@@ -2,6 +2,7 @@
   (:require [frontend.api :as api]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.modal :as modal]
@@ -131,32 +132,25 @@
             (if-let [[_ [vcs-type name]] selected-org-ident]
               (card/titled
                 (html
-                  [:div
-                   name
-                   (case vcs-type
-                     "github" [:i.octicon.octicon-mark-github]
-                     "bitbucket" [:i.fa.fa-bitbucket]
-                     nil)
-                   (when (:invite-teammates? (om/get-render-state owner))
-                     (component
-                       (modal/modal-dialog {:title "Invite Teammates"
-                                            :body
-                                            (let [users (remove :circle_member (:github-users (:invite-data app)))
-                                                  count-users (count users)
-                                                  count-with-email (count (filter #(utils/valid-email? (:email %)) users))
-                                                  count-selected (count (filter #(:checked %) users))
-                                                  ]
+                  (let [users (remove :circle_member (:github-users (:invite-data app)))
+                        count-users (count users)
+                        count-with-email (count (filter #(utils/valid-email? (:email %)) users))
+                        count-selected (count (filter #(:checked %) users))]
+                    [:div
+                     name
+                     (case vcs-type
+                       "github" [:i.octicon.octicon-mark-github]
+                       "bitbucket" [:i.fa.fa-bitbucket]
+                       nil)
+                     (when (:invite-teammates? (om/get-render-state owner))
+                       (component
+                         (modal/modal-dialog {:title "Invite Teammates"
+                                              :body
                                               [:div
                                                [:div
                                                 "These are the people who are not using CircleCI yet:"
                                                 [:br]
-                                                (str count-with-email " of " count-users " users have emails, " count-selected " are selected")
-                                                ;; TODO -ac Delete this before merging?
-                                                ;; [:br]
-                                                ;; (str "(" count-with-email " of " count-users " have emails)")
-                                                ;; [:br]
-                                                ;; (str "(" count-selected  " of "  count-with-email " with emails are selected)")
-                                                ]
+                                                [:span [:b count-with-email] " of " [:b count-users] " users have emails, " [:b count-selected] " are selected"]]
                                                [:div.constraining-modal
                                                 (om/build table/table {:rows users
                                                                        :columns [{:header "Username"
@@ -166,43 +160,59 @@
                                                                                               (str "  " (:login user-map))])}
                                                                                  {:header "Email"
                                                                                   :cell-fn (fn [user-map]
-                                                                                             (let [{:keys [avatar_url email login index]} user-map
-                                                                                                   id-name (str login "-email")]
+                                                                                             (let [{:keys [avatar_url email login index checked]} user-map
+                                                                                                   id-name (str login "-email")
+                                                                                                   error? (and (or checked (not (empty? email)))
+                                                                                                               (not (utils/valid-email? email)))]
                                                                                                [:span
                                                                                                 (component
                                                                                                   (om/build text-input/text-input {:input-type "email"
-                                                                                                                                   :on-change #(utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
+                                                                                                                                   :on-change (fn [event]
+                                                                                                                                                  (utils/edit-input owner (conj (state/invite-github-user-path index) :email) event)
+                                                                                                                                                  (when (and (not= checked true)
+                                                                                                                                                             (not (empty? email)))
+                                                                                                                                                      (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) nil)))
                                                                                                                                    :required? true
                                                                                                                                    :id id-name
                                                                                                                                    :value email
                                                                                                                                    :size "small"
-                                                                                                                                   :error? (and (not (empty? email))
-                                                                                                                                                (not (utils/valid-email? email)))
+                                                                                                                                   :long? true
+                                                                                                                                   :error? error?
                                                                                                                                    :defaultValue email}))]))}
                                                                                  {:type :shrink
                                                                                   :cell-fn (fn [user-map]
-                                                                                             (let [{:keys [email login index checked]} user-map
-                                                                                                   id-name (str login "-checkbox")]
-                                                                                               (component
-                                                                                                 (om/build checkbox/checkbox {:id id-name
-                                                                                                                              :disabled? (not (utils/valid-email? email))
-                                                                                                                              :checked? checked
-                                                                                                                              :on-click #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}))))}]
-                                                                       :striped? true})]])
-                                            :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
-                                                      (button/button {:on-click #(.log js/console "Send the emails in this on-click!" (seq (invitees (remove :circle_member (:github-users (:invite-data app))))))
-                                                                      :primary? true} "Send emails")]
-                                            :close-fn #(om/set-state! owner :invite-teammates? false)})))
-                   (button/button
-                     {:disabled? (nil? (:users selected-org))
-                      :primary? true
-                      :on-click (fn []
-                                  ;; TODO -ac Add tracking back in before merging
-                                  #_((om/get-shared owner :track-event)
-                                     {:event-type :invite-teammates-clicked
-                                      :properties {:view :team}})
-                                  (om/set-state! owner :invite-teammates? (not (:invite-teammates? (om/get-render-state owner)))))}
-                     "Invite Teammates")])
+                                                                                               (let [{:keys [email login index checked]} user-map
+                                                                                                     id-name (str login "-checkbox")
+                                                                                                     email-valid? (utils/valid-email? email)]
+                                                                                                   (component
+                                                                                                       (om/build checkbox/checkbox {:id id-name
+                                                                                                                                    :disabled? (and (not (utils/valid-email? email))
+                                                                                                                                                    (not (empty? email)))
+                                                                                                                                    :checked? checked
+                                                                                                                                    :on-click #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}))))}]
+                                                                       :striped? true
+                                                                       :fixed-header? true})]]
+                                              :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
+                                                        (forms/managed-button
+                                                          [:button.btn.btn-success {:data-success-text "Sent"
+                                                                                    ;; :on-click #(raise! owner [:invited-github-users {:invitees (invitees users)}])
+                                                                                    :on-click #(.log js/console "Send the emails in this on-click!" (seq (invitees users)))
+                                                                                    :disabled (or (empty? (invitees users))
+                                                                                                  (not (every? #(utils/valid-email? (:email %)) (invitees users))))}
+                                                           "Send Invites "
+                                                           [:i.fa.fa-envelope-o]])]
+                                              :close-fn #(om/set-state! owner :invite-teammates? false)})))
+                     (button/button
+                       {:disabled? (nil? (:users selected-org))
+                        :primary? true
+                        :on-click (fn []
+                                    ;; TODO -ac Add tracking back in before merging
+                                    #_((om/get-shared owner :track-event)
+                                       {:event-type :invite-teammates-clicked
+                                        :properties {:view :team}})
+                                    (om/set-state! owner :invite-teammates? (not (:invite-teammates? (om/get-render-state owner)))))}
+                       "Invite Teammates")])
+                  )
                 (if-let [users (:users selected-org)]
                   (table (add-follow-counts users (:projects selected-org)))
                   (html [:div.loading-spinner common/spinner])))

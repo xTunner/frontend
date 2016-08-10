@@ -44,16 +44,17 @@
       }
     }
 
+    // Striped styling
     &.striped {
-      border-color: 1px solid @grayLight;
+      border-color: @grayLighter;
       > thead {
-        background-color: @grayLight;
-      }
-      > tbody > tr:nth-child(even) {
         background-color: @grayLighter;
       }
-      > tbody > tr:nth-child(odd) {
+      > tbody > tr:nth-child(even) {
         background-color: @whiten;
+      }
+      > tbody > tr:nth-child(odd) {
+        background-color: @grayLightest;
       }
     }
 

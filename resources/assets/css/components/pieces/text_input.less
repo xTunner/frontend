@@ -1,36 +1,41 @@
 .ns("frontend.components.pieces.text-input", {
   .ui("text-input", {
-      // TODO All these important!s are bad, should be removed in a future PR
-      // that switched over *all* of our input fields to this component
-      padding: 6px 8px !important;
-      width: auto !important;
-      border-radius: 0 !important;
+    // TODO All these important!s are bad, should be removed in a future PR
+    // that switched over *all* of our input fields to this component
+    padding: 6px 8px !important;
+    width: auto !important;
+    border-radius: 0 !important;
+    margin: 0.5em 0 !important;
 
-      &.small {
-          height: 30px !important;
-      }
-      &.medium {
-          height: 35px !important;
-      }
-      &.medium {
-          min-height: 99px !important;
-      }
+    &.long {
+      width: 100% !important;
+    }
 
-      &.rounded {
-          border-radius: 30px !important;
-      }
+    &.small {
+      height: 30px !important;
+    }
+    &.medium {
+      height: 35px !important;
+    }
+    &.large{
+      min-height: 100px !important;
+    }
 
-      &.error {
-          background-color: @redLightest !important;
-          border-color: @red !important;
-          transition: background-color 0.2s linear;
-          &:focus {
-              outline: none !important;
-              background-color: @white !important;
-              box-shadow: 0 0 3px 0 @redLight, inset 0 0 3px 0 @redLightest !important;
-              border-color: @red !important;
-          }
+    &.rounded {
+      border-radius: 30px !important;
+    }
+
+    &.error {
+      background-color: @redLightest !important;
+      border-color: @red !important;
+      transition: background-color 0.2s linear;
+      &:focus {
+        outline: none !important;
+        background-color: @white !important;
+        box-shadow: 0 0 3px 0 @redLight, inset 0 0 3px 0 @redLightest !important;
+        border-color: @red !important;
       }
+    }
   });
 });
 
