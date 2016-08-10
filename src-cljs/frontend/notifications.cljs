@@ -1,7 +1,6 @@
 (ns frontend.notifications
   (:require [frontend.utils :as utils :include-macros true]
-            [goog.events]
-            [frontend.utils.launchdarkly :as ld]))
+            [goog.events]))
 
 (defn notifiable-browser? [] (exists? (.-Notification js/window)))
 (defn notifications-permission [] (.-permission js/Notification))
@@ -22,8 +21,7 @@
 ;; - The body property should be a MAX of 42 characters (this is assuming a
 ;;   default text size with San Francisco, the default system font on macOS)
 (defn notify [title properties]
-  (when (and (notifications-granted?)
-             (ld/feature-on? "web-notifications"))
+  (when (notifications-granted?)
     (let [new-notification (js/Notification.
                              title
                              (clj->js (assoc
