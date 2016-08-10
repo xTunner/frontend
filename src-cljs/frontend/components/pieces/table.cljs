@@ -33,7 +33,7 @@
              the columns' :cell-fns to generate each cell.
   :key-fn  - A function of a row object which returns a value to use as the React
              key for the row.
-  :striped - (optional) Adds a .striped class to the table."
+  :striped? - (optional) Adds a .striped class to the table."
   [{:keys [columns rows key-fn striped? ]} owner]
   {:pre (fn? key-fn)}
   (reify
@@ -41,8 +41,8 @@
     (render [_]
       (component
         (html
-         [:table
-          [:thead {:class (when striped? "striped")}
+         [:table {:class (when striped? "striped")}
+          [:thead
            [:tr
             (for [[idx {:keys [header type]}] (map-indexed vector columns)]
               ;; We never reorder columns in a table, so the index works as a
@@ -78,7 +78,8 @@
 
   (defn table-parent [data owner]
     (om/component
-        (om/build table {:rows [{:name "John"
+        (om/build table {:key-fn :name
+                         :rows [{:name "John"
                                  :birthday (js/Date. "1940-10-09")}
                                 {:name "Paul"
                                  :birthday (js/Date. "1942-06-18")}
