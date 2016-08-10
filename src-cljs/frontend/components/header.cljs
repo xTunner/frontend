@@ -18,7 +18,6 @@
             [frontend.utils :as utils]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.html :refer [open-ext]]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -390,7 +389,7 @@
                       (feature/enabled? :offer-linux-trial)
                       (not (get-in app state/dismissed-trial-offer-banner)))
              (om/build trial-offer-banner app))
-           (when (not (nil? (:build (get-in app state/build-data-path))))
+           (when (:build (get-in app state/build-data-path))
              (cond
                (and (= (n/notifications-permission) "default")
                     show-web-notif-banner?)
@@ -410,20 +409,21 @@
                           :impression-event-type :web-notifications-permissions-banner-impression
                           :dismiss-fn #(raise! owner [:dismiss-web-notifications-permissions-banner {:response (n/notifications-permission)}])})
                (and (not show-web-notif-banner?)
-                    show-web-notif-banner-follow-up?) (om/build top-banner/banner
-                                                                (let [response (n/notifications-permission)]
-                                                                  {:banner-type (case (n/notifications-permission)
-                                                                                  "default" "danger"
-                                                                                  "denied" "danger"
-                                                                                  "granted" "success")
-                                                                   :content [:div (let [not-granted-message "If you change your mind you can go to this link to turn web notifications on: "]
-                                                                                    (case (n/notifications-permission)
-                                                                                      "default" not-granted-message
-                                                                                      "denied"  not-granted-message
-                                                                                      "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
-                                                                             [:a {:on-click #(raise! owner [:web-notifications-confirmation-account-settings-clicked {:response response}])}
-                                                                              "Account Notifications"]]
-                                                                   :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
+                    show-web-notif-banner-follow-up?)
+               (om/build top-banner/banner
+                         (let [response (n/notifications-permission)]
+                           {:banner-type (case (n/notifications-permission)
+                                           "default" "danger"
+                                           "denied" "danger"
+                                           "granted" "success")
+                            :content [:div (let [not-granted-message "If you change your mind you can go to this link to turn web notifications on: "]
+                                             (case (n/notifications-permission)
+                                               "default" not-granted-message
+                                               "denied"  not-granted-message
+                                               "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
+                                      [:a {:on-click #(raise! owner [:web-notifications-confirmation-account-settings-clicked {:response response}])}
+                                       "Account Notifications"]]
+                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user params))])))))
 

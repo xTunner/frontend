@@ -14,7 +14,6 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.html :refer [open-ext]]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
