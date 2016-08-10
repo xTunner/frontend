@@ -478,20 +478,21 @@
                 (let [close-fn #(om/set-state! owner :show-modal? false)]
                   (modal/modal-dialog {:title "Add an Environment Variable"
                                        :body (html
-                                              [:form
+                                              [:div
                                                [:p
                                                 " To disable string substitution you need to escape the " [:code "$"]
                                                 " characters by prefixing them with " [:code "\\"] "."
                                                 " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
-                                               (om/build form/text-field {:label "Name"
-                                                                          :required true
-                                                                          :value new-env-var-name
-                                                                          :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
-                                               (om/build form/text-field {:label "Value"
-                                                                          :required true
-                                                                          :value new-env-var-value
-                                                                          :auto-complete "off"
-                                                                          :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)})])
+                                               (form/form {}
+                                                          (om/build form/text-field {:label "Name"
+                                                                                     :required true
+                                                                                     :value new-env-var-name
+                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
+                                                          (om/build form/text-field {:label "Value"
+                                                                                     :required true
+                                                                                     :value new-env-var-value
+                                                                                     :auto-complete "off"
+                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
                                        :actions [(button/button {:on-click close-fn} "Cancel")
                                                  (forms/managed-button
                                                   [:input.btn.btn-primary {:data-failed-text "Failed" ,
@@ -1004,27 +1005,27 @@
                 (let [close-fn #(om/set-state! owner :show-modal? false)]
                   (modal/modal-dialog
                    {:title "Add an SSH Key"
-                    :body (html
-                           [:form
-                            (om/build form/text-field {:label "Hostname"
-                                                       :value hostname
-                                                       :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)})
-                            (om/build form/text-area {:label "Private Key"
-                                                      :required true
-                                                      :value private-key
-                                                      :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)})])
+                    :body
+                    (form/form {}
+                               (om/build form/text-field {:label "Hostname"
+                                                          :value hostname
+                                                          :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)})
+                               (om/build form/text-area {:label "Private Key"
+                                                         :required true
+                                                         :value private-key
+                                                         :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}))
                     :actions [(button/button {:on-click close-fn} "Cancel")
                               (forms/managed-button
-                             [:input.btn.btn-primary
-                              {:data-failed-text "Failed"
-                               :data-success-text "Saved"
-                               :data-loading-text "Saving..."
-                               :value "Add SSH Key"
-                               :type "submit"
-                               :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
-                                                                         :ssh-key {:hostname hostname
-                                                                                   :private_key private-key}
-                                                                         :on-success close-fn}])}])]
+                               [:input.btn.btn-primary
+                                {:data-failed-text "Failed"
+                                 :data-success-text "Saved"
+                                 :data-loading-text "Saving..."
+                                 :value "Add SSH Key"
+                                 :type "submit"
+                                 :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
+                                                                           :ssh-key {:hostname hostname
+                                                                                     :private_key private-key}
+                                                                           :on-success close-fn}])}])]
                     :close-fn close-fn})))
               (when-let [ssh-keys (seq (:ssh_keys project))]
                 (let [remove-key-button
@@ -1753,19 +1754,19 @@
         (html
          [:div
           (om/build common/flashes error-message)
-          [:div
-           (om/build form/text-field {:label "Description"
-                                      :value description
-                                      :on-change #(om/set-state! owner :description (.. % -target -value))})
-           (om/build form/text-field {:label "Password (Optional)"
-                                      :password? true
-                                      :value password
-                                      :on-change #(om/set-state! owner :password (.. % -target -value))})
-           (om/build form/file-selector {:label "Key File"
-                                         :file-name file-name
-                                         :on-change (fn [{:keys [file-name file-content]}]
-                                                      (om/update-state! owner #(merge % {:file-name file-name
-                                                                                         :file-content file-content})))})]])
+          (form/form {}
+                     (om/build form/text-field {:label "Description"
+                                                :value description
+                                                :on-change #(om/set-state! owner :description (.. % -target -value))})
+                     (om/build form/text-field {:label "Password (Optional)"
+                                                :password? true
+                                                :value password
+                                                :on-change #(om/set-state! owner :password (.. % -target -value))})
+                     (om/build form/file-selector {:label "Key File"
+                                                   :file-name file-name
+                                                   :on-change (fn [{:keys [file-name file-content]}]
+                                                                (om/update-state! owner #(merge % {:file-name file-name
+                                                                                                   :file-content file-content})))}))])
         :actions [(forms/managed-button
                    [:input.upload-p12-button
                     {:data-failed-text "Failed" ,

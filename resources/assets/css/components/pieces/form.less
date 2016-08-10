@@ -50,6 +50,7 @@
 
   // Mixin for common styles for text inputs and textareas.
   .text-type-field() {
+    display: block;
     width: 100%;
     padding: 7px 10px 8px;
     line-height: 18px;
@@ -132,5 +133,15 @@
         font-size: 18px;
       }
     });
+  });
+
+  .ui("Form", {
+    > .field {
+      margin-bottom: 25px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   });
 });

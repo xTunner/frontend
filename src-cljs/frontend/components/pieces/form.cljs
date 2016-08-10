@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.form
   (:require [devcards.core :as dc :refer-macros [defcard defcard-om]]
             [om.core :as om :include-macros true]
+            [om.next :as om-next :refer-macros [defui]]
             [frontend.components.pieces.button :as button]
             [goog.events :as gevents])
   (:require-macros [frontend.utils :refer [component element html]]))
@@ -158,6 +159,19 @@
                                             "Choose File"])))]))}))))))
 
 
+;; Presents a series of fields (the Form's children), laid out appropriately.
+(defui Form
+  Object
+  (render [this]
+    (component
+      (html
+       [:form
+        (js/React.Children.map (om-next/children this)
+                               #(html [:.field %]))]))))
+
+(def form (om-next/factory Form))
+
+
 (dc/do
   (defcard text-field
     (fn [state]
@@ -246,4 +260,24 @@ Sea ei equidem torquatos, duo in quis porro voluptaria, quo eligendi recusabo in
     (om/build file-selector {:label "Favorite File"
                              :file-name "a-file.txt"
                              :validation-error "That file's not all that great."
-                             :on-change (constantly nil)})))
+                             :on-change (constantly nil)}))
+
+  (defcard-om form
+    (fn [{:keys [text-field-value text-field-2-value text-area-value file-name] :as app-state} owner]
+      (om/component
+        (form {}
+              (om/build text-field {:label "Hostname"
+                                    :value text-field-value
+                                    :on-change #(om/update! app-state :text-field-value (.. % -target -value))})
+              (om/build text-field {:label "Favorite Band"
+                                    :value text-field-2-value
+                                    :validation-error (when (seq text-field-2-value)
+                                                        (str text-field-2-value " is so last year."))
+                                    :on-change #(om/update! app-state :text-field-2-value (.. % -target -value))})
+              (om/build text-area {:label "Favorite Latin Passage"
+                                   :value text-area-value
+                                   :on-change #(om/update! app-state :text-area-value (.. % -target -value))})
+              (om/build file-selector {:label "Favorite File"
+                                       :file-name file-name
+                                       :on-change #(om/update! app-state :file-name (:file-name %))}))))
+    {:text-area-value lorem-ipsum}))
