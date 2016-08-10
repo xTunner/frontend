@@ -33,6 +33,10 @@
     :beta-join-clicked
     :beta-leave-clicked
     :branch-clicked
+    :branch-picker-project-settings-clicked
+    :build-head-parallelism-clicked
+    :build-page-project-settings-clicked
+    :build-page-tab-clicked
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
     :build-link-clicked
@@ -40,8 +44,11 @@
     :build-timing-upsell-impression
     :cancel-plan-clicked
     :change-image-clicked
+    :container-filter-changed
+    :container-selected
     :dismiss-trial-offer-banner-clicked
     :insights-bar-clicked
+    :insights-header-parallelism-clicked
     :invite-teammates-clicked
     :invite-teammates-dismissed
     :invite-teammates-impression
@@ -51,11 +58,10 @@
     :new-plan-clicked
     :no-plan-banner-impression
     :org-clicked
-    :parallelism-clicked
     :pr-link-clicked
     :project-branch-changed
     :project-clicked
-    :project-settings-clicked
+    :project-enabled
     :revision-link-clicked
     :select-plan-clicked
     :set-up-junit-clicked

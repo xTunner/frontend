@@ -734,12 +734,15 @@
                         (conj {:name :build-parameters :label "Build Parameters"}))]
              (om/build tabs/tab-row {:tabs tabs
                                      :selected-tab-name selected-tab-name
-                                     :on-tab-click #(navigate! owner (routes/v1-build-path
-                                                                      (vcs-url/vcs-type (:vcs_url build))
-                                                                      (:username build)
-                                                                      (:reponame build)
-                                                                      (:build_num build)
-                                                                      (name %)))}))]
+                                     :on-tab-click #(do
+                                                      (navigate! owner (routes/v1-build-path
+                                                                        (vcs-url/vcs-type (:vcs_url build))
+                                                                        (:username build)
+                                                                        (:reponame build)
+                                                                        (:build_num build)
+                                                                        (name %)))
+                                                      ((om/get-shared owner :track-event) {:event-type :build-page-tab-clicked
+                                                                                           :properties {:selected-tab-name selected-tab-name}}))}))]
 
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name
@@ -895,7 +898,7 @@
                [:div.summary-item
                 [:span.summary-label "Parallelism: "]
                 [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :build-head-parallelism-clicked
                                                                                            :properties {:repo (project-model/repo-name project)
                                                                                                         :org (project-model/org-name project)}})
                                            :href (build-model/path-for-parallelism build)}

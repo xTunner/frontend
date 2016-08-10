@@ -101,7 +101,10 @@
            (when can-write-settings?
              [:div.build-settings
               [:a.build-action
-               {:href (routes/v1-project-settings-path (:navigation-data data))}
+               {:href (routes/v1-project-settings-path (:navigation-data data))
+                :on-click #((om/get-shared owner :track-event) {:event-type :build-page-project-settings-clicked
+                                                                :properties {:project project
+                                                                             :user user}})}
                [:i.material-icons "settings"]
                "Project Settings"]])])))))
 
