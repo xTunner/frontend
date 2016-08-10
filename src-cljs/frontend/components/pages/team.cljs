@@ -138,11 +138,13 @@
                                    "bitbucket" [:i.fa.fa-bitbucket]
                                    nil)])
                    :action  (html
-                                (let [users (remove :circle_member (:github-users (:invite-data app)))
+                                (let [invite-data (:invite-data app)
+                                      users (remove :circle_member (:github-users invite-data))
+                                      opts {:vcs_type (:vcs_type invite-data)
+                                            :org-name (:org invite-data)}
                                       count-users (count users)
                                       count-with-email (count (filter #(utils/valid-email? (:email %)) users))
                                       count-selected (count (filter #(:checked %) users))]
-                                    ;; TODO -ac You can turn all of this vvvvv into an :action for the title of the card!
                                     [:div (when (:invite-teammates? (om/get-render-state owner))
                                               (component
                                                   (modal/modal-dialog {:title "Invite Teammates"
@@ -197,8 +199,11 @@
                                                                        :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
                                                                                  (forms/managed-button
                                                                                      [:button.btn.btn-success {:data-success-text "Sent"
-                                                                                                               ;; :on-click #(raise! owner [:invited-github-users {:invitees (invitees users)}])
-                                                                                                               :on-click #(.log js/console "Send the emails in this on-click!" (seq (invitees users)))
+                                                                                                               :on-click #(raise! owner [:invited-github-users (merge {:invitees (invitees users)
+                                                                                                                                                                       :vcs_type (:vcs_type opts)}
+                                                                                                                                                                      (if (:project-name opts)
+                                                                                                                                                                          {:project-name (:project-name opts)}
+                                                                                                                                                                          {:org-name (:org-name opts)}))])
                                                                                                                :disabled (or (empty? (invitees users))
                                                                                                                              (not (every? #(utils/valid-email? (:email %)) (invitees users))))}
                                                                                       "Send Invites "
