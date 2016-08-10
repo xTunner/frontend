@@ -519,7 +519,10 @@
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (toggle-project current-state vcs-url {:project-id project-id}
-                  :follow-project api-path/project-follow))
+                  :follow-project api-path/project-follow)
+  (analytics/track {:event-type :project-followed
+                    :current-state current-state
+                    :properties {:vcs-url vcs-url}}))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -897,7 +900,12 @@
                  (api-path/build-cancel vcs-type org-name repo-name build-num)
                  :cancel-build
                  api-ch
-                 :context {:build-id build-id})))
+                 :context {:build-id build-id})
+    (analytics/track {:event-type :build-canceled
+                      :current-state current-state
+                      :properties {:vcs-type vcs-type
+                                   :org-name org-name
+                                   :repo-name repo-name}})))
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [vcs-url project-name project-id]} previous-state current-state]
