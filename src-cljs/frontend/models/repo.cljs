@@ -22,7 +22,9 @@
            (building-on-circle? repo))))
 
 (defn likely-osx-repo? [repo]
-  (let [osx-languages #{"Swift" "Objective-C"}]
+  (let [osx-languages #{"Swift" "Objective-C" ; GH
+                        "swift" "objective-c" ; BB
+                        }]
     (contains? osx-languages (:language repo))))
 
 (defn id [repo]
