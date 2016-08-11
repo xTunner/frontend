@@ -98,13 +98,10 @@
             selected-org (when selected-org-ident (get-in app selected-org-ident))]
         (when (not= (:selected-org-ident (om/get-render-state owner))
                     selected-org-ident)
-          (api/get-org-settings-normalized name vcs-type api-chan)
-          (api/get-org-members api-chan (:name selected-org)))
+          (api/get-org-settings-normalized name vcs-type api-chan))
         (when (and selected-org
                    invite-teammates?)
-          ;; TODO -ac here or up there? ^
-          ;; (api/get-org-members api-chan (:name selected-org)))
-          )))
+          (api/get-org-members api-chan (:name selected-org)))))
 
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident invite-teammates?]}]
