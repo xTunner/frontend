@@ -8,10 +8,8 @@
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
-            [frontend.components.pieces.text-input :as text-input]
             [frontend.components.templates.main :as main-template]
             [frontend.components.invites :as invites]
-            [frontend.components.pieces.checkbox :as checkbox]
             [frontend.components.pieces.button :as button]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -169,31 +167,30 @@
                                                                                                                               error? (and (or checked (not (empty? email)))
                                                                                                                                           (not (utils/valid-email? email)))]
                                                                                                                             [:span
-                                                                                                                             (component
-                                                                                                                                 (om/build text-input/text-input {:input-type "email"
-                                                                                                                                                                  :on-change (fn [event]
-                                                                                                                                                                                 (utils/edit-input owner (conj (state/invite-github-user-path index) :email) event)
-                                                                                                                                                                                 (when (and (not= checked true)
-                                                                                                                                                                                            (not (empty? email)))
-                                                                                                                                                                                     (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) nil)))
-                                                                                                                                                                  :required? true
-                                                                                                                                                                  :id id-name
-                                                                                                                                                                  :value email
-                                                                                                                                                                  :size "small"
-                                                                                                                                                                  :long? true
-                                                                                                                                                                  :error? error?
-                                                                                                                                                                  :defaultValue email}))]))}
+                                                                                                                             [:input {:type "email"
+                                                                                                                                :on-change (fn [event]
+                                                                                                                                             (utils/edit-input owner (conj (state/invite-github-user-path index) :email) event)
+                                                                                                                                             (when (and (not= checked true)
+                                                                                                                                                        (not (empty? email)))
+                                                                                                                                               (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) nil)))
+                                                                                                                                :required? true
+                                                                                                                                :id id-name
+                                                                                                                                :value email
+                                                                                                                                ;; :size "small"
+                                                                                                                                ;; :long? true
+                                                                                                                                ;; :error? error?
+                                                                                                                                :defaultValue email}]]))}
                                                                                                           {:type :shrink
                                                                                                            :cell-fn (fn [user-map]
                                                                                                                         (let [{:keys [email login index checked]} user-map
                                                                                                                               id-name (str login "-checkbox")
                                                                                                                               email-valid? (utils/valid-email? email)]
-                                                                                                                            (component
-                                                                                                                                (om/build checkbox/checkbox {:id id-name
-                                                                                                                                                             :disabled? (and (not (utils/valid-email? email))
-                                                                                                                                                                             (not (empty? email)))
-                                                                                                                                                             :checked? checked
-                                                                                                                                                             :on-click #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}))))}]
+                                                                                                                          [:input {:type "checkbox"
+                                                                                                                                   :id id-name
+                                                                                                                                   :disabled? (and (not (utils/valid-email? email))
+                                                                                                                                                   (not (empty? email)))
+                                                                                                                                   :checked? checked
+                                                                                                                                   :on-click #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}]))}]
                                                                                                 :striped? true
                                                                                                 :fixed-header? true})]]
                                                                        :actions [(button/button {:on-click #(om/set-state! owner :invite-teammates? false)} "Cancel")
