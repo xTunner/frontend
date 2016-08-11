@@ -8,6 +8,8 @@
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.form :as form]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
@@ -25,13 +27,11 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.html :refer [hiccup->html-str open-ext]]
             [frontend.utils.state :as state-utils]
-            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true]
-            [frontend.components.pieces.button :as button]
-            [frontend.components.pieces.card :as card])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn- remove-action-button
@@ -478,24 +478,21 @@
                 (let [close-fn #(om/set-state! owner :show-modal? false)]
                   (modal/modal-dialog {:title "Add an Environment Variable"
                                        :body (html
-                                              [:form
+                                              [:div
                                                [:p
                                                 " To disable string substitution you need to escape the " [:code "$"]
                                                 " characters by prefixing them with " [:code "\\"] "."
                                                 " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
-                                               [:div.form-group
-                                                [:label "Name"]
-                                                [:input.form-control#env-var-name
-                                                 {:required true ,:type "text" ,:value new-env-var-name
-                                                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]]
-                                               [:div.form-group
-                                                [:label "Value"]
-                                                [:input.form-control#env-var-value
-                                                 {:required true
-                                                  :type "text"
-                                                  :value new-env-var-value
-                                                  :auto-complete "off"
-                                                  :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]])
+                                               (form/form {}
+                                                          (om/build form/text-field {:label "Name"
+                                                                                     :required true
+                                                                                     :value new-env-var-name
+                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
+                                                          (om/build form/text-field {:label "Value"
+                                                                                     :required true
+                                                                                     :value new-env-var-value
+                                                                                     :auto-complete "off"
+                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
                                        :actions [(button/button {:on-click close-fn} "Cancel")
                                                  (forms/managed-button
                                                   [:input.btn.btn-primary {:data-failed-text "Failed" ,
@@ -1008,26 +1005,27 @@
                 (let [close-fn #(om/set-state! owner :show-modal? false)]
                   (modal/modal-dialog
                    {:title "Add an SSH Key"
-                    :body (html
-                           [:form
-                            [:input#hostname {:required true ,:type "text" :value (str hostname)
-                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)}]
-                            [:label {:placeholder "Hostname"}]
-                            [:textarea#privateKey {:required true :value (str private-key)
-                                                   :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}]
-                            [:label {:placeholder "Private Key"}]])
+                    :body
+                    (form/form {}
+                               (om/build form/text-field {:label "Hostname"
+                                                          :value hostname
+                                                          :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)})
+                               (om/build form/text-area {:label "Private Key"
+                                                         :required true
+                                                         :value private-key
+                                                         :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}))
                     :actions [(button/button {:on-click close-fn} "Cancel")
                               (forms/managed-button
-                             [:input.btn.btn-primary
-                              {:data-failed-text "Failed"
-                               :data-success-text "Saved"
-                               :data-loading-text "Saving..."
-                               :value "Add SSH Key"
-                               :type "submit"
-                               :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
-                                                                         :ssh-key {:hostname hostname
-                                                                                   :private_key private-key}
-                                                                         :on-success close-fn}])}])]
+                               [:input.btn.btn-primary
+                                {:data-failed-text "Failed"
+                                 :data-success-text "Saved"
+                                 :data-loading-text "Saving..."
+                                 :value "Add SSH Key"
+                                 :type "submit"
+                                 :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
+                                                                           :ssh-key {:hostname hostname
+                                                                                     :private_key private-key}
+                                                                           :on-success close-fn}])}])]
                     :close-fn close-fn})))
               (when-let [ssh-keys (seq (:ssh_keys project))]
                 (let [remove-key-button
@@ -1739,85 +1737,52 @@
          [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
 
 
-(defn p12-upload-modal [{:keys [show-modal? close-fn error-message project-name vcs-type]} owner]
+(defn p12-upload-modal [{:keys [close-fn error-message project-name vcs-type]} owner]
   (reify
     om/IInitState
     (init-state [_]
       {:description nil
        :password nil
        :file-name nil
-       :file-content nil
-       :dragged-over? false})
+       :file-content nil})
 
     om/IRenderState
-    (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
-      (let [file-selected-fn
-            (fn [file]
-              (om/set-state! owner :file-name (aget file "name"))
-              (doto (js/FileReader.)
-                (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
-                (.readAsBinaryString file)))
-
-            upload-form
-            (html
-             [:div {:data-component `p12-upload-form}
-              [:div
-               [:label.label "Description"]
-               [:input.dumb.text-input
-                {:type "text" :value description
-                 :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
-
-              [:div
-               [:label.label "Password (Optional)"]
-               [:input.dumb.text-input
-                {:type "password" :value password
-                 :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
-
-              [:div
-               [:label.label "File"]
-               [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
-                                         :on-drag-over #(do (.stopPropagation %)
-                                                            (.preventDefault %)
-                                                            (om/set-state! owner :dragged-over? true))
-                                         :on-drag-leave #(om/set-state! owner :dragged-over? false)
-                                         :on-drop #(do (.stopPropagation %)
-                                                       (.preventDefault %)
-                                                       (om/set-state! owner :dragged-over? false)
-                                                       (file-selected-fn (aget % "dataTransfer" "files" 0)))}
-                (if file-name
-                  [:div file-name]
-                  [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
-                [:label.p12-file-input
-                 [:input.hidden-p12-file-input {:type "file"
-                                                :on-change #(file-selected-fn (aget % "target" "files" 0))}]
-                 [:i.material-icons "file_upload"]
-                 "Choose file"]]]])
-
-            upload-button
-            (forms/managed-button
-             [:input.upload-p12-button
-              {:data-failed-text "Failed" ,
-               :data-success-text "Uploaded" ,
-               :data-loading-text "Uploading..." ,
-               :value "Upload" ,
-               :type "submit"
-               :disabled (not (and file-content description))
-               :on-click #(raise! owner [:upload-p12 {:project-name project-name
-                                                      :vcs-type vcs-type
-                                                      :description description
-                                                      :password (or password "")
-                                                      :file-content (base64/encodeString file-content)
-                                                      :file-name file-name
-                                                      :on-success close-fn}])}])]
-
-        (when show-modal?
-          (modal/modal-dialog {:title "Upload a New Apple Code Signing Key"
-                               :body (html
-                                      [:div
-                                       (om/build common/flashes error-message)
-                                       upload-form])
-                               :actions [upload-button]
-                               :close-fn close-fn}))))))
+    (render-state [_ {:keys [description password file-name file-content]}]
+      (modal/modal-dialog
+       {:title "Upload a New Apple Code Signing Key"
+        :body
+        (html
+         [:div
+          (om/build common/flashes error-message)
+          (form/form {}
+                     (om/build form/text-field {:label "Description"
+                                                :value description
+                                                :on-change #(om/set-state! owner :description (.. % -target -value))})
+                     (om/build form/text-field {:label "Password (Optional)"
+                                                :password? true
+                                                :value password
+                                                :on-change #(om/set-state! owner :password (.. % -target -value))})
+                     (om/build form/file-selector {:label "Key File"
+                                                   :file-name file-name
+                                                   :on-change (fn [{:keys [file-name file-content]}]
+                                                                (om/update-state! owner #(merge % {:file-name file-name
+                                                                                                   :file-content file-content})))}))])
+        :actions [(forms/managed-button
+                   [:input.upload-p12-button
+                    {:data-failed-text "Failed" ,
+                     :data-success-text "Uploaded" ,
+                     :data-loading-text "Uploading..." ,
+                     :value "Upload" ,
+                     :type "submit"
+                     :disabled (not (and file-content description))
+                     :on-click #(raise! owner [:upload-p12 {:project-name project-name
+                                                            :vcs-type vcs-type
+                                                            :description description
+                                                            :password (or password "")
+                                                            :file-content (base64/encodeString file-content)
+                                                            :file-name file-name
+                                                            :on-success close-fn}])}])]
+        :close-fn close-fn}))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
@@ -1849,11 +1814,11 @@
                                                                       :vcs-type vcs-type})))})
              (om/build no-keys-empty-state {:project-name project-name
                                             :add-key #(om/set-state! owner :show-modal? true)}))
-           (om/build p12-upload-modal {:show-modal? show-modal?
-                                       :close-fn #(om/set-state! owner :show-modal? false)
-                                       :error-message error-message
-                                       :project-name project-name
-                                       :vcs-type vcs-type})]])))))
+           (when show-modal?
+             (om/build p12-upload-modal {:close-fn #(om/set-state! owner :show-modal? false)
+                                         :error-message error-message
+                                         :project-name project-name
+                                         :vcs-type vcs-type}))]])))))
 
 (defn project-settings [data owner]
   (reify
