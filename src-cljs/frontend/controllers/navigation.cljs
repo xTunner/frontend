@@ -369,7 +369,7 @@
     ;; get the list of orgs
     (api/get-orgs api-ch :include-user? true)
     (when org
-      (api/get-org-members api-ch org))
+      (api/get-org-members org vcs_type api-ch))
     (set-page-title! "Invite teammates")))
 
 (defmethod navigated-to :project-settings

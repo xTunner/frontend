@@ -631,7 +631,7 @@
 
 (defmethod api-event [:org-member-invite-users :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state [:invite-data :github-users] (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))
+  (assoc-in state [:invite-data :github-users] (vec (map-indexed (fn [i u] (assoc u :index i :checked (utils/valid-email? (:email u)))) resp))))
 
 
 (defmethod api-event [:enable-project :success]

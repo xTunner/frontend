@@ -47,8 +47,8 @@
              :organizations
              api-ch))
 
-(defn get-org-members [api-ch org-name]
-  (ajax/ajax :get (gstring/format "/api/v1/organization/%s/members" org-name)
+(defn get-org-members [org-name vcs-type api-ch]
+  (ajax/ajax :get (path/org-members vcs-type org-name)
              :org-member-invite-users
              api-ch))
 

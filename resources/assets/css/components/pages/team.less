@@ -29,4 +29,21 @@
       }
     });
   });
+
+  .ui("invite-teammates-modal", {}, {
+    .el("body", {
+      > .table {
+        max-height: 27vh;
+        overflow: scroll;
+      }
+    });
+
+    .el("avatars", {
+      > img.invite-gravatar {
+        max-height: 1.7em;
+        width: auto;
+        border-radius: 50%;
+      }
+    });
+  });
 });
