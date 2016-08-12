@@ -1352,11 +1352,14 @@
                                     :type #{:shrink :right}
                                     :cell-fn
                                     (fn [token]
-                                      (table/action-button
-                                       "Remove"
-                                       (icon/delete)
-                                       #(raise! owner [:deleted-project-api-token {:project-id project-id
-                                                                                   :token (:token token)}])))}]}))]]])))))
+                                      (om/build remove-action-button
+                                                {:confirmation-question
+                                                 (str "Are you sure you want to remove the API token \""
+                                                      (:label token)
+                                                      "\"?")
+                                                 :remove-fn
+                                                 #(raise! owner [:deleted-project-api-token {:project-id project-id
+                                                                                             :token (:token token)}])}))}]}))]]])))))
 
 (defn heroku [data owner]
   (reify
