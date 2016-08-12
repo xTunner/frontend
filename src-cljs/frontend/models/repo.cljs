@@ -1,5 +1,6 @@
 (ns frontend.models.repo
   (:require [clojure.set :as set]
+            [clojure.string :as str]
             [frontend.datetime :as datetime]
             [goog.string :as gstring]
             goog.string.format))
@@ -22,10 +23,12 @@
            (building-on-circle? repo))))
 
 (defn likely-osx-repo? [repo]
-  (let [osx-languages #{"Swift" "Objective-C" ; GH
-                        "swift" "objective-c" ; BB
-                        }]
-    (contains? osx-languages (:language repo))))
+  ;; GH "Swift" "Objective-C"
+  ;; BB "swift" "objective-c"
+  (let [osx-languages #{"swift" "objective-c"}]
+    (->> (:language repo)
+         str/lower-case
+         (contains? osx-languages))))
 
 (defn id [repo]
   (:vcs_url repo))
