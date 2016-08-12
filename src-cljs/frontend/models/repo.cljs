@@ -26,9 +26,10 @@
   ;; GH "Swift" "Objective-C"
   ;; BB "swift" "objective-c"
   (let [osx-languages #{"swift" "objective-c"}]
-    (->> (:language repo)
-         str/lower-case
-         (contains? osx-languages))))
+    (boolean
+     (some->> (:language repo)
+              str/lower-case
+              (contains? osx-languages)))))
 
 (defn id [repo]
   (:vcs_url repo))
