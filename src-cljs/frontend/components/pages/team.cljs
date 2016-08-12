@@ -143,6 +143,7 @@
                                   :actions [(button/button {:on-click #(om/set-state! owner :show-modal? false)} "Cancel")
                                             (forms/managed-button
                                               [:button.btn.btn-success {:data-success-text "Sent"
+                                                                        ;; TODO -ac Switch this to the real implementation before merging
                                                                         :on-click #(.log js/console "Invitees: " (seq (invitees users)))
                                                                         ;; :on-click #(raise! owner [:invited-github-users (merge {:invitees (invitees users)
                                                                         ;;                                                         :vcs_type (:vcs_type opts)}
@@ -158,8 +159,7 @@
              {:disabled? (nil? users)
               :primary? true
               :on-click (fn []
-                          ;; TODO -ac Add tracking back in before merging
-                          #_((om/get-shared owner :track-event)
+                          ((om/get-shared owner :track-event)
                              {:event-type :invite-teammates-clicked
                               :properties {:view :team}})
                           (om/set-state! owner :show-modal? (not (:show-modal? (om/get-render-state owner)))))}
@@ -185,12 +185,7 @@
             selected-org (when selected-org-ident (get-in app selected-org-ident))]
         (when (not= (:selected-org-ident (om/get-render-state owner))
                     selected-org-ident)
-          (api/get-org-settings-normalized name vcs-type api-chan))
-        ;; TODO -ac This is doing the thing, need to make it into a component
-        ;; Fire on WillMount
-        (when (and selected-org
-                   invite-teammates?)
-          #_(api/get-org-members api-chan (:name selected-org)))))
+          (api/get-org-settings-normalized name vcs-type api-chan))))
 
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident invite-teammates?]}]
@@ -222,13 +217,7 @@
                                    "bitbucket" [:i.fa.fa-bitbucket]
                                    nil)])
                    :action  (om/build invite-teammates-modal {:selected-org-ident selected-org-ident
-                                                              :app app})
-                   ;; TODO -ac Remvoethis cruft
-                   #_(html
-                              [:div (when (:show-modal? (om/get-render-state owner))
-                                      (om/build invite-teammates-modal {:selected-org-ident selected-org-ident
-                                                                        :app app}))
-                               ])}
+                                                              :app app})}
                 (if-let [users (:users selected-org)]
                   (table (add-follow-counts users (:projects selected-org)))
                   (html [:div.loading-spinner common/spinner])))
