@@ -34,7 +34,7 @@
   :key-fn   - A function of a row object which returns a value to use as the React
               key for the row.
   :striped? - (optional) Renders the table with alternating white/gray row stripes."
-  [{:keys [columns rows key-fn striped? ]} owner]
+  [{:keys [columns rows key-fn striped?]} owner]
   {:pre (fn? key-fn)}
   (reify
     om/IRender

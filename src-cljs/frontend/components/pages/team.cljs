@@ -89,8 +89,8 @@
       (component
         (let [invite-data (:invite-data app)
               users (remove :circle_member (:github-users invite-data))
-              opts {:vcs_type (:vcs_type invite-data)
-                    :org-name (:org invite-data)}
+              opts {:vcs_type vcs_type
+                    :org-name selected-org-name}
               count-users (count users)
               count-with-email (count (filter #(utils/valid-email? (:email %)) users))
               count-selected (count (filter #(:checked %) users))]
@@ -100,6 +100,8 @@
                                (element :body
                                         (html
                                           [:div
+                                           (js/console.log "opts vcs: " (:vcs_type opts))
+                                           (js/console.log "opts org name : " (:org-name opts))
                                            [:.header
                                             "These are the people who are not using CircleCI yet ("
                                             [:span [:b count-with-email] " of " [:b count-users] " users have emails, " [:b count-selected] " are selected):"]]
@@ -114,33 +116,25 @@
                                                                                                      [:img.invite-gravatar {:src (gh-utils/make-avatar-url user-map :size 50)}]
                                                                                                      (str "  " (:login user-map))])))}
                                                                              {:header "Email"
-                                                                              :cell-fn (fn [user-map]
-                                                                                         (let [{:keys [avatar_url email login index checked]} user-map
-                                                                                               id-name (str login "-email")
-                                                                                               error? (and (or checked (not (empty? email)))
-                                                                                                           (not (utils/valid-email? email)))]
-                                                                                           (om/build form/text-field {:on-change (fn [event]
-                                                                                                                                   (utils/edit-input owner (conj (state/invite-github-user-path index) :email) event)
-                                                                                                                                   (when (or (and (not= checked true)
-                                                                                                                                                  (not (empty? email)))
-                                                                                                                                             (utils/valid-email? (.. event -target -value)))
-                                                                                                                                     (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) nil)))
-                                                                                                                      :value email
-                                                                                                                      :size :medium
-                                                                                                                      :validation-error (when (and (or checked (not (empty? email)))
-                                                                                                                                                   (not (utils/valid-email? email)))
-                                                                                                                                          (str email " is not a valid email"))})))}
+                                                                              :cell-fn (fn [{:keys [avatar_url email login index checked] :as user-map}]
+                                                                                         (om/build form/text-field {:on-change (fn [event]
+                                                                                                                                 (utils/edit-input owner (conj (state/invite-github-user-path index) :email) event)
+                                                                                                                                 (when (or (and (not checked)
+                                                                                                                                                (not (empty? email)))
+                                                                                                                                           (utils/valid-email? (.. event -target -value)))
+                                                                                                                                   (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) nil)))
+                                                                                                                    :value email
+                                                                                                                    :size :medium
+                                                                                                                    :validation-error (when (and (or checked (not (empty? email)))
+                                                                                                                                                 (not (utils/valid-email? email)))
+                                                                                                                                        (str email " is not a valid email"))}))}
                                                                              {:type :shrink
-                                                                              :cell-fn (fn [user-map]
-                                                                                         (let [{:keys [email login index checked]} user-map
-                                                                                               id-name (str login "-checkbox")
-                                                                                               email-valid? (utils/valid-email? email)]
-                                                                                           [:input {:type "checkbox"
-                                                                                                    :id id-name
-                                                                                                    :disabled (and (not (utils/valid-email? email))
-                                                                                                                   (not (empty? email)))
-                                                                                                    :checked checked
-                                                                                                    :on-click #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}]))}]
+                                                                              :cell-fn (fn [{:keys [avatar_url email login index checked] :as user-map}]
+                                                                                         [:input {:type "checkbox"
+                                                                                                  :disabled (and (not (utils/valid-email? email))
+                                                                                                                 (not (empty? email)))
+                                                                                                  :checked checked
+                                                                                                  :on-click #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}])}]
                                                                    :striped? true})]]))
                                :actions [(button/button {:on-click close-fn} "Cancel")
                                          (forms/managed-button
@@ -149,7 +143,7 @@
                                                                                                                              :vcs_type (:vcs_type opts)}
                                                                                                                             (if (:project-name opts)
                                                                                                                               {:project-name (:project-name opts)}
-                                                                                                                              {:org-name (:org-name opts)}))])
+                                                                                                                              {:org (:org-name opts)}))])
                                                                      :disabled (or (empty? (invitees users))
                                                                                    (not (every? #(utils/valid-email? (:email %)) (invitees users))))}
                                             "Send Invites "
@@ -218,10 +212,10 @@
                                                :properties {:view :team}}))}
                                "Invite Teammates")
                              (when show-modal?
-                               (om/build invite-teammates-modal {:selected-org-name (:name (get-in app selected-org-ident))
+                               (om/build invite-teammates-modal {:selected-org-name (:name selected-org)
                                                                  :close-fn #(om/set-state! owner :show-modal? false)
                                                                  :invite-data (:invite-data app)
-                                                                 :vcs_type (:vcs_type app)
+                                                                 :vcs_type (:vcs_type selected-org)
                                                                  :app app}))]}
                 (if-let [users (:users selected-org)]
                   (table (add-follow-counts users (:projects selected-org)))
