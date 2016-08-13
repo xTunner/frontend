@@ -139,11 +139,13 @@
                                :actions [(button/button {:on-click close-fn} "Cancel")
                                          (forms/managed-button
                                            [:button.btn.btn-success {:data-success-text "Sent"
-                                                                     :on-click #(raise! owner [:invited-github-users (merge {:invitees (invitees users)
+                                                                     :on-click #(do
+                                                                                  (raise! owner [:invited-github-users (merge {:invitees (invitees users)
                                                                                                                              :vcs_type (:vcs_type opts)}
                                                                                                                             (if (:project-name opts)
                                                                                                                               {:project-name (:project-name opts)}
-                                                                                                                              {:org (:org-name opts)}))])
+                                                                                                                              {:org-name (:org-name opts)}))])
+                                                                                  (close-fn))
                                                                      :disabled (or (empty? (invitees users))
                                                                                    (not (every? #(utils/valid-email? (:email %)) (invitees users))))}
                                             "Send Invites "
@@ -212,10 +214,10 @@
                                                :properties {:view :team}}))}
                                "Invite Teammates")
                              (when show-modal?
-                               (om/build invite-teammates-modal {:selected-org-name (:name selected-org)
+                               (om/build invite-teammates-modal {:selected-org-name name
                                                                  :close-fn #(om/set-state! owner :show-modal? false)
                                                                  :invite-data (:invite-data app)
-                                                                 :vcs_type (:vcs_type selected-org)
+                                                                 :vcs_type vcs-type
                                                                  :app app}))]}
                 (if-let [users (:users selected-org)]
                   (table (add-follow-counts users (:projects selected-org)))
