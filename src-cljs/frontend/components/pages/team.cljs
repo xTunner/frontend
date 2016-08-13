@@ -82,7 +82,7 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (api/get-org-members  selected-org-name vcs_type (om/get-shared owner [:comms :api])))
+      (api/get-org-members selected-org-name vcs_type (om/get-shared owner [:comms :api])))
 
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
@@ -121,14 +121,15 @@
                                                                                                            (not (utils/valid-email? email)))]
                                                                                            (om/build form/text-field {:on-change (fn [event]
                                                                                                                                    (utils/edit-input owner (conj (state/invite-github-user-path index) :email) event)
-                                                                                                                                   (when (and (not= checked true)
-                                                                                                                                              (not (empty? email)))
+                                                                                                                                   (when (or (and (not= checked true)
+                                                                                                                                                  (not (empty? email)))
+                                                                                                                                             (utils/valid-email? (.. event -target -value)))
                                                                                                                                      (utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) nil)))
                                                                                                                       :value email
                                                                                                                       :size :medium
                                                                                                                       :validation-error (when (and (or checked (not (empty? email)))
                                                                                                                                                    (not (utils/valid-email? email)))
-                                                                                                                                          (str email "is not a valid email"))})))}
+                                                                                                                                          (str email " is not a valid email"))})))}
                                                                              {:type :shrink
                                                                               :cell-fn (fn [user-map]
                                                                                          (let [{:keys [email login index checked]} user-map
@@ -207,21 +208,16 @@
                                    "github" [:i.octicon.octicon-mark-github]
                                    "bitbucket" [:i.fa.fa-bitbucket]
                                    nil)])
-                   :action  [:div
+                   :action [:div
                              (button/button
-                               {
-                                #_#_:disabled? (nil? (-> app
-                                                     (:invite-data)
-                                                     (:github-users)))
-                                :primary? true
+                               {:primary? true
                                 :on-click #(do
                                              (om/set-state! owner :show-modal? true)
-                                            ;; TODO -ac Add tracking back in before merge
-                                            #_((om/get-shared owner :track-event)
-                                               {:event-type :invite-teammates-clicked
-                                                :properties {:view :team}}))}
+                                             ((om/get-shared owner :track-event)
+                                              {:event-type :invite-teammates-clicked
+                                               :properties {:view :team}}))}
                                "Invite Teammates")
-                             (when (om/get-state owner :show-modal?)
+                             (when show-modal?
                                (om/build invite-teammates-modal {:selected-org-name (:name (get-in app selected-org-ident))
                                                                  :close-fn #(om/set-state! owner :show-modal? false)
                                                                  :invite-data (:invite-data app)

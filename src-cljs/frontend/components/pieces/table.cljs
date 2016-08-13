@@ -20,20 +20,20 @@
 (defn table
   "Our standard table component.
 
-  :columns - A sequence of column descriptions. Each is a map with the following keys:
-             :header  - The content which should appear in the header cell of the column.
-             :cell-fn - A function which, given a row object, returns the content for that
-                        row's cell in this column.
-             :type    - A column type, or a collection of types. Available types:
-                        :right  - Column aligns its content to the right. Without this
-                                  type, the column will align left.
-                        :shrink - Column width shrinks to fit its content. Columns without
-                                  :shrink will share any leftover space.
-  :rows    - A sequence of objects which will each generate a row. These will be passed to
-             the columns' :cell-fns to generate each cell.
-  :key-fn  - A function of a row object which returns a value to use as the React
-             key for the row.
-  :striped? - (optional) Adds a .striped class to the table."
+  :columns  - A sequence of column descriptions. Each is a map with the following keys:
+              :header  - The content which should appear in the header cell of the column.
+              :cell-fn - A function which, given a row object, returns the content for that
+                         row's cell in this column.
+              :type    - A column type, or a collection of types. Available types:
+                         :right  - Column aligns its content to the right. Without this
+                                   type, the column will align left.
+                         :shrink - Column width shrinks to fit its content. Columns without
+                                   :shrink will share any leftover space.
+  :rows     - A sequence of objects which will each generate a row. These will be passed to
+              the columns' :cell-fns to generate each cell.
+  :key-fn   - A function of a row object which returns a value to use as the React
+              key for the row.
+  :striped? - (optional) Renders the table with alternating white/gray row stripes."
   [{:keys [columns rows key-fn striped? ]} owner]
   {:pre (fn? key-fn)}
   (reify
