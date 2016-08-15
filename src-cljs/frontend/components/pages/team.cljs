@@ -100,8 +100,6 @@
                                (element :body
                                         (html
                                           [:div
-                                           (js/console.log "opts vcs: " (:vcs_type opts))
-                                           (js/console.log "opts org name : " (:org-name opts))
                                            [:.header
                                             "These are the people who are not using CircleCI yet ("
                                             [:span [:b count-with-email] " of " [:b count-users] " users have emails, " [:b count-selected] " are selected):"]]
