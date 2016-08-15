@@ -73,6 +73,7 @@
     ;; notification to be displayed, while one which doesn't change the key is
     ;; ignored.
     (set! (.-notificationsChan this) (chan 1 (dedupe-by #(.-key %))))
+    (set! (.-clickEventChan this) (chan))
 
     ;; Put the first notification on the channel.
     (when-let [n (:notification (om-next/props this))]
@@ -101,12 +102,16 @@
           ;; Show the notification we just took off the channel.
           (om-next/update-state! this assoc :notification notification)
 
-          ;; Park here until another notification arrives or we time out.
+          ;; Park here until another notification arrives, the notification is
+          ;; clicked, or we time out.
           (alt!
             ;; If we found a new notification, put it onto peek-chan so we'll
             ;; pick it up on the next loop (since we can't put it back on the
             ;; front of the actual notification channel).
             (.-notificationsChan this) ([n] (when n (>! peek-chan n)))
+
+            ;; If the notification is clicked, do nothing, just move on.
+            (.-clickEventChan this) nil
 
             ;; If we time out, do nothing, just move on.
             (timeout (:display-timeout (om-next/props this))) nil)
@@ -139,7 +144,8 @@
            (html
             ;; Wrap the notification in a div we can style (to animate it),
             ;; but "inherit" the notification's key.
-            [:div {:key (.-key notification)}
+            [:div {:key (.-key notification)
+                   :on-click #(put! (.-clickEventChan this) %)}
              notification])))))))
 
 (def flash-notification-presenter (om-next/factory FlashNotificationPresenter))
