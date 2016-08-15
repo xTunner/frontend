@@ -77,7 +77,7 @@ If you have access to the backend code, you can also add this line:
 
 ### Development Processes
 
-You must use foreman (or goreman) to run the frontend and nginx.
+You must use [foreman](https://github.com/ddollar/foreman#installation) (or goreman) to run the frontend and nginx.
 
 ```
 foreman start # (or) goreman start
