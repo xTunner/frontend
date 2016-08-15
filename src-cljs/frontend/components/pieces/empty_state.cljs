@@ -48,13 +48,12 @@
 
 (dc/do
   (defcard empty-state
-    (html
-     (empty-state {:icon (html [:i.material-icons "cake"])
-                   :heading (html
-                             [:span
-                              "The "
-                              (important "cake")
-                              " is a lie"])
-                   :subheading "Let's add some."
-                   :action (button/button {:primary? true}
-                                          "Add Cake")}))))
+    (empty-state {:icon (html [:i.material-icons "cake"])
+                  :heading (html
+                            [:span
+                             "The "
+                             (important "cake")
+                             " is a lie"])
+                  :subheading "Let's add some."
+                  :action (button/button {:primary? true}
+                                         "Add Cake")})))
