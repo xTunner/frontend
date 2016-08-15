@@ -41,3 +41,21 @@
   (let [k (keys m1)]
     (= (select-keys m2 k)
        m1)))
+
+(defn dedupe-by
+  "Like clojure.core/dedupe, but removes values with duplicate values for (keyfn
+  value)."
+  ([keyfn]
+   (fn [rf]
+     (let [pk (volatile! ::none)]
+       (fn
+         ([] (rf))
+         ([result] (rf result))
+         ([result input]
+          (let [prior-key @pk
+                input-key (keyfn input)]
+            (vreset! pk input-key)
+            (if (= prior-key input-key)
+              result
+              (rf result input))))))))
+  ([keyfn coll] (sequence (dedupe-by keyfn) coll)))

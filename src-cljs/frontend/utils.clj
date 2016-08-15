@@ -225,3 +225,13 @@
   (assert (contains? (:locals &env) component-name-symbol)
           "element form must appear within a component form.")
   `(element* ~(name element-name) ~component-name-symbol (do ~@body)))
+
+(defmacro while-let
+  "Repeatedly executes body while test expression is true, with form bound to
+  test."
+  [[form test] & body]
+  `(loop [temp# ~test]
+     (when temp#
+       (let [~form temp#]
+         ~@body
+         (recur ~test)))))

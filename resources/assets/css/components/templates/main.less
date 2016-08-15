@@ -1,0 +1,32 @@
+.ns("frontend.components.templates.main", {
+  .ui("FlashNotification", {
+    padding: 20px 15px;
+    color: @white;
+    background-color: @blueDarkest;
+    font-size: @fontSizeSmall;
+  });
+
+  .ui("FlashNotificationPresenter", {}, {
+    .el("notification", {
+      @duration: 200ms;
+
+      &.notification-appear,
+      &.notification-enter {
+        transition: transform @duration linear;
+      }
+
+      &.notification-appear:not(.notification-appear-active),
+      &.notification-enter:not(.notification-enter-active) {
+        transform: translateY(-100%);
+      }
+
+      &.notification-leave {
+        transition: transform @duration linear;
+      }
+
+      &.notification-leave.notification-leave-active {
+        transform: translateY(-100%);
+      }
+    });
+  });
+});
