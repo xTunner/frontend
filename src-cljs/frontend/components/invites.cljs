@@ -92,7 +92,7 @@
     om/IRender
     (render [_]
       (let [project-name (:project-name opts)
-            users (remove :following (:github-users invite-data))
+            users (remove :following (:org-members invite-data))
             dismiss-form (:dismiss-invite-form invite-data)]
         (html
          [:div.first-green.invite-form {:class (when (or (empty? users) dismiss-form)
@@ -138,7 +138,7 @@
              [:div.first-green.invite-form
               [:h3 "Invite your " (:org invite-data) " teammates"]
               (om/build invites
-                        (remove :is_user (:github-users invite-data))
+                        (remove :is_user (:org-members invite-data))
                         {:opts {:vcs_type (:vcs_type invite-data)
                                 :org-name (:org invite-data)}}) ]
              [:div.org-invites

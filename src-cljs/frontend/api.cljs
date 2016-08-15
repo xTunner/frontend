@@ -49,8 +49,10 @@
 
 (defn get-org-members [org-name vcs-type api-ch]
   (ajax/ajax :get (path/org-members vcs-type org-name)
-             :org-member-invite-users
-             api-ch))
+             :get-org-members
+             api-ch
+             :context {:org-name org-name
+                       :vcs-type vcs-type}))
 
 (defn get-org-plan [org-name vcs-type api-ch]
   (ajax/ajax :get

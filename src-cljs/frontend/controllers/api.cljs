@@ -629,9 +629,12 @@
     (assoc-in state state/dismiss-invite-form-path true)))
 
 
-(defmethod api-event [:org-member-invite-users :success]
+(defmethod api-event [:get-org-members :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state [:invite-data :github-users] (vec (map-indexed (fn [i u] (assoc u :index i :checked (utils/valid-email? (:email u)))) resp))))
+  (let [{:keys [vcs-type org-name]} context]
+    (assoc-in state
+              (conj (state/org-ident vcs-type org-name) :vcs-users)
+              (vec resp))))
 
 
 (defmethod api-event [:enable-project :success]
