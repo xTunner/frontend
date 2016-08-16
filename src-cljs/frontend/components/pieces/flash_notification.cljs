@@ -92,6 +92,9 @@
           ;; Show the notification we just took off the channel.
           (om-next/update-state! this assoc :notification notification)
 
+          ;; Wait for the notification to animate on.
+          (<! (timeout presenter-animation-duration))
+
           ;; Park here until another notification arrives, the notification is
           ;; clicked, or we time out.
           (alt!
@@ -151,7 +154,8 @@
         (html
          [:div
           [:div {:style {:margin "10px 0"}}
-           (button/button {:on-click #(swap! state update :counter inc)}
+           (button/button {:primary? true
+                           :on-click #(swap! state update :counter inc)}
                           "Show Notification")]
           [:div {:style {:overflow "hidden"}}
            (when-not (zero? counter)
