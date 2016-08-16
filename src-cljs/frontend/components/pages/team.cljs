@@ -14,7 +14,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :include-macros true :refer [valid-email?]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs :as vcs-utils]
             [goog.string :as gstr]
@@ -77,16 +77,16 @@
                       (:email user))))))
 
 (defn invite-teammates-modal [{:keys [selected-org close-fn show-modal?]} owner]
-  (let [select-user! (fn [{:keys [login] :as user}]
-                       (om/set-state! owner [:org-members-by-login login :selected] true))
-        deselect-user! (fn [{:keys [login] :as user}]
-                         (om/set-state! owner [:org-members-by-login login :selected] false))
-        selected? (fn [{:keys [login] :as user}]
-                    (om/get-state owner [:org-members-by-login login :selected]))
-        set-email! (fn [{:keys [login] :as user} value]
-                       (om/set-state! owner [:org-members-by-login login :email] value))
-        get-email (fn [{:keys [login] :as user}]
-                    (om/get-state owner [:org-members-by-login login :email]))]
+  (letfn [(select-user! [{:keys [login] :as user}]
+            (om/set-state! owner [:org-members-by-login login :selected] true))
+          (deselect-user! [{:keys [login] :as user}]
+            (om/set-state! owner [:org-members-by-login login :selected] false))
+          (selected? [{:keys [login] :as user}]
+            (om/get-state owner [:org-members-by-login login :selected]))
+          (set-email! [{:keys [login] :as user} value]
+            (om/set-state! owner [:org-members-by-login login :email] value))
+          (get-email [{:keys [login] :as user}]
+            (om/get-state owner [:org-members-by-login login :email]))]
     (reify
       om/IWillReceiveProps
       (will-receive-props [_ new-props]
@@ -101,12 +101,14 @@
             (om/set-state! owner
                            :org-members-by-login
                            (into {}
-                                 (for [{:keys [login circle_member email]
+                                 (for [{:keys [login circle_member email id]
                                         :as user} new-vcs-users
-                                       :when (not circle_member)]
-                                   [login (-> user
-                                              (select-keys [:email :login :id])
-                                              (assoc :selected (utils/valid-email? email)))]))))))
+                                       :when (not circle_member)
+                                       :let [trimmed-email (some-> email gstr/trim)]]
+                                   [login {:email trimmed-email
+                                           :login login
+                                           :id id
+                                           :selected (valid-email? trimmed-email)}]))))))
       
       om/IRenderState
       (render-state [_ {:keys [org-members-by-login]}]
@@ -114,8 +116,12 @@
          (if show-modal?
            (let [users (remove :circle_member (:vcs-users selected-org))
                  count-users (count users)
-                 count-with-email (count (filter (comp utils/valid-email? :email last) org-members-by-login))
-                 count-selected (count (filter (comp :selected last) org-members-by-login))]
+                 count-with-email (count (filter (fn [[_ user]]
+                                                   (-> user :email valid-email?))
+                                                 org-members-by-login))
+                 count-selected (count (filter (fn [[_ user]]
+                                                 (:selected user))
+                                               org-members-by-login))]
              (modal/modal-dialog {:title "Invite Teammates"
                                   :body
                                   (element :body
@@ -151,17 +157,21 @@
                                                                                  email (get-email user)]
                                                                              (om/build form/text-field
                                                                                        {:on-change (fn [event]
-                                                                                                     (let [input (.. event -target -value)]
-                                                                                                       (set-email! user input)
-                                                                                                       (when (or (and (not is-selected)
-                                                                                                                      (not (empty? input)))
-                                                                                                                 (utils/valid-email? input))
-                                                                                                         (select-user! user))))
+                                                                                                     (let [trimmed-input (gstr/trim (.. event -currentTarget -value))
+                                                                                                           is-valid (valid-email? trimmed-input)]
+                                                                                                       (set-email! user trimmed-input)
+                                                                                                       (cond
+                                                                                                         (and (not is-selected)
+                                                                                                              is-valid)
+                                                                                                         (select-user! user)
+                                                                                                         (and is-selected
+                                                                                                              (not is-valid))
+                                                                                                         (deselect-user! user))))
                                                                                         :value email
                                                                                         :size :medium
                                                                                         :validation-error (when (and (or is-selected
                                                                                                                          (not (empty? email)))
-                                                                                                                     (not (utils/valid-email? email)))
+                                                                                                                     (not (valid-email? email)))
                                                                                                             (str email " is not a valid email"))})))}
                                                                {:type :shrink
                                                                 :cell-fn (fn [user]
@@ -185,7 +195,7 @@
                                                                                                                           :org-name (:name selected-org)}])
                                                                                     (close-fn))
                                                                        :disabled (or (empty? (invitees org-members-by-login))
-                                                                                     (not (every? #(utils/valid-email? (:email %)) (invitees org-members-by-login))))}
+                                                                                     (not (every? (comp valid-email? :email) (invitees org-members-by-login))))}
                                               "Send Invites "
                                               [:i.fa.fa-envelope-o]])]
                                   :close-fn close-fn}))
