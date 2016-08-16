@@ -4,10 +4,13 @@
             [frontend.components.account :as account]
             [frontend.components.admin :as admin]
             [frontend.components.aside :as aside]
+            [frontend.components.common :as common]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
             [frontend.components.insights :as insights]
+            [frontend.components.inspector :as inspector]
+            [frontend.components.instrumentation :as instrumentation]
             [frontend.components.invites :as invites]
             [frontend.components.key-queue :as keyq]
             [frontend.components.landing :as landing]
@@ -18,10 +21,12 @@
             [frontend.components.pages.project-settings :as project-settings]
             [frontend.components.pages.projects :as projects]
             [frontend.components.pages.team :as team]
+            [frontend.components.pieces.topbar :as topbar]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.state :as state]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [dissoc-in]]
             [goog.dom :as gdom]
             [om.core :as om :include-macros true])
@@ -68,6 +73,56 @@
 
           :error errors/error-page})))
 
+(defn head-admin [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Admin Header")
+    om/IRender
+    (render [_]
+      (let [open? (get-in app state/show-admin-panel-path)
+            expanded? (get-in app state/show-instrumentation-line-items-path)
+            inspector? (get-in app state/show-inspector-path)
+            user-session-settings (get-in app [:render-context :user_session_settings])
+            env (config/env)
+            local-storage-logging-enabled? (get-in app state/logging-enabled-path)]
+        (html
+          [:div
+           [:div.environment {:class (str "env-" env)
+                              :role "button"
+                              :on-click #(raise! owner [:show-admin-panel-toggled])}
+            env]
+           [:div.head-admin {:class (concat (when open? ["open"])
+                                            (when expanded? ["expanded"]))}
+            [:div.admin-tools
+
+
+             [:div.options
+              [:a {:href "/admin/switch"} "switch "]
+              [:a {:href "/admin/build-state"} "build state "]
+              [:a {:href "/admin/recent-builds"} "builds "]
+              [:a {:href "/admin/deployments"} "deploys "]
+              (let [use-local-assets (get user-session-settings :use_local_assets)]
+                [:a {:on-click #(raise! owner [:set-user-session-setting {:setting :use-local-assets
+                                                                          :value (not use-local-assets)}])}
+                 "local assets " (if use-local-assets "off " "on ")])
+              (let [current-build-id (get user-session-settings :om_build_id "dev")]
+                (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
+                  [:a.menu-item
+                   {:key build-id
+                    :on-click #(raise! owner [:set-user-session-setting {:setting :om-build-id
+                                                                         :value build-id}])}
+                   [:span (str "om " build-id " ")]]))
+              [:a {:on-click #(raise! owner [:show-inspector-toggled])}
+               (if inspector? "inspector off " "inspector on ")]
+              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]
+              [:a {:on-click #(raise! owner [:logging-enabled-clicked])}
+               (str (if local-storage-logging-enabled?
+                      "turn OFF "
+                      "turn ON ")
+                    "logging-enabled?")]]
+             (om/build instrumentation/summary (:instrumentation app))]
+            (when (and open? expanded?)
+              (om/build instrumentation/line-items (:instrumentation app)))]])))))
+
 (defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
@@ -81,6 +136,10 @@
                                   ;; Components are not aware of external state changes.
                                   (reinstall-om!))
               logged-in? (get-in app state/user-path)
+              admin? (if (config/enterprise?)
+                       (get-in app [:current-user :dev-admin])
+                       (get-in app [:current-user :admin]))
+              show-inspector? (get-in app state/show-inspector-path)
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)
               page (nav-point->page (:navigation-point app))]
@@ -115,10 +174,21 @@
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
-              (when (and inner? logged-in?)
-                (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
+              (when admin?
+                (om/build head-admin app))
 
-              (om/build page app)])))))))
+              (when show-inspector?
+                (om/build inspector/inspector app))
+
+              (when (ld/feature-on? "top-bar-ui-v-1")
+                (topbar/topbar {:support-info (common/contact-support-a-info owner)
+                                :user (get-in app state/user-path)}))
+
+              [:.below-bar
+               (when (and inner? logged-in?)
+                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
+
+               (om/build page app)]])))))))
 
 
 (defn app [app owner opts]
