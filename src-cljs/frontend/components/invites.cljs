@@ -119,32 +119,3 @@
           [:img {:src (gh-utils/make-avatar-url org :size 25)
                  :width 25 :height 25}]
           [:div.orgname (:login org)]]]))))
-
-(defn teammates-invites [data owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :invite-teammates-impression}))
-    om/IRender
-    (render [_]
-      (let [invite-data (:invite-data data)]
-        (html
-          [:div#invite-teammates
-           ; org bar on the left, borrowed from add projects
-           [:ul.side-list
-            (om/build-all side-item (filter :org (get-in data state/user-organizations-path)))]
-           ; invites box on the right
-           (if (:org invite-data)
-             [:div.first-green.invite-form
-              [:h3 "Invite your " (:org invite-data) " teammates"]
-              (om/build invites
-                        (remove :is_user (:org-members invite-data))
-                        {:opts {:vcs_type (:vcs_type invite-data)
-                                :org-name (:org invite-data)}}) ]
-             [:div.org-invites
-              [:h3 "Invite your teammates"]
-              [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
-              (let [current-uri (Uri. js/location.href)
-                    root-uri (.resolve current-uri (Uri. "/"))]
-                [:p [:input.form-control {:value root-uri :type "text"}]])
-              [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on CircleCI."]])])))))

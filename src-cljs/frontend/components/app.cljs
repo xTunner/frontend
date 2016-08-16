@@ -56,7 +56,6 @@
          (map #(vector (key %) (templated (val %))))
          {:dashboard dashboard/dashboard
           :build-insights insights/build-insights
-          :invite-teammates invites/teammates-invites
           :org-settings org-settings/org-settings
           :account account/account
 
