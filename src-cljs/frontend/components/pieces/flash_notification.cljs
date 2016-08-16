@@ -24,7 +24,7 @@
 (def flash-notification (om-next/factory Notification))
 
 
-(def ^:const presenter-animation-duration 200)
+(def ^:const presenter-animation-duration 300)
 
 (defui
   ^{:doc
