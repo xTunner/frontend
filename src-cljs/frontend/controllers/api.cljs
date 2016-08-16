@@ -617,10 +617,14 @@
 
 (defmethod api-event [:first-green-build-github-users :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+  (if-not (and (= (:project-name context)
+                  (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+               (= (:vcs-type context)
+                  (get-in state (conj state/build-path :vcs_type))))
     state
-    (-> state
-        (assoc-in state/invite-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
+    (assoc-in state
+              state/build-invite-members-path
+              (vec (map-indexed (fn [i u] (assoc u :index i)) resp)))))
 
 (defmethod api-event [:invite-github-users :success]
   [target message status {:keys [resp context]} state]

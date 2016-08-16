@@ -432,7 +432,7 @@
       (let [build (get-in app state/build-path)
             build-data (get-in app state/build-data-path)
             container-data (get-in app state/container-data-path)
-            invite-data (:invite-data app)
+            invite-data (get-in app state/build-invite-data-path)
             project-data (get-in app state/project-data-path)
             user (get-in app state/user-path)]
         (html

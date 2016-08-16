@@ -184,7 +184,7 @@
 
 (deftest post-control-event-invite-selected-all-works
   (let [users ["user1" "user2"]
-        current-state (assoc-in {} state/invite-github-users-path users)]
+        current-state (assoc-in {} state/build-invite-members-path users)]
     (println current-state)
     (testing "the post-control-event invite-selected-all sends a :invite-teammates-select-all-clicked event"
       (let [calls (analytics-track-call-args #(controls/post-control-event! {} :invite-selected-all {} {} current-state))]
@@ -196,7 +196,7 @@
 
 (deftest post-control-event-invite-selected-none-works
   (let [users ["user1" "user2"]
-        current-state (assoc-in {} state/invite-github-users-path users)]
+        current-state (assoc-in {} state/build-invite-members-path users)]
     (testing "the post-control-event invite-selected-none sends a :invite-teammates-select-none-clicked event"
       (let [calls (analytics-track-call-args #(controls/post-control-event! {} :invite-selected-none {} {} current-state))]
         (is (= (count calls) 1))

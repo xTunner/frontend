@@ -34,7 +34,7 @@
            [:img {:src (gh-utils/make-avatar-url user)}]]
           [:div.invite-profile
            handle
-           [:input {:on-change #(utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
+           [:input {:on-change #(utils/edit-input owner (conj (state/build-invite-member-path index) :email) %)
                     :required true
                     :type "email"
                     :value email
@@ -47,7 +47,7 @@
            [:input {:type "checkbox"
                     :id (str handle "-checkbox")
                     :checked (boolean (:checked user))
-                    :on-change #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}]
+                    :on-change #(utils/toggle-input owner (conj (state/build-invite-member-path index) :checked) %)}]
            [:div.checked \uf046]
            [:div.unchecked \uf096]]])))))
 

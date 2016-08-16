@@ -397,27 +397,31 @@
 
 (defmethod control-event :invite-selected-all
   [_ _ _ state]
-  (update-in state state/invite-github-users-path (fn [users]
-                                                    (mapv #(if (utils/valid-email? (:email %))
-                                                                 (assoc % :checked true)
-                                                                 %)
-                                                              users))))
+  (update-in state
+             state/build-invite-members-path
+             (fn [users]
+               (mapv #(if (utils/valid-email? (:email %))
+                        (assoc % :checked true)
+                        %)
+                     users))))
 
 (defmethod post-control-event! :invite-selected-all
   [_ _ _ _ current-state]
-  (let [teammates (get-in current-state state/invite-github-users-path)]
+  (let [teammates (get-in current-state state/build-invite-members-path)]
     (analytics/track {:event-type :invite-teammates-select-all-clicked
                       :current-state current-state
                       :properties {:teammate-count (count teammates)}})))
 
 (defmethod control-event :invite-selected-none
   [_ _ _ state]
-  (update-in state state/invite-github-users-path (fn [users]
-                                                    (vec (map #(assoc % :checked false) users)))))
+  (update-in state
+             state/build-invite-members-path
+             (fn [users]
+               (vec (map #(assoc % :checked false) users)))))
 
 (defmethod post-control-event! :invite-selected-none
   [_ _ _ _ current-state]
-  (let [teammates (get-in current-state state/invite-github-users-path)]
+  (let [teammates (get-in current-state state/build-invite-members-path)]
     (analytics/track {:event-type :invite-teammates-select-none-clicked
                       :current-state current-state
                       :properties {:teammate-count (count teammates)}})))
@@ -865,7 +869,8 @@
                (api-path/project-users vcs_type project-name)
                :first-green-build-github-users
                (get-in current-state [:comms :api])
-               :context {:project-name project-name})))
+               :context {:project-name project-name
+                         :vcs-type vcs_type})))
 
 (defmethod post-control-event! :invited-github-users
   [target message {:keys [vcs_type project-name org-name invitees]} previous-state current-state]
