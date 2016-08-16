@@ -903,7 +903,9 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (assoc-in state state/error-message-path nil)))
+    (-> state
+        (assoc-in state/error-message-path nil)
+        (state/add-flash-notification "Your key has been successfully added."))))
 
 (defmethod post-api-event! [:set-code-signing-keys :success]
   [target message status {:keys [context]} previous-state current-state]

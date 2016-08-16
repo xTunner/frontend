@@ -1,12 +1,12 @@
-.ns("frontend.components.templates.main", {
-  .ui("FlashNotification", {
+.ns("frontend.components.pieces.flash-notification", {
+  .ui("Notification", {
     padding: 20px 15px;
     color: @white;
     background-color: @blueDarkest;
     font-size: @fontSizeSmall;
   });
 
-  .ui("FlashNotificationPresenter", {}, {
+  .ui("Presenter", {}, {
     .el("notification", {
       @duration: 200ms;
 

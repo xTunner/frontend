@@ -21,6 +21,7 @@
             [frontend.components.pages.project-settings :as project-settings]
             [frontend.components.pages.projects :as projects]
             [frontend.components.pages.team :as team]
+            [frontend.components.pieces.flash-notification :as flash]
             [frontend.components.pieces.topbar :as topbar]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
@@ -180,15 +181,24 @@
               (when show-inspector?
                 (om/build inspector/inspector app))
 
-              (when (ld/feature-on? "top-bar-ui-v-1")
-                (topbar/topbar {:support-info (common/contact-support-a-info owner)
-                                :user (get-in app state/user-path)}))
+              [:.top
+               [:.bar
+                (when (ld/feature-on? "top-bar-ui-v-1")
+                  (topbar/topbar {:support-info (common/contact-support-a-info owner)
+                                  :user (get-in app state/user-path)}))]
+               [:.flash-presenter
+                 (flash/presenter {:display-timeout 2000
+                                   :notification
+                                   (when-let [{:keys [number message]} (get-in app state/flash-notification-path)]
+                                     (flash/flash-notification {:react-key number} message))})]]
 
-              [:.below-bar
+              [:.below-top
                (when (and inner? logged-in?)
-                 (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data)))
+                 [:.left-nav
+                  (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data))])
 
-               (om/build page app)]])))))))
+               [:.main
+                (om/build page app)]]])))))))
 
 
 (defn app [app owner opts]
