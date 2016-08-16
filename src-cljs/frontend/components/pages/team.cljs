@@ -69,14 +69,12 @@
                            :project project}))]]
     (assoc user ::follow-count (count (get followings user)))))
 
-(defn invitees
-  "Filters users to invite and returns only fields needed by invitation API"
-  [users]
-  (->> users
-       (filter #(and (:email %)
-                     (:checked %)))
-       (map #(select-keys % [:email :login :id]))
-       (vec)))
+(defn invitees [users-by-login]
+  (->> users-by-login
+       vals
+       (filter (fn [user]
+                 (and (:selected user)
+                      (:email user))))))
 
 (defn invite-teammates-modal [{:keys [selected-org close-fn]} owner]
   (let [select-user! (fn [{:keys [login] :as user}]
@@ -95,20 +93,20 @@
         (when-not (:vcs-users selected-org)
           (api/get-org-members (:name selected-org) (:vcs_type selected-org) (om/get-shared owner [:comms :api]))))
 
-      om/IInitState
-      (init-state [_]
-        {:selected-members #{}
-         :show-modal? false})
-
       om/IWillReceiveProps
-      (will-receive-props [_ {new-vcs-users :vcs-users}]
-        (let [{old-vcs-users :vcs-users} (om/get-props owner)]
+      (will-receive-props [_ new-props]
+        (let [new-vcs-users (get-in new-props [:selected-org :vcs-users])
+              old-vcs-users (get-in (om/get-props owner) [:selected-org :vcs-users])]
           (when (not= new-vcs-users old-vcs-users)
-            (om/set-state! :org-members-by-login (into {}
-                                                       (map (fn [{:keys [email login]}]
-                                                              [login {:email email
-                                                                      :selected (utils/valid-email? email)}])
-                                                            new-vcs-users))))))
+            (om/set-state! owner
+                           :org-members-by-login
+                           (into {}
+                                 (for [{:keys [login circle_member email]
+                                        :as user} new-vcs-users
+                                       :when (not circle_member)]
+                                   [login (-> user
+                                              (select-keys [:email :login :id])
+                                              (assoc :selected (utils/valid-email? email)))]))))))
       
       om/IRenderState
       (render-state [_ {:keys [show-modal? org-members-by-login] :as state}]
@@ -176,12 +174,12 @@
                                           (forms/managed-button
                                            [:button.btn.btn-success {:data-success-text "Sent"
                                                                      :on-click #(do
-                                                                                  (raise! owner [:invited-github-users {:invitees (invitees users)
+                                                                                  (raise! owner [:invited-github-users {:invitees (invitees org-members-by-login)
                                                                                                                         :vcs_type (:vcs_type selected-org)
                                                                                                                         :org-name (:name selected-org)}])
                                                                                   (close-fn))
-                                                                     :disabled (or (empty? (invitees users))
-                                                                                   (not (every? #(utils/valid-email? (:email %)) (invitees users))))}
+                                                                     :disabled (or (empty? (invitees org-members-by-login))
+                                                                                   (not (every? #(utils/valid-email? (:email %)) (invitees org-members-by-login))))}
                                             "Send Invites "
                                             [:i.fa.fa-envelope-o]])]
                                 :close-fn close-fn})))))))
@@ -249,8 +247,7 @@
                                "Invite Teammates")
                              (when show-modal?
                                (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
-                                                                 :close-fn #(om/set-state! owner :show-modal? false)
-                                                                 :app app}))]}
+                                                                 :close-fn #(om/set-state! owner :show-modal? false)}))]}
                 (if-let [users (:users selected-org)]
                   (table (add-follow-counts users (:projects selected-org)))
                   (html [:div.loading-spinner common/spinner])))
