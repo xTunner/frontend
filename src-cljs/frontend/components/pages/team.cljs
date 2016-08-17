@@ -75,7 +75,7 @@
             (when selected?
               (-> vcs-user
                   (assoc :email (:entered-email component-user))
-                  (select-keys [:id :login :email :name])))))
+                  (select-keys [:provider_id :handle :email :name])))))
         vcs-users-by-handle))
 
 (defn invite-teammates-modal [{:keys [selected-org close-fn show-modal?]} owner]
