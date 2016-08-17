@@ -93,7 +93,7 @@
           users (when show-modal?
                   (->> vcs-users-by-handle
                        vals
-                       (remove :is_user)
+                       (remove :user?)
                        (sort-by :handle)))
           count-users (count users)]
       (reify
@@ -110,9 +110,9 @@
               (om/set-state! owner
                              :org-members-by-handle
                              (into {}
-                                   (for [[handle {:keys [is_user email]
+                                   (for [[handle {:keys [user? email]
                                                   :as user}] new-vcs-users
-                                         :when (not is_user)
+                                         :when (not user?)
                                          :let [trimmed-email (some-> email gstr/trim)]]
                                      [handle {:entered-email trimmed-email
                                               :selected? (valid-email? trimmed-email)}]))))))
