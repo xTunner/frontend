@@ -43,8 +43,8 @@
        m1)))
 
 (defn dedupe-by
-  "Like clojure.core/dedupe, but removes values with duplicate values for (keyfn
-  value)."
+  "Like clojure.core/dedupe, but removes values with duplicate values for
+  (keyfn value)."
   ([keyfn]
    (fn [rf]
      (let [pk (volatile! ::none)]
