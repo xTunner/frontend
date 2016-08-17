@@ -71,7 +71,7 @@
           (forms/managed-button
            [:button.btn.btn-success (let [users-to-invite (invitees users)]
                                       {:data-success-text "Sent"
-                                       :on-click #(raise! owner [:invited-github-users
+                                       :on-click #(raise! owner [:invited-team-members
                                                                  (merge {:invitees users-to-invite
                                                                          :vcs_type (:vcs_type opts)}
                                                                         (if (:project-name opts)

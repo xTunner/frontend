@@ -198,7 +198,7 @@
                                                 (forms/managed-button
                                                  [:button.btn.btn-success {:data-success-text "Sent"
                                                                            :on-click #(do
-                                                                                        (raise! owner [:invited-github-users {:invitees selected-members
+                                                                                        (raise! owner [:invited-team-members {:invitees selected-members
                                                                                                                               :vcs_type (:vcs_type selected-org)
                                                                                                                               :org-name (:name selected-org)}])
                                                                                         (close-fn))

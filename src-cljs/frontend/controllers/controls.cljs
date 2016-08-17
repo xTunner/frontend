@@ -872,7 +872,7 @@
                :context {:project-name project-name
                          :vcs-type vcs_type})))
 
-(defmethod post-control-event! :invited-github-users
+(defmethod post-control-event! :invited-team-members
   [target message {:keys [vcs_type project-name org-name invitees]} previous-state current-state]
   (let [project-vcs-type (or vcs_type "github")
         org-vcs-type (or vcs_type "github")
