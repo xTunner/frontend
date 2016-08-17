@@ -224,7 +224,7 @@
           (is (= (count calls) 1))
           (is (= (nth args 0) :post))
           (is (= (nth args 1) (api-path/project-users-invite vcs-type project-name)))
-          (is (= (nth args 2) :invite-github-users))
+          (is (= (nth args 2) :invite-team-members))
           (is (= (nth args 3) api-ch))
           (is (= (->> (nth args 4) (apply hash-map) :context) {:project project-name
                                                               :first_green_build true}))

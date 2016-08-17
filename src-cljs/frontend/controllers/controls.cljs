@@ -884,7 +884,7 @@
                  (if project-name
                    (api-path/project-users-invite project-vcs-type project-name)
                    (api-path/organization-invite org-vcs-type org-name))
-                 :invite-github-users
+                 :invite-team-members
                  (get-in current-state [:comms :api])
                  :context context
                  :params invitees
