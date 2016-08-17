@@ -458,15 +458,13 @@
 
         (html
           [:nav.aside-left-nav
-           ;; TODO -ac Remove this class when ff removed
-           {:class (when (ld/feature-on? "top-bar-ui-v-1") "top-bar-ff")}
            (when (not (ld/feature-on? "top-bar-ui-v-1"))
-           [:a.aside-item.logo {:title "Dashboard"
-                                :data-placement "right"
-                                :data-trigger "hover"
-                                :href (routes/v1-dashboard-path {})}
-             [:div.logomark
-              (common/ico :logo)]])
+             [:a.aside-item.logo {:title "Dashboard"
+                                  :data-placement "right"
+                                  :data-trigger "hover"
+                                  :href (routes/v1-dashboard-path {})}
+              [:div.logomark
+               (common/ico :logo)]])
 
            [:a.aside-item {:data-placement "right"
                            :data-trigger "hover"

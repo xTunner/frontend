@@ -272,6 +272,18 @@
 (def system-settings-path [:system-settings])
 (def feature-flags-path (conj project-path :feature_flags))
 
+(def flash-notification-path [:flash-notification])
+
+
+(defn add-flash-notification
+  "Adds a flash notification to the state."
+  [state message]
+  (update-in state flash-notification-path
+             #(-> %
+                  (update :number inc)
+                  (assoc :message message))))
+
+
 ;--------- Om Next Paths -----------
 (defn org-ident [vcs-type org-name]
   [:organization/by-vcs-type-and-name [vcs-type org-name]])

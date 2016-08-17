@@ -8,6 +8,7 @@
             [frontend.components.test-statuspage]
             [frontend.components.test-insights]
             [frontend.utils-test]
+            [frontend.utils.test-seq]
             [frontend.controllers.test-controls]
             [frontend.controllers.test-ws]
             [frontend.controllers.test-api]
@@ -34,6 +35,7 @@
            'frontend.components.test-statuspage
            'frontend.components.test-insights
            'frontend.utils-test
+           'frontend.utils.test-seq
            'frontend.controllers.test-controls
            'frontend.controllers.test-ws
            'frontend.controllers.test-api

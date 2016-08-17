@@ -7,79 +7,51 @@
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn topbar
-  ":support-info This is most likely going to be the output of the function
-                 (common/contact-support-a-info owner), but regardless it
-                 should be a map defining the attributes of the support link
+  "A bar which sits at the top of the screen and provides navigation and context.
 
-   :user         We will eventually extract more from the user, but its
-                 good hygene to be as reusable as possible. For now, we
-                 only extract the avatar-url"
+  :support-info - A map defining the attributes of the support link. This is
+                   most likely going to be the result of the
+                   function (common/contact-support-a-info owner).
+
+  :user         - The current user. We display their avatar in the bar."
   [{:keys [support-info user]}]
-  (let [avatar-url (gh-utils/make-avatar-url user :size 60)]
-    (component
+  (component
     (html
-      [:div.top-bar
-       [:div.bar
-        [:div.header-nav.left
-         [:a.logo {:href "/"}
-          [:div.logomark
-           (common/ico :logo)]]]
-        [:div.header-nav.right
+     [:div
+      [:a.logomark {:href "/dashboard"
+                    :aria-label "Dashboard"}
+       (common/ico :logo)]
 
-         ;; What's New, Notification dropdown
-         [:li.top-nav-dropdown.header-nav-item.dropdown
-          [:a.header-nav-link.dropdown-toggle
-           {:href "#"
-            :data-toggle "dropdown"
-            :role "button"
-            :aria-haspopup "true"
-            :aria-expanded "false"}
-           "What's New " [:i.material-icons "keyboard_arrow_down"]]
-          [:ul.dropdown-menu.dropdown-menu-right
-           (when-not (config/enterprise?)
-             [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
-           [:li [:a {:href "https://discuss.circleci.com/c/announcements"} "Announcements"]]]]
-
-         ;; Support dropdown
-         ;;
-         ;; TODO -ac
-         ;;
-         ;; Eventually, this will be the implementation for
-         ;;
-         ;; [:li.top-nav-dropdown.header-nav-item.dropdown
-         ;;  [:a.header-nav-link.dropdown-toggle
-         ;;   {:href "#"
-         ;;    :data-toggle "dropdown"
-         ;;    :role "button"
-         ;;    :aria-haspopup "true"
-         ;;    :aria-expanded "false"}
-         ;;   "Support" [:i.material-icons "keyboard_arrow_down"]]
-         ;;  [:ul.dropdown-menu
-         ;;   [:li [:a {:href "https://circleci.com/docs/"} "Docs"]]
-         ;;   [:li [:a {:href "https://discuss.circleci.com/"} "Discuss"]]
-         ;;   [:li [:a (common/contact-support-a-info owner) "Eng. Support"]]]]
-
-         [:li.top-nav-dropdown.header-nav-item
-          [:a.header-nav-link {:href "https://circleci.com/docs/"}
-           "Docs"]]
-         [:li.top-nav-dropdown.header-nav-item
-          [:a.header-nav-link {:href "https://discuss.circleci.com/"}
-           "Discuss"]]
-         [:li.top-nav-dropdown.header-nav-item
-          [:a.header-nav-link support-info
-           "Support"]]
-         [:li.header-nav-item.divider-vertical]
-         [:li.top-nav-dropdown.header-nav-item.dropdown
-          [:a.header-nav-link.dropdown-toggle.dropbtn
-           {:href "#"
-            :data-toggle "dropdown"
-            :role "button"
-            :aria-haspopup "true"
-            :aria-expanded "false"}
-           [:img.gravatar {:src avatar-url}] [:i.material-icons "keyboard_arrow_down"]]
-          [:ul.dropdown-menu.dropdown-menu-right
-           [:li [:a {:href "/logout/"} "Logout"]]
-           [:li [:a {:href "/account"} "Account Settings"]]]]]]]))))
+      [:ul.nav-items
+       [:li.dropdown
+        [:button.dropdown-toggle
+         {:data-toggle "dropdown"
+          :aria-haspopup "true"
+          :aria-expanded "false"}
+         "What's New " [:i.material-icons "keyboard_arrow_down"]]
+        [:ul.dropdown-menu
+         (when-not (config/enterprise?)
+           [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
+         [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
+       [:li
+        [:a (html/open-ext {:href "https://circleci.com/docs/"})
+         "Docs"]]
+       [:li
+        [:a (html/open-ext {:href "https://discuss.circleci.com/"})
+         "Discuss"]]
+       [:li
+        [:a support-info
+         "Support"]]
+       [:li.dropdown.user-menu
+        [:button.dropdown-toggle
+         {:data-toggle "dropdown"
+          :aria-haspopup "true"
+          :aria-expanded "false"}
+         [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
+         [:i.material-icons "keyboard_arrow_down"]]
+        [:ul.dropdown-menu
+         [:li [:a {:href "/logout/"} "Logout"]]
+         [:li [:a {:href "/account"} "Account Settings"]]]]]])))
 
 (dc/do
   (defcard topbar
