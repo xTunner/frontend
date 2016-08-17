@@ -77,16 +77,16 @@
                       (:email user))))))
 
 (defn invite-teammates-modal [{:keys [selected-org close-fn show-modal?]} owner]
-  (letfn [(select-user! [{:keys [login] :as user}]
-            (om/set-state! owner [:org-members-by-login login :selected] true))
-          (deselect-user! [{:keys [login] :as user}]
-            (om/set-state! owner [:org-members-by-login login :selected] false))
-          (selected? [{:keys [login] :as user}]
-            (om/get-state owner [:org-members-by-login login :selected]))
-          (set-email! [{:keys [login] :as user} value]
-            (om/set-state! owner [:org-members-by-login login :email] value))
-          (get-email [{:keys [login] :as user}]
-            (om/get-state owner [:org-members-by-login login :email]))]
+  (letfn [(select-user! [{:keys [handle] :as user}]
+            (om/set-state! owner [:org-members-by-handle handle :selected] true))
+          (deselect-user! [{:keys [handle] :as user}]
+            (om/set-state! owner [:org-members-by-handle handle :selected] false))
+          (selected? [{:keys [handle] :as user}]
+            (om/get-state owner [:org-members-by-handle handle :selected]))
+          (set-email! [{:keys [handle] :as user} value]
+            (om/set-state! owner [:org-members-by-handle handle :email] value))
+          (get-email [{:keys [handle] :as user}]
+            (om/get-state owner [:org-members-by-handle handle :email]))]
     (reify
       om/IWillReceiveProps
       (will-receive-props [_ new-props]
@@ -99,103 +99,108 @@
             (api/get-org-members (:name new-selected-org) (:vcs_type new-selected-org) (om/get-shared owner [:comms :api])))
           (when (not= new-vcs-users old-vcs-users)
             (om/set-state! owner
-                           :org-members-by-login
+                           :org-members-by-handle
                            (into {}
-                                 (for [{:keys [login circle_member email id]
-                                        :as user} new-vcs-users
-                                       :when (not circle_member)
+                                 (for [[handle {:keys [is_user email provider_id]
+                                                :as user}] new-vcs-users
+                                       :when (not is_user)
                                        :let [trimmed-email (some-> email gstr/trim)]]
-                                   [login {:email trimmed-email
-                                           :login login
-                                           :id id
-                                           :selected (valid-email? trimmed-email)}]))))))
+                                   [handle {:email trimmed-email
+                                            :login handle
+                                            :id provider_id
+                                            :selected (valid-email? trimmed-email)}]))))))
       
       om/IRenderState
-      (render-state [_ {:keys [org-members-by-login]}]
+      (render-state [_ {:keys [org-members-by-handle]}]
         (component
          (if show-modal?
-           (let [users (remove :circle_member (:vcs-users selected-org))
+           (let [users (when show-modal?
+                         (->> selected-org
+                              :vcs-users
+                              vals
+                              (remove :is_user)
+                              (sort-by :handle)))
                  count-users (count users)
                  count-with-email (count (filter (fn [[_ user]]
                                                    (-> user :email valid-email?))
-                                                 org-members-by-login))
+                                                 org-members-by-handle))
                  count-selected (count (filter (fn [[_ user]]
                                                  (:selected user))
-                                               org-members-by-login))]
+                                               org-members-by-handle))]
              (modal/modal-dialog {:title "Invite Teammates"
                                   :body
                                   (element :body
-                                    (html
-                                     [:div
-                                      (if-not (contains? selected-org :vcs-users)
-                                        [:div.loading-spinner common/spinner]
-                                        (list
-                                         [:.header
-                                          "These are the people who are not using CircleCI yet ("
-                                          [:span
-                                           [:b count-with-email]
-                                           " of "
-                                           [:b count-users]
-                                           " users have emails, "
-                                           [:b count-selected]
-                                           " are selected):"]]
-                                         [:.table
-                                          (om/build table/table
-                                                    {:rows users
-                                                     :key-fn :login
-                                                     :columns [{:header "Username"
-                                                                :cell-fn (fn [{:keys [login] :as user}]
-                                                                           (element :avatars
-                                                                                    (html
-                                                                                     [:div
-                                                                                      [:img.invite-gravatar {:src (gh-utils/make-avatar-url user
-                                                                                                                                            :size 50)}]
-                                                                                      (str "  " login)])))}
-                                                               {:header "Email"
-                                                                :cell-fn (fn [user]
-                                                                           (let [is-selected (selected? user)
-                                                                                 email (get-email user)]
-                                                                             (om/build form/text-field
-                                                                                       {:on-change (fn [event]
-                                                                                                     (let [trimmed-input (gstr/trim (.. event -currentTarget -value))
-                                                                                                           is-valid (valid-email? trimmed-input)]
-                                                                                                       (set-email! user trimmed-input)
-                                                                                                       (cond
-                                                                                                         (and (not is-selected)
-                                                                                                              is-valid)
-                                                                                                         (select-user! user)
-                                                                                                         (and is-selected
-                                                                                                              (not is-valid))
-                                                                                                         (deselect-user! user))))
-                                                                                        :value email
-                                                                                        :size :medium
-                                                                                        :validation-error (when (and (or is-selected
-                                                                                                                         (not (empty? email)))
-                                                                                                                     (not (valid-email? email)))
-                                                                                                            (str email " is not a valid email"))})))}
-                                                               {:type :shrink
-                                                                :cell-fn (fn [user]
-                                                                           (let [email (get-email user)
-                                                                                 is-valid (valid-email? email)]
-                                                                             [:input {:type "checkbox"
-                                                                                      :disabled (and (not is-valid)
-                                                                                                     (not (empty? email)))
-                                                                                      :checked (selected? user)
-                                                                                      :on-click #(if-let [is-checked (.. % -currentTarget -checked)]
-                                                                                                   (when is-valid
-                                                                                                     (select-user! user))
-                                                                                                   (deselect-user! user))}]))}]
-                                                     :striped? true})]))]))
+                                           (html
+                                            [:div
+                                             (if-not (contains? selected-org :vcs-users)
+                                               [:div.loading-spinner common/spinner]
+                                               (list
+                                                [:.header
+                                                 "These are the people who are not using CircleCI yet ("
+                                                 [:span
+                                                  [:b count-with-email]
+                                                  " of "
+                                                  [:b count-users]
+                                                  " users have emails, "
+                                                  [:b count-selected]
+                                                  " are selected):"]]
+                                                [:.table
+                                                 (om/build table/table
+                                                           {:rows users
+                                                            :key-fn :handle
+                                                            :columns [{:header "Username"
+                                                                       :cell-fn (fn [{:keys [handle] :as user}]
+                                                                                  (element :avatars
+                                                                                           (html
+                                                                                            [:div
+                                                                                             [:img.invite-gravatar {:src (gh-utils/make-avatar-url user
+                                                                                                                                                   :size 50)}]
+                                                                                             (str "  " handle)])))}
+                                                                      {:header "Email"
+                                                                       :cell-fn (fn [user]
+                                                                                  (let [is-selected (selected? user)
+                                                                                        email (get-email user)]
+                                                                                    (om/build form/text-field
+                                                                                              {:on-change (fn [event]
+                                                                                                            (let [trimmed-input (gstr/trim (.. event -currentTarget -value))
+                                                                                                                  is-valid (valid-email? trimmed-input)]
+                                                                                                              (set-email! user trimmed-input)
+                                                                                                              (cond
+                                                                                                                (and (not is-selected)
+                                                                                                                     is-valid)
+                                                                                                                (select-user! user)
+                                                                                                                (and is-selected
+                                                                                                                     (not is-valid))
+                                                                                                                (deselect-user! user))))
+                                                                                               :value email
+                                                                                               :size :medium
+                                                                                               :validation-error (when (and (or is-selected
+                                                                                                                                (not (empty? email)))
+                                                                                                                            (not (valid-email? email)))
+                                                                                                                   (str email " is not a valid email"))})))}
+                                                                      {:type :shrink
+                                                                       :cell-fn (fn [user]
+                                                                                  (let [email (get-email user)
+                                                                                        is-valid (valid-email? email)]
+                                                                                    [:input {:type "checkbox"
+                                                                                             :disabled (and (not is-valid)
+                                                                                                            (not (empty? email)))
+                                                                                             :checked (selected? user)
+                                                                                             :on-click #(if-let [is-checked (.. % -currentTarget -checked)]
+                                                                                                          (when is-valid
+                                                                                                            (select-user! user))
+                                                                                                          (deselect-user! user))}]))}]
+                                                            :striped? true})]))]))
                                   :actions [(button/button {:on-click close-fn} "Cancel")
                                             (forms/managed-button
                                              [:button.btn.btn-success {:data-success-text "Sent"
                                                                        :on-click #(do
-                                                                                    (raise! owner [:invited-github-users {:invitees (invitees org-members-by-login)
+                                                                                    (raise! owner [:invited-github-users {:invitees (invitees org-members-by-handle)
                                                                                                                           :vcs_type (:vcs_type selected-org)
                                                                                                                           :org-name (:name selected-org)}])
                                                                                     (close-fn))
-                                                                       :disabled (or (empty? (invitees org-members-by-login))
-                                                                                     (not (every? (comp valid-email? :email) (invitees org-members-by-login))))}
+                                                                       :disabled (or (empty? (invitees org-members-by-handle))
+                                                                                     (not (every? (comp valid-email? :email) (invitees org-members-by-handle))))}
                                               "Send Invites "
                                               [:i.fa.fa-envelope-o]])]
                                   :close-fn close-fn}))
