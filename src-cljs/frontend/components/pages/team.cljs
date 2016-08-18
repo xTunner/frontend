@@ -139,14 +139,13 @@
                                                    [:div.loading-spinner common/spinner]
                                                    (list
                                                     [:.header
-                                                     "These are the people who are not using CircleCI yet ("
+                                                     "These are the people who are not using CircleCI yet. "
                                                      [:span
+                                                      "We were able to fill in "
                                                       [:b count-with-email]
                                                       " of "
                                                       [:b count-users]
-                                                      " users have emails, "
-                                                      [:b count-selected]
-                                                      " are selected):"]]
+                                                      " email addresses for you."]]
                                                     [:.table
                                                      (om/build table/table
                                                                {:rows users
@@ -204,7 +203,9 @@
                                                                                         (close-fn))
                                                                            :disabled (or (empty? selected-members)
                                                                                          (not (every? (comp valid-email? :email) selected-members)))}
-                                                  "Send Invites "
+                                                  "Send "
+                                                  count-selected
+                                                  " Invites"
                                                   [:i.fa.fa-envelope-o]])]
                                       :close-fn close-fn})))])))))))
 
