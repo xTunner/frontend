@@ -115,9 +115,10 @@
   "Maximum containers that a linux plan has available to it"
   [plan]
   (+ (freemium-containers plan)
-     (enterprise-containers plan)
-     (trial-containers plan)
-     (paid-linux-containers plan)))
+     (if (:enterprise plan)
+       (enterprise-containers plan)
+       (paid-linux-containers plan))
+     (trial-containers plan)))
 
 (defn can-edit-plan? [plan org-name vcs-type]
   ;; kill plan pricing page for trial plans by making
