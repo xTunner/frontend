@@ -119,7 +119,7 @@
                                    (let [trimmed-email (some-> email gstr/trim)]
                                      [handle {:entered-email trimmed-email
                                               :selected? (valid-email? trimmed-email)}]))))))))
-    
+
     om/IRenderState
     (render-state [_ {:keys [org-members-by-handle]}]
       (component
@@ -146,11 +146,10 @@
                                                 [:.header
                                                  "These are the people who are not using CircleCI yet. "
                                                  [:span
-                                                  "We were able to fill in "
                                                   [:b count-with-email]
                                                   " of "
                                                   [:b count-users]
-                                                  " email addresses for you."]]
+                                                  " have valid email addresses."]]
                                                 [:.table
                                                  (om/build table/table
                                                            {:rows users
