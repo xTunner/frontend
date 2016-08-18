@@ -95,6 +95,12 @@
 (defn- get-entered-email [owner {:keys [handle] :as user}]
   (om/get-state owner [:org-members-by-handle handle :entered-email]))
 
+(defn- invite-button-text [number-of-invites]
+  (cond
+    (= 0 number-of-invites) "Send Invites"
+    (= 1 number-of-invites) "Send 1 Invite"
+    :else (gstr/format "Send %s Invites" number-of-invites)))
+
 (defn invite-teammates-modal [{:keys [selected-org close-fn show-modal?]} owner]
   (reify
     om/IWillReceiveProps
@@ -206,9 +212,7 @@
                                                                                                                           :org-name (:name selected-org)}])
                                                                                     (close-fn))
                                                                        :disabled (= 0 count-selected)}
-                                              "Send "
-                                              count-selected
-                                              " Invites"
+                                              (invite-button-text count-selected)
                                               [:i.fa.fa-envelope-o]])]
                                   :close-fn close-fn})))])))))
 
