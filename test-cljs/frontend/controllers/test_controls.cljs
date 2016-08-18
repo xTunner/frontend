@@ -209,10 +209,17 @@
   (let [calls (atom [])
         project-name "proj"
         vcs-type "github"
-        invitees ["me@foo.com", "you@bar.co"]
+        invitees [{:handle "me"
+                   :email "me@foo.com"
+                   :provider_id 666
+                   :name "Me"}
+                  {:handle "you"
+                   :email "you@bar.co"
+                   :provider_id 667
+                   :name "You"}]
         control-data {:project-name project-name
                       :org-name "org"
-                      :invitees ["me@foo.com", "you@bar.co"]}
+                      :invitees invitees}
         api-ch "api-ch"
         current-state {:comms {:api api-ch}}]
     (testing "the post-control-event invite-github-users calls button-ajax with the correct parameters"
@@ -227,18 +234,25 @@
           (is (= (nth args 2) :invite-team-members))
           (is (= (nth args 3) api-ch))
           (is (= (->> (nth args 4) (apply hash-map) :context) {:project project-name
-                                                              :first_green_build true}))
+                                                               :first_green_build true}))
           (is (= (->> (nth args 4) (apply hash-map) :params) invitees)))))))
 
 (deftest post-control-event-invited-team-members-invites-users-for-bb-projects
   (let [calls (atom [])
         project-name "proj"
         vcs-type "bitbucket"
-        invitees ["me@foo.com", "you@bar.co"]
+        invitees [{:handle "me"
+                   :email "me@foo.com"
+                   :provider_id 666
+                   :name "Me"}
+                  {:handle "you"
+                   :email "you@bar.co"
+                   :provider_id 667
+                   :name "You"}]
         control-data {:project-name project-name
                       :vcs-type vcs-type
                       :org-name "org"
-                      :invitees ["me@foo.com", "you@bar.co"]}
+                      :invitees invitees}
         api-ch "api-ch"
         current-state {:comms {:api api-ch}}]
     (testing "the post-control-event invite-github-users does nothing for bitbucket projects"
