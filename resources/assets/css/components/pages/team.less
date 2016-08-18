@@ -32,6 +32,10 @@
 
   .ui("invite-teammates-modal", {}, {
     .el("body", {
+      > .loading-spinner {
+        .flexy(center, center);
+        height: 27vh;
+      }
       > .table {
         max-height: 27vh;
         overflow: auto;
