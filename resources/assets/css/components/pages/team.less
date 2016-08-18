@@ -32,14 +32,17 @@
 
   .ui("invite-teammates-modal", {}, {
     .el("body", {
+
+      @body-height: 27vh;
+
       > .loading-spinner {
         .flexy(center, center);
-        height: 27vh;
+        height: @body-height;
       }
 
       > .table {
         overflow: auto;
-        max-height: 27vh;
+        max-height: @body-height;
         margin-top: 1em;
         margin-bottom: 0;
         border: 1px solid @grayLighter;
