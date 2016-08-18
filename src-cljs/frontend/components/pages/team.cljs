@@ -116,7 +116,7 @@
                                          :let [trimmed-email (some-> email gstr/trim)]]
                                      [handle {:entered-email trimmed-email
                                               :selected? (valid-email? trimmed-email)}]))))))
-        
+
         om/IRenderState
         (render-state [_ {:keys [org-members-by-handle]}]
           (component
@@ -196,7 +196,7 @@
                                                                 :striped? true})]))]))
                                       :actions [(button/button {:on-click close-fn} "Cancel")
                                                 (forms/managed-button
-                                                 [:button.btn.btn-success {:data-success-text "Sent"
+                                                 [:button.btn.btn-primary {:data-success-text "Sent"
                                                                            :on-click #(do
                                                                                         (raise! owner [:invited-team-members {:invitees selected-members
                                                                                                                               :vcs_type (:vcs_type selected-org)

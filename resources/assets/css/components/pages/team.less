@@ -36,9 +36,23 @@
         .flexy(center, center);
         height: 27vh;
       }
+
       > .table {
-        max-height: 27vh;
         overflow: auto;
+        max-height: 27vh;
+        margin-top: 1em;
+        margin-bottom: 0;
+        border: 1px solid gray;
+        border-radius: 2px;
+
+        table > tbody {
+          > tr {
+            height: 45px;
+            &:last-of-type {
+              border-bottom: none;
+            }
+          }
+        }
       }
     });
 
@@ -49,5 +63,12 @@
         border-radius: 50%;
       }
     });
+
+    .action > button {
+      min-width: 155px;
+      > i {
+        padding-left: .5em;
+      }
+    }
   });
 });
