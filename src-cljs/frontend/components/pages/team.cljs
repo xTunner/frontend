@@ -126,13 +126,12 @@
            (html
             [:div
              (when show-modal?
-               (let [count-with-email (count (filter (fn [[_ user]]
+               (let [count-selected (count (filter (fn [[_ user]]
+                                                (:selected? user))
+                                              org-members-by-handle))
+                     count-with-email (count (filter (fn [[_ user]]
                                                        (-> user :entered-email valid-email?))
-                                                     org-members-by-handle))
-                     count-selected (count (filter (fn [[_ user]]
-                                                     (:selected? user))
-                                                   org-members-by-handle))
-                     selected-members (invitees org-members-by-handle vcs-users-by-handle)]
+                                                     org-members-by-handle))]
                  (modal/modal-dialog {:title "Invite Teammates"
                                       :body
                                       (element :body
@@ -200,12 +199,11 @@
                                                 (forms/managed-button
                                                  [:button.btn.btn-primary {:data-success-text "Sent"
                                                                            :on-click #(do
-                                                                                        (raise! owner [:invited-team-members {:invitees selected-members
+                                                                                        (raise! owner [:invited-team-members {:invitees (invitees org-members-by-handle vcs-users-by-handle)
                                                                                                                               :vcs_type (:vcs_type selected-org)
                                                                                                                               :org-name (:name selected-org)}])
                                                                                         (close-fn))
-                                                                           :disabled (or (empty? selected-members)
-                                                                                         (not (every? (comp valid-email? :email) selected-members)))}
+                                                                           :disabled (= 0 count-selected)}
                                                   "Send "
                                                   count-selected
                                                   " Invites"
