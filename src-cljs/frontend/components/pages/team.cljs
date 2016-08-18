@@ -102,7 +102,8 @@
           (let [new-selected-org (:selected-org new-props)
                 new-vcs-users (:vcs-users-by-handle new-selected-org)
                 old-vcs-users (get-in (om/get-props owner) [:selected-org :vcs-users-by-handle])
-                new-show-modal? (:show-modal? new-props)]
+                new-show-modal? (:show-modal? new-props)
+                component-users-by-handle (om/get-state owner :org-members-by-handle)]
             (when (and new-show-modal?
                        (not new-vcs-users))
               (api/get-org-members (:name new-selected-org) (:vcs_type new-selected-org) (om/get-shared owner [:comms :api])))
@@ -112,11 +113,13 @@
                              (into {}
                                    (for [[handle {:keys [user? email]
                                                   :as user}] new-vcs-users
-                                         :when (not user?)
-                                         :let [trimmed-email (some-> email gstr/trim)]]
-                                     [handle {:entered-email trimmed-email
-                                              :selected? (valid-email? trimmed-email)}]))))))
-
+                                         :when (not user?)]
+                                     (if-let [component-user (get component-users-by-handle handle)]
+                                       [handle component-user]
+                                       (let [trimmed-email (some-> email gstr/trim)]
+                                         [handle {:entered-email trimmed-email
+                                                  :selected? (valid-email? trimmed-email)}]))))))))
+        
         om/IRenderState
         (render-state [_ {:keys [org-members-by-handle]}]
           (component
