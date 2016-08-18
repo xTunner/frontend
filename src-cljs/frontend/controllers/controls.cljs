@@ -149,6 +149,17 @@
   [target message value state]
   (assoc-in state state/show-all-branches-path value))
 
+(defmethod post-control-event! :show-all-branches-toggled
+  [target message value previous-state current-state]
+  (let [element-state (fn [state]
+                        (condp = (get-in state state/show-all-branches-path)
+                          true "All"
+                          false "Mine"))]
+  (analytics/track {:event-type :show-all-branches-toggled
+                    :current-state current-state
+                    :properties {:current-state (element-state current-state)
+                                 :previous-state (element-state previous-state)}})))
+
 (defmethod control-event :expand-repo-toggled
   [target message {:keys [repo]} state]
   (update-in state state/expanded-repos-path (fn [expanded-repos]
@@ -157,9 +168,33 @@
                                                   conj)
                                                 expanded-repos repo))))
 
+(defmethod post-control-event! :expand-repo-toggled
+  [target message {:keys [repo]} previous-state current-state]
+  (let [expanded-state (fn [state repo]
+                         (condp = (-> state
+                                      (get-in state/expanded-repos-path)
+                                      (contains? repo))
+                           true "expanded"
+                           false "unexpanded"))]
+    (analytics/track {:event-type :expand-repo-toggled
+                      :current-state current-state
+                      :properties {:previous-state (expanded-state previous-state repo)
+                                   :current-state (expanded-state current-state repo)}})))
+
 (defmethod control-event :sort-branches-toggled
   [target message value state]
   (assoc-in state state/sort-branches-by-recency-path value))
+
+(defmethod post-control-event! :sort-branches-toggled
+  [target message value previous-state current-state]
+  (let [element-state (fn [state]
+                        (condp = (get-in state state/sort-branches-by-recency-path)
+                          true "Recent"
+                          false "By Repo"))]
+  (analytics/track {:event-type :sort-branches-toggled
+                    :current-state current-state
+                    :properties {:current-state (element-state current-state)
+                                 :previous-state (element-state previous-state)}})))
 
 (defmethod control-event :collapse-branches-toggled
   [target message {:keys [collapse-group-id]} state]
