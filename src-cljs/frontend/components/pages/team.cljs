@@ -213,7 +213,7 @@
     om/IInitState
     (init-state [_]
       {:selected-org-ident nil
-       :show-modal? nil})
+       :show-invite-modal? nil})
 
     om/IWillMount
     (will-mount [_]
@@ -232,7 +232,7 @@
           (api/get-org-settings-normalized name vcs-type api-chan))))
 
     om/IRenderState
-    (render-state [_ {:keys [selected-org-ident show-modal?]}]
+    (render-state [_ {:keys [selected-org-ident show-invite-modal?]}]
       (let [user (:current-user app)
             selected-org (when selected-org-ident (get-in app selected-org-ident))
             available-orgs (filter :org (:organizations user))]
@@ -264,14 +264,14 @@
                          (button/button
                           {:primary? true
                            :on-click #(do
-                                        (om/set-state! owner :show-modal? true)
+                                        (om/set-state! owner :show-invite-modal? true)
                                         ((om/get-shared owner :track-event)
                                          {:event-type :invite-teammates-clicked
                                           :properties {:view :team}}))}
                           "Invite Teammates")
                          (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users-by-handle])
-                                                           :close-fn #(om/set-state! owner :show-modal? false)
-                                                           :show-modal? show-modal?})]}
+                                                           :close-fn #(om/set-state! owner :show-invite-modal? false)
+                                                           :show-modal? show-invite-modal?})]}
                (if-let [users (:users selected-org)]
                  (table (add-follow-counts users (:projects selected-org)))
                  (html [:div.loading-spinner common/spinner])))
