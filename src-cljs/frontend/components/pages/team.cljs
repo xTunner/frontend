@@ -69,14 +69,14 @@
                            :project project}))]]
     (assoc user ::follow-count (count (get followings user)))))
 
-(defn invitees [component-users-by-handle vcs-users-by-handle]
-  (keep (fn [[handle vcs-user]]
+(defn invitees [component-users-by-handle vcs-users]
+  (keep (fn [{:keys [handle] :as vcs-user}]
           (let [{:keys [selected?] :as component-user} (get component-users-by-handle handle)]
             (when selected?
               (-> vcs-user
                   (assoc :email (:entered-email component-user))
                   (select-keys [:provider_id :handle :email :name])))))
-        vcs-users-by-handle))
+        vcs-users))
 
 ;; functions for invite-teammates-modal component state manipulation
 
@@ -100,8 +100,8 @@
     om/IWillReceiveProps
     (will-receive-props [_ new-props]
       (let [new-selected-org (:selected-org new-props)
-            new-vcs-users (:vcs-users-by-handle new-selected-org)
-            old-vcs-users (get-in (om/get-props owner) [:selected-org :vcs-users-by-handle])
+            new-vcs-users (:vcs-users new-selected-org)
+            old-vcs-users (get-in (om/get-props owner) [:selected-org :vcs-users])
             new-show-modal? (:show-modal? new-props)
             component-users-by-handle (om/get-state owner :org-members-by-handle)]
         (when (and new-show-modal?
@@ -111,8 +111,8 @@
           (om/set-state! owner
                          :org-members-by-handle
                          (into {}
-                               (for [[handle {:keys [user? email]
-                                              :as user}] new-vcs-users
+                               (for [{:keys [handle user? email]
+                                      :as user} new-vcs-users
                                      :when (not user?)]
                                  (if-let [component-user (get component-users-by-handle handle)]
                                    [handle component-user]
@@ -126,11 +126,8 @@
        (html
         [:div
          (when show-modal?
-           (let [{:keys [vcs-users-by-handle]} selected-org
-                 users (->> vcs-users-by-handle
-                            vals
-                            (remove :user?)
-                            (sort-by :handle))
+           (let [{:keys [vcs-users]} selected-org
+                 users (remove :user? vcs-users)
                  count-users (count users)
                  count-selected (count (filter (fn [[_ user]]
                                                  (:selected? user))
@@ -143,7 +140,7 @@
                                   (element :body
                                            (html
                                             [:div
-                                             (if-not (contains? selected-org :vcs-users-by-handle)
+                                             (if-not (contains? selected-org :vcs-users)
                                                [:div.loading-spinner common/spinner]
                                                (list
                                                 [:.header
@@ -205,7 +202,7 @@
                                             (forms/managed-button
                                              [:button.btn.btn-primary {:data-success-text "Sent"
                                                                        :on-click #(do
-                                                                                    (raise! owner [:invited-team-members {:invitees (invitees org-members-by-handle vcs-users-by-handle)
+                                                                                    (raise! owner [:invited-team-members {:invitees (invitees org-members-by-handle vcs-users)
                                                                                                                           :vcs_type (:vcs_type selected-org)
                                                                                                                           :org-name (:name selected-org)}])
                                                                                     (close-fn))
@@ -277,7 +274,7 @@
                                          {:event-type :invite-teammates-clicked
                                           :properties {:view :team}}))}
                           "Invite Teammates")
-                         (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users-by-handle])
+                         (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
                                                            :close-fn #(om/set-state! owner :show-invite-modal? false)
                                                            :show-modal? show-invite-modal?})]}
                (if-let [users (:users selected-org)]

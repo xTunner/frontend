@@ -637,10 +637,8 @@
   [target message status {:keys [resp context]} state]
   (let [{:keys [vcs-type org-name]} context]
     (assoc-in state
-              (conj (state/org-ident vcs-type org-name) :vcs-users-by-handle)
-              (into {}
-                    (for [{:keys [handle] :as user} resp]
-                      [handle user])))))
+              (conj (state/org-ident vcs-type org-name) :vcs-users)
+              (vec resp))))
 
 
 (defmethod api-event [:enable-project :success]
