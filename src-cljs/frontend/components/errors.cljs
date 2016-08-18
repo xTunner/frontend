@@ -2,6 +2,7 @@
   (:require [frontend.state :as state]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.config :as config]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true]
@@ -39,13 +40,14 @@
                (or (= status 404) (= status 401))
                [:p.error-message "Try heading back to our "
                 [:a {:href "/"} "homepage"]
-               (if (not logged-in?)
-                  [:span ", " [:a {:href (auth-url)
-                              :on-click #(raise! owner [:track-external-link-clicked {:event :login-clicked
-                                                                                      :path (auth-url)
-                                                                                      :owner owner}])}
-                          "logging in"]
-                   ", or "
-                   [:a {:href "/signup"} "signing up"]]
-                  '(" or checking out our " [:a {:href "http://blog.circleci.com/"} "blog"]))]
+                (let [logging-in [:a {:href (auth-url)
+                                      :on-click #(raise! owner [:track-external-link-clicked {:event :login-clicked
+                                                                                              :path (auth-url)
+                                                                                              :owner owner}])}
+                                  "logging in"]]
+                  (if (not logged-in?)
+                    (if (config/enterprise?)
+                      [:span " or " logging-in]
+                      [:span ", " logging-in ", or " [:a {:href "/signup"} "signing up"]])
+                    [:span " or checking out our " [:a {:href "http://blog.circleci.com/"} "blog"]]))]
                :else "Something completely unexpected happened")]]])))))
