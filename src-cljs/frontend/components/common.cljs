@@ -68,6 +68,13 @@
 (def messages-default-opts
   {:show-warning-text? true})
 
+(defn message-severity-display-options [message]
+  (get {"error"    ["alert-danger"  "Info-Error"]
+        "warning"  ["alert-warning" "Info-Warning"]
+        "info"     ["alert-info"    "Info-Info"]}
+       (:type message)
+       ["alert-info" "Info-Info"]))
+
 (defn messages
   ([msgs]
    (messages msgs {}))
@@ -76,11 +83,12 @@
      (when (pos? (count msgs))
        [:div.col-xs-12
         (map (fn [message]
-               [:div.row
-                [:div.alert.alert-info.iconified
-                 [:div.alert-icon
-                  [:img {:src (icon-path "Info-Info")}]]
-                 [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]])
+               (let [[alert-class alert-icon] (message-severity-display-options message)]
+                 [:div.row
+                  [:div {:class ["alert" alert-class "iconified"]}
+                   [:div.alert-icon
+                    [:img {:src (icon-path alert-icon)}]]
+                   [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]]))
              msgs)]))))
 
 ;; TODO: Why do we have ico and icon?
