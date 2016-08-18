@@ -134,8 +134,11 @@
                                     :height 25})]
               (if logged-in?
                 [:a.mobile-nav {:href "/dashboard"} "Back to app"]
-                [:a.mobile-nav.signup (open-ext {:href "/signup/"}) "Sign up"])
-              ]
+                [:a.mobile-nav.signup
+                 (open-ext {:href (if (config/enterprise?)
+                                    (auth-url)
+                                    "/signup/")})
+                 "Sign up"])]
              [:div.navbar-container {:class hamburger-state}
               [:ul.nav.navbar-nav
                (when (config/show-marketing-pages?)
@@ -184,7 +187,12 @@
                    [:li (maybe-active nav-point :pricing)
                     [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
-                [:a.menu-item (open-ext {:href "/docs"}) "Documentation"]]
+                [:a.menu-item {:href "https://circleci.com/docs"}
+                 (if (config/enterprise?)
+                  "CircleCI Documentation"
+                  "Documentation")]]
+               (if (config/enterprise?)
+                 [:li [:a.menu-item {:href "https://enterprise-docs.circleci.com"} "Enterprise Documentation"]])
                [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
                (when (config/show-marketing-pages?)
                  (list
@@ -206,9 +214,10 @@
                                                   :on-click #((om/get-shared owner :track-event) {:event-type :login-clicked})
                                                   :title "Log In with Github"}
                    "Log In"]]
-                 [:li
-                  [:a.signup-link.btn.btn-success.navbar-btn.menu-item (open-ext {:href "/signup/"
-                                                                                  :on-click #((om/get-shared owner :track-event) {:event-type :signup-clicked})}) "Sign Up"]]])]]]
+                 (when (not (config/enterprise?))
+                   [:li
+                    [:a.signup-link.btn.btn-success.navbar-btn.menu-item (open-ext {:href "/signup/"
+                                                                                    :on-click #((om/get-shared owner :track-event) {:event-type :signup-clicked})}) "Sign Up"]])])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
                         :title "Mobile"}
