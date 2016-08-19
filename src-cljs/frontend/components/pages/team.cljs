@@ -124,16 +124,16 @@
           (api/get-org-members (:name new-selected-org) (:vcs_type new-selected-org) (om/get-shared owner [:comms :api])))
         (when (not= new-vcs-users old-vcs-users)
           (om/set-state! owner
-                         (reduce (fn [acc {:keys [user? email] :as user}]
+                         (reduce (fn [new-state {:keys [user? email] :as user}]
                                    (if user?
-                                     acc
+                                     new-state
                                      (let [user-state (if-let [component-user (get-user-from-state owner user)]
                                                         component-user
                                                         (let [trimmed-email (some-> email gstr/trim)]
                                                           {:entered-email trimmed-email
                                                            :selected? (valid-email? trimmed-email)}))
                                            user-ident (component-user-ident user)]
-                                       (assoc-in acc user-ident user-state))))
+                                       (assoc-in new-state user-ident user-state))))
                                  {}
                                  new-vcs-users)))))
 
