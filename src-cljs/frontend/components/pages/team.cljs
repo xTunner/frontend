@@ -10,14 +10,12 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
-            [frontend.components.invites :as invites]
             [frontend.components.pieces.button :as button]
-            [frontend.routes :as routes]
-            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true :refer [valid-email?]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs :as vcs-utils]
             [goog.string :as gstr]
+            [inflections.core :as inflections]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
 
@@ -106,10 +104,11 @@
         vcs-users))
 
 (defn- invite-button-text [number-of-invites]
-  (cond
-    (= 0 number-of-invites) "Send Invites"
-    (= 1 number-of-invites) "Send 1 Invite"
-    :else (gstr/format "Send %s Invites" number-of-invites)))
+  (case number-of-invites
+    0 "Send Invite"
+    (gstr/format "Send %s %s"
+                 number-of-invites
+                 (inflections/pluralize number-of-invites "Invite"))))
 
 (defn invite-teammates-modal [{:keys [selected-org close-fn show-modal?]} owner]
   (reify
@@ -186,14 +185,14 @@
                                                                                     (om/build form/text-field
                                                                                               {:on-change (fn [event]
                                                                                                             (let [trimmed-input (gstr/trim (.. event -currentTarget -value))
-                                                                                                                  is-valid (valid-email? trimmed-input)]
+                                                                                                                  valid? (valid-email? trimmed-input)]
                                                                                                               (set-entered-email! owner user trimmed-input)
                                                                                                               (cond
                                                                                                                 (and (not selected?)
-                                                                                                                     is-valid)
+                                                                                                                     valid?)
                                                                                                                 (select! owner user)
                                                                                                                 (and selected?
-                                                                                                                     (not is-valid))
+                                                                                                                     (not valid?))
                                                                                                                 (deselect! owner user))))
                                                                                                :value entered-email
                                                                                                :size :medium

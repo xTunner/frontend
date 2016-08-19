@@ -638,7 +638,7 @@
   (let [{:keys [vcs-type org-name]} context]
     (assoc-in state
               (conj (state/org-ident vcs-type org-name) :vcs-users)
-              (vec resp))))
+              resp)))
 
 
 (defmethod api-event [:enable-project :success]

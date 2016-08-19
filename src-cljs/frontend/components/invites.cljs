@@ -91,8 +91,7 @@
                                                              :project-name project-name}])))
     om/IRender
     (render [_]
-      (let [project-name (:project-name opts)
-            users (remove :following (:org-members invite-data))
+      (let [users (remove :following (:org-members invite-data))
             dismiss-form (:dismiss-invite-form invite-data)]
         (html
          [:div.first-green.invite-form {:class (when (or (empty? users) dismiss-form)
