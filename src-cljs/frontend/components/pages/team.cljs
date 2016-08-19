@@ -69,31 +69,41 @@
                            :project project}))]]
     (assoc user ::follow-count (count (get followings user)))))
 
-(defn invitees [component-users-by-handle vcs-users]
+;; functions for invite-teammates-modal component state manipulation
+
+(defn- component-user-ident [{:keys [type handle] :as user} & keys]
+  [:org-members-by-type-and-handle [type handle]])
+
+(defn- conj-to-user-ident [user & keys]
+  (apply conj (component-user-ident user) keys))
+
+(defn- select! [owner user]
+  (om/set-state! owner (conj-to-user-ident user :selected?) true))
+
+(defn- deselect! [owner user]
+  (om/set-state! owner (conj-to-user-ident user :selected?) false))
+
+(defn- selected? [owner user]
+  (om/get-state owner (conj-to-user-ident user :selected?)))
+
+(defn- set-entered-email! [owner user value]
+  (om/set-state! owner (conj-to-user-ident user :entered-email) value))
+
+(defn- get-entered-email [owner user]
+  (om/get-state owner (conj-to-user-ident user :entered-email)))
+
+(defn- get-user-from-state [owner vcs-user]
+  (om/get-state owner (component-user-ident vcs-user)))
+
+(defn- invitees [component-state vcs-users]
   (keep (fn [{:keys [handle] :as vcs-user}]
-          (let [{:keys [selected?] :as component-user} (get component-users-by-handle handle)]
+          (let [user-ident (component-user-ident vcs-user)
+                {:keys [selected?] :as component-user} (get-in component-state user-ident)]
             (when selected?
               (-> vcs-user
                   (assoc :email (:entered-email component-user))
                   (select-keys [:provider_id :handle :email :name])))))
         vcs-users))
-
-;; functions for invite-teammates-modal component state manipulation
-
-(defn- select! [owner {:keys [handle] :as user}]
-  (om/set-state! owner [:org-members-by-handle handle :selected?] true))
-
-(defn- deselect! [owner {:keys [handle] :as user}]
-  (om/set-state! owner [:org-members-by-handle handle :selected?] false))
-
-(defn- selected? [owner {:keys [handle] :as user}]
-  (om/get-state owner [:org-members-by-handle handle :selected?]))
-
-(defn- set-entered-email! [owner {:keys [handle] :as user} value]
-  (om/set-state! owner [:org-members-by-handle handle :entered-email] value))
-
-(defn- get-entered-email [owner {:keys [handle] :as user}]
-  (om/get-state owner [:org-members-by-handle handle :entered-email]))
 
 (defn- invite-button-text [number-of-invites]
   (cond
@@ -108,26 +118,27 @@
       (let [new-selected-org (:selected-org new-props)
             new-vcs-users (:vcs-users new-selected-org)
             old-vcs-users (get-in (om/get-props owner) [:selected-org :vcs-users])
-            new-show-modal? (:show-modal? new-props)
-            component-users-by-handle (om/get-state owner :org-members-by-handle)]
+            new-show-modal? (:show-modal? new-props)]
         (when (and new-show-modal?
                    (not new-vcs-users))
           (api/get-org-members (:name new-selected-org) (:vcs_type new-selected-org) (om/get-shared owner [:comms :api])))
         (when (not= new-vcs-users old-vcs-users)
           (om/set-state! owner
-                         :org-members-by-handle
-                         (into {}
-                               (for [{:keys [handle user? email]
-                                      :as user} new-vcs-users
-                                     :when (not user?)]
-                                 (if-let [component-user (get component-users-by-handle handle)]
-                                   [handle component-user]
-                                   (let [trimmed-email (some-> email gstr/trim)]
-                                     [handle {:entered-email trimmed-email
-                                              :selected? (valid-email? trimmed-email)}]))))))))
+                         (reduce (fn [acc {:keys [user? email] :as user}]
+                                   (if user?
+                                     acc
+                                     (let [user-state (if-let [component-user (get-user-from-state owner user)]
+                                                        component-user
+                                                        (let [trimmed-email (some-> email gstr/trim)]
+                                                          {:entered-email trimmed-email
+                                                           :selected? (valid-email? trimmed-email)}))
+                                           user-ident (component-user-ident user)]
+                                       (assoc-in acc user-ident user-state))))
+                                 {}
+                                 new-vcs-users)))))
 
     om/IRenderState
-    (render-state [_ {:keys [org-members-by-handle]}]
+    (render-state [_ {:keys [org-members-by-type-and-handle] :as state}]
       (component
        (html
         [:div
@@ -137,10 +148,10 @@
                  count-users (count users)
                  count-selected (count (filter (fn [[_ user]]
                                                  (:selected? user))
-                                               org-members-by-handle))
+                                               org-members-by-type-and-handle))
                  count-with-email (count (filter (fn [[_ user]]
                                                    (-> user :entered-email valid-email?))
-                                                 org-members-by-handle))]
+                                                 org-members-by-type-and-handle))]
              (modal/modal-dialog {:title "Invite Teammates"
                                   :body
                                   (element :body
@@ -207,7 +218,7 @@
                                             (forms/managed-button
                                              [:button.btn.btn-primary {:data-success-text "Sent"
                                                                        :on-click #(do
-                                                                                    (raise! owner [:invited-team-members {:invitees (invitees org-members-by-handle vcs-users)
+                                                                                    (raise! owner [:invited-team-members {:invitees (invitees state vcs-users)
                                                                                                                           :vcs_type (:vcs_type selected-org)
                                                                                                                           :org-name (:name selected-org)}])
                                                                                     (close-fn))
