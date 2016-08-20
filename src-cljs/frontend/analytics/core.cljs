@@ -58,6 +58,7 @@
     :dismiss-trial-offer-banner-clicked
     :header-follow-project-clicked
     :header-org-settings-link-clicked
+    :expand-repo-toggled
     :insights-bar-clicked
     :insights-header-parallelism-clicked
     :invite-teammates-clicked
@@ -78,8 +79,10 @@
     :project-settings-clicked
     :select-plan-clicked
     :set-up-junit-clicked
+    :show-all-branches-toggled
     :signup-clicked
     :signup-impression
+    :sort-branches-toggled
     :start-trial-clicked
     :teammates-invited
     :trial-offer-banner-impression

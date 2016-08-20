@@ -174,7 +174,8 @@
                                                                            :repo (:reponame project)})
                                   :on-click #((om/get-shared owner :track-event) {:event-type :project-clicked
                                                                                   :properties {:org org-name
-                                                                                               :repo repo-name}})}
+                                                                                               :repo repo-name
+                                                                                               :component "branch-picker"}})}
                  (project-model/project-name project)]
                 (project-settings-link {:project project} owner)]
 
