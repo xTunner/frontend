@@ -182,7 +182,10 @@
                                                                        :cell-fn (fn [user]
                                                                                   (let [selected? (selected? owner user)
                                                                                         entered-email (get-entered-email owner user)]
-                                                                                    (om/build form/text-field
+                                                                                    (element :email-field
+                                                                                      (html
+                                                                                        [:div
+                                                                                         (om/build form/text-field
                                                                                               {:on-change (fn [event]
                                                                                                             (let [trimmed-input (gstr/trim (.. event -currentTarget -value))
                                                                                                                   valid? (valid-email? trimmed-input)]
@@ -199,7 +202,7 @@
                                                                                                :validation-error (when (and (or selected?
                                                                                                                                 (not (empty? entered-email)))
                                                                                                                             (not (valid-email? entered-email)))
-                                                                                                                   (str entered-email " is not a valid email"))})))}
+                                                                                                                   (str entered-email " is not a valid email"))})]))))}
                                                                       {:type :shrink
                                                                        :cell-fn (fn [user]
                                                                                   (let [entered-email (get-entered-email owner user)
