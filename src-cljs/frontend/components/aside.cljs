@@ -272,11 +272,15 @@
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
 (defn account-settings-nav-items []
-  [{:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notifications" :subpage :notifications}
-   {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
-   {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
-   {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans}
-   {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta}])
+  (remove
+    nil?
+    [{:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notifications" :subpage :notifications}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
+     (when-not (config/enterprise?)
+       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans})
+     (when-not (config/enterprise?)
+       {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
 
 (defn account-settings-menu [app owner]
   (reify
