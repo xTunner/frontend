@@ -51,7 +51,7 @@
          [:i.material-icons "keyboard_arrow_down"]]
         [:ul.dropdown-menu.pull-right
          [:li [:a {:href "/logout/"} "Logout"]]
-         [:li [:a {:href "/account"} "Account Settings"]]]]]])))
+         [:li [:a {:href "/account"} "User Settings"]]]]]])))
 
 (dc/do
   (defcard topbar
