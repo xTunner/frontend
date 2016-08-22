@@ -575,11 +575,13 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (let [{:keys [hostname fingerprint]} context]
-      (update-in state (conj state/project-path :ssh_keys)
-                 (fn [keys]
-                   (remove #(and (= (:hostname %) hostname)
-                                 (= (:fingerprint %) fingerprint))
-                           keys))))))
+      (-> state
+          (update-in (conj state/project-path :ssh_keys)
+                     (fn [keys]
+                       (remove #(and (= (:hostname %) hostname)
+                                     (= (:fingerprint %) fingerprint))
+                               keys)))
+          (state/add-flash-notification "Your key has been successfully deleted.")))))
 
 
 (defmethod api-event [:save-project-api-token :success]
