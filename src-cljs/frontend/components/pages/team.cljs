@@ -114,12 +114,12 @@
     (will-receive-props [_ new-props]
       (let [new-selected-org (:selected-org new-props)
             new-vcs-users (:vcs-users new-selected-org)
-            old-vcs-users (get-in (om/get-props owner) [:selected-org :vcs-users])
+            vcs-users (:vcs-users selected-org)
             new-show-modal? (:show-modal? new-props)]
         (when (and new-show-modal?
                    (not new-vcs-users))
           (api/get-org-members (:name new-selected-org) (:vcs_type new-selected-org) (om/get-shared owner [:comms :api])))
-        (when (not= new-vcs-users old-vcs-users)
+        (when (not= new-vcs-users vcs-users)
           (om/set-state! owner
                          (reduce (fn [new-state {:keys [user? email] :as user}]
                                    (if user?
