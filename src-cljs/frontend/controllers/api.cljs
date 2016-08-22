@@ -543,9 +543,12 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state state/project-envvars-path (fn [vars]
-                                                  (remove #(= (:env-var-name context) (:name %))
-                                                          vars)))))
+    (-> state
+        (update-in state/project-envvars-path (fn [vars]
+                                                (remove #(= (:env-var-name context) (:name %))
+                                                        vars)))
+        (state/add-flash-notification (gstring/format "Environment variable '%s' deleted successfully."
+                                                      (:env-var-name context))))))
 
 
 (defmethod api-event [:save-ssh-key :success]
