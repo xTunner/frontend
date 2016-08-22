@@ -218,7 +218,8 @@
                                                             :striped? true})]))]))
                                   :actions [(button/button {:on-click close-fn} "Cancel")
                                             (forms/managed-button
-                                             [:button.btn.btn-primary {:data-success-text "Sent"
+                                             [:button.btn.btn-primary {:style {:width "155px"}
+                                                                       :data-success-text "Sent"
                                                                        :on-click #(do
                                                                                     (raise! owner [:invited-team-members {:invitees (invitees state vcs-users)
                                                                                                                           :vcs_type (:vcs_type selected-org)
