@@ -222,8 +222,7 @@
                                                                                                                           :org-name (:name selected-org)}])
                                                                                     (close-fn))
                                                                        :disabled (= 0 count-selected)}
-                                              (invite-button-text count-selected)
-                                              [:i.fa.fa-envelope-o]])]
+                                              (invite-button-text count-selected)])]
                                   :close-fn close-fn})))])))))
 
 (defn- main-content [app owner]
