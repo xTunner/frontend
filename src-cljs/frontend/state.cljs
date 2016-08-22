@@ -70,9 +70,12 @@
 (def user-path [:current-user])
 
 (def build-data-path [:current-build-data])
+
+;; state related to the first-green-build invite box
 (def build-invite-data-path (conj build-data-path :invite-data))
 (def build-invite-members-path (conj build-invite-data-path :org-members))
 (defn build-invite-member-path [index] (conj build-invite-members-path index))
+
 (def build-path [:current-build-data :build])
 (def dismiss-invite-form-path (conj build-invite-data-path :dismiss-invite-form))
 (def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
