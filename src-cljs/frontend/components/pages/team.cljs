@@ -243,8 +243,7 @@
     om/IWillUpdate
     (will-update [_ _ {:keys [selected-org-ident]}]
       (let [[_ [vcs-type name]] selected-org-ident
-            api-chan (om/get-shared owner [:comms :api])
-            selected-org (when selected-org-ident (get-in app selected-org-ident))]
+            api-chan (om/get-shared owner [:comms :api])]
         (when (not= (:selected-org-ident (om/get-render-state owner))
                     selected-org-ident)
           (api/get-org-settings-normalized name vcs-type api-chan))))
