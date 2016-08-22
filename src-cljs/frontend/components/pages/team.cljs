@@ -283,6 +283,7 @@
                 :action [:div
                          (button/button
                           {:primary? true
+                           :size :medium
                            :on-click #(do
                                         (om/set-state! owner :show-invite-modal? true)
                                         ((om/get-shared owner :track-event)
