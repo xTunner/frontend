@@ -104,8 +104,8 @@
         vcs-users))
 
 (defn- invite-button-text [number-of-invites]
-  (case number-of-invites
-    0 "Send Invite"
+  (if (zero? number-of-invites)
+    "Send Invite"
     (gstr/format "Send %s %s"
                  number-of-invites
                  (inflections/pluralize number-of-invites "Invite"))))
