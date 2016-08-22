@@ -170,7 +170,7 @@
                                                             :key-fn :handle
                                                             :columns [{:header "Username"
                                                                        :cell-fn (fn [{:keys [handle] :as user}]
-                                                                                  (element :avatars
+                                                                                  (element :username
                                                                                            (html
                                                                                             [:div
                                                                                              [:img.invite-gravatar {:src (gh-utils/make-avatar-url user
