@@ -105,10 +105,8 @@
 
 (defn- invite-button-text [number-of-invites]
   (if (zero? number-of-invites)
-    "Send Invite"
-    (gstr/format "Send %s %s"
-                 number-of-invites
-                 (inflections/pluralize number-of-invites "Invite"))))
+    "Send Invites"
+    (str "Send " (inflections/pluralize number-of-invites "Invite"))))
 
 (defn invite-teammates-modal [{:keys [selected-org close-fn show-modal?]} owner]
   (reify
