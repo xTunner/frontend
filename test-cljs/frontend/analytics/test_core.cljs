@@ -5,6 +5,7 @@
             [frontend.utils.seq :refer [submap?]]
             [frontend.utils.build :as build-util]
             [frontend.test-utils :as test-utils]
+            [frontend.models.user :as user]
             [frontend.analytics.core :as analytics]
             [frontend.analytics.common :as common-analytics]
             [frontend.analytics.segment :as segment]))
@@ -153,18 +154,22 @@
 
 (deftest track-init-user-works
   (testing "track :init-user adds the correct properties and calls segment/identify"
-    (let [stub-identify (fn [properties]
+    (let [user-email "hi-im-a-users-email@foobarbaz.com"
+          stub-identify (fn [properties]
                           (let [calls (atom [])]
                             (with-redefs [segment/identify (fn [event-data]
-                                                             (swap! calls conj {:args (list event-data)}))]
+                                                             (swap! calls conj {:args (list event-data)}))
+                                          user/primary-email #(constantly user-email)]
                               (analytics/track {:event-type :init-user
                                                 :current-state current-state}))
                             @calls))]
        (let [calls (stub-identify {})
              expected-data {:id (get-in current-state state/user-analytics-id-path)
-                            :user-properties (select-keys
-                                               (get-in current-state state/user-path)
-                                               (keys common-analytics/UserProperties))}]
+                            :user-properties (merge
+                                               {:default-email user-email}
+                                               (select-keys
+                                                 (get-in current-state state/user-path)
+                                                 (keys common-analytics/UserProperties)))}]
          (is (= 1 (-> calls count)))
          (is (submap? expected-data (-> calls first :args first)))))))
 

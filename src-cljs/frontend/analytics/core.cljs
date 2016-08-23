@@ -3,6 +3,7 @@
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
+            [frontend.models.user :as user]
             [frontend.utils :refer [merror]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -213,7 +214,9 @@
   (let [analytics-id (get-in current-state state/user-analytics-id-path)
         user-data (get-in current-state state/user-path)]
     {:id analytics-id
-     :user-properties (select-keys user-data (keys common-analytics/UserProperties))}))
+     :user-properties (merge
+                        {:default-email (user/primary-email user-data)}
+                        (select-keys user-data (keys common-analytics/UserProperties)))}))
 
 (s/defmethod track :init-user [event-data :- CoreAnalyticsEvent]
   (segment/identify (get-user-properties-from-state (:current-state event-data))))
