@@ -532,7 +532,8 @@
     (-> state
         (update-in state/project-envvars-path (fnil conj []) resp)
         (assoc-in (conj state/inputs-path :new-env-var-name) "")
-        (assoc-in (conj state/inputs-path :new-env-var-value) ""))))
+        (assoc-in (conj state/inputs-path :new-env-var-value) "")
+        (state/add-flash-notification "Environment variable added successfully."))))
 
 (defmethod post-api-event! [:create-env-var :success]
   [target message status {:keys [context]} previous-state current-state]
