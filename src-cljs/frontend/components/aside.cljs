@@ -112,7 +112,8 @@
                     repo-name (project-model/repo-name project)
                     branch-identifier (:identifier branch)]
                 [:li {:key (hash [vcs-type org-name repo-name branch-identifier])
-                      :class (when (and (= org-name (:org navigation-data))
+                      :class (when (and (= vcs-type (:vcs_type navigation-data))
+                                        (= org-name (:org navigation-data))
                                         (= repo-name (:repo navigation-data))
                                         (= (name branch-identifier)
                                            (:branch navigation-data)))
@@ -156,19 +157,20 @@
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
     (render [_]
-      (let [repo (project-model/project-name project)
-            vcs-url (:vcs_url project)
+      (let [vcs-url (:vcs_url project)
+            vcs-type (project-model/vcs-type project)
             org-name (project-model/org-name project)
             repo-name (project-model/repo-name project)]
         (html [:li
                [:.project-heading
-                {:class (when (and (= org-name (:org navigation-data))
+                {:class (when (and (= vcs-type (:vcs_type navigation-data))
+                                   (= org-name (:org navigation-data))
                                    (= repo-name (:repo navigation-data))
                                    (not (contains? navigation-data :branch)))
                           "selected")
                  :title (project-model/project-name project)}
-                [:i.fa.rotating-chevron {:class (when (expanded-repos repo) "expanded")
-                                         :on-click #(raise! owner [:expand-repo-toggled {:repo repo}])}]
+                [:i.fa.rotating-chevron {:class (when (expanded-repos vcs-url) "expanded")
+                                         :on-click #(raise! owner [:expand-repo-toggled {:repo vcs-url}])}]
                 [:a.project-name {:href (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
                                                                            :org (:username project)
                                                                            :repo (:reponame project)})
@@ -179,7 +181,7 @@
                  (project-model/project-name project)]
                 (project-settings-link {:project project} owner)]
 
-               (when (expanded-repos repo)
+               (when (expanded-repos vcs-url)
                  (om/build branch-list
                            {:branches (->> project
                                            project-model/branches
