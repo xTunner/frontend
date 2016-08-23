@@ -129,9 +129,7 @@
     om/IDisplayName (display-name [_] "App")
     om/IRender
     (render [_]
-      (if-not (:navigation-point app)
-        (html [:div#app])
-
+      (when (:navigation-point app)
         (let [persist-state! #(raise! owner [:state-persisted])
               restore-state! #(do (raise! owner [:state-restored])
                                   ;; Components are not aware of external state changes.
@@ -149,29 +147,29 @@
           (html
            (let [inner? (get-in app state/inner?-path)]
 
-             [:div#app {:class (if inner? "inner" "outer")
-                        ;; Disable natural form submission. This keeps us from having to
-                        ;; .preventDefault every submit button on every form.
-                        ;;
-                        ;; To let a button actually submit a form naturally, handle its click
-                        ;; event and call .stopPropagation on the event. That will stop the
-                        ;; event from bubbling to here and having its default behavior
-                        ;; prevented.
-                        :on-click #(let [target (.-target %)
-                                         button (if (or (= (.-tagName target) "BUTTON")
-                                                        (and (= (.-tagName target) "INPUT")
-                                                             (= (.-type target) "submit")))
-                                                  ;; If the clicked element was a button or an
-                                                  ;; input.submit, that's the button.
-                                                  target
-                                                  ;; Otherwise, it's the button (if any) that
-                                                  ;; contains the clicked element.
-                                                  (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
-                                     ;; Finally, if we found an applicable button and that
-                                     ;; button is associated with a form which it would submit,
-                                     ;; prevent that submission.
-                                     (when (and button (.-form button))
-                                       (.preventDefault %)))}
+             [:div {:class (if inner? "inner" "outer")
+                    ;; Disable natural form submission. This keeps us from having to
+                    ;; .preventDefault every submit button on every form.
+                    ;;
+                    ;; To let a button actually submit a form naturally, handle its click
+                    ;; event and call .stopPropagation on the event. That will stop the
+                    ;; event from bubbling to here and having its default behavior
+                    ;; prevented.
+                    :on-click #(let [target (.-target %)
+                                     button (if (or (= (.-tagName target) "BUTTON")
+                                                    (and (= (.-tagName target) "INPUT")
+                                                         (= (.-type target) "submit")))
+                                              ;; If the clicked element was a button or an
+                                              ;; input.submit, that's the button.
+                                              target
+                                              ;; Otherwise, it's the button (if any) that
+                                              ;; contains the clicked element.
+                                              (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
+                                 ;; Finally, if we found an applicable button and that
+                                 ;; button is associated with a form which it would submit,
+                                 ;; prevent that submission.
+                                 (when (and button (.-form button))
+                                   (.preventDefault %)))}
               (om/build keyq/KeyboardHandler app-without-container-data
                         {:opts {:keymap keymap
                                 :error-ch (get-in app [:comms :errors])}})
@@ -187,10 +185,10 @@
                   (topbar/topbar {:support-info (common/contact-support-a-info owner)
                                   :user (get-in app state/user-path)}))]
                [:.flash-presenter
-                 (flash/presenter {:display-timeout 2000
-                                   :notification
-                                   (when-let [{:keys [number message]} (get-in app state/flash-notification-path)]
-                                     (flash/flash-notification {:react-key number} message))})]]
+                (flash/presenter {:display-timeout 2000
+                                  :notification
+                                  (when-let [{:keys [number message]} (get-in app state/flash-notification-path)]
+                                    (flash/flash-notification {:react-key number} message))})]]
 
               [:.below-top
                (when (and inner? logged-in?)
