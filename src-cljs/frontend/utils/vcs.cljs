@@ -1,10 +1,10 @@
 (ns frontend.utils.vcs
-  (:require [frontend.models.feature :as feature]
+  (:require [frontend.config :as config]
             [frontend.models.user :as user]))
 
 (defn bitbucket-enabled? [user]
-  (or (feature/enabled? :bitbucket)
-      (user/bitbucket-authorized? user)))
+  (and (not (config/enterprise?))
+       (user/bitbucket-authorized? user)))
 
 (def short-to-long-vcs
   {"gh" "github"
