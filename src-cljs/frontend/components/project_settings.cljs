@@ -10,6 +10,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.form :as form]
+            [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
@@ -1292,16 +1293,11 @@
 
 (defn api-tokens [project-data owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (utils/popover "#scope-popover-hack" {:html true
-                                            :delay 0
-                                            :animation false
-                                            :placement "left"
-                                            :title "Scope"
-                                            :content (scope-popover-html)}))
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [project (:project project-data)
             project-id (project-model/id project)
             {:keys [scope label]
@@ -1309,55 +1305,70 @@
         (html
          [:section.circle-api-page
           [:article
-           [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
-           [:div.circle-api-page-inner
-            [:p "Create and revoke project-specific API tokens to access this project's details using our API. First choose a scope "
-             [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
-             " and then create a label."]
-            [:form
-             [:select.form-control {:name "scope" :value scope
-                                    :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)}
-              [:option {:value "status"} "Status"]
-              [:option {:value "view-builds"} "Build Artifacts"]
-              [:option {:value "all"} "All"]]
-             [:input
-              {:required true, :type "text" :value (str label)
-               :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :label) %)}]
-             [:label {:placeholder "Token label"}]
-             (forms/managed-button
-              [:input
-               {:data-failed-text "Failed",
-                :data-success-text "Created",
-                :data-loading-text "Creating...",
-                :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
-                                                                    :api-token {:scope scope
-                                                                                :label label}}])
-                :value "Create token",
-                :type "submit"}])]
-            (when-let [tokens (seq (:tokens project-data))]
-              (om/build table/table
-                        {:rows tokens
-                         :key-fn :token
-                         :columns [{:header "Scope"
-                                    :cell-fn :scope}
-                                   {:header "Label"
-                                    :cell-fn :label}
-                                   {:header "Token"
-                                    :cell-fn :token}
-                                   {:header "Created"
-                                    :cell-fn :time}
-                                   {:header "Remove"
-                                    :type #{:shrink :right}
-                                    :cell-fn
-                                    (fn [token]
-                                      (om/build remove-action-button
-                                                {:confirmation-question
-                                                 (str "Are you sure you want to remove the API token \""
-                                                      (:label token)
-                                                      "\"?")
-                                                 :remove-fn
-                                                 #(raise! owner [:deleted-project-api-token {:project-id project-id
-                                                                                             :token (:token token)}])}))}]}))]]])))))
+           (card/titled
+            {:title (str "API tokens for " (vcs-url/project-name (:vcs_url project)))
+             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                     :primary? true
+                                     :size :medium}
+                                    "Create Token")}
+            (html
+             [:div
+              [:p "Create and revoke project-specific API tokens to access this project's details using our API."]
+              (when show-modal?
+                (let [close-fn #(om/set-state! owner :show-modal? false)]
+                  (modal/modal-dialog {:title "Add an API token"
+                                       :body (html
+                                              [:div
+                                               [:p "First choose a scope and then create a label."]
+                                               (form/form {}
+                                                          (dropdown/dropdown {:options [["status" "Status"]
+                                                                                        ["view-builds" "Build Artifacts"]
+                                                                                        ["all" "All"]]
+                                                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)
+                                                                              :name "scope"
+                                                                              :value scope})
+                                                          (om/build form/text-field {:value (str label)
+                                                                                     :on-change #(utils/edit-input owner
+                                                                                                                   (conj state/project-data-path
+                                                                                                                         :new-api-token
+                                                                                                                         :label)
+                                                                                                                   %)
+                                                                                     :label "Token Label"}))])
+                                       :close-fn close-fn
+                                       :actions [(button/button {:on-click close-fn} "Cancel")
+                                                 (forms/managed-button
+                                                  [:input.btn.btn-primary {:data-failed-text "Failed" ,
+                                                                           :data-success-text "Added" ,
+                                                                           :data-loading-text "Adding..." ,
+                                                                           :value "Create Token" ,
+                                                                           :type "submit"
+                                                                           :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
+                                                                                                                               :api-token {:scope scope
+                                                                                                                                           :label label}}])}])]})))
+              (when-let [tokens (seq (:tokens project-data))]
+                (om/build table/table
+                          {:rows tokens
+                           :key-fn :token
+                           :columns [{:header "Scope"
+                                      :cell-fn :scope}
+                                     {:header "Label"
+                                      :cell-fn :label}
+                                     {:header "Token"
+                                      :cell-fn :token}
+                                     {:header "Created"
+                                      :cell-fn :time}
+                                     {:header "Remove"
+                                      :type #{:shrink :right}
+                                      :cell-fn
+                                      (fn [token]
+                                        (om/build remove-action-button
+                                                  {:confirmation-question
+                                                   (str "Are you sure you want to remove the API token \""
+                                                        (:label token)
+                                                        "\"?")
+                                                   :remove-fn
+                                                   #(raise! owner [:deleted-project-api-token {:project-id project-id
+                                                                                               :token (:token token)}])}))}]}))]))]])))))
 
 (defn heroku [data owner]
   (reify
