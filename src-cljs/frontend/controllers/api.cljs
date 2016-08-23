@@ -556,7 +556,9 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state (conj state/project-data-path :new-ssh-key) {})))
+    (-> state
+        (assoc-in (conj state/project-data-path :new-ssh-key) {})
+        (state/add-flash-notification "Your key has been successfully added."))))
 
 (defmethod post-api-event! [:save-ssh-key :success]
   [target message status {:keys [context resp]} previous-state current-state]
