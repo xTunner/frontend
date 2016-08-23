@@ -54,4 +54,4 @@
 (defn primary-email [user]
   (or (:selected_email user)
       (:email user)
-      (last (:emails user))))
+      (last (:all_emails user))))
