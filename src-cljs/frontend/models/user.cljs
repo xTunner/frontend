@@ -50,3 +50,8 @@
 (defn deauthorize-bitbucket [user]
   (-> user
       (assoc :bitbucket_authorized nil)))
+
+(defn primary-email [user]
+  (or (:selected_email user)
+      (:email user)
+      (last (:emails user))))
