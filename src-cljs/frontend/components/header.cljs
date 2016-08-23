@@ -5,7 +5,6 @@
             [frontend.components.forms :as forms]
             [frontend.components.license :as license]
             [frontend.components.pieces.top-banner :as top-banner]
-            [frontend.components.statuspage :as statuspage]
             [frontend.components.svg :as svg]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
@@ -318,8 +317,6 @@
           [:header.main-head (when logged-out? {:class "guest"})
            (when (license/show-banner? license)
              (om/build license/license-banner license))
-           (when (config/statuspage-header-enabled?)
-             (om/build statuspage/statuspage app))
            (when logged-out?
              (om/build outer-header app))
            (when (and (= :build (:navigation-point app))
