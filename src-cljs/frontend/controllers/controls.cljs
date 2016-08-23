@@ -201,10 +201,6 @@
   ;; Lets us store this in localstorage without leaking info about the user
   (update-in state (state/project-branches-collapsed-path collapse-group-id) not))
 
-(defmethod control-event :collapse-build-diagnostics-toggled
-  [target message {:keys [project-id-hash]} state]
-  (update-in state (state/project-build-diagnostics-collapsed-path project-id-hash) not))
-
 (defmethod control-event :show-admin-panel-toggled
   [target message _ state]
   (update-in state state/show-admin-panel-path not))
