@@ -498,20 +498,12 @@
               [:i.material-icons "library_add"]
               [:div.nav-label "Add Projects"]])
 
-           (if (feature/enabled? :team-page)
-             [:a.aside-item {:href "/team",
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Team"}
-              [:i.material-icons "group"]
-              [:div.nav-label "Team"]]
-
-             [:a.aside-item {:href "/invite-teammates",
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Add Teammates"}
-              [:i.material-icons "group_add"]
-              [:div.nav-label "Team"]])
+           [:a.aside-item {:href "/team",
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "Team"}
+            [:i.material-icons "group"]
+            [:div.nav-label "Team"]]
 
            (when-not (ld/feature-on? "top-bar-ui-v-1")
              [:a.aside-item {:data-placement "right"
