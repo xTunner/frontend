@@ -821,9 +821,15 @@
 
 (defmethod api-event [:create-api-token :success]
   [target message status {:keys [resp context]} state]
-  (-> state
-      (assoc-in state/new-user-token-path "")
-      (update-in state/user-tokens-path conj resp)))
+  (let [label (:label context)
+        label (if (empty? label)
+                label
+                (str "'" label "'"))]
+    (-> state
+        (assoc-in state/new-user-token-path "")
+        (update-in state/user-tokens-path conj resp)
+        (state/add-flash-notification (gstring/format "API token %s added successfully."
+                                                      label)))))
 
 (defmethod api-event [:delete-api-token :success]
   [target message status {:keys [resp context]} state]
