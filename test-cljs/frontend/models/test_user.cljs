@@ -10,19 +10,11 @@
               :email email
               :all_emails all-emails}]
 
-   (testing "if they have selected-email we use that"
+   (testing "if they have a :selected-email we use that"
+     ;; The user should always have a :selected_email since we insert the primary-email into
+     ;; that key in the api layer.
     (is (= selected-email (user/primary-email user))))
 
-   (testing "if they don't have a selected-email, we use the :email (super rare, for profiles that have pushed but never signed up)"
-    (is (= email (user/primary-email (dissoc user :selected_email)))))
-
-   (testing "when all else fails, use the last email in the :all_email list (github logic we inherited)"
-     (is (= (last all-emails) (user/primary-email (-> user
-                                                      (dissoc :selected_email)
-                                                      (dissoc :email))))))
-
-   (testing "actually, when all else really fails, its nil"
+   (testing "otherwise its nil"
      (is (= nil (user/primary-email (-> user
-                                        (dissoc :selected_email)
-                                        (dissoc :email)
-                                        (dissoc :all_emails))))))))
+                                        (dissoc :selected_email))))))))

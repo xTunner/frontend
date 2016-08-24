@@ -52,6 +52,5 @@
       (assoc :bitbucket_authorized nil)))
 
 (defn primary-email [user]
-  (or (:selected_email user)
-      (:email user)
-      (last (:all_emails user))))
+  ;; We shove the primary email into :selected_email in the api layer.
+  (:selected_email user))
