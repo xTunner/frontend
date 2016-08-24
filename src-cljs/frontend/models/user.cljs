@@ -52,5 +52,8 @@
       (assoc :bitbucket_authorized nil)))
 
 (defn primary-email [user]
-  ;; We shove the primary email into :selected_email in the api layer.
+  ;; We shove the primary email into :selected_email in the api layer, even
+  ;; though we have a :selected-email key in the collection which is different.
+  ;; Encapsulating this logic in case we ever want to make the :selected_email on
+  ;; the FE == the :selected-email on the BE.
   (:selected_email user))
