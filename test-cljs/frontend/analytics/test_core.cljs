@@ -159,7 +159,7 @@
                           (let [calls (atom [])]
                             (with-redefs [segment/identify (fn [event-data]
                                                              (swap! calls conj {:args (list event-data)}))
-                                          user/primary-email #(constantly user-email)]
+                                          user/primary-email (constantly user-email)]
                               (analytics/track {:event-type :init-user
                                                 :current-state current-state}))
                             @calls))]
