@@ -833,9 +833,17 @@
 
 (defmethod api-event [:delete-api-token :success]
   [target message status {:keys [resp context]} state]
-  (let [deleted-token (:token context)]
-    (update-in state state/user-tokens-path (fn [tokens]
-                                              (vec (remove #(= (:token %) (:token deleted-token)) tokens))))))
+  (let [deleted-token (:token context)
+        label (:label deleted-token)
+        label (if (empty? label)
+                label
+                (str "'" label "'"))]
+    (-> state
+        (update-in state/user-tokens-path (fn [tokens]
+                                            (vec (remove #(= (:token %) (:token deleted-token)) tokens))))
+        (state/add-flash-notification (gstring/format "API token %s deleted successfully."
+                                                      label)))))
+
 (defmethod api-event [:plan-invoices :success]
   [target message status {:keys [resp context]} state]
   (utils/mlog ":plan-invoices API event: " resp)
