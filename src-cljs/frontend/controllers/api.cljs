@@ -445,12 +445,6 @@
     state
     (assoc-in state state/project-plan-path resp)))
 
-(defmethod api-event [:project-build-diagnostics :success]
-  [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (str (get-in state [:navigation-data :org]) "/" (get-in state [:navigation-data :repo])))
-    state
-    (assoc-in state state/project-build-diagnostics-path resp)))
-
 
 (defmethod api-event [:project-token :success]
   [target message status {:keys [resp context]} state]
