@@ -9,5 +9,5 @@
    :in_beta_program s/Bool
    :login s/Str
    :name s/Str
-   :selected_email (s/maybe s/Str)
+   :selected_email s/Str
    :sign_in_count s/Int})
