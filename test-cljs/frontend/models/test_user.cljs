@@ -7,7 +7,6 @@
         email "public@profile.com"
         all-emails ["all@emails.com" "last@emails.com"]
         user {:selected_email selected-email
-              :email email
               :all_emails all-emails}]
 
    (testing "if they have a :selected-email we use that"
