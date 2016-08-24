@@ -80,7 +80,7 @@
          [:div.rebuild-container
           [:button.rebuild {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])}
            [:i.octicon.octicon-git-merge.rebuild-icon]
-           (str "Merge PR#" pull-request-number)]])))))
+           (str "Merge PR #" pull-request-number)]])))))
 
 (defn- header-actions
   [data owner]
