@@ -23,6 +23,11 @@
   {:id s/Str
    :user-properties common-analytics/UserProperties})
 
+(def IdentifyEvent
+  (merge-with merge
+              UserEvent
+              {:user-properties {:default-email (s/maybe s/Str)}}))
+
 (s/defn track-pageview [navigation-point :- s/Keyword subpage :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors
     (js/analytics.page (name navigation-point)
@@ -34,7 +39,7 @@
     (js/analytics.track (name event)
                         (clj-keys-with-dashes->js-keys-with-underscores properties))))
 
-(s/defn identify [event-data :- UserEvent]
+(s/defn identify [event-data :- IdentifyEvent]
   (utils/swallow-errors
     (js/analytics.identify (:id event-data) (-> event-data
                                                 :user-properties

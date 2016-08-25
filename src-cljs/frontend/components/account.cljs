@@ -8,6 +8,7 @@
             [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
+            [frontend.models.user :as user]
             [frontend.notifications :as notifications]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -304,7 +305,7 @@
        [:select.form-control
         {:on-change #(let [email (-> % .-target .-value)]
                        (raise! owner [:preferences-updated {:selected_email email}]))
-         :value (:selected_email user)}
+         :value (user/primary-email user)}
         (for [email (:all_emails user)]
           [:option
            {:value email}
