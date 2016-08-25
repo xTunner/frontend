@@ -766,6 +766,14 @@
   [_ _ {:keys [org]} state]
   (assoc-in state state/selected-transfer-org-path org))
 
+(defmethod control-event :set-project-api-token-scope
+  [_ _ {:keys [scope]} state]
+  (assoc-in state
+            (conj state/project-data-path
+                  :new-api-token
+                  :scope)
+            scope))
+
 (defmethod post-control-event! :saved-project-settings
   [target message {:keys [project-id merge-paths]} previous-state current-state]
   (let [uuid frontend.async/*uuid*]

@@ -1324,7 +1324,7 @@
                                                           (dropdown/dropdown {:options [["status" "Status"]
                                                                                         ["view-builds" "Build Artifacts"]
                                                                                         ["all" "All"]]
-                                                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)
+                                                                              :on-change #(raise! owner [:set-project-api-token-scope {:scope %}])
                                                                               :name "scope"
                                                                               :value scope})
                                                           (om/build form/text-field {:value (str label)
