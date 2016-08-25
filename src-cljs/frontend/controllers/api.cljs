@@ -597,6 +597,12 @@
         (update-in state/project-tokens-path (fnil conj []) resp))))
 
 
+(defmethod post-api-event! [:save-project-api-token :success]
+  [target message status {:keys [context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status)
+  ((:on-success context)))
+
+
 (defmethod api-event [:delete-project-api-token :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))

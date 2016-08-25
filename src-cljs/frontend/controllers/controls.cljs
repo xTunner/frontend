@@ -843,16 +843,19 @@
 
 
 (defmethod post-control-event! :saved-project-api-token
-  [target message {:keys [project-id api-token]} previous-state current-state]
+  [target message {:keys [project-id api-token on-success]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         vcs-type (vcs-url/vcs-type project-id)
-        api-ch (get-in current-state [:comms :api])]
+        api-ch (get-in current-state [:comms :api])
+        uuid frontend.async/*uuid*]
     (button-ajax :post
                  (api-path/project-tokens vcs-type project-name)
                  :save-project-api-token
                  api-ch
                  :params api-token
-                 :context {:project-id project-id})))
+                 :context {:project-id project-id
+                           :on-success on-success
+                           :uuid uuid})))
 
 
 (defmethod post-control-event! :deleted-project-api-token
