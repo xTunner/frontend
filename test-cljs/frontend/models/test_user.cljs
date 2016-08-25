@@ -4,7 +4,6 @@
 
 (deftest primary-email-works
   (let [selected-email "selected@email.com"
-        email "public@profile.com"
         all-emails ["all@emails.com" "last@emails.com"]
         user {:selected_email selected-email
               :all_emails all-emails}]
