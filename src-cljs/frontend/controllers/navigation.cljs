@@ -409,9 +409,6 @@
                api-ch
                :context {:project-name project-name})
 
-    (when-not (get-in current-state state/system-settings-path)
-        (api/get-all-system-settings api-ch))
-
     (cond (and (or (= subpage :parallel-builds) (= subpage :build-environment))
                (not (get-in current-state state/project-plan-path)))
           (ajax/ajax :get
