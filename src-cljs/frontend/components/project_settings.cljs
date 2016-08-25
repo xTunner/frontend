@@ -316,38 +316,19 @@
                                                  :_fragment "linux-pricing"})}
          "Upgrade"]]))))
 
-(defn max-parallelism-setting [system-settings]
-  (or (some->> system-settings
-               (filter #(= (:name %) "max-parallelism"))
-               first
-               :value)
-      0))
-
-(defn get-offered-parallelism
-  "If the system max-parallelism setting is disabled, then preserve the old
-  behavior of offering at least 24 but up to their plan's setting. If enabled,
-  then don't offer more than it allows."
-  [system-settings plan]
-  (let [plan-offered (max 24 (plan-model/max-parallelism plan))
-        system-offered (max-parallelism-setting system-settings)]
-    (if (zero? system-offered)
-      plan-offered
-      (min plan-offered system-offered))))
-
-(defn parallelism-picker [project-data owner system-settings]
+(defn parallelism-picker [project-data owner]
   [:div.parallelism-picker
    (if-not (:plan project-data)
      [:div.loading-spinner common/spinner]
      (let [plan (:plan project-data)
            project (:project project-data)
-           project-id (project-model/id project)
-           number-tiles (get-offered-parallelism system-settings plan)]
+           project-id (project-model/id project)]
        (list
         (when (:parallelism-edited project-data)
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (inc number-tiles))]
+         (for [parallelism (range 1 (inc (max 24 (plan-model/max-parallelism plan))))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
@@ -386,8 +367,7 @@
     om/IRender
     (render [_]
       (let [project-data (get-in data state/project-data-path)
-            plan (get-in data state/project-plan-path)
-            system-settings (get-in data state/system-settings-path)]
+            plan (get-in data state/project-plan-path)]
         (html
           [:section
            (when (plan-model/in-trial? plan)
@@ -396,7 +376,7 @@
             [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
             (if-not (:plan project-data)
               [:div.loading-spinner common/spinner]
-              (list (parallelism-picker project-data owner system-settings)
+              (list (parallelism-picker project-data owner)
                     (project-common/mini-parallelism-faq project-data)))]])))))
 
 (defn result-box
