@@ -164,7 +164,7 @@
                                                   " of "
                                                   [:b count-users]
                                                   " have valid email addresses."]]
-                                                [:.table
+                                                [:.members-table
                                                  (om/build table/table
                                                            {:rows users
                                                             :key-fn :handle
