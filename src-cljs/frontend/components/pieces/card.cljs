@@ -1,7 +1,8 @@
 (ns frontend.components.pieces.card
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [om.core :as om :include-macros true]
-            [frontend.components.pieces.button :as button])
+            [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.tabs :as tabs])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn- exterior [content]
@@ -37,6 +38,16 @@
      (header title action)
      (body content)))))
 
+(defn tabbed
+  "A card with a tab row.
+
+  :tab-row - The tab row to attach to the card."
+  ([{:keys [tab-row]} content]
+   (exterior
+    (list
+     tab-row
+     (body content)))))
+
 
 (dc/do
   (defcard basic-card
@@ -58,4 +69,17 @@
                              "Action")}
      "Some content.")
     {}
+    {:classname "background-gray"})
+
+  (defcard tabbed-card
+    (fn [state]
+      (tabbed
+       {:tab-row (om/build tabs/tab-row {:tabs [{:name :tab-one
+                                                 :label "Tab One"}
+                                                {:name :tab-two
+                                                 :label "Tab Two"}]
+                                         :selected-tab-name (:selected-tab-name @state)
+                                         :on-tab-click #(swap! state assoc :selected-tab-name %)})}
+       "Some content."))
+    {:selected-tab-name :tab-one}
     {:classname "background-gray"}))

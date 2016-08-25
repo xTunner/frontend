@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [frontend.analytics.track :as analytics-track]
             [frontend.async :refer [navigate! raise!]]
+            [frontend.components.pieces.card :as card]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
@@ -569,8 +570,8 @@
     (render [_]
       (let [{{org-name :name
               vcs-type :vcs_type} :org} plan]
-        (html
-         [:div {:data-component `pricing-tabs}
+        (card/tabbed
+         {:tab-row
           (om/build tabs/tab-row {:tabs [{:name :linux
                                           :icon (html [:i.fa.fa-linux.fa-lg])
                                           :label "Build on Linux"}
@@ -580,17 +581,17 @@
                                   :selected-tab-name selected-tab-name
                                   :on-tab-click #(navigate! owner (routes/v1-org-settings-path {:org org-name
                                                                                                 :vcs_type vcs-type
-                                                                                                :_fragment (str (name %) "-pricing")}))})
-          (case selected-tab-name
-            :linux [:div.card
-                    (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                    (om/build faq linux-faq-items)]
+                                                                                                :_fragment (str (name %) "-pricing")}))})}
+         (case selected-tab-name
+           :linux (list
+                   (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                   (om/build faq linux-faq-items))
 
-            :osx [:div.card
-                  (om/build osx-plans-list {:plan plan
-                                            :org-name (get-in app state/org-name-path)
-                                            :vcs-type (get-in app state/org-vcs_type-path)})
-                  (om/build faq osx-faq-items)])])))))
+           :osx (list
+                 (om/build osx-plans-list {:plan plan
+                                           :org-name (get-in app state/org-name-path)
+                                           :vcs-type (get-in app state/org-vcs_type-path)})
+                 (om/build faq osx-faq-items))))))))
 
 (defn pricing-starting-tab [subpage]
   (get {:osx-pricing :osx
