@@ -1342,9 +1342,11 @@
                                                                            :data-loading-text "Adding..." ,
                                                                            :value "Create Token" ,
                                                                            :type "submit"
-                                                                           :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
-                                                                                                                               :api-token {:scope scope
-                                                                                                                                           :label label}}])}])]})))
+                                                                           :on-click #(do
+                                                                                        (raise! owner [:saved-project-api-token {:project-id project-id
+                                                                                                                                 :api-token {:scope scope
+                                                                                                                                             :label label}}])
+                                                                                        (close-fn))}])]})))
               (when-let [tokens (seq (:tokens project-data))]
                 (om/build table/table
                           {:rows tokens
