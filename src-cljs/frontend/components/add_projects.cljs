@@ -1,8 +1,9 @@
 (ns frontend.components.add-projects
   (:require [clojure.string :as string]
-            [frontend.async :refer [raise! navigate!]]
+            [frontend.async :refer [navigate! raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.models.plan :as pm]
@@ -409,17 +410,17 @@
                                 :else "bitbucket")
             github-active? (= "github" selected-vcs-type)
             bitbucket-active? (= "bitbucket" selected-vcs-type)]
-        (html
-         [:div
-          (om/build tabs/tab-row {:tabs [{:name "github"
-                                          :icon (html [:i.octicon.octicon-mark-github])
-                                          :label "GitHub"}
-                                         {:name "bitbucket"
-                                          :icon (html [:i.fa.fa-bitbucket])
-                                          :label "Bitbucket"}]
-                                  :selected-tab-name selected-vcs-type
-                                  :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})
-          [:div.organizations.card
+        (card/tabbed
+         {:tab-row (om/build tabs/tab-row {:tabs [{:name "github"
+                                                   :icon (html [:i.octicon.octicon-mark-github])
+                                                   :label "GitHub"}
+                                                  {:name "bitbucket"
+                                                   :icon (html [:i.fa.fa-bitbucket])
+                                                   :label "Bitbucket"}]
+                                           :selected-tab-name selected-vcs-type
+                                           :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})}
+         (html
+          [:div
            (when github-active?
              (if github-authorized?
                (missing-org-info owner)
@@ -442,7 +443,7 @@
                                         :on-org-click #(raise! owner [:selected-add-projects-org %])})
            (when (get-in user [:repos-loading (keyword selected-vcs-type)])
              [:div.orgs-loading
-              [:div.loading-spinner common/spinner]])]])))))
+              [:div.loading-spinner common/spinner]])]))))))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)

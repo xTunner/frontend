@@ -34,18 +34,6 @@
            [:span.tab-label label]])]))))
 
 (dc/do
-  (defn tab-row-parent [{:keys [selected-tab-name] :as data} owner]
-    (om/component
-        (html
-         [:div
-          (om/build tab-row {:tabs [{:name :tab-one
-                                     :label "Tab One"}
-                                    {:name :tab-two
-                                     :label "Tab Two"}]
-                             :selected-tab-name selected-tab-name
-                             :on-tab-click #(om/update! data :selected-tab-name %)})
-          "Selected: " (str selected-tab-name)])))
-
   (defcard-om tab-row
     "Here, a parent renders a `tab-row`. Note that the `tab-row` itself does not
     track which tab is selected as state. Instead, the parent tells the tab row
@@ -55,11 +43,23 @@
     here), or some other means. (Often, in our app, we accomplish this by
     navigating to a different URL, which specifies the tab which should be
     selected.)"
-    tab-row-parent
+    (fn [{:keys [selected-tab-name] :as data} owner]
+      (om/component
+        (html
+         [:div
+          (om/build tab-row {:tabs [{:name :tab-one
+                                     :label "Tab One"}
+                                    {:name :tab-two
+                                     :label "Tab Two"}]
+                             :selected-tab-name selected-tab-name
+                             :on-tab-click #(om/update! data :selected-tab-name %)})
+          "Selected: " (str selected-tab-name)])))
     {:selected-tab-name :tab-one})
 
-  (defn tab-row-with-icon-parent [{:keys [selected-tab-name] :as data} owner]
-    (om/component
+  (defcard-om tab-row-with-icon
+    "This `tab-row` features icons on the tab labels."
+    (fn [{:keys [selected-tab-name] :as data} owner]
+      (om/component
         (html
          [:div
           (om/build tab-row {:tabs [{:name :tab-one
@@ -71,8 +71,4 @@
                              :selected-tab-name selected-tab-name
                              :on-tab-click #(om/update! data :selected-tab-name %)})
           "Selected: " (str selected-tab-name)])))
-
-  (defcard-om tab-row-with-icon
-    "This `tab-row` features icons on the tab labels."
-    tab-row-with-icon-parent
     {:selected-tab-name :tab-one}))
