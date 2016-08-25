@@ -133,7 +133,8 @@
 (defn- add-properties-to-track-from-state [current-state]
   "Get a map of the mutable properties we want to track out of the
   state. Also add a timestamp."
-  {:user (get-in current-state state/user-login-path) 
+  {:user (get-in current-state state/user-login-path)
+   :default-email (get-in current-state state/user-selected-email-path)
    :view (get-in current-state state/current-view-path)
    :repo (get-in current-state state/navigation-repo-path)
    :org (get-in current-state state/navigation-org-path)})
