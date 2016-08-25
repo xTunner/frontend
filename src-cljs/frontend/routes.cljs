@@ -179,11 +179,6 @@
     (open-to-inner! nav-ch :build-insights {}))
   (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
     (open-to-inner! nav-ch :project-insights {:org org :repo repo :branch branch :vcs_type (vcs/->lengthen-vcs short-vcs-type)}))
-  (defroute v1-invite-teammates "/invite-teammates" []
-    (open-to-inner! nav-ch :invite-teammates {}))
-  (defroute v1-invite-teammates-org #"/invite-teammates/organization/(gh|bb)/([^/]+)" [short-vcs-type org]
-    (open-to-inner! nav-ch :invite-teammates {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
-                                              :org org}))
   (defroute v1-account "/account" []
     (open-to-inner! nav-ch :account {:subpage :notifications}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]

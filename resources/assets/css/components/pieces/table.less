@@ -44,6 +44,17 @@
       }
     }
 
+    // Striped styling
+    &.striped {
+      border-color: @grayLighter;
+      > tbody > tr:nth-child(even) {
+        background-color: @white;
+      }
+      > tbody > tr:nth-child(odd) {
+        background-color: @grayLightest;
+      }
+    }
+
     > tbody > tr:hover {
       background-color: rgba(80, 198, 221, 0.04);
     }

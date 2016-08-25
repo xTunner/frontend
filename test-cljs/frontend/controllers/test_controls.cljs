@@ -184,7 +184,7 @@
 
 (deftest post-control-event-invite-selected-all-works
   (let [users ["user1" "user2"]
-        current-state (assoc-in {} state/invite-github-users-path users)]
+        current-state (assoc-in {} state/build-invite-members-path users)]
     (println current-state)
     (testing "the post-control-event invite-selected-all sends a :invite-teammates-select-all-clicked event"
       (let [calls (analytics-track-call-args #(controls/post-control-event! {} :invite-selected-all {} {} current-state))]
@@ -196,7 +196,7 @@
 
 (deftest post-control-event-invite-selected-none-works
   (let [users ["user1" "user2"]
-        current-state (assoc-in {} state/invite-github-users-path users)]
+        current-state (assoc-in {} state/build-invite-members-path users)]
     (testing "the post-control-event invite-selected-none sends a :invite-teammates-select-none-clicked event"
       (let [calls (analytics-track-call-args #(controls/post-control-event! {} :invite-selected-none {} {} current-state))]
         (is (= (count calls) 1))
@@ -205,46 +205,60 @@
           (is (= (:current-state args) current-state))
           (is (= (:properties args) {:teammate-count (count users)})))))))
 
-(deftest post-control-event-invited-github-users-works
+(deftest post-control-event-invited-team-members-works
   (let [calls (atom [])
         project-name "proj"
         vcs-type "github"
-        invitees ["me@foo.com", "you@bar.co"]
+        invitees [{:handle "me"
+                   :email "me@foo.com"
+                   :provider_id 666
+                   :name "Me"}
+                  {:handle "you"
+                   :email "you@bar.co"
+                   :provider_id 667
+                   :name "You"}]
         control-data {:project-name project-name
                       :org-name "org"
-                      :invitees ["me@foo.com", "you@bar.co"]}
+                      :invitees invitees}
         api-ch "api-ch"
         current-state {:comms {:api api-ch}}]
     (testing "the post-control-event invite-github-users calls button-ajax with the correct parameters"
       (with-redefs [controls/button-ajax (fn [method url message channel & opts]
                                            (swap! calls conj {:args (list method url message channel opts)}))]
-        (controls/post-control-event! {} :invited-github-users control-data {} current-state)
+        (controls/post-control-event! {} :invited-team-members control-data {} current-state)
         (let [calls @calls
               args (-> calls first :args)]
           (is (= (count calls) 1))
           (is (= (nth args 0) :post))
           (is (= (nth args 1) (api-path/project-users-invite vcs-type project-name)))
-          (is (= (nth args 2) :invite-github-users))
+          (is (= (nth args 2) :invite-team-members))
           (is (= (nth args 3) api-ch))
           (is (= (->> (nth args 4) (apply hash-map) :context) {:project project-name
-                                                              :first_green_build true}))
+                                                               :first_green_build true}))
           (is (= (->> (nth args 4) (apply hash-map) :params) invitees)))))))
 
-(deftest post-control-event-invited-github-users-invites-users-for-bb-projects
+(deftest post-control-event-invited-team-members-invites-users-for-bb-projects
   (let [calls (atom [])
         project-name "proj"
         vcs-type "bitbucket"
-        invitees ["me@foo.com", "you@bar.co"]
+        invitees [{:handle "me"
+                   :email "me@foo.com"
+                   :provider_id 666
+                   :name "Me"}
+                  {:handle "you"
+                   :email "you@bar.co"
+                   :provider_id 667
+                   :name "You"}]
         control-data {:project-name project-name
                       :vcs-type vcs-type
                       :org-name "org"
-                      :invitees ["me@foo.com", "you@bar.co"]}
+                      :invitees invitees}
         api-ch "api-ch"
         current-state {:comms {:api api-ch}}]
     (testing "the post-control-event invite-github-users does nothing for bitbucket projects"
       (with-redefs [controls/button-ajax (fn [method url message channel & opts]
                                            (swap! calls conj {:args (list method url message channel opts)}))]
-        (controls/post-control-event! {} :invited-github-users control-data {} current-state)
+        (controls/post-control-event! {} :invited-team-members control-data {} current-state)
         (let [calls @calls
               args (-> calls first :args)]
           (is (= (count calls) 1))

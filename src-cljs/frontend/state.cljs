@@ -60,8 +60,6 @@
                       :users nil
                       :invoices nil
                       :name nil}
-   :invite-data {:dismiss-invite-form nil
-                 :github-users nil}
    :instrumentation []
    :hamburger-menu "closed"
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
@@ -72,10 +70,14 @@
 (def user-path [:current-user])
 
 (def build-data-path [:current-build-data])
+
+;; state related to the first-green-build invite box
+(def build-invite-data-path (conj build-data-path :invite-data))
+(def build-invite-members-path (conj build-invite-data-path :org-members))
+(defn build-invite-member-path [index] (conj build-invite-members-path index))
+
 (def build-path [:current-build-data :build])
-(def invite-github-users-path [:invite-data :github-users])
-(defn invite-github-user-path [index] (conj invite-github-users-path index))
-(def dismiss-invite-form-path [:invite-data :dismiss-invite-form])
+(def dismiss-invite-form-path (conj build-invite-data-path :dismiss-invite-form))
 (def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
 (def invite-logins-path (conj build-data-path :invite-data :invite-logins))
 (defn invite-login-path [login] (conj invite-logins-path login))

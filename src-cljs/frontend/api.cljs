@@ -47,6 +47,13 @@
              :organizations
              api-ch))
 
+(defn get-org-members [org-name vcs-type api-ch]
+  (ajax/ajax :get (path/org-members vcs-type org-name)
+             :get-org-members
+             api-ch
+             :context {:org-name org-name
+                       :vcs-type vcs-type}))
+
 (defn get-org-plan [org-name vcs-type api-ch]
   (ajax/ajax :get
              (gstring/format "/api/v1.1/organization/%s/%s/plan"

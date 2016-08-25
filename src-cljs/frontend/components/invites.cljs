@@ -34,7 +34,7 @@
            [:img {:src (gh-utils/make-avatar-url user)}]]
           [:div.invite-profile
            handle
-           [:input {:on-change #(utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
+           [:input {:on-change #(utils/edit-input owner (conj (state/build-invite-member-path index) :email) %)
                     :required true
                     :type "email"
                     :value email
@@ -47,7 +47,7 @@
            [:input {:type "checkbox"
                     :id (str handle "-checkbox")
                     :checked (boolean (:checked user))
-                    :on-change #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}]
+                    :on-change #(utils/toggle-input owner (conj (state/build-invite-member-path index) :checked) %)}]
            [:div.checked \uf046]
            [:div.unchecked \uf096]]])))))
 
@@ -71,7 +71,7 @@
           (forms/managed-button
            [:button.btn.btn-success (let [users-to-invite (invitees users)]
                                       {:data-success-text "Sent"
-                                       :on-click #(raise! owner [:invited-github-users
+                                       :on-click #(raise! owner [:invited-team-members
                                                                  (merge {:invitees users-to-invite
                                                                          :vcs_type (:vcs_type opts)}
                                                                         (if (:project-name opts)
@@ -91,8 +91,7 @@
                                                              :project-name project-name}])))
     om/IRender
     (render [_]
-      (let [project-name (:project-name opts)
-            users (remove :following (:github-users invite-data))
+      (let [users (remove :following (:org-members invite-data))
             dismiss-form (:dismiss-invite-form invite-data)]
         (html
          [:div.first-green.invite-form {:class (when (or (empty? users) dismiss-form)
@@ -119,32 +118,3 @@
           [:img {:src (gh-utils/make-avatar-url org :size 25)
                  :width 25 :height 25}]
           [:div.orgname (:login org)]]]))))
-
-(defn teammates-invites [data owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :invite-teammates-impression}))
-    om/IRender
-    (render [_]
-      (let [invite-data (:invite-data data)]
-        (html
-          [:div#invite-teammates
-           ; org bar on the left, borrowed from add projects
-           [:ul.side-list
-            (om/build-all side-item (filter :org (get-in data state/user-organizations-path)))]
-           ; invites box on the right
-           (if (:org invite-data)
-             [:div.first-green.invite-form
-              [:h3 "Invite your " (:org invite-data) " teammates"]
-              (om/build invites
-                        (remove :is_user (:github-users invite-data))
-                        {:opts {:vcs_type (:vcs_type invite-data)
-                                :org-name (:org invite-data)}}) ]
-             [:div.org-invites
-              [:h3 "Invite your teammates"]
-              [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
-              (let [current-uri (Uri. js/location.href)
-                    root-uri (.resolve current-uri (Uri. "/"))]
-                [:p [:input.form-control {:value root-uri :type "text"}]])
-              [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on CircleCI."]])])))))

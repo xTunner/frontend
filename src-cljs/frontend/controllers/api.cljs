@@ -619,21 +619,28 @@
 
 (defmethod api-event [:first-green-build-github-users :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+  (if-not (and (= (:project-name context)
+                  (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+               (= (:vcs-type context)
+                  (get-in state (conj state/build-path :vcs_type))))
     state
-    (-> state
-        (assoc-in state/invite-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
+    (assoc-in state
+              state/build-invite-members-path
+              (vec (map-indexed (fn [i u] (assoc u :index i)) resp)))))
 
-(defmethod api-event [:invite-github-users :success]
+(defmethod api-event [:invite-team-members :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
     state
     (assoc-in state state/dismiss-invite-form-path true)))
 
 
-(defmethod api-event [:org-member-invite-users :success]
+(defmethod api-event [:get-org-members :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state [:invite-data :github-users] (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))
+  (let [{:keys [vcs-type org-name]} context]
+    (assoc-in state
+              (conj (state/org-ident vcs-type org-name) :vcs-users)
+              resp)))
 
 
 (defmethod api-event [:enable-project :success]

@@ -342,16 +342,6 @@
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
 
-(defmethod navigated-to :invite-teammates
-  [history-imp navigation-point args state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc state/current-view navigation-point
-             state/navigation-data (assoc args :show-aside-menu? false))
-      (assoc-in [:invite-data :org] (:org args))
-      (assoc-in [:invite-data :vcs_type] (:vcs_type args))
-      (assoc-in state/crumbs-path [{:type :invite-teammates}])))
-
 (defmethod navigated-to :team
   [history-imp navigation-point args state]
   (let [current-user (get-in state state/user-path)]
@@ -369,8 +359,7 @@
     ;; get the list of orgs
     (api/get-orgs api-ch :include-user? true)
     (when org
-      (go (let [api-result (<! (ajax/managed-ajax :get (gstring/format (api-path/org-members vcs_type org))))]
-            (put! api-ch [:org-member-invite-users (:status api-result) api-result]))))
+      (api/get-org-members org vcs_type api-ch))
     (set-page-title! "Invite teammates")))
 
 (defmethod navigated-to :project-settings
