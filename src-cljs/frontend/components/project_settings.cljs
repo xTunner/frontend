@@ -1324,7 +1324,7 @@
                                                           (dropdown/dropdown {:options [["status" "Status"]
                                                                                         ["view-builds" "Build Artifacts"]
                                                                                         ["all" "All"]]
-                                                                              :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)
+                                                                              :on-change #(raise! owner [:set-project-api-token-scope {:scope %}])
                                                                               :name "scope"
                                                                               :value scope})
                                                           (om/build form/text-field {:value (str label)
@@ -1344,7 +1344,8 @@
                                                                            :type "submit"
                                                                            :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
                                                                                                                                :api-token {:scope scope
-                                                                                                                                           :label label}}])}])]})))
+                                                                                                                                           :label label}
+                                                                                                                               :on-success close-fn}])}])]})))
               (when-let [tokens (seq (:tokens project-data))]
                 (om/build table/table
                           {:rows tokens
