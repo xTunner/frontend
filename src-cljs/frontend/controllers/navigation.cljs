@@ -106,11 +106,6 @@
             :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
             (put! (:errors comms) [:api-error api-resp]))
           (when (:repo args)
-            (ajax/ajax :get
-                       (gstring/format "/api/v1/project/%s/%s/build-diagnostics" (:org args) (:repo args))
-                       :project-build-diagnostics
-                       api-ch
-                       :context {:project-name (str (:org args) "/" (:repo args))})
             (when (:read-settings scopes)
               (ajax/ajax :get
                          (api-path/project-info (:vcs_type args) (:org args) (:repo args))
