@@ -223,7 +223,7 @@
     (:status override-status)
     real-status))
 
-(defn container-pill [{:keys [container status current-container-id build-running?]} owner]
+(defn container-pill [{:keys [container status current-container-id build-running? build-finished?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -241,7 +241,6 @@
     (render-state [_ {:keys [override-status]}]
       (html
        (let [container-id (container-model/id container)
-             duration-ms (container-utilization-duration container)
              status (maybe-override-status status override-status)
              icon-name (case status
                          :failed "Status-Failed"
@@ -258,7 +257,8 @@
            [:span.container-index (str (:index container))]
            [:span.status-icon
             (om/build container-result-icon {:name icon-name})]]
-          (om/build container-duration-label {:actions (:actions container)})])))))
+          (when build-finished?
+            (om/build container-duration-label {:actions (:actions container)}))])))))
 
 (def paging-width 10)
 
@@ -351,6 +351,7 @@
                     (om/build container-pill
                               {:container container
                                :build-running? build-running?
+                               :build-finished? (build-model/finished? build)
                                :current-container-id current-container-id
                                :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
