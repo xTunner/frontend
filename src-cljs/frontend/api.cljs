@@ -271,3 +271,6 @@
              :context {:project-name project-name
                        :id id
                        :uuid uuid}))
+
+(defn get-enterprise-site-status [api-ch]
+  (ajax/ajax :get "/api/v1/enterprise/site-status" :enterprise-site-status api-ch))

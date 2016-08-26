@@ -27,6 +27,7 @@
             [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.state :as state]
+            [frontend.utils :as utils]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [dissoc-in]]
             [goog.dom :as gdom]
@@ -123,79 +124,101 @@
             (when (and open? expanded?)
               (om/build instrumentation/line-items (:instrumentation app)))]])))))
 
+(defn blocked-page [app owner]
+  (let [reason (get-in app [:enterprise :site-status :blocked_reason])]
+    (html
+     [:div.outer {:style {:padding-top "0"}}
+      [:div.enterprise-landing
+       [:div.jumbotron
+        common/language-background-jumbotron
+        [:section.container
+         [:div.row
+          [:article.hero-title.center-block
+           [:div.text-center frontend.components.enterprise-landing/enterprise-logo]
+           [:h1.text-center "Error Launching CircleCI"]]]]
+        [:div.row.text-center
+         [:h2 reason]]]
+       [:div.outer-section]]])))
+
+(defn app-blocked? [app]
+  (and (config/enterprise?)
+       (= "blocked" (get-in app [:enterprise :site-status :status]))))
+
 (defn app* [app owner {:keys [reinstall-om!]}]
   (reify
     om/IDisplayName (display-name [_] "App")
     om/IRender
     (render [_]
-      (when (:navigation-point app)
-        (let [persist-state! #(raise! owner [:state-persisted])
-              restore-state! #(do (raise! owner [:state-restored])
-                                  ;; Components are not aware of external state changes.
-                                  (reinstall-om!))
-              logged-in? (get-in app state/user-path)
-              admin? (if (config/enterprise?)
-                       (get-in app [:current-user :dev-admin])
-                       (get-in app [:current-user :admin]))
-              show-inspector? (get-in app state/show-inspector-path)
-              ;; simple optimzation for real-time updates when the build is running
-              app-without-container-data (dissoc-in app state/container-data-path)
-              page (nav-point->page (:navigation-point app))]
-          (reset! keymap {["ctrl+s"] persist-state!
-                          ["ctrl+r"] restore-state!})
-          (html
-           (let [inner? (get-in app state/inner?-path)]
+      (if (app-blocked? app)
+        (blocked-page app owner)
+        (when (:navigation-point app)
+          (let [persist-state! #(raise! owner [:state-persisted])
+                restore-state! #(do (raise! owner [:state-restored])
+                                    ;; Components are not aware of external state changes.
+                                    (reinstall-om!))
+                logged-in? (get-in app state/user-path)
+                admin? (if (config/enterprise?)
+                         (get-in app [:current-user :dev-admin])
+                         (get-in app [:current-user :admin]))
+                show-inspector? (get-in app state/show-inspector-path)
+                ;; simple optimzation for real-time updates when the build is running
+                app-without-container-data (dissoc-in app state/container-data-path)
+                page (nav-point->page (:navigation-point app))]
+            (reset! keymap {["ctrl+s"] persist-state!
+                            ["ctrl+r"] restore-state!})
+            (html
+             (let [inner? (get-in app state/inner?-path)]
 
-             [:div {:class (if inner? "inner" "outer")
-                    ;; Disable natural form submission. This keeps us from having to
-                    ;; .preventDefault every submit button on every form.
-                    ;;
-                    ;; To let a button actually submit a form naturally, handle its click
-                    ;; event and call .stopPropagation on the event. That will stop the
-                    ;; event from bubbling to here and having its default behavior
-                    ;; prevented.
-                    :on-click #(let [target (.-target %)
-                                     button (if (or (= (.-tagName target) "BUTTON")
-                                                    (and (= (.-tagName target) "INPUT")
-                                                         (= (.-type target) "submit")))
-                                              ;; If the clicked element was a button or an
-                                              ;; input.submit, that's the button.
-                                              target
-                                              ;; Otherwise, it's the button (if any) that
-                                              ;; contains the clicked element.
-                                              (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
-                                 ;; Finally, if we found an applicable button and that
-                                 ;; button is associated with a form which it would submit,
-                                 ;; prevent that submission.
-                                 (when (and button (.-form button))
-                                   (.preventDefault %)))}
-              (om/build keyq/KeyboardHandler app-without-container-data
-                        {:opts {:keymap keymap
-                                :error-ch (get-in app [:comms :errors])}})
-              (when admin?
-                (om/build head-admin app))
+               [:div {:class (if inner? "inner" "outer")
+                      ;; Disable natural form submission. This keeps us from having to
+                      ;; .preventDefault every submit button on every form.
+                      ;;
+                      ;; To let a button actually submit a form naturally, handle its click
+                      ;; event and call .stopPropagation on the event. That will stop the
+                      ;; event from bubbling to here and having its default behavior
+                      ;; prevented.
+                      :on-click #(let [target (.-target %)
+                                       button (if (or (= (.-tagName target) "BUTTON")
+                                                      (and (= (.-tagName target) "INPUT")
+                                                           (= (.-type target) "submit")))
+                                                ;; If the clicked element was a button or an
+                                                ;; input.submit, that's the button.
+                                                target
+                                                ;; Otherwise, it's the button (if any) that
+                                                ;; contains the clicked element.
+                                                (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
+                                   ;; Finally, if we found an applicable button and that
+                                   ;; button is associated with a form which it would submit,
+                                   ;; prevent that submission.
+                                   (when (and button (.-form button))
+                                     (.preventDefault %)))}
+                (om/build keyq/KeyboardHandler app-without-container-data
+                          {:opts {:keymap keymap
+                                  :error-ch (get-in app [:comms :errors])}})
+                (when admin?
+                  (om/build head-admin app))
 
-              (when show-inspector?
-                (om/build inspector/inspector app))
+                (when show-inspector?
+                  (om/build inspector/inspector app))
 
-              [:.top
-               [:.bar
-                (when (ld/feature-on? "top-bar-ui-v-1")
-                  (topbar/topbar {:support-info (common/contact-support-a-info owner)
-                                  :user (get-in app state/user-path)}))]
-               [:.flash-presenter
-                (flash/presenter {:display-timeout 2000
-                                  :notification
-                                  (when-let [{:keys [number message]} (get-in app state/flash-notification-path)]
-                                    (flash/flash-notification {:react-key number} message))})]]
+                [:.top
+                 [:.bar
+                  (when (ld/feature-on? "top-bar-ui-v-1")
+                    (topbar/topbar {:support-info (common/contact-support-a-info owner)
+                                    :user (get-in app state/user-path)}))]
+                 [:.flash-presenter
+                  (flash/presenter {:display-timeout 2000
+                                    :notification
+                                    (when-let [{:keys [number message]} (get-in app state/flash-notification-path)]
+                                      (flash/flash-notification {:react-key number} message))})]]
 
-              [:.below-top
-               (when (and inner? logged-in?)
-                 [:.left-nav
-                  (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data))])
+                [:.below-top
+                 (when (and inner? logged-in?)
+                   [:.left-nav
+                    (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data))])
 
-               [:.main
-                (om/build page app)]]])))))))
+                 [:.main
+                  (om/build page app)]]]))))))))
 
 
 (defn app [app owner opts]

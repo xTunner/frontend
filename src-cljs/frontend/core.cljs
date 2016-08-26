@@ -7,6 +7,7 @@
             [goog.dom.classlist]
             [frontend.ab :as ab]
             [frontend.analytics.core :as analytics]
+            [frontend.api :as api]
             [frontend.components.app :as app]
             [frontend.config :as config]
             [frontend.controllers.controls :as controls-con]
@@ -228,6 +229,9 @@
     (async/tap (:api-mult comms) api-tap)
     (async/tap (:ws-mult comms) ws-tap)
     (async/tap (:errors-mult comms) errors-tap)
+
+    (when (config/enterprise?)
+      (api/get-enterprise-site-status (:api comms)))
 
     (go (while true
           (alt!
