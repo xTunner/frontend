@@ -25,11 +25,13 @@
       @calls)))
 
 (def data {:view :a-view
+           :primary-email "foobar@email.com"
            :user "foobar-user"
            :repo "foobar-repo"
            :org "foobar-org"})
 
 (def properties {:view :new-view
+                 :primary-email "props@email.com"
                  :user "props-user"
                  :repo "props-repo"
                  :org "props-org"})
