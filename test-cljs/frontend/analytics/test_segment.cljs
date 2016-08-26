@@ -74,8 +74,8 @@
       (is (= (js->clj outbound-segment-props) (-> calls first :args second js->clj))))))
 
 (deftest identify-works
-  ;; segment/identify takes a :default-email, so add that to the mock-user-properties and outbound-user-props
-  (let [mock-user-properties (merge mock-user-properties {:default-email "email"})
+  ;; segment/identify takes a :primary-email, so add that to the mock-user-properties and outbound-user-props
+  (let [mock-user-properties (merge mock-user-properties {:primary-email "email"})
         outbound-user-props (clj-keys-with-dashes->js-keys-with-underscores mock-user-properties)]
     (testing "identify requires event-data consisting of a id and user-properties"
       (test-utils/fails-schema-validation #(segment/identify "id"))

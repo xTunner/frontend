@@ -26,7 +26,7 @@
 (def IdentifyEvent
   (merge-with merge
               UserEvent
-              {:user-properties {:default-email (s/maybe s/Str)}}))
+              {:user-properties {:primary-email (s/maybe s/Str)}}))
 
 (s/defn track-pageview [navigation-point :- s/Keyword subpage :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors

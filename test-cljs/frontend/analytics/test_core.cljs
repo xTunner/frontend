@@ -25,11 +25,13 @@
       @calls)))
 
 (def data {:view :a-view
+           :primary-email "foobar@email.com"
            :user "foobar-user"
            :repo "foobar-repo"
            :org "foobar-org"})
 
 (def properties {:view :new-view
+                 :primary-email "props@email.com"
                  :user "props-user"
                  :repo "props-repo"
                  :org "props-org"})
@@ -166,7 +168,7 @@
        (let [calls (stub-identify {})
              expected-data {:id (get-in current-state state/user-analytics-id-path)
                             :user-properties (merge
-                                               {:default-email user-email}
+                                               {:primary-email user-email}
                                                (select-keys
                                                  (get-in current-state state/user-path)
                                                  (keys common-analytics/UserProperties)))}]
