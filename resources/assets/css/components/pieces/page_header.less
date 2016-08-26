@@ -1,0 +1,62 @@
+.ns("frontend.components.pieces.page-header", {
+  .ui("header", {
+    .flexy(center, space-between);
+
+    box-sizing: border-box;
+    height: @tile;
+    padding: 20px;
+    border-bottom: solid 1px @grayLighter;
+
+    > .breadcrumbs {
+      .text-overflow;
+
+      margin: 0;
+      padding: 0;
+      font-size: @fontSizeLarger;
+
+      > li {
+        display: inline;
+
+        &:not(:first-child):before {
+          content: "»\00a0";
+          padding: 0 5px;
+          color: @grayDarker;
+        }
+
+        &:last-child {
+          pointer-events: none;
+        }
+
+        > a {
+          text-decoration: none;
+
+          &:not(:hover) {
+            color: @grayDark;
+          }
+
+          &:hover {
+            color: @grayDark;
+            text-decoration: underline;
+          }
+
+          &[disabled] {
+            pointer-events: none;
+          }
+        }
+      }
+    }
+
+    > .actions {
+      .flexy;
+    }
+
+    @media (max-width: @screen-sm-max) {
+      .flexy(stretch, flex-start, column);
+      height: auto;
+
+      > .breadcrumbs {
+        margin-bottom: 12px;
+      }
+    }
+  });
+});

@@ -18,7 +18,7 @@
                                        project-user (:username project)
                                        vcs-type (:vcs-type project)]
                                    (html
-                                    [:a.settings {:href (routes/v1-dashboard-path {:org project-user
-                                                                                   :repo project-name
-                                                                                   :vcs_type vcs-type})}
+                                    [:a.header-settings-link {:href (routes/v1-dashboard-path {:org project-user
+                                                                                               :repo project-name
+                                                                                               :vcs_type vcs-type})}
                                      (str "View " project-name " »")]))}))))

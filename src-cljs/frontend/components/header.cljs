@@ -1,9 +1,9 @@
 (ns frontend.components.header
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
             [frontend.components.license :as license]
+            [frontend.components.pieces.page-header :as page-header]
             [frontend.components.pieces.top-banner :as top-banner]
             [frontend.components.svg :as svg]
             [frontend.config :as config]
@@ -40,8 +40,10 @@
                         (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
                         ((om/get-shared owner :track-event) {:event-type :header-follow-project-clicked
                                                              :properties {:vcs-url vcs-url}}))
-           :data-spinner true}
-          "follow the " (vcs-url/repo-name vcs-url) " project"])))))
+           :data-loading-text "Following..."
+           :data-failed-text (str "Failed to Follow " (vcs-url/repo-name vcs-url))
+           :data-success-text "Followed"}
+          "Follow " (vcs-url/repo-name vcs-url)])))))
 
 (defn show-settings-link? [app]
   (and
@@ -51,38 +53,17 @@
 (defn settings-link [app owner]
   (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
     (cond repo (when (:write-settings (get-in app state/project-scopes-path))
-                 [:a.settings.project-settings
+                 [:a.header-settings-link.project-settings
                   {:href (routes/v1-project-settings-path navigation-data)}
                   [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                   "Project Settings"])
-          org [:a.settings.org-settings
+          org [:a.header-settings-link.org-settings
                {:href (routes/v1-org-settings-path navigation-data)
                 :on-click #((om/get-shared owner :track-event) {:event-type :header-org-settings-link-clicked
                                                                 :properties {:org org}})}
                [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                "Organization Settings"]
           :else nil)))
-
-(defn head-user
-  "The page header.
-
-  :crumbs  - The breadcrumbs to display.
-  :actions - (optional) A component (or collection of components) which will be
-             placed on the right of the header. This is where page-wide actions are
-             placed."
-  [{:keys [crumbs actions]} owner]
-  (reify
-    om/IDisplayName (display-name [_] "User Header")
-    om/IRender
-    (render [_]
-      (html
-       [:div.head-user
-        ;; Avoids a React warning for not giving each `li` a key. Correctly,
-        ;; we should render the `li`s here directly, with a `for`, and give
-        ;; each one a `:key` here. This gets rid of the warning for now and
-        ;; avoids re-architecting the crumbs rendering.
-        (apply vector :ol.breadcrumb (crumbs/crumbs crumbs))
-        [:div.actions actions]]))))
 
 (defn maybe-active [current goal]
   {:class (when (= current goal)
@@ -373,16 +354,16 @@
                                        "Account Notifications"]]
                             :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
            (when (seq (get-in app state/crumbs-path))
-             (om/build head-user {:crumbs (get-in app state/crumbs-path)
-                                  :actions (cond-> []
-                                             (show-settings-link? app)
-                                             (conj (settings-link app owner))
+             (om/build page-header/header {:crumbs (get-in app state/crumbs-path)
+                                           :actions (cond-> []
+                                                      (show-settings-link? app)
+                                                      (conj (settings-link app owner))
 
-                                             true
-                                             (conj actions)
+                                                      true
+                                                      (conj actions)
 
-                                             (show-follow-project-button? app)
-                                             (conj (om/build follow-project-button project)))}))])))))
+                                                      (show-follow-project-button? app)
+                                                      (conj (om/build follow-project-button project)))}))])))))
 
 (defn header [{:keys [app actions] :as props} owner]
   (reify
