@@ -951,8 +951,10 @@
   [target message status {:keys [context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state state/project-osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
-                                                                       (= (:id context) (:id %)))))))
+    (-> state
+        (update-in state/project-osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
+                                                                     (= (:id context) (:id %)))))
+        (state/add-flash-notification "Your key has been successfully removed."))))
 
 (defmethod post-api-event! [:delete-code-signing-keys :success]
   [target message status {:keys [context]} previous-state current-state]
