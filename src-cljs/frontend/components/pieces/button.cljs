@@ -24,34 +24,30 @@
 (defn managed-button
   "A standard button.
 
-  :on-click  - A function called when the button is clicked.
-  :primary?  - If true, the button appears as a primary button. (default: false)
-  :disabled? - If true, the button is disabled. (default: false)
-  :size      - The size of the button. One of #{:full :medium}. (default: :full)"
-  [{:keys [primary? size] :or {size :full} :as opts} content]
-  (forms/managed-button [:button (-> (select-keys opts [:data-failed-text
-                                                        :data-success-text
-                                                        :data-loading-text
-                                                        :on-click])
-                                     (assoc :class (remove nil? [(when primary? "primary")
-                                                                 (case size
-                                                                   :full nil
-                                                                   :medium "medium")])
-                                            ;; normally, manually
-                                            ;; adding :data-component
-                                            ;; is not
-                                            ;; recommended. Here, an
-                                            ;; exception is being made
-                                            ;; because `component` is
-                                            ;; not compatible with om
-                                            ;; components as the root,
-                                            ;; and
-                                            ;; `forms/managed-button`
-                                            ;; takes hiccup as an
-                                            ;; argument instead of an
-                                            ;; element
-                                            :data-component `managed-button))
-                         content]))
+  :on-click     - A function called when the button is clicked.
+  :primary?     - If true, the button appears as a primary button. (default: false)
+  :disabled?    - If true, the button is disabled. (default: false)
+  :size         - The size of the button. One of #{:full :medium}. (default: :full)
+  :loading-text - Text to display indicating that the button action is in progress. (default: \"...\")
+  :success-text - Text to display indicating that the button action was successful. (default: \"Saved\")
+  :failed-text  - Text to display indicating that the button action failed. (default: \"Failed\")"
+  [{:keys [primary? size failed-text success-text loading-text on-click]
+    :or {size :full}}
+   content]
+  (forms/managed-button
+   ;; Normally, manually adding :data-component is not recommended. We
+   ;; make an exception here because `forms/managed-button` takes
+   ;; hiccup as an argument instead of an element.
+   [:button {:data-component `managed-button
+             :data-failed-text failed-text
+             :data-success-text success-text
+             :data-loading-text loading-text
+             :on-click on-click
+             :class (remove nil? [(when primary? "primary")
+                                  (case size
+                                    :full nil
+                                    :medium "medium")])}
+    content]))
 
 
 (dc/do

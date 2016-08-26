@@ -1,50 +1,51 @@
-.button-styles() {
-  height: 35px;
-  width: 155px;
-  border-radius: 3px;
-  color: @grayDark;
-  background-color: @grayLightest;
-  border: solid 1px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    background-color: @whiten;
-  }
-
-  &:active {
-    background-color: @grayLighter;
-  }
-
-  &.medium {
-    height: 30px;
-  }
-
-
-  // TODO: These colors match the style guide, but the style guide doesn\'t
-  // match our palette/variables. Reconcile these in CIRCLE-103.
-
-  &.primary {
-    color: @white;
-    background-color: #3dc1d9;
+.ns("frontend.components.pieces.button", {
+  .button-styles() {
+    height: 35px;
+    width: 155px;
+    border-radius: 3px;
+    color: @grayDark;
+    background-color: @grayLightest;
+    border: solid 1px rgba(0, 0, 0, 0.1);
 
     &:hover {
-      background-color: #27a0bd;
+      background-color: @whiten;
     }
 
     &:active {
-      background-color: @blueDarkest;
+      background-color: @grayLighter;
+    }
+
+    &.medium {
+      height: 30px;
+    }
+
+
+    // TODO: These colors match the style guide, but the style guide doesn\'t
+    // match our palette/variables. Reconcile these in CIRCLE-103.
+
+    &.primary {
+      color: @white;
+      background-color: #3dc1d9;
+
+      &:hover {
+        background-color: #27a0bd;
+      }
+
+      &:active {
+        background-color: @blueDarkest;
+      }
+    }
+
+    &[disabled] {
+      &,
+      &:hover,
+      &:active {
+        color: @grayLight;
+        background-color: #dddddd;
+      }
     }
   }
-
-  &[disabled] {
-    &, &:hover, &:active {
-                  color: @grayLight;
-                  background-color: #dddddd;
-                }
-  }
-}
-
-
-.ns("frontend.components.pieces.button", {
+     
   .ui("button", {
     .button-styles();
   });

@@ -495,9 +495,9 @@
                                                                                      :auto-complete "off"
                                                                                      :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
                                        :actions [(button/button {:on-click close-fn} "Cancel")
-                                                 (button/managed-button {:data-failed-text "Failed" ,
-                                                                         :data-success-text "Added" ,
-                                                                         :data-loading-text "Adding..." ,
+                                                 (button/managed-button {:failed-text "Failed"
+                                                                         :success-text "Added" 
+                                                                         :loading-text "Adding..." 
                                                                          :primary? true
                                                                          :on-click #(raise! owner [:created-env-var
                                                                                                    {:project-id project-id
