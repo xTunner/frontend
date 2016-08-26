@@ -50,7 +50,6 @@
                     :org nil}
    :current-project-data {:project nil
                           :plan nil
-                          :build-diagnostics nil
                           :settings {}
                           :tokens nil
                           :checkout-keys nil
