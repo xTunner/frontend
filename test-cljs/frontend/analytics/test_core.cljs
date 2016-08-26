@@ -166,7 +166,7 @@
        (let [calls (stub-identify {})
              expected-data {:id (get-in current-state state/user-analytics-id-path)
                             :user-properties (merge
-                                               {:default-email user-email}
+                                               {:primary-email user-email}
                                                (select-keys
                                                  (get-in current-state state/user-path)
                                                  (keys common-analytics/UserProperties)))}]
