@@ -317,19 +317,29 @@
                                                  :_fragment "linux-pricing"})}
          "Upgrade"]]))))
 
+(defn get-offered-parallelism
+  "In enterprise, offer whatever their plan's setting is (since they cannot upgrade).
+  Otherwise, offer at least 24 and up to their plan's setting."
+  [project plan]
+  (let [plan-parallelism (plan-model/max-parallelism plan)]
+    (if (config/enterprise?)
+      (max plan-parallelism (project-model/parallelism project))
+      (max 24 plan-parallelism))))
+
 (defn parallelism-picker [project-data owner]
   [:div.parallelism-picker
    (if-not (:plan project-data)
      [:div.loading-spinner common/spinner]
      (let [plan (:plan project-data)
            project (:project project-data)
-           project-id (project-model/id project)]
+           project-id (project-model/id project)
+           number-tiles (get-offered-parallelism project plan)]
        (list
         (when (:parallelism-edited project-data)
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (inc (max 24 (plan-model/max-parallelism plan))))]
+         (for [parallelism (range 1 (inc number-tiles))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
