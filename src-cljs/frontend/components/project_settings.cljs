@@ -505,15 +505,14 @@
                                                                                      :auto-complete "off"
                                                                                      :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
                                        :actions [(button/button {:on-click close-fn} "Cancel")
-                                                 (forms/managed-button
-                                                  [:input.btn.btn-primary {:data-failed-text "Failed" ,
-                                                                           :data-success-text "Added" ,
-                                                                           :data-loading-text "Adding..." ,
-                                                                           :value "Add Variable" ,
-                                                                           :type "submit"
-                                                                           :on-click #(raise! owner [:created-env-var
-                                                                                                     {:project-id project-id
-                                                                                                      :on-success close-fn}])}])]
+                                                 (button/managed-button {:failed-text "Failed"
+                                                                         :success-text "Added" 
+                                                                         :loading-text "Adding..." 
+                                                                         :primary? true
+                                                                         :on-click #(raise! owner [:created-env-var
+                                                                                                   {:project-id project-id
+                                                                                                    :on-success close-fn}])}
+                                                                        "Add Variable")]
                                        :close-fn close-fn})))
               (when-let [env-vars (seq (:envvars project-data))]
                 (om/build table/table
