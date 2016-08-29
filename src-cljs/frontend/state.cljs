@@ -2,7 +2,7 @@
 
 (def debug-state)
 
-(defn initial-state []
+(def initial-state
   {:error-message nil
    :general-message nil
    ;; A/B test instructions:
