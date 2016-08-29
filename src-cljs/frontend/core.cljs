@@ -238,10 +238,7 @@
            nav-tap ([v] (nav-handler v state history-imp))
            api-tap ([v] (api-handler v state container))
            ws-tap ([v] (ws-handler v state pusher-imp))
-           errors-tap ([v] (errors-handler v state container))
-           ;; Capture the current history for playback in the absence
-           ;; of a server to store it
-           (async/timeout 10000) (do #_(print "TODO: print out history: ")))))))
+           errors-tap ([v] (errors-handler v state container)))))))
 
 (defn subscribe-to-user-channel [user ws-ch]
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
