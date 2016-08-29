@@ -35,7 +35,7 @@
 (defn parse-uri-bool
   "Parses a boolean from a url into true, false, or nil"
   [string]
-  (condp = string
+  (case string
     "true" true
     "false" false
     nil))

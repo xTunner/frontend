@@ -374,7 +374,7 @@
     (render [_]
       (let [show-all-branches? (get-in app state/show-all-branches-path)
             expanded-repos (get-in app state/expanded-repos-path)
-            sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path)
+            sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path false)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
             recent-projects-filter (if (and sort-branches-by-recency?
@@ -388,9 +388,9 @@
                      :name "toggle-sorting"
                      :on-change #(raise! owner [:sort-branches-toggled
                                                 (utils/parse-uri-bool (.. % -target -value))])
-                     :value sort-branches-by-recency?}
-            [:option {:value false} "By Repo"]
-            [:option {:value true} "Recent"]]
+                     :value (pr-str sort-branches-by-recency?)}
+            [:option {:value "false"} "By Repo"]
+            [:option {:value "true"} "Recent"]]
 
            [:div.toggle-all-branches
             [:input {:id "my-branches"
