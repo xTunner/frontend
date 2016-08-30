@@ -188,9 +188,9 @@
 (defmethod post-control-event! :sort-branches-toggled
   [target message value previous-state current-state]
   (let [element-state (fn [state]
-                        (condp = (get-in state state/sort-branches-by-recency-path)
-                          true "Recent"
-                          false "By Repo"))]
+                        (if (get-in state state/sort-branches-by-recency-path)
+                          "Recent"
+                          "By Repo"))]
   (analytics/track {:event-type :sort-branches-toggled
                     :current-state current-state
                     :properties {:current-state (element-state current-state)
