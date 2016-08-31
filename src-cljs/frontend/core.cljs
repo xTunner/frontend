@@ -73,21 +73,6 @@
   ws-ch
   (chan))
 
-(defn get-ab-overrides []
-  (merge (some-> js/window
-                 (aget "renderContext")
-                 (aget "abOverrides")
-                 (utils/js->clj-kw))))
-
-(defn set-ab-override [test-name value]
-  (when (nil? (aget js/window "renderContext" "abOverrides"))
-    (aset js/window "renderContext" "abOverrides" #js {}))
-  (aset js/window "renderContext" "abOverrides" (name test-name) value))
-
-(defn get-ab-tests [ab-test-definitions]
-  (let [overrides (get-ab-overrides)]
-    (ab/setup! ab-test-definitions :overrides overrides)))
-
 (defn app-state []
   (atom (assoc state/initial-state
                :current-user (-> js/window
@@ -186,14 +171,12 @@
 
 (declare reinstall-om!)
 
-(defn install-om [state ab-tests container comms]
+(defn install-om [state container comms]
   (om/root
    app/app
    state
    {:target container
     :shared {:comms comms
-             ;; note that changing ab-tests dynamically requires reinstalling om
-             :ab-tests ab-tests
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state
              :track-event #(analytics/track (assoc % :current-state @state))}
@@ -205,7 +188,7 @@
 (defn find-app-container []
   (goog.dom/getElement "app"))
 
-(defn main [state ab-tests top-level-node history-imp]
+(defn main [state top-level-node history-imp]
   (let [comms       (:comms @state)
         container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
@@ -216,7 +199,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state ab-tests container comms)
+    (install-om state container comms)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -249,29 +232,12 @@
   (swallow-errors
     (assoc [] :deliberate :exception)))
 
-(defn ^:export set-ab-test
-  "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
-  [test-name value]
-  (let [test-key (keyword (name test-name))]
-    (println "starting value for" test-name "was" (-> @state/debug-state
-                                                      :ab-test-definitions
-                                                      get-ab-tests
-                                                      test-key))
-    (set-ab-override (name test-name) value)
-    (reinstall-om!)
-    (println "value for" test-name "is now" (-> @state/debug-state
-                                                :ab-test-definitions
-                                                get-ab-tests
-                                                test-key))))
-
-(aset js/window "set_ab_test" set-ab-test)
-
 (defn ^:export app-state-to-js
   "Used for inspecting app state in the console."
   []
   (clj->js @state/debug-state))
 
-(aset js/window "app_state_to_js" set-ab-test)
+(aset js/window "app_state_to_js" app-state-to-js)
 
 
 ;; Figwheel offers an event when JS is reloaded, but not when CSS is reloaded. A
@@ -282,7 +248,7 @@
 
 
 (defn ^:export reinstall-om! []
-  (install-om state/debug-state (get-ab-tests (:ab-test-definitions @state/debug-state)) (find-app-container) (:comms @state/debug-state)))
+  (install-om state/debug-state (find-app-container) (:comms @state/debug-state)))
 
 (defn add-css-link [path]
   (let [link (goog.dom/createDom "link"
@@ -294,12 +260,11 @@
   (support/enable-one!)
   (let [state (app-state)
         top-level-node (find-top-level-node)
-        history-imp (history/new-history-imp top-level-node)
-        ab-tests (get-ab-tests (:ab-test-definitions @state))]
+        history-imp (history/new-history-imp top-level-node)]
     ;; globally define the state so that we can get to it for debugging
     (set! state/debug-state state)
     (browser-settings/setup! state)
-    (main state ab-tests top-level-node history-imp)
+    (main state top-level-node history-imp)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
