@@ -1524,10 +1524,6 @@
                       :current-state current-state
                       :properties {:new-branch new-branch}})))
 
-(defmethod control-event :logging-enabled-clicked
-  [_ _ _ state]
-  (update-in state state/logging-enabled-path not))
-
 (defmethod control-event :dismiss-osx-usage-banner
   [_ _ {:keys [current-usage]} current-state]
   (cond
