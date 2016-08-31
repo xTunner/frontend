@@ -6,44 +6,6 @@
   }
 }
 
-.breadcrumb {
-  margin: 0;
-  font-size: @fontSizeLarger;
-  display: inline-block;
-
-  .text-overflow;
-
-
-  > li {
-    display: inline;
-
-    &:before {
-      padding: 0;
-    }
-
-    &:last-child {
-      pointer-events: none;
-    }
-  }
-
-  a {
-    text-decoration: none;
-
-    &:not(:hover) {
-      color: @grayDark;
-    }
-
-    &:hover {
-      color: @grayDark;
-      text-decoration: underline;
-    }
-
-    &[disabled] {
-        pointer-events: none;
-    }
-  }
-}
-
 #follow-project-button {
   margin-left: 2em;
   height: 30px;

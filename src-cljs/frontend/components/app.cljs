@@ -23,6 +23,7 @@
             [frontend.components.pages.team :as team]
             [frontend.components.pieces.flash-notification :as flash]
             [frontend.components.pieces.topbar :as topbar]
+            [frontend.components.statuspage :as statuspage]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
@@ -200,6 +201,9 @@
 
                 (when show-inspector?
                   (om/build inspector/inspector app))
+
+                (when (config/statuspage-header-enabled?)
+                  (om/build statuspage/statuspage app))
 
                 [:.top
                  [:.bar
