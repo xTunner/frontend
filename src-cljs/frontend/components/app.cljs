@@ -221,7 +221,8 @@
                    [:.left-nav
                     (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data))])
 
-                 (om/build page app)]]))))))))
+                 [:.main
+                  (om/build page app)]]]))))))))
 
 
 (defn app [app owner opts]
