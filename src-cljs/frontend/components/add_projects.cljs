@@ -381,47 +381,33 @@
      "Refresh this list"]
     " after you have updated permissions."]))
 
-(defn- org-picker-without-bitbucket [{:keys [orgs user selected-org]} owner]
-  (reify
-    om/IDisplayName (display-name [_] "Organization Listing")
-    om/IRender
-    (render [_]
-      (html
-       [:div
-        [:h4 "Your accounts"]
-        (om/build org-picker/picker {:orgs (filter vcs-github? orgs)
-                                     :selected-org selected-org
-                                     :on-org-click #(raise! owner [:selected-add-projects-org %])})
-        (when (get-in user [:repos-loading :github])
-          [:div.orgs-loading
-           [:div.loading-spinner common/spinner]])
-        (missing-org-info owner)]))))
-
-(defn- org-picker-with-bitbucket [{:keys [orgs user selected-org tab]} owner]
+(defn- org-picker [{:keys [orgs user selected-org tab]} owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
     om/IRender
     (render [_]
       (let [github-authorized? (user-model/github-authorized? user)
+            bitbucket-possible? (vcs-utils/bitbucket-possible?)
             bitbucket-authorized? (user-model/bitbucket-authorized? user)
             selected-vcs-type (cond
+                                (not bitbucket-possible?) "github"
                                 tab tab
                                 github-authorized? "github"
                                 :else "bitbucket")
-            github-active? (= "github" selected-vcs-type)
-            bitbucket-active? (= "bitbucket" selected-vcs-type)]
+            tabs (when bitbucket-possible?
+                   [{:name "github"
+                     :icon (html [:i.octicon.octicon-mark-github])
+                     :label "GitHub"}
+                    {:name "bitbucket"
+                     :icon (html [:i.fa.fa-bitbucket])
+                     :label "Bitbucket"}])]
         (card/tabbed
-         {:tab-row (om/build tabs/tab-row {:tabs [{:name "github"
-                                                   :icon (html [:i.octicon.octicon-mark-github])
-                                                   :label "GitHub"}
-                                                  {:name "bitbucket"
-                                                   :icon (html [:i.fa.fa-bitbucket])
-                                                   :label "Bitbucket"}]
+         {:tab-row (om/build tabs/tab-row {:tabs tabs
                                            :selected-tab-name selected-vcs-type
                                            :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})}
          (html
           [:div
-           (when github-active?
+           (when (= "github" selected-vcs-type)
              (if github-authorized?
                (missing-org-info owner)
                [:div
@@ -430,7 +416,7 @@
                                      :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
                                                                                      :properties {:vcs-type selected-vcs-type}})}
                  "Authorize with GitHub"]]))
-           (when (and bitbucket-active?
+           (when (and (= "bitbucket" selected-vcs-type)
                       (not bitbucket-authorized?))
              [:div
               [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
@@ -483,14 +469,10 @@
            [:div.overview
             [:span.big-number "1"]
             [:div.instruction "Choose an organization that you are a member of."]]
-           (if (vcs-utils/bitbucket-enabled? user)
-             (om/build org-picker-with-bitbucket {:orgs orgs
-                                                  :selected-org selected-org
-                                                  :user user
-                                                  :tab tab})
-             (om/build org-picker-without-bitbucket {:orgs orgs
-                                                     :selected-org selected-org
-                                                     :user user}))])]
+           (om/build org-picker {:orgs orgs
+                                 :selected-org selected-org
+                                 :user user
+                                 :tab tab})])]
        [:div#project-listing.project-listing
         [:div.overview
          [:span.big-number "2"]
