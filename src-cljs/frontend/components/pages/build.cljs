@@ -75,7 +75,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [pull-request-number (first (build-model/pull-request-numbers build))]
+      (let [pull-request-number (last (build-model/pull-request-numbers build))]
         (html
          [:div.rebuild-container
           [:button.rebuild {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])}
