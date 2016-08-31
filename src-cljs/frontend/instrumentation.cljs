@@ -1,7 +1,6 @@
 (ns frontend.instrumentation
   (:require [cljs-time.core :as time]
             [cljs-time.format :as time-format]
-            [frontend.components.key-queue :as keyq]
             [frontend.datetime :as datetime]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -76,10 +75,6 @@
 (defn stats-view [data owner]
   (om/component
    (dom/figure nil
-     (om/build keyq/KeyboardHandler {}
-               {:opts {:keymap (atom {["ctrl+k"] #(om/transact! data (constantly {}))
-                                      ["ctrl+j"] #(om/update-state! owner :shown? not)})}})
-
      (when (om/get-state owner :shown?)
        (let [stats (map (fn [[display-name renders]]
                           (let [times (mapcat :render-ms renders)]
