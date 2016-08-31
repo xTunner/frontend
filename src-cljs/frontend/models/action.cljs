@@ -16,7 +16,8 @@
   These actions only 'happen' on container 0, but are shown on every container. So the index
   (always 0) of the action may be mismatched with the container-id it is grouped under."
   [action]
-  (#{"checkout" "database" "deployment"} (:type action)))
+  (or (#{"checkout" "database" "deployment"} (:type action))
+      (not (:parallel action))))
 
 (defn has-content? [action]
   (or (:has_output action)
