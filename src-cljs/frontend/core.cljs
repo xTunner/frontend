@@ -17,7 +17,7 @@
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.errors :as errors-con]
             [frontend.extensions]
-            [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
             [goog.events]
             [om.core :as om :include-macros true]
@@ -186,7 +186,7 @@
 
 (declare reinstall-om!)
 
-(defn install-om [state ab-tests container comms instrument?]
+(defn install-om [state ab-tests container comms]
   (om/root
    app/app
    state
@@ -197,11 +197,6 @@
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state
              :track-event #(analytics/track (assoc % :current-state @state))}
-    ;; :instrument (let [methods (cond-> om/pure-methods
-    ;;                             instrument? instrumentation/instrument-methods)
-    ;;                   descriptor (om/specify-state-methods! (clj->js methods))]
-    ;;               (fn [f cursor m]
-    ;;                 (om/build* f cursor (assoc m :descriptor descriptor))))
     :opts {:reinstall-om! reinstall-om!}}))
 
 (defn find-top-level-node []
@@ -210,7 +205,7 @@
 (defn find-app-container []
   (goog.dom/getElement "app"))
 
-(defn main [state ab-tests top-level-node history-imp instrument?]
+(defn main [state ab-tests top-level-node history-imp]
   (let [comms       (:comms @state)
         container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
@@ -221,7 +216,7 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state ab-tests container comms instrument?)
+    (install-om state ab-tests container comms)
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -287,7 +282,7 @@
 
 
 (defn ^:export reinstall-om! []
-  (install-om state/debug-state (get-ab-tests (:ab-test-definitions @state/debug-state)) (find-app-container) (:comms @state/debug-state) true))
+  (install-om state/debug-state (get-ab-tests (:ab-test-definitions @state/debug-state)) (find-app-container) (:comms @state/debug-state)))
 
 (defn add-css-link [path]
   (let [link (goog.dom/createDom "link"
@@ -300,14 +295,11 @@
   (let [state (app-state)
         top-level-node (find-top-level-node)
         history-imp (history/new-history-imp top-level-node)
-        instrument? (get-in @state [:render-context :instrument])
         ab-tests (get-ab-tests (:ab-test-definitions @state))]
     ;; globally define the state so that we can get to it for debugging
     (set! state/debug-state state)
-    (when instrument?
-      (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (main state ab-tests top-level-node history-imp instrument?)
+    (main state ab-tests top-level-node history-imp)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
