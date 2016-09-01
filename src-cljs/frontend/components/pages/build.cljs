@@ -77,9 +77,9 @@
     (render [_]
       (let [pull-request-number (last (build-model/pull-request-numbers build))]
         (html
-         [:div.rebuild-container
-          [:button.rebuild {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])}
-           [:i.octicon.octicon-git-merge.rebuild-icon]
+         [:div.merge-container
+          [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])}
+           [:i.octicon.octicon-git-merge.merge-icon]
            (str "Merge PR #" pull-request-number)]])))))
 
 (defn- header-actions

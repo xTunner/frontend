@@ -82,7 +82,7 @@
     cursor: pointer;
   }
 
-  .rebuild-container {
+  .rebuild-container, .merge-container {
 
     @container-height: 30px;
     @container-width: 160px;
@@ -101,7 +101,7 @@
       }
     }
 
-    button.rebuild {
+    button {
       .button-look();
 
       width: @container-width - @container-height - @button-right-margin;
@@ -113,8 +113,8 @@
       text-align: inherit;
       font-size: 14px;
 
-      .rebuild-icon {
-        margin: 6px 10px;
+      > .rebuild-icon, > .merge-icon {
+          margin: 6px 10px;
       }
     }
 
