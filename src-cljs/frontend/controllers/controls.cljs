@@ -518,14 +518,14 @@
 
 (defmethod post-control-event! :merge-pull-request-clicked
   [target message {:keys [vcs-url owner repo number sha] :as args} previous-state current-state]
-  (let [vcs-type (vcs-url/vcs-type vcs-url)
+  (let [api-ch (-> current-state :comms :api)
+        vcs-type (vcs-url/vcs-type vcs-url)
         uuid frontend.async/*uuid*]
     (go
       (let [api-result (<! (ajax/managed-ajax :put (api-path/merge-pull-request vcs-type owner repo number)
                                               :params {:sha sha}))]
-        (if (= :success (:status api-result))
-          (.log js/console "SUCCESS" (-> api-result :resp :body :message))
-          (.log js/console "ERROR" (-> api-result :response :resp :message)))))))
+        (put! api-ch [:merge-pull-request (:status api-result) api-result])
+        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state]

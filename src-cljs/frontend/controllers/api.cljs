@@ -977,3 +977,11 @@
 (defmethod api-event [:enterprise-site-status :success]
   [target message status {:keys [resp]} state]
   (assoc-in state [:enterprise :site-status] resp))
+
+(defmethod api-event [:merge-pull-request :success]
+  [target message status {:keys [resp]} state]
+  (state/add-flash-notification state (-> resp :message)))
+
+(defmethod api-event [:merge-pull-request :failed]
+  [target message status {:keys [resp]} state]
+  (state/add-flash-notification state (-> resp :message)))
