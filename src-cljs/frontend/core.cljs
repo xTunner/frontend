@@ -45,7 +45,7 @@
 
 
 (defn initial-state
-  "Builds the initial app state, including :comms and data that comes from the
+  "Builds the initial app state, including data that comes from the
   renderContext."
   []
   (assoc state/initial-state
@@ -55,12 +55,7 @@
                            utils/js->clj-kw)
          :render-context (-> js/window
                              (aget "renderContext")
-                             utils/js->clj-kw)
-         :comms {:controls  (chan)
-                 :api       (chan)
-                 :errors    (chan)
-                 :nav       (chan)
-                 :ws        (chan)}))
+                             utils/js->clj-kw)))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
@@ -68,14 +63,14 @@
   (:log-channels? utils/initial-query-map (config/log-channels?)))
 
 (defn controls-handler
-  [value state container]
+  [value state container comms]
   (when (log-channels?)
     (mlog "Controls Verbose: " value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial controls-con/control-event container (first value) (second value)))
-       (controls-con/post-control-event! container (first value) (second value) previous-state @state)))))
+       (controls-con/post-control-event! container (first value) (second value) previous-state @state comms)))))
 
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
@@ -154,8 +149,12 @@
 
 (defn ^:export setup! []
   (support/enable-one!)
-  (let [state (initial-state)
-        comms (:comms state)
+  (let [comms {:controls (chan)
+               :api (chan)
+               :errors (chan)
+               :nav (chan)
+               :ws (chan)}
+        state (assoc (initial-state) :comms comms)
         state-atom (atom state)
         top-level-node (find-top-level-node)
         container (find-app-container)
@@ -180,7 +179,7 @@
     (go
       (while true
         (alt!
-          (:controls comms) ([v] (controls-handler v state-atom container))
+          (:controls comms) ([v] (controls-handler v state-atom container comms))
           (:nav comms) ([v] (nav-handler v state-atom history-imp))
           (:api comms) ([v] (api-handler v state-atom container))
           (:ws comms) ([v] (ws-handler v state-atom pusher-imp))
@@ -191,12 +190,12 @@
 
     (if-let [error-status (get-in state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
-      (put! (get-in state [:comms :nav]) [:error {:status error-status}])
+      (put! (:nav comms) [:error {:status error-status}])
       (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user state)]
       (analytics/track {:event-type :init-user
                         :current-state state})
-      (subscribe-to-user-channel user (get-in state [:comms :ws])))))
+      (subscribe-to-user-channel user (:ws comms)))))
 
 
 
