@@ -166,7 +166,7 @@
        (#{"not_running" "running" "queued" "scheduled"} (:lifecycle build))))
 
 (defn has-pull-requests? [build]
-  (not (empty? (:pull_request_urls build))))
+  (seq (:pull_request_urls build)))
 
 (defn can-merge? [build]
   (and (= "success" (:outcome build))
