@@ -148,8 +148,9 @@
 
 (def example-user-plans-piggieback (make-example-user-plans [example-piggieback-plan (example-plan :free)]))
 
-(defn state [{:keys [view user repo org state]}]
-  (merge {:current-user {:login (or user "test-user")}
+(defn state [{:keys [view user repo org state primary-email]}]
+  (merge {:current-user {:login (or user "test-user")
+                         :selected_email (or primary-email "email@test.com")}
           :navigation-point (or view :test-view)
           :navigation-data {:repo (or repo "test-view")
                             :org (or org "test-org")}}

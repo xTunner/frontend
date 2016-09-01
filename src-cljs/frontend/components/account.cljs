@@ -8,12 +8,13 @@
             [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
+            [frontend.models.user :as user]
             [frontend.notifications :as notifications]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -139,6 +140,7 @@
            (when (seq tokens)
              (om/build table/table
                        {:rows tokens
+                        :key-fn :token
                         :columns [{:header "Label"
                                    :cell-fn :label}
 
@@ -303,7 +305,7 @@
        [:select.form-control
         {:on-change #(let [email (-> % .-target .-value)]
                        (raise! owner [:preferences-updated {:selected_email email}]))
-         :value (:selected_email user)}
+         :value (user/primary-email user)}
         (for [email (:all_emails user)]
           [:option
            {:value email}
@@ -354,14 +356,15 @@
           "denied" [:div.section
                     "It looks like you've denied CircleCI access to send you web notifications.
                     Before you can change your web notification preferences please "
-                    [:a {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"}
+                    [:a {:href "https://circleci.com/docs/web-notifications/#turning-notifications-permissions-back-on"
+                         :target "_blank"}
                      "turn on permissions for your browser."]]
           "default" [:div.section
                      "You haven't given CircleCI access to notify you through the browser — "
                      [:a {:href "javascript:void(0)"
                           :on-click #(notifications/request-permission
                                        (fn [response]
-                                         (when (= response "granted") (raise! owner [:set-web-notifications {:enabled? true}]))))}
+                                         (when (= response "granted") (raise! owner [:set-web-notifications-permissions {:enabled? true :response response}]))))}
                       "click here to turn permissions on."]]
           nil)
         [:div.section
@@ -372,7 +375,7 @@
              {:name "web_notif_pref"
               :type "radio"
               :checked web-notifications-enabled?
-              :on-change #(raise! owner [:set-web-notifications {:enabled? true}])
+              :on-change #(raise! owner [:set-web-notifications-permissions {:enabled? true}])
               :disabled disabled?}]
             (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             [:span.label-contents " Show me notifications when a build finishes"]]]
@@ -382,7 +385,7 @@
              {:name "web_notif_pref"
               :type "radio"
               :checked (not web-notifications-enabled?)
-              :on-change #(raise! owner [:set-web-notifications {:enabled? false}])
+              :on-change #(raise! owner [:set-web-notifications-permissions {:enabled? false}])
               :disabled disabled?}]
             (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             [:span.label-contents " Don't show me notifications when a build finishes"]]]]]]
@@ -454,14 +457,14 @@
     (render [_]
       (let [user (get-in app state/user-path)
             projects (get-in app state/projects-path)
-            notifications-enabled? (get-in app state/web-notifications-enabled?-path)]
+            notifications-enabled? (get-in app state/web-notifications-enabled-path)]
         (html
          [:div#settings-notification
           [:legend "Notification Settings"]
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
-          (when (ld/feature-on? "web-notifications") (web-notifications owner notifications-enabled? (notifications/notifications-permission)))])))))
+          (web-notifications owner notifications-enabled? (notifications/notifications-permission))])))))
 
 (defn account [app owner]
   (reify
@@ -478,4 +481,4 @@
          [:div#account-settings
           [:div.row (om/build common/flashes (get-in app state/error-message-path))]
           [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled?-path]))]])))))
+           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled-path]))]])))))

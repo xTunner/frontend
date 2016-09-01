@@ -7,6 +7,8 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.vcs :as vcs]
+            [frontend.routes :as routes]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]])
   (:import [goog Uri]))
@@ -17,34 +19,35 @@
   (->> users
        (filter (fn [u] (and (:email u)
                             (:checked u))))
-       (map (fn [u] (select-keys u [:email :login :id])))
+       ;; select all of login and id (GitHub) and username and uuid (Bitbucket)
+       (map (fn [u] (select-keys u [:email :login :username :id :uuid])))
        vec))
 
 (defn invite-tile [user owner]
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [avatar_url email login index]} user]
+      (let [{:keys [email handle index]} user]
         (html
          [:li
           [:div.invite-gravatar
            [:img {:src (gh-utils/make-avatar-url user)}]]
           [:div.invite-profile
-           login
-           [:input {:on-change #(utils/edit-input owner (conj (state/invite-github-user-path index) :email) %)
+           handle
+           [:input {:on-change #(utils/edit-input owner (conj (state/build-invite-member-path index) :email) %)
                     :required true
                     :type "email"
                     :value email
-                    :id (str login "-email")}]
-           [:label.no-email {:for (str login "-email") :title "We could not retrieve this teammate's email address because it has been set as private."}
+                    :id (str handle "-email")}]
+           [:label.no-email {:for (str handle "-email") :title "We could not retrieve this teammate's email address because it has been set as private."}
             [:i.fa.fa-exclamation-circle]
             " Click to add an email address."]]
-          [:label.invite-select {:id (str login "-label")
-                                 :for (str login "-checkbox")}
+          [:label.invite-select {:id (str handle "-label")
+                                 :for (str handle "-checkbox")}
            [:input {:type "checkbox"
-                    :id (str login "-checkbox")
+                    :id (str handle "-checkbox")
                     :checked (boolean (:checked user))
-                    :on-change #(utils/toggle-input owner (conj (state/invite-github-user-path index) :checked) %)}]
+                    :on-change #(utils/toggle-input owner (conj (state/build-invite-member-path index) :checked) %)}]
            [:div.checked \uf046]
            [:div.unchecked \uf096]]])))))
 
@@ -68,11 +71,11 @@
           (forms/managed-button
            [:button.btn.btn-success (let [users-to-invite (invitees users)]
                                       {:data-success-text "Sent"
-                                       :on-click #(raise! owner [:invited-github-users
-                                                                 (merge {:invitees users-to-invite}
+                                       :on-click #(raise! owner [:invited-team-members
+                                                                 (merge {:invitees users-to-invite
+                                                                         :vcs_type (:vcs_type opts)}
                                                                         (if (:project-name opts)
-                                                                          {:project-name (:project-name opts)
-                                                                           :vcs-type (:vcs-type opts)}
+                                                                          {:project-name (:project-name opts)}
                                                                           {:org-name (:org-name opts)}))])})
 
             "Send Invites "
@@ -83,13 +86,12 @@
     om/IWillMount
     (will-mount [_]
       (let [project-name (:project-name opts)
-            vcs-type (:vcs-type opts)]
-        (raise! owner [:load-first-green-build-github-users {:vcs-type vcs-type
+            vcs_type (:vcs_type opts)]
+        (raise! owner [:load-first-green-build-github-users {:vcs_type vcs_type
                                                              :project-name project-name}])))
     om/IRender
     (render [_]
-      (let [project-name (:project-name opts)
-            users (remove :following (:github-users invite-data))
+      (let [users (remove :following (:org-members invite-data))
             dismiss-form (:dismiss-invite-form invite-data)]
         (html
          [:div.first-green.invite-form {:class (when (or (empty? users) dismiss-form)
@@ -110,35 +112,9 @@
     (render [_]
       (html
         [:li.side-item
-         [:a {:href (str "/invite-teammates/organization/" (:login org))}
+         [:a {:href (str "/invite-teammates/organization/"
+                         (vcs/long-to-short-vcs (:vcs_type org))
+                         "/" (:login org))}
           [:img {:src (gh-utils/make-avatar-url org :size 25)
                  :width 25 :height 25}]
           [:div.orgname (:login org)]]]))))
-
-(defn teammates-invites [data owner opts]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :invite-teammates-impression}))
-    om/IRender
-    (render [_]
-      (let [invite-data (:invite-data data)]
-        (html
-          [:div#invite-teammates
-           ; org bar on the left, borrowed from add projects
-           [:ul.side-list
-            (om/build-all side-item (filter :org (get-in data state/user-organizations-path)))]
-           ; invites box on the right
-           (if (:org invite-data)
-             [:div.first-green.invite-form
-              [:h3 "Invite your " (:org invite-data) " teammates"]
-              (om/build invites
-                        (remove :circle_member (:github-users invite-data))
-                        {:opts {:org-name (:org invite-data)}}) ]
-             [:div.org-invites
-              [:h3 "Invite your teammates"]
-              [:p "Select one of your organizations on the left to select teammates to invite.  Or send them this link:"]
-              (let [current-uri (Uri. js/location.href)
-                    root-uri (.resolve current-uri (Uri. "/"))]
-                [:p [:input.form-control {:value root-uri :type "text"}]])
-              [:p "We use GitHub permissions for every user, so if your teammates have access to your project on GitHub, they will automatically have access to the same project on Circle."]])])))))

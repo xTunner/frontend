@@ -9,8 +9,6 @@
 @border-width: 1px;
 
 .inner {
-  height: 100vh;
-
   .app-main {
     .flexy(column);
     overflow: auto;
@@ -26,8 +24,10 @@
 
 .aside-left-nav {
   width: @aside-nav-width;
-  background: @gray;
+  height: 100%;
+  background: @top-bar-color;
   overflow: visible;
+  // margin-top: @top-bar-height;
 
   // Because this div can include elements which stretch across the top and the
   // side of the page, it tends to cover the page. Therefore, we need to make it
@@ -53,6 +53,7 @@
   .tooltip {
     font-size: @baseFontSize;
     visibility: hidden;
+    min-width: 12em;
     .tooltip-inner {
       border-radius: (@em * 2);
       padding: (@em / 2) @em;   // BS RESET
@@ -433,7 +434,6 @@
   .flex(0 1 @tile);
   .flexy(center, center, column);
 
-  opacity: 0.8;
   background: transparent;
   white-space: nowrap;
   transition: (@aside-transition-speed / 2) ease-in-out;

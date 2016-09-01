@@ -3,14 +3,15 @@
             [frontend.components.common :as common]
             [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
-            [frontend.components.instrumentation :as instrumentation]
             [frontend.components.license :as license]
+            [frontend.components.pieces.top-banner :as top-banner]
             [frontend.components.statuspage :as statuspage]
             [frontend.components.svg :as svg]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan]
             [frontend.models.project :as project-model]
+            [frontend.notifications :as n]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils]
@@ -38,11 +39,13 @@
     (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
       (cond repo (when (:write-settings (get-in app state/project-scopes-path))
                    [:a.settings.project-settings
-                    {:href (routes/v1-project-settings-path navigation-data) }
+                    {:href (routes/v1-project-settings-path navigation-data)}
                     [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                     "Project Settings"])
             org [:a.settings.org-settings
-                 {:href (routes/v1-org-settings-path navigation-data)}
+                 {:href (routes/v1-org-settings-path navigation-data)
+                  :on-click #((om/get-shared owner :track-event) {:event-type :header-org-settings-link-clicked
+                                                                  :properties {:org org}})}
                  [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                  "Organization Settings"]
             :else nil))))
@@ -61,65 +64,24 @@
             project-id (project-model/id project)
             vcs-url (:vcs_url project)]
         (html
-          [:div.head-user
-           [:ol.breadcrumb (crumbs/crumbs crumbs-data)]
+         [:div.head-user
+          ;; Avoids a React warning for not giving each `li` a key. Correctly,
+          ;; we should render the `li`s here directly, with a `for`, and give
+          ;; each one a `:key` here. This gets rid of the warning for now and
+          ;; avoids re-architecting the crumbs rendering.
+          (apply vector :ol.breadcrumb (crumbs/crumbs crumbs-data))
+          [:div.actions
+           (settings-link app owner)
+           actions
            (when (show-follow-project-button? app)
              (forms/managed-button
-              [:button#follow-project-button
-               {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+              [:button#follow-project-button.btn.btn-primary
+               {:on-click #(do
+                             (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                             ((om/get-shared owner :track-event) {:event-type :header-follow-project-clicked
+                                                                  :properties {:vcs-url vcs-url}}))
                 :data-spinner true}
-               "follow the " (vcs-url/repo-name vcs-url) " project"]))
-           (settings-link app owner)
-           actions])))))
-
-(defn head-admin [app owner]
-  (reify
-    om/IDisplayName (display-name [_] "Admin Header")
-    om/IRender
-    (render [_]
-      (let [open? (get-in app state/show-admin-panel-path)
-            expanded? (get-in app state/show-instrumentation-line-items-path)
-            inspector? (get-in app state/show-inspector-path)
-            user-session-settings (get-in app [:render-context :user_session_settings])
-            env (config/env)
-            local-storage-logging-enabled? (get-in app state/logging-enabled-path)]
-        (html
-          [:div
-           [:div.environment {:class (str "env-" env)
-                              :role "button"
-                              :on-click #(raise! owner [:show-admin-panel-toggled])}
-            env]
-           [:div.head-admin {:class (concat (when open? ["open"])
-                                            (when expanded? ["expanded"]))}
-            [:div.admin-tools
-
-
-             [:div.options
-              [:a {:href "/admin/switch"} "switch "]
-              [:a {:href "/admin/build-state"} "build state "]
-              [:a {:href "/admin/recent-builds"} "builds "]
-              [:a {:href "/admin/deployments"} "deploys "]
-              (let [use-local-assets (get user-session-settings :use_local_assets)]
-                [:a {:on-click #(raise! owner [:set-user-session-setting {:setting :use-local-assets
-                                                                          :value (not use-local-assets)}])}
-                 "local assets " (if use-local-assets "off " "on ")])
-              (let [current-build-id (get user-session-settings :om_build_id "dev")]
-                (for [build-id (remove (partial = current-build-id) ["dev" "whitespace" "production"])]
-                  [:a.menu-item
-                   {:on-click #(raise! owner [:set-user-session-setting {:setting :om-build-id
-                                                                         :value build-id}])}
-                   [:span (str "om " build-id " ")]]))
-              [:a {:on-click #(raise! owner [:show-inspector-toggled])}
-               (if inspector? "inspector off " "inspector on ")]
-              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]
-              [:a {:on-click #(raise! owner [:logging-enabled-clicked])}
-               (str (if local-storage-logging-enabled?
-                      "turn OFF "
-                      "turn ON ")
-                    "logging-enabled?")]]
-             (om/build instrumentation/summary (:instrumentation app))]
-            (when (and open? expanded?)
-              (om/build instrumentation/line-items (:instrumentation app)))]])))))
+               "follow the " (vcs-url/repo-name vcs-url) " project"]))]])))))
 
 (defn maybe-active [current goal]
   {:class (when (= current goal)
@@ -346,19 +308,16 @@
     om/IDisplayName (display-name [_] "Inner Header")
     om/IRender
     (render [_]
-      (let [admin? (if (config/enterprise?)
-                     (get-in app [:current-user :dev-admin])
-                     (get-in app [:current-user :admin]))
-            logged-out? (not (get-in app state/user-path))
+      (let [logged-out? (not (get-in app state/user-path))
             license (get-in app state/license-path)
             project (get-in app state/project-path)
-            plan (get-in app state/project-plan-path)]
+            plan (get-in app state/project-plan-path)
+            show-web-notif-banner? (not (get-in app state/remove-web-notification-banner-path))
+            show-web-notif-banner-follow-up? (not (get-in app state/remove-web-notification-confirmation-banner-path))]
         (html
           [:header.main-head (when logged-out? {:class "guest"})
            (when (license/show-banner? license)
              (om/build license/license-banner license))
-           (when admin?
-             (om/build head-admin app))
            (when (config/statuspage-header-enabled?)
              (om/build statuspage/statuspage app))
            (when logged-out?
@@ -379,6 +338,41 @@
                       (feature/enabled? :offer-linux-trial)
                       (not (get-in app state/dismissed-trial-offer-banner)))
              (om/build trial-offer-banner app))
+           (when (:build (get-in app state/build-data-path))
+             (cond
+               (and (= (n/notifications-permission) "default")
+                    show-web-notif-banner?)
+               (om/build top-banner/banner
+                         {:banner-type "warning"
+                          :content [:div
+                                    [:span.banner-alert-icon
+                                     [:img {:src (common/icon-path "Info-Info")}]]
+                                    [:b "  New: "] "You can now get web notifications when your build is done! "
+                                    [:a
+                                     {:href "#"
+                                      :on-click #(n/request-permission
+                                                   (fn [response]
+                                                     (raise! owner [:set-web-notifications-permissions {:enabled? (= response "granted")
+                                                                                                        :response response}])))}
+                                     "Click here to activate web notifications."]]
+                          :impression-event-type :web-notifications-permissions-banner-impression
+                          :dismiss-fn #(raise! owner [:dismiss-web-notifications-permissions-banner {:response (n/notifications-permission)}])})
+               (and (not show-web-notif-banner?)
+                    show-web-notif-banner-follow-up?)
+               (om/build top-banner/banner
+                         (let [response (n/notifications-permission)]
+                           {:banner-type (case (n/notifications-permission)
+                                           "default" "danger"
+                                           "denied" "danger"
+                                           "granted" "success")
+                            :content [:div (let [not-granted-message "If you change your mind you can go to this link to turn web notifications on: "]
+                                             (case (n/notifications-permission)
+                                               "default" not-granted-message
+                                               "denied"  not-granted-message
+                                               "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
+                                      [:a {:on-click #(raise! owner [:web-notifications-confirmation-account-settings-clicked {:response response}])}
+                                       "Account Notifications"]]
+                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
            (when (seq (get-in app state/crumbs-path))
              (om/build head-user params))])))))
 

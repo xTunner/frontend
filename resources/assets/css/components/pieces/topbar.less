@@ -1,0 +1,83 @@
+.ns("frontend.components.pieces.topbar", {
+  .ui("topbar", {
+    .flexy(row, space-between);
+    background-color: @top-bar-color;
+    background-color: @grayDark;
+    height: @top-bar-height;
+
+    > .logomark {
+      .flexy(center, center);
+      .icon-style(@white, (@em * 2));
+      width: 70px;
+      height: @top-bar-height;
+
+      > i {
+        opacity: 1;
+      }
+    }
+
+    > .nav-items {
+      .flexy;
+
+      > li {
+        .flexy;
+
+        &:hover {
+          background-color: @gray;
+        }
+
+        > button.dropdown-toggle {
+          border: none;
+          background: none;
+        }
+
+        > a, > button.dropdown-toggle {
+          display: block;
+          padding: 20px;
+          font-size: @fontSizeSmall;
+          font-weight: 400;
+          line-height: 30px;
+          color: @white;
+          text-decoration: none;
+
+          > i {
+            color: @white;
+          }
+
+          // TODO -ac Note, this should become its own component, since we
+          // reuse it - *a lot*
+          > .gravatar {
+            min-width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid @white;
+          }
+        }
+
+        > .dropdown-menu {
+          // Bootstrap Overrides
+          margin-top: -4px;
+          padding: 8px 0;
+          border: none;
+          margin-right: 1em;
+
+          > li > a {
+            padding: 6px 20px;
+            white-space: pre-wrap;
+          }
+        }
+
+        &.user-menu {
+          margin-left: 9px;
+          padding-left: 9px;
+          border-left: 2px solid fade(@gray, 50%);
+
+          @media (max-width: @screen-sm-max) {
+            padding-left: 0;
+            border-left: none;
+          }
+        }
+      }
+    }
+  });
+});

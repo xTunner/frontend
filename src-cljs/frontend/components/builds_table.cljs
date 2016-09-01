@@ -54,12 +54,15 @@
 (defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         raise-build-action! (fn [event] (raise! owner [event (build-model/build-args build)]))
+        status-words (build-model/status-words build)
         should-show-rebuild? (#{"timedout" "failed"} (:outcome build))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
       [:a {:href url
-           :title (build-model/status-words build)}
+           :title status-words
+           :on-click #((om/get-shared owner :track-event) {:event-type :build-row-status-clicked
+                                                           :properties {:status-words status-words}})}
        (build-status-badge build)]
 
 
@@ -71,14 +74,18 @@
           {:text "cancel"
            :loading-text "Cancelling..."
            :icon "Status-Canceled"
-           :on-click #(raise-build-action! :cancel-build-clicked)})
+           :on-click #(do
+                        (raise-build-action! :cancel-build-clicked)
+                        ((om/get-shared owner :track-event) {:event-type :build-row-cancel-build-clicked}))})
 
         should-show-rebuild?
         (build-action
           {:text "rebuild"
            :loading-text "Rebuilding..."
            :icon "Rebuild"
-           :on-click #(raise-build-action! :retry-build-clicked)})
+           :on-click #(do
+                        (raise-build-action! :retry-build-clicked)
+                        ((om/get-shared owner :track-event) {:event-type :build-row-rebuild-clicked}))})
 
         :else nil)]
 
@@ -146,7 +153,7 @@
             ", "
             (for [url urls]
               [:a {:href url
-                   :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
+                   :on-click #((om/get-shared owner :track-event) {:event-type :build-row-pr-link-clicked
                                                                    :properties {:repo (:reponame build)
                                                                                 :org (:username build)}})}
                "#"
@@ -158,7 +165,7 @@
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
                 :href (build-model/commit-url build)
-                :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
+                :on-click #((om/get-shared owner :track-event) {:event-type :build-row-revision-link-clicked
                                                                 :properties {:repo (:reponame build)
                                                                              :org (:username build)}})}
             (build-model/github-revision build)])]]]]))

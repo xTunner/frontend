@@ -26,14 +26,20 @@ a {
 .main-head {
   .flex(0 0 auto);
   .flexy(column);
+  // margin-top: @top-bar-height;
+
 
   .head-user {
     .flexy(center, space-between);
     height: @tile;
     box-sizing: border-box;
     border-bottom: solid 1px @grayLighter;
-    height: 70px;
-    padding: 15px;
+    height: @top-bar-height;
+    padding: 20px;
+
+    > .actions {
+      .flexy;
+    }
 
     @media (max-width: @screen-sm-max) {
       .breadcrumb {
@@ -47,7 +53,6 @@ a {
     .settings {
       .flexy(center, center);
       height: initial;
-      padding: 10px 16px;
 
       color: @blueDark;
 
@@ -79,6 +84,11 @@ a {
       }
     }
   }
+}
+
+// TODO -ac Remove this when you take out the ff, and add it back into .main-head rule
+.top-bar ~ .main-head {
+    margin-top: @top-bar-height;
 }
 
 .main-body {
@@ -208,7 +218,7 @@ button [spinner], button [data-spinner]{
   margin-bottom: @card-padding;
 
   background: white;
-  box-shadow: 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.15);
 
   hr {
     margin: 10px 0;

@@ -2,6 +2,7 @@
   (:require [cljs.test :refer-macros [is deftest testing use-fixtures]]
             [schema.test]
             [frontend.utils :refer [clj-keys-with-dashes->js-keys-with-underscores]]
+            [frontend.models.user :as user]
             [frontend.test-utils :as test-utils]
             [frontend.analytics.segment :as segment]))
 
@@ -73,20 +74,23 @@
       (is (= (js->clj outbound-segment-props) (-> calls first :args second js->clj))))))
 
 (deftest identify-works
-  (testing "identify requires event-data consisting of a id and user-properties"
-    (test-utils/fails-schema-validation #(segment/identify "id"))
-    (test-utils/fails-schema-validation #(segment/identify {:id "id"
-                                                            :user-properties {}}))
-    (test-utils/fails-schema-validation #(segment/identify {:id 1
-                                                            :user-properties mock-user-properties})))
-  (testing "identify does the correct data manipulation before sending data to segment"
-    (let [id "id"
-          calls (segment/identify {:id id
-                                   :user-properties mock-user-properties})]
-      (is (= 1 (count calls)))
-      (is (= "identify" (-> calls first :fn)))
-      (is (= id (-> calls first :args first)))
-      (is (= (js->clj outbound-user-props) (-> calls first :args second js->clj))))))
+  ;; segment/identify takes a :primary-email, so add that to the mock-user-properties and outbound-user-props
+  (let [mock-user-properties (merge mock-user-properties {:primary-email "email"})
+        outbound-user-props (clj-keys-with-dashes->js-keys-with-underscores mock-user-properties)]
+    (testing "identify requires event-data consisting of a id and user-properties"
+      (test-utils/fails-schema-validation #(segment/identify "id"))
+      (test-utils/fails-schema-validation #(segment/identify {:id "id"
+                                                              :user-properties {}}))
+      (test-utils/fails-schema-validation #(segment/identify {:id 1
+                                                              :user-properties mock-user-properties})))
+    (testing "identify does the correct data manipulation before sending data to segment"
+      (let [id "id"
+            calls (segment/identify {:id id
+                                     :user-properties mock-user-properties})]
+        (is (= 1 (count calls)))
+        (is (= "identify" (-> calls first :fn)))
+        (is (= id (-> calls first :args first)))
+        (is (= (js->clj outbound-user-props) (-> calls first :args second js->clj)))))))
 
 (deftest track-external-click-works
   (let [logged-out-data (merge {:user nil}

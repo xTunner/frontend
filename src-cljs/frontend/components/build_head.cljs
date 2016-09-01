@@ -6,6 +6,7 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise? github-endpoint]]
@@ -616,7 +617,7 @@
         [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
                                    :title commit
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked})}
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :build-head-revision-link-clicked})}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -684,63 +685,65 @@
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)
             build-params (:build_parameters build)]
-        (html
-         [:div.sub-head
-          [:div.sub-head-top
-           (let [tabs (cond-> []
-                        ;; tests don't get saved until the end of the build (TODO: stream the tests!)
-                        (build-model/finished? build)
-                        (conj {:name :tests
-                               :label (str
-                                       "Test Summary"
-                                       (when-let [fail-count (some->> build-data
-                                                                      :tests-data
-                                                                      :tests
-                                                                      (filter #(contains? #{"failure" "error"} (:result %)))
-                                                                      count)]
-                                         (when (not= 0 fail-count)
-                                           (str " (" fail-count ")"))))})
+        (card/tabbed
+         {:tab-row
+          (om/build tabs/tab-row
+                    {:tabs (cond-> []
+                             ;; tests don't get saved until the end of the build (TODO: stream the tests!)
+                             (build-model/finished? build)
+                             (conj {:name :tests
+                                    :label (str
+                                            "Test Summary"
+                                            (when-let [fail-count (some->> build-data
+                                                                           :tests-data
+                                                                           :tests
+                                                                           (filter #(contains? #{"failure" "error"} (:result %)))
+                                                                           count)]
+                                              (when (not= 0 fail-count)
+                                                (str " (" fail-count ")"))))})
 
-                        (has-scope :read-settings data)
-                        (conj {:name :usage-queue
-                               :label (html
-                                       (list
-                                        "Queue"
-                                        (when (:usage_queued_at build)
-                                          [:span " ("
-                                           (om/build common/updating-duration {:start (:usage_queued_at build)
-                                                                               :stop (or (:start_time build) (:stop_time build))})
-                                           ")"])))})
+                             (has-scope :read-settings data)
+                             (conj {:name :usage-queue
+                                    :label (html
+                                            (list
+                                             "Queue"
+                                             (when (:usage_queued_at build)
+                                               [:span " ("
+                                                (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                                                    :stop (or (:start_time build) (:stop_time build))})
+                                                ")"])))})
 
-                        (and (has-scope :trigger-builds data)
-                             (:ssh-available? data)
-                             (not (:ssh_disabled build)))
-                        (conj {:name :ssh-info :label "Debug via SSH"})
+                             (and (has-scope :trigger-builds data)
+                                  (:ssh-available? data)
+                                  (not (:ssh_disabled build)))
+                             (conj {:name :ssh-info :label "Debug via SSH"})
 
-                        ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
-                        (and logged-in? (build-model/finished? build))
-                        (conj {:name :artifacts :label "Artifacts"})
+                             ;; artifacts don't get uploaded until the end of the build (TODO: stream artifacts!)
+                             (and logged-in? (build-model/finished? build))
+                             (conj {:name :artifacts :label "Artifacts"})
 
-                        true
-                        (conj {:name :config
-                               :label (str "circle.yml"
-                                           (when-let [errors (-> build build-model/config-errors)]
-                                             (gstring/format " (%s)" (count errors))))})
+                             true
+                             (conj {:name :config
+                                    :label (str "circle.yml"
+                                                (when-let [errors (-> build build-model/config-errors)]
+                                                  (gstring/format " (%s)" (count errors))))})
 
-                        (build-model/finished? build)
-                        (conj {:name :build-timing :label "Build Timing"})
+                             (build-model/finished? build)
+                             (conj {:name :build-timing :label "Build Timing"})
 
-                        (seq build-params)
-                        (conj {:name :build-parameters :label "Build Parameters"}))]
-             (om/build tabs/tab-row {:tabs tabs
-                                     :selected-tab-name selected-tab-name
-                                     :on-tab-click #(navigate! owner (routes/v1-build-path
-                                                                      (vcs-url/vcs-type (:vcs_url build))
-                                                                      (:username build)
-                                                                      (:reponame build)
-                                                                      (:build_num build)
-                                                                      (name %)))}))]
-
+                             (seq build-params)
+                             (conj {:name :build-parameters :label "Build Parameters"}))
+                     :selected-tab-name selected-tab-name
+                     :on-tab-click #(do
+                                      (navigate! owner (routes/v1-build-path
+                                                        (vcs-url/vcs-type (:vcs_url build))
+                                                        (:username build)
+                                                        (:reponame build)
+                                                        (:build_num build)
+                                                        (name %)))
+                                      ((om/get-shared owner :track-event) {:event-type :build-page-tab-clicked
+                                                                           :properties {:selected-tab-name selected-tab-name}}))})}
+         (html
           [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name
 
@@ -767,7 +770,7 @@
              :ssh-info (om/build build-ssh {:build build :user user})
 
              ;; avoid errors if a nonexistent tab is typed in the URL
-             nil)]])))))
+             nil)]))))))
 
 (defn build-canceler [canceler github-endpoint]
   [:span.summary-label
@@ -789,7 +792,7 @@
      ", "
      (for [url urls]
        [:a {:href url
-            :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
+            :on-click #((om/get-shared owner :track-event) {:event-type :build-head-pr-link-clicked})}
         "#"
         (gh-utils/pull-request-number url)]))]])
 
@@ -894,7 +897,7 @@
                [:div.summary-item
                 [:span.summary-label "Parallelism: "]
                 [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :build-head-parallelism-clicked
                                                                                            :properties {:repo (project-model/repo-name project)
                                                                                                         :org (project-model/org-name project)}})
                                            :href (build-model/path-for-parallelism build)}

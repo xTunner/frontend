@@ -499,36 +499,6 @@
     }
   }
 
-  // SSH Keys Page
-  .sshkeys-page {
-    table {
-      margin: 2em 0;
-      &:empty {
-        display: none;
-      }
-      th {
-        text-align: left;
-        &:last-child {
-          width: 1%;
-        }
-      }
-      td {
-        vertical-align: middle;
-      }
-    }
-
-    input {
-      &[type="submit"] {
-        .circleButton();
-        display: block;
-      }
-    }
-  }
-
-  .sshkeys-inner {
-    margin: 2em 0;
-  }
-
   // Checkout keys page
   .checkout-page {
     .btn {
@@ -776,85 +746,18 @@
   }
 }
 
-[data-component="frontend.components.project-settings/p12-upload-form"] {
-  .label {
-    padding: 0px;
-    margin-bottom: 5px;
-    font-size: @fontSizeSmaller;
-    color: @gray;
-  }
-
-  .text-input {
-    width: 100%;
-    height: 30px;
-    border: 1px solid @blueLight;
-    font-size: @fontSizeSmaller;
-    color: @gray;
-    margin-bottom: 25px;
-    padding-left: 10px;
-
-    &:focus {
-      border: 1px solid @blueLightest;
-      box-shadow: 0 0 4px @blueLightest;
-      outline: none;
-    }
-  }
-
-  .drag-and-drop-area {
-    width: 100%;
-    height: 90px;
-    padding-top: 15px;
-    margin-bottom: 100px;
-    border: 1px dashed @blueLight;
-    text-align: center;
-  }
-
-  .dragged-over {
-    border: 1px dashed @blueLightest;
-    box-shadow: 0 0 4px @blueLightest;
-    outline: none;
-  }
-
-  .hidden-p12-file-input {
-    display: none;
-  }
-
-  .p12-file-input {
-    min-width: 160px;
-    min-height: 30px;
-    margin-top: 12px;
-    padding-top: 3px;
-    padding-bottom: 3px;
-    padding-right: 15px;
-    color: @gray;
-    background: @grayLightest;
-    border: 1px solid @button-border;
-    border-radius: 3px;
-    font-weight: 300;
-    cursor: pointer;
-    text-align: center;
-
-    &:hover {
-      background: @whiten;
-    }
-  }
-
-  .buttons {
-    margin-top: 10px;
-    text-align: right;
-  }
-}
-
 .upload-p12-button {
-  min-width: 160px;
+  min-width: 155px;
   min-height: 35px;
   color: @white;
   background: @blue;
-  border: 1px solid @button-border;
+  border: 1px solid fade(@black, 10%); // or #27a0b6
   border-radius: 3px;
+  padding-top: 2px;
 
   &:hover {
     background: @blueDark;
+    border: 1px solid fade(@black, 10%); // or #1d8494
   }
 
   &:disabled {
@@ -862,6 +765,7 @@
     color: @grayLight;
     text-shadow: 0 1px 0 @white;
     border: 1px solid @grayLighter;
+    padding-top: 4px;
   }
 }
 

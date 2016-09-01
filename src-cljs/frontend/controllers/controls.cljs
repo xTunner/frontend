@@ -149,6 +149,17 @@
   [target message value state]
   (assoc-in state state/show-all-branches-path value))
 
+(defmethod post-control-event! :show-all-branches-toggled
+  [target message value previous-state current-state]
+  (let [element-state (fn [state]
+                        (condp = (get-in state state/show-all-branches-path)
+                          true "All"
+                          false "Mine"))]
+  (analytics/track {:event-type :show-all-branches-toggled
+                    :current-state current-state
+                    :properties {:current-state (element-state current-state)
+                                 :previous-state (element-state previous-state)}})))
+
 (defmethod control-event :expand-repo-toggled
   [target message {:keys [repo]} state]
   (update-in state state/expanded-repos-path (fn [expanded-repos]
@@ -157,18 +168,38 @@
                                                   conj)
                                                 expanded-repos repo))))
 
+(defmethod post-control-event! :expand-repo-toggled
+  [target message {:keys [repo]} previous-state current-state]
+  (let [expanded-state (fn [state repo]
+                         (condp = (-> state
+                                      (get-in state/expanded-repos-path)
+                                      (contains? repo))
+                           true "expanded"
+                           false "unexpanded"))]
+    (analytics/track {:event-type :expand-repo-toggled
+                      :current-state current-state
+                      :properties {:previous-state (expanded-state previous-state repo)
+                                   :current-state (expanded-state current-state repo)}})))
+
 (defmethod control-event :sort-branches-toggled
   [target message value state]
   (assoc-in state state/sort-branches-by-recency-path value))
+
+(defmethod post-control-event! :sort-branches-toggled
+  [target message value previous-state current-state]
+  (let [element-state (fn [state]
+                        (condp = (get-in state state/sort-branches-by-recency-path)
+                          true "Recent"
+                          false "By Repo"))]
+  (analytics/track {:event-type :sort-branches-toggled
+                    :current-state current-state
+                    :properties {:current-state (element-state current-state)
+                                 :previous-state (element-state previous-state)}})))
 
 (defmethod control-event :collapse-branches-toggled
   [target message {:keys [collapse-group-id]} state]
   ;; Lets us store this in localstorage without leaking info about the user
   (update-in state (state/project-branches-collapsed-path collapse-group-id) not))
-
-(defmethod control-event :collapse-build-diagnostics-toggled
-  [target message {:keys [project-id-hash]} state]
-  (update-in state (state/project-build-diagnostics-collapsed-path project-id-hash) not))
 
 (defmethod control-event :show-admin-panel-toggled
   [target message _ state]
@@ -291,7 +322,11 @@
                                :project-name (vcs-url/project-name vcs-url)
                                :old-container-id previous-container-id
                                :new-container-id container-id}
-                              (get-in current-state [:comms :api]))))))
+                              (get-in current-state [:comms :api])))
+      (analytics/track {:event-type :container-selected
+                        :current-state current-state
+                        :properties {:old-container-id previous-container-id
+                                     :new-container-id container-id}}))))
 
 (defmethod control-event :container-paging-offset-changed
   [target message {:keys [paging-offset]} state]
@@ -312,7 +347,10 @@
     (if-not (and selected-container-in-containers?
                  (seq containers))
       (put! controls-ch [:container-selected {:container-id (:index (first containers))
-                                              :animate? true}]))))
+                                              :animate? true}])))
+  (analytics/track {:event-type :container-filter-changed
+                    :current-state current-state
+                    :properties {:new-filter new-filter}}))
 
 (defmethod control-event :action-log-output-toggled
   [target message {:keys [index step value]} state]
@@ -390,24 +428,31 @@
 
 (defmethod control-event :invite-selected-all
   [_ _ _ state]
-  (update-in state state/invite-github-users-path (fn [users]
-                                                    (vec (map #(assoc % :checked true) users)))))
+  (update-in state
+             state/build-invite-members-path
+             (fn [users]
+               (mapv #(if (utils/valid-email? (:email %))
+                        (assoc % :checked true)
+                        %)
+                     users))))
 
 (defmethod post-control-event! :invite-selected-all
   [_ _ _ _ current-state]
-  (let [teammates (get-in current-state state/invite-github-users-path)]
+  (let [teammates (get-in current-state state/build-invite-members-path)]
     (analytics/track {:event-type :invite-teammates-select-all-clicked
                       :current-state current-state
                       :properties {:teammate-count (count teammates)}})))
 
 (defmethod control-event :invite-selected-none
   [_ _ _ state]
-  (update-in state state/invite-github-users-path (fn [users]
-                                                    (vec (map #(assoc % :checked false) users)))))
+  (update-in state
+             state/build-invite-members-path
+             (fn [users]
+               (vec (map #(assoc % :checked false) users)))))
 
 (defmethod post-control-event! :invite-selected-none
   [_ _ _ _ current-state]
-  (let [teammates (get-in current-state state/invite-github-users-path)]
+  (let [teammates (get-in current-state state/build-invite-members-path)]
     (analytics/track {:event-type :invite-teammates-select-none-clicked
                       :current-state current-state
                       :properties {:teammate-count (count teammates)}})))
@@ -524,7 +569,10 @@
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state]
   (toggle-project current-state vcs-url {:project-id project-id}
-                  :follow-project api-path/project-follow))
+                  :follow-project api-path/project-follow)
+  (analytics/track {:event-type :project-followed
+                    :current-state current-state
+                    :properties {:vcs-url vcs-url}}))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -602,7 +650,7 @@
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :created-env-var
-  [target message {:keys [project-id]} previous-state current-state]
+  [target message {:keys [project-id on-success]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
@@ -612,7 +660,8 @@
                  api-ch
                  :params {:name (get-in current-state (conj state/inputs-path :new-env-var-name))
                           :value (get-in current-state (conj state/inputs-path :new-env-var-value))}
-                 :context {:project-id project-id})))
+                 :context {:project-id project-id
+                           :on-success on-success})))
 
 
 (defmethod post-control-event! :deleted-env-var
@@ -732,6 +781,14 @@
   [_ _ {:keys [org]} state]
   (assoc-in state state/selected-transfer-org-path org))
 
+(defmethod control-event :set-project-api-token-scope
+  [_ _ {:keys [scope]} state]
+  (assoc-in state
+            (conj state/project-data-path
+                  :new-api-token
+                  :scope)
+            scope))
+
 (defmethod post-control-event! :saved-project-settings
   [target message {:keys [project-id merge-paths]} previous-state current-state]
   (let [uuid frontend.async/*uuid*]
@@ -751,7 +808,7 @@
 
 
 (defmethod post-control-event! :saved-ssh-key
-  [target message {:keys [project-id ssh-key]} previous-state current-state]
+  [target message {:keys [project-id ssh-key on-success]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         vcs-type (vcs-url/vcs-type project-id)
         api-ch (get-in current-state [:comms :api])]
@@ -760,7 +817,8 @@
                  :save-ssh-key
                  api-ch
                  :params ssh-key
-                 :context {:project-id project-id})))
+                 :context {:project-id project-id
+                           :on-success on-success})))
 
 
 (defmethod post-control-event! :deleted-ssh-key
@@ -800,16 +858,19 @@
 
 
 (defmethod post-control-event! :saved-project-api-token
-  [target message {:keys [project-id api-token]} previous-state current-state]
+  [target message {:keys [project-id api-token on-success]} previous-state current-state]
   (let [project-name (vcs-url/project-name project-id)
         vcs-type (vcs-url/vcs-type project-id)
-        api-ch (get-in current-state [:comms :api])]
+        api-ch (get-in current-state [:comms :api])
+        uuid frontend.async/*uuid*]
     (button-ajax :post
                  (api-path/project-tokens vcs-type project-name)
                  :save-project-api-token
                  api-ch
                  :params api-token
-                 :context {:project-id project-id})))
+                 :context {:project-id project-id
+                           :on-success on-success
+                           :uuid uuid})))
 
 
 (defmethod post-control-event! :deleted-project-api-token
@@ -856,36 +917,36 @@
 
 
 (defmethod post-control-event! :load-first-green-build-github-users
-  [target message {:keys [vcs-type project-name]} previous-state current-state]
-  (if (or (nil? vcs-type) (= "github" vcs-type))
+  [target message {:keys [vcs_type project-name]} previous-state current-state]
+  (if (or (nil? vcs_type) (= "github" vcs_type))
     (ajax/ajax :get
-               (api-path/project-users vcs-type project-name)
+               (api-path/project-users vcs_type project-name)
                :first-green-build-github-users
                (get-in current-state [:comms :api])
-               :context {:project-name project-name})))
+               :context {:project-name project-name
+                         :vcs-type vcs_type})))
 
-(defmethod post-control-event! :invited-github-users
-  [target message {:keys [vcs-type project-name org-name invitees]} previous-state current-state]
-  (if (or (nil? vcs-type) (= "github" vcs-type))
-    (let [project-vcs-type (or vcs-type "github")
-          org-vcs-type "github"
-          context (if project-name
-                    ;; TODO: non-hackish way to indicate the type of invite
-                    {:project project-name :first_green_build true}
-                    {:org org-name})]
-      (button-ajax :post
-                   (if project-name
-                     (api-path/project-users-invite project-vcs-type project-name)
-                     (api-path/organization-invite org-vcs-type org-name))
-                   :invite-github-users
-                   (get-in current-state [:comms :api])
-                   :context context
-                   :params invitees
-                   :events {:success #(analytics/track {:event-type :teammates-invited
-                                                        :current-state current-state
-                                                        :properties {:vcs-type :github
-                                                                     :invitees invitees
-                                                                     :invitee-count (count invitees)}})}))))
+(defmethod post-control-event! :invited-team-members
+  [target message {:keys [vcs_type project-name org-name invitees]} previous-state current-state]
+  (let [project-vcs-type (or vcs_type "github")
+        org-vcs-type (or vcs_type "github")
+        context (if project-name
+                  ;; TODO: non-hackish way to indicate the type of invite
+                  {:project project-name :first_green_build true}
+                  {:org org-name})]
+    (button-ajax :post
+                 (if project-name
+                   (api-path/project-users-invite project-vcs-type project-name)
+                   (api-path/organization-invite org-vcs-type org-name))
+                 :invite-team-members
+                 (get-in current-state [:comms :api])
+                 :context context
+                 :params invitees
+                 :events {:success #(analytics/track {:event-type :teammates-invited
+                                                      :current-state current-state
+                                                      :properties {:vcs-type vcs_type
+                                                                   :invitees invitees
+                                                                   :invitee-count (count invitees)}})})))
 
 (defmethod post-control-event! :report-build-clicked
   [target message {:keys [build-url]} previous-state current-state]
@@ -901,7 +962,12 @@
                  (api-path/build-cancel vcs-type org-name repo-name build-num)
                  :cancel-build
                  api-ch
-                 :context {:build-id build-id})))
+                 :context {:build-id build-id})
+    (analytics/track {:event-type :build-canceled
+                      :current-state current-state
+                      :properties {:vcs-type vcs-type
+                                   :org-name org-name
+                                   :repo-name repo-name}})))
 
 (defmethod post-control-event! :enabled-project
   [target message {:keys [vcs-url project-name project-id]} previous-state current-state]
@@ -910,7 +976,9 @@
                :enable-project
                (get-in current-state [:comms :api])
                :context {:project-name project-name
-                         :project-id project-id}))
+                         :project-id project-id})
+  (analytics/track {:event-type :project-enabled
+                    :current-state current-state}))
 
 (defmethod post-control-event! :new-plan-clicked
   [target message {:keys [containers price description linux]} previous-state current-state]
@@ -1302,7 +1370,7 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :cancel-plan-clicked
-  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes]} previous-state current-state]
+  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes plan-type] :or {plan-type :paid}} previous-state current-state]
   (let [uuid frontend.async/*uuid*
         api-ch (get-in current-state [:comms :api])
         nav-ch (get-in current-state [:comms :nav])
@@ -1313,15 +1381,14 @@
                            (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                            vcs_type
                                            org-name)
-                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes}))]
+                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes :plan-type plan-type}))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
-         (let [plan-api-result (<! (ajax/managed-ajax
-                                    :get
-                                    (gstring/format "/api/v1.1/organization/%s/%s/plan"
-                                                    vcs_type
-                                                    org-name)))]
-           (put! api-ch [:org-plan (:status plan-api-result) (assoc plan-api-result :context {:org-name org-name})])
+         (do
+           (put! api-ch [:org-plan
+                         (:status api-result)
+                         (assoc api-result :context {:org-name org-name
+                                                     :vcs-type vcs_type})])
            (put! nav-ch [:navigate! {:path (routes/v1-org-settings {:org org-name
                                                                     :vcs_type vcs_type})
                                      :replace-token? true}])))
@@ -1526,6 +1593,44 @@
   [_ _ _ state]
   (assoc-in state state/dismissed-trial-update-banner true))
 
-(defmethod control-event :set-web-notifications
+(defmethod control-event :dismiss-web-notifications-permissions-banner
+  [_ _ _ state]
+  (-> state
+      (assoc-in state/remove-web-notification-banner-path true)
+      (assoc-in state/remove-web-notification-confirmation-banner-path true)))
+
+(defmethod post-control-event! :dismiss-web-notifications-permissions-banner
+  [_ _ {:keys [response]} _ current-state]
+  (analytics/track {:event-type :web-notifications-permissions-banner-dismissed
+                    :current-state current-state
+                    :properties {:response response}}))
+
+(defmethod control-event :set-web-notifications-permissions
   [_ _ {:keys [enabled?]} state]
-  (assoc-in state state/web-notifications-enabled?-path enabled?))
+  (-> state
+      (assoc-in state/remove-web-notification-banner-path true)
+      (assoc-in state/web-notifications-enabled-path enabled?)))
+
+(defmethod post-control-event! :set-web-notifications-permissions
+  [_ _ {:keys [enabled? response]} _ current-state]
+  (analytics/track {:event-type :web-notifications-permissions-set
+                    :current-state current-state
+                    :properties {:notifications-enabled enabled?
+                                 :response response}}))
+
+(defmethod control-event :dismiss-web-notifications-confirmation-banner
+  [_ _ _ state]
+  (assoc-in state state/remove-web-notification-confirmation-banner-path true))
+
+(defmethod control-event :web-notifications-confirmation-account-settings-clicked
+  [_ _ _ state]
+  (assoc-in state state/remove-web-notification-confirmation-banner-path true))
+
+(defmethod post-control-event! :web-notifications-confirmation-account-settings-clicked
+  [_ _ {:keys [response]} _ current-state]
+  (analytics/track {:event-type :account-settings-clicked
+                    :current-state current-state
+                    :properties {:response response
+                                 :component "web-notifications-confirmation-banner"}})
+  (let [nav-ch (get-in current-state [:comms :nav])]
+    (put! nav-ch [:navigate! {:path (routes/v1-account-subpage {:subpage "notifications"})}])))

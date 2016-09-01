@@ -1,5 +1,5 @@
 .ns("frontend.components.pieces.button", {
-  .ui("button", {
+  .button-styles() {
     height: 35px;
     width: 155px;
     border-radius: 3px;
@@ -32,15 +32,25 @@
       }
 
       &:active {
-        background-color: #1d8494;
+        background-color: @blueDarkest;
       }
     }
 
     &[disabled] {
-      &, &:hover, &:active {
+      &,
+      &:hover,
+      &:active {
         color: @grayLight;
-        background-color: #dddddd;
+        background-color: @grayLighter;
       }
     }
+  }
+     
+  .ui("button", {
+    .button-styles();
+  });
+
+  .ui("managed-button", {
+    .button-styles();
   });
 });

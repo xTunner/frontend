@@ -11,4 +11,4 @@
     om/IRender
     (render [_]
       (html
-       [:code {:style {:flex "0 0 40%" :overflow "scroll"}} (om/build ankha/inspector (dissoc app :comms))]))))
+       [:code (om/build ankha/inspector (dissoc app :comms))]))))

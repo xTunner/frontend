@@ -3,7 +3,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh]
             [frontend.utils.bitbucket :as bb]
-            [frontend.routes :as routes]))
+            [frontend.utils.vcs :as vcs]))
 
 (def url-project-re #"^https?://([^/]+)/(.*)")
 
@@ -42,4 +42,4 @@
   (.replace (project-name vcs-url) "/" \u200b))
 
 (defn project-path [vcs-url]
-  (str "/" (routes/->short-vcs (vcs-type vcs-url)) "/" (project-name vcs-url)))
+  (str "/" (vcs/->short-vcs (vcs-type vcs-url)) "/" (project-name vcs-url)))

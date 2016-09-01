@@ -50,7 +50,6 @@
                     :org nil}
    :current-project-data {:project nil
                           :plan nil
-                          :build-diagnostics nil
                           :settings {}
                           :tokens nil
                           :checkout-keys nil
@@ -60,8 +59,6 @@
                       :users nil
                       :invoices nil
                       :name nil}
-   :invite-data {:dismiss-invite-form nil
-                 :github-users nil}
    :instrumentation []
    :hamburger-menu "closed"
    ;; This isn't passed to the components, it can be accessed though om/get-shared :_app-state-do-not-use
@@ -72,10 +69,14 @@
 (def user-path [:current-user])
 
 (def build-data-path [:current-build-data])
+
+;; state related to the first-green-build invite box
+(def build-invite-data-path (conj build-data-path :invite-data))
+(def build-invite-members-path (conj build-invite-data-path :org-members))
+(defn build-invite-member-path [index] (conj build-invite-members-path index))
+
 (def build-path [:current-build-data :build])
-(def invite-github-users-path [:invite-data :github-users])
-(defn invite-github-user-path [index] (conj invite-github-users-path index))
-(def dismiss-invite-form-path [:invite-data :dismiss-invite-form])
+(def dismiss-invite-form-path (conj build-invite-data-path :dismiss-invite-form))
 (def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
 (def invite-logins-path (conj build-data-path :invite-data :invite-logins))
 (defn invite-login-path [login] (conj invite-logins-path login))
@@ -115,7 +116,6 @@
 (def project-plan-org-path (conj project-plan-path :org))
 (def project-plan-org-name-path (conj project-plan-org-path :name))
 (def project-plan-vcs-type-path (conj project-plan-org-path :vcs_type))
-(def project-build-diagnostics-path (conj project-data-path :build-diagnostics))
 (def project-tokens-path (conj project-data-path :tokens))
 (def project-checkout-keys-path (conj project-data-path :checkout-keys))
 (def project-envvars-path (conj project-data-path :envvars))
@@ -206,7 +206,6 @@
 (def expanded-repos-path (conj browser-settings-path :expanded-repos))
 (def sort-branches-by-recency-path (conj browser-settings-path :sort-branches-by-recency))
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
-(defn project-build-diagnostics-collapsed-path [project-id] (conj browser-settings-path :projects project-id :build-diagnostics-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 (def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
 (def logging-enabled-path (conj browser-settings-path :logging-enabled))
@@ -214,7 +213,10 @@
 (def dismissed-osx-command-change-banner-path (conj browser-settings-path :dismissed-osx-command-change-banner))
 (def dismissed-trial-offer-banner (conj browser-settings-path :dismissed-trial-offer-banner))
 (def dismissed-trial-update-banner (conj browser-settings-path :dismissed-trial-update-banner))
-(def web-notifications-enabled?-path (conj browser-settings-path :web-notifications-enabled?))
+
+(def web-notifications-enabled-path (conj browser-settings-path :web-notifications-enabled?))
+(def remove-web-notification-banner-path (conj browser-settings-path :remove-web-notification-banner?))
+(def remove-web-notification-confirmation-banner-path (conj browser-settings-path :remove-web-notification-banner-follow-up?))
 
 (def add-projects-settings-path (conj settings-path :add-projects))
 (def add-projects-selected-org-path (conj add-projects-settings-path :selected-org))
@@ -268,3 +270,26 @@
 
 (def system-settings-path [:system-settings])
 (def feature-flags-path (conj project-path :feature_flags))
+
+(def flash-notification-path [:flash-notification])
+
+
+(defn add-flash-notification
+  "Adds a flash notification to the state."
+  [state message]
+  (update-in state flash-notification-path
+             #(-> %
+                  (update :number inc)
+                  (assoc :message message))))
+
+
+;--------- Om Next Paths -----------
+(defn org-ident [vcs-type org-name]
+  [:organization/by-vcs-type-and-name [vcs-type org-name]])
+
+(defn org-ident->vcs-type-and-org
+  "Given an org-ident returns a vector of [vcs-type org-name]."
+  [org-ident]
+  (second org-ident))
+
+(def current-org-ident [:current-org-ident])

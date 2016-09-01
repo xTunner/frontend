@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [frontend.analytics.track :as analytics-track]
             [frontend.async :refer [navigate! raise!]]
+            [frontend.components.pieces.card :as card]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
@@ -260,11 +261,8 @@
               " with any additional questions"]]}
 
    {:question "Can I change my plan at a later time? Can I cancel anytime?"
-    :answer [[:p "Yes and yes!"]
-             [:div
-              "Please reach out to "
-              [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
-              " to cancel."] ]}
+    :answer [[:div "Yes and yes!"]
+             [:div "You can visit this page to upgrade, downgrade, or cancel your plan at any time."]]}
 
    {:question "What if I want something custom?"
     :answer [[:div "Feel free to contact us "
@@ -348,8 +346,7 @@
            text])))))
 
 (defn osx-plan [{:keys [title price container-count daily-build-count max-minutes support-level team-size
-                           plan-id plan
-                           trial-starts-here?]} owner]
+                        plan-id plan trial-starts-here? org-name vcs-type]} owner]
   (reify
     om/IRender
     (render [_]
@@ -358,6 +355,7 @@
             on-trial? (and trial-starts-here? (pm/osx-trial-plan? plan))
             trial-expired? (and on-trial? (not (pm/osx-trial-active? plan)))
             trial-starts-here? (and trial-starts-here?
+                                    (pm/trial-eligible? plan :osx)
                                     (not (pm/osx? plan)))]
         (html
           [:div {:data-component `osx-plan}
@@ -403,19 +401,30 @@
                                                                                                     :properties {:plan-type pm/osx-plan-type
                                                                                                                  :plan plan-id}}))}))
 
-              (when (and trial-starts-here? (not (pm/osx? plan)))
-                (let [template "osx-trial"
-                      plan-type :osx]
+              (if (not (pm/osx? plan))
+                (when trial-starts-here?
                   [:div.start-trial "OR" [:br]
-                  (forms/managed-button
+                   (forms/managed-button
                      [:a
                       {:data-success-text "Success!"
                        :data-loading-text "Starting..."
                        :data-failed-text "Failed"
-                       :on-click #(raise! owner [:activate-plan-trial {:plan-type plan-type
-                                                                       :template template
+                       :on-click #(raise! owner [:activate-plan-trial {:plan-type :osx
+                                                                       :template "osx-trial"
                                                                        :org (:org plan)}])}
-                      "start a 2-week free trial"])]))]]
+                      "start a 2-week free trial"])])
+                (when currently-selected?
+                  [:div.cancel-plan "OR" [:br]
+                   (forms/managed-button
+                     [:a
+                      {:data-success-text "Success!"
+                       :data-loading-text "Cancelling..."
+                       :data-failed-text "Failed"
+                       :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
+                                                                       :vcs_type vcs-type
+                                                                       :plan-type :osx}])}
+                      "cancel your current OSX plan"])]))]]
+
             (cond
               trial-starts-here?
               [:div.bottom "FREE TRIAL STARTS HERE"]
@@ -430,7 +439,7 @@
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
 
-(defn osx-plans-list [plan owner]
+(defn osx-plans-list [{:keys [plan org-name vcs-type]} owner]
   (reify
     om/IRender
     (render [_]
@@ -447,7 +456,8 @@
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
               [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
            [:div.plan-selection
-            (om/build-all osx-plan osx-plans)]])))))
+            (om/build-all osx-plan (->> osx-plans
+                                        (map #(assoc % :org-name org-name :vcs-type vcs-type))))]])))))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
   (reify
@@ -560,8 +570,8 @@
     (render [_]
       (let [{{org-name :name
               vcs-type :vcs_type} :org} plan]
-        (html
-         [:div {:data-component `pricing-tabs}
+        (card/tabbed
+         {:tab-row
           (om/build tabs/tab-row {:tabs [{:name :linux
                                           :icon (html [:i.fa.fa-linux.fa-lg])
                                           :label "Build on Linux"}
@@ -571,15 +581,17 @@
                                   :selected-tab-name selected-tab-name
                                   :on-tab-click #(navigate! owner (routes/v1-org-settings-path {:org org-name
                                                                                                 :vcs_type vcs-type
-                                                                                                :_fragment (str (name %) "-pricing")}))})
-          (case selected-tab-name
-            :linux [:div.card
-                    (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                    (om/build faq linux-faq-items)]
+                                                                                                :_fragment (str (name %) "-pricing")}))})}
+         (case selected-tab-name
+           :linux (list
+                   (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
+                   (om/build faq linux-faq-items))
 
-            :osx [:div.card
-                  (om/build osx-plans-list plan)
-                  (om/build faq osx-faq-items)])])))))
+           :osx (list
+                 (om/build osx-plans-list {:plan plan
+                                           :org-name (get-in app state/org-name-path)
+                                           :vcs-type (get-in app state/org-vcs_type-path)})
+                 (om/build faq osx-faq-items))))))))
 
 (defn pricing-starting-tab [subpage]
   (get {:osx-pricing :osx
@@ -838,6 +850,7 @@
                [:div.offset1.span6
                 (om/build table/table
                           {:rows [card]
+                           :key-fn (constantly "card")
                            :columns [{:header "Name"
                                       :cell-fn #(:name % "N/A")}
                                      {:header "Card type"
@@ -1013,6 +1026,7 @@
                 [:span (->balance-string account-balance)]]]
               (om/build table/table
                         {:rows invoices
+                         :key-fn :id
                          :columns [{:header "Invoice date"
                                     :cell-fn (comp stripe-ts->date :date)}
 
@@ -1169,6 +1183,7 @@
                               :over-usage? (> amount max)})]
                   (om/build table/table
                             {:rows rows
+                             :key-fn (comp hash (juxt :from :to))
                              :columns [{:header "Billing Period"
                                         :type :shrink
                                         :cell-fn #(html

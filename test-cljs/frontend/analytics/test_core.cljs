@@ -5,6 +5,7 @@
             [frontend.utils.seq :refer [submap?]]
             [frontend.utils.build :as build-util]
             [frontend.test-utils :as test-utils]
+            [frontend.models.user :as user]
             [frontend.analytics.core :as analytics]
             [frontend.analytics.common :as common-analytics]
             [frontend.analytics.segment :as segment]))
@@ -24,11 +25,13 @@
       @calls)))
 
 (def data {:view :a-view
+           :primary-email "foobar@email.com"
            :user "foobar-user"
            :repo "foobar-repo"
            :org "foobar-org"})
 
 (def properties {:view :new-view
+                 :primary-email "props@email.com"
                  :user "props-user"
                  :repo "props-repo"
                  :org "props-org"})
@@ -36,7 +39,7 @@
 (def current-state (test-utils/state data))
 
 (deftest track-default-works
-  (let [click-event (first analytics/supported-click-and-impression-events)]
+  (let [click-event (first analytics/supported-events)]
     (testing "track :default works with a current-state"
       (let [calls (stub-segment-track-event #(analytics/track {:event-type click-event
                                                                :current-state current-state}))]
@@ -58,7 +61,7 @@
 
 (deftest track-external-click-works
   (let [event-type :external-click
-        event (first analytics/supported-click-and-impression-events)]
+        event (first analytics/supported-events)]
     (testing "a valid external-click event is fired"
       (let [calls (stub-segment-track-event #(analytics/track {:event-type event-type
                                                                :event event
@@ -153,18 +156,22 @@
 
 (deftest track-init-user-works
   (testing "track :init-user adds the correct properties and calls segment/identify"
-    (let [stub-identify (fn [properties]
+    (let [user-email "hi-im-a-users-email@foobarbaz.com"
+          stub-identify (fn [properties]
                           (let [calls (atom [])]
                             (with-redefs [segment/identify (fn [event-data]
-                                                             (swap! calls conj {:args (list event-data)}))]
+                                                             (swap! calls conj {:args (list event-data)}))
+                                          user/primary-email (constantly user-email)]
                               (analytics/track {:event-type :init-user
                                                 :current-state current-state}))
                             @calls))]
        (let [calls (stub-identify {})
              expected-data {:id (get-in current-state state/user-analytics-id-path)
-                            :user-properties (select-keys
-                                               (get-in current-state state/user-path)
-                                               (keys common-analytics/UserProperties))}]
+                            :user-properties (merge
+                                               {:primary-email user-email}
+                                               (select-keys
+                                                 (get-in current-state state/user-path)
+                                                 (keys common-analytics/UserProperties)))}]
          (is (= 1 (-> calls count)))
          (is (submap? expected-data (-> calls first :args first)))))))
 
@@ -220,7 +227,7 @@
 
 (deftest properties-overwrite-default-state
   (testing "for each type of tracking that calls segment/track-event, ensure that :properties overwrite the default values from :current-state"
-    (let [click-event (first analytics/supported-click-and-impression-events)
+    (let [click-event (first analytics/supported-events)
           ensure-overwrite (fn [event-type & extra-args]
                              (let [calls (stub-segment-track-event #(analytics/track
                                                                       (merge {:event-type event-type

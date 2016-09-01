@@ -3,6 +3,7 @@
     @dialog-padding: 15px;
 
     background-color: @white;
+    border-radius: 3px;
 
     > .header {
       .flexy(row, space-between);
@@ -11,9 +12,10 @@
 
       border-bottom: 1px solid @grayLighter;
       background: @grayLightest;
+      border-radius: 3px 3px 0 0;
 
       > .close-button {
-        padding-top: 5px;
+        padding-top: 6px;
         font-size: @fontSizeLarger;
         cursor: pointer;
       }
@@ -22,13 +24,21 @@
       // component, so we need a more specific name. This should become
       // .title when it\'s free again.
       > .modal-component-title {
-        font-size: @fontSizeLarger;
+        font-size: @fontSizeLarge;
         line-height: 1.5;
+        padding-top: 2px;
       }
     }
 
     > .body {
       padding: @dialog-padding;
+
+      .alert-danger {
+        background-color: @redLightest;
+        border: 1px solid fade(@black, 10%);
+        min-height: 38px;
+        padding: 8px 10px 4px 10px;
+      }
     }
 
     > .actions {
@@ -87,7 +97,8 @@
         margin: auto;
 
         background-color: @white;
-        box-shadow: 0 3px 9px fade(@black, 50%);
+        box-shadow: 0 0 10px fade(@black, 50%);
+        border-radius: 3px;
       }
 
 
@@ -111,7 +122,7 @@
         background-color: transparent;
 
         > .box {
-          transform: translateY(calc(-50vh - 50%));
+          transform: ~'translateY(calc(-50vh - 50%))';
         }
       }
 
@@ -129,7 +140,7 @@
         background-color: transparent;
 
         > .box {
-          transform: translateY(calc(-50vh - 50%));
+          transform: ~'translateY(calc(-50vh - 50%))';
         }
       }
     });

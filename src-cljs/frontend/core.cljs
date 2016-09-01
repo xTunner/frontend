@@ -7,6 +7,7 @@
             [goog.dom.classlist]
             [frontend.ab :as ab]
             [frontend.analytics.core :as analytics]
+            [frontend.api :as api]
             [frontend.components.app :as app]
             [frontend.config :as config]
             [frontend.controllers.controls :as controls-con]
@@ -208,7 +209,7 @@
   (.-body js/document))
 
 (defn find-app-container []
-  (goog.dom/getElement "om-app"))
+  (goog.dom/getElement "app"))
 
 (defn main [state ab-tests top-level-node history-imp instrument?]
   (let [comms       (:comms @state)
@@ -229,6 +230,9 @@
     (async/tap (:ws-mult comms) ws-tap)
     (async/tap (:errors-mult comms) errors-tap)
 
+    (when (config/enterprise?)
+      (api/get-enterprise-site-status (:api comms)))
+
     (go (while true
           (alt!
            controls-tap ([v] (controls-handler v state container))
@@ -243,12 +247,6 @@
 (defn subscribe-to-user-channel [user ws-ch]
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
                            :messages [:refresh]}]))
-
-(defn apply-app-id-hack
-  "Hack to make the top-level id of the app the same as the
-   current knockout app. Lets us use the same stylesheet."
-  []
-  (goog.dom.setProperties (goog.dom/getElement "app") #js {:id "om-app"}))
 
 (defn ^:export toggle-admin []
   (swap! state/debug-state update-in [:current-user :admin] not))
@@ -302,7 +300,6 @@
     (.appendChild (.-head js/document) link)))
 
 (defn ^:export setup! []
-  (apply-app-id-hack)
   (support/enable-one!)
   (let [state (app-state)
         top-level-node (find-top-level-node)

@@ -236,7 +236,7 @@
                  ;; TODO for V2 notifications we should consider reading from localstorage directly because
                  ;; storing it in state gets it out of sync with localstorage — or maybe this is reasonable
                  ;; behavior for our app?
-                 (get-in current-state state/web-notifications-enabled?-path))
+                 (get-in current-state state/web-notifications-enabled-path))
         (notifications/notify-build-done build))
       (api/get-build-tests build (get-in current-state [:comms :api])))))
 
@@ -445,12 +445,6 @@
     state
     (assoc-in state state/project-plan-path resp)))
 
-(defmethod api-event [:project-build-diagnostics :success]
-  [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (str (get-in state [:navigation-data :org]) "/" (get-in state [:navigation-data :repo])))
-    state
-    (assoc-in state state/project-build-diagnostics-path resp)))
-
 
 (defmethod api-event [:project-token :success]
   [target message status {:keys [resp context]} state]
@@ -532,27 +526,38 @@
     (-> state
         (update-in state/project-envvars-path (fnil conj []) resp)
         (assoc-in (conj state/inputs-path :new-env-var-name) "")
-        (assoc-in (conj state/inputs-path :new-env-var-value) ""))))
+        (assoc-in (conj state/inputs-path :new-env-var-value) "")
+        (state/add-flash-notification "Environment variable added successfully."))))
+
+(defmethod post-api-event! [:create-env-var :success]
+  [target message status {:keys [context]} previous-state current-state]
+  ((:on-success context)))
 
 
 (defmethod api-event [:delete-env-var :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state state/project-envvars-path (fn [vars]
-                                                  (remove #(= (:env-var-name context) (:name %))
-                                                          vars)))))
+    (-> state
+        (update-in state/project-envvars-path (fn [vars]
+                                                (remove #(= (:env-var-name context) (:name %))
+                                                        vars)))
+        (state/add-flash-notification (gstring/format "Environment variable '%s' deleted successfully."
+                                                      (:env-var-name context))))))
 
 
 (defmethod api-event [:save-ssh-key :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state (conj state/project-data-path :new-ssh-key) {})))
+    (-> state
+        (assoc-in (conj state/project-data-path :new-ssh-key) {})
+        (state/add-flash-notification "Your key has been successfully added."))))
 
 (defmethod post-api-event! [:save-ssh-key :success]
   [target message status {:keys [context resp]} previous-state current-state]
   (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
+    ((:on-success context))
     (let [project-name (vcs-url/project-name (:project-id context))
           api-ch (get-in current-state [:comms :api])
           vcs-type (vcs-url/vcs-type (:project-id context))
@@ -570,11 +575,13 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (let [{:keys [hostname fingerprint]} context]
-      (update-in state (conj state/project-path :ssh_keys)
-                 (fn [keys]
-                   (remove #(and (= (:hostname %) hostname)
-                                 (= (:fingerprint %) fingerprint))
-                           keys))))))
+      (-> state
+          (update-in (conj state/project-path :ssh_keys)
+                     (fn [keys]
+                       (remove #(and (= (:hostname %) hostname)
+                                     (= (:fingerprint %) fingerprint))
+                               keys)))
+          (state/add-flash-notification "Your key has been successfully deleted.")))))
 
 
 (defmethod api-event [:save-project-api-token :success]
@@ -584,6 +591,12 @@
     (-> state
         (assoc-in (conj state/project-data-path :new-api-token) {})
         (update-in state/project-tokens-path (fnil conj []) resp))))
+
+
+(defmethod post-api-event! [:save-project-api-token :success]
+  [target message status {:keys [context]} previous-state current-state]
+  (forms/release-button! (:uuid context) status)
+  ((:on-success context)))
 
 
 (defmethod api-event [:delete-project-api-token :success]
@@ -612,21 +625,28 @@
 
 (defmethod api-event [:first-green-build-github-users :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+  (if-not (and (= (:project-name context)
+                  (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
+               (= (:vcs-type context)
+                  (get-in state (conj state/build-path :vcs_type))))
     state
-    (-> state
-        (assoc-in state/invite-github-users-path (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))))
+    (assoc-in state
+              state/build-invite-members-path
+              (vec (map-indexed (fn [i u] (assoc u :index i)) resp)))))
 
-(defmethod api-event [:invite-github-users :success]
+(defmethod api-event [:invite-team-members :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (vcs-url/project-name (:vcs_url (get-in state state/build-path))))
     state
     (assoc-in state state/dismiss-invite-form-path true)))
 
 
-(defmethod api-event [:org-member-invite-users :success]
+(defmethod api-event [:get-org-members :success]
   [target message status {:keys [resp context]} state]
-  (assoc-in state [:invite-data :github-users] (vec (map-indexed (fn [i u] (assoc u :index i)) resp))))
+  (let [{:keys [vcs-type org-name]} context]
+    (assoc-in state
+              (conj (state/org-ident vcs-type org-name) :vcs-users)
+              resp)))
 
 
 (defmethod api-event [:enable-project :success]
@@ -814,15 +834,29 @@
 
 (defmethod api-event [:create-api-token :success]
   [target message status {:keys [resp context]} state]
-  (-> state
-      (assoc-in state/new-user-token-path "")
-      (update-in state/user-tokens-path conj resp)))
+  (let [label (:label context)
+        label (if (empty? label)
+                label
+                (str "'" label "'"))]
+    (-> state
+        (assoc-in state/new-user-token-path "")
+        (update-in state/user-tokens-path conj resp)
+        (state/add-flash-notification (gstring/format "API token %s added successfully."
+                                                      label)))))
 
 (defmethod api-event [:delete-api-token :success]
   [target message status {:keys [resp context]} state]
-  (let [deleted-token (:token context)]
-    (update-in state state/user-tokens-path (fn [tokens]
-                                              (vec (remove #(= (:token %) (:token deleted-token)) tokens))))))
+  (let [deleted-token (:token context)
+        label (:label deleted-token)
+        label (if (empty? label)
+                label
+                (str "'" label "'"))]
+    (-> state
+        (update-in state/user-tokens-path (fn [tokens]
+                                            (vec (remove #(= (:token %) (:token deleted-token)) tokens))))
+        (state/add-flash-notification (gstring/format "API token %s deleted successfully."
+                                                      label)))))
+
 (defmethod api-event [:plan-invoices :success]
   [target message status {:keys [resp context]} state]
   (utils/mlog ":plan-invoices API event: " resp)
@@ -898,7 +932,9 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (assoc-in state state/error-message-path nil)))
+    (-> state
+        (assoc-in state/error-message-path nil)
+        (state/add-flash-notification "Your key has been successfully added."))))
 
 (defmethod post-api-event! [:set-code-signing-keys :success]
   [target message status {:keys [context]} previous-state current-state]
@@ -915,8 +951,10 @@
   [target message status {:keys [context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (update-in state state/project-osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
-                                                                       (= (:id context) (:id %)))))))
+    (-> state
+        (update-in state/project-osx-keys-path (partial remove #(and (:id %) ; figure out why we get nil id's
+                                                                     (= (:id context) (:id %)))))
+        (state/add-flash-notification "Your key has been successfully removed."))))
 
 (defmethod post-api-event! [:delete-code-signing-keys :success]
   [target message status {:keys [context]} previous-state current-state]
@@ -935,3 +973,7 @@
   [target message status {:keys [resp]} state]
   (let [org (:org resp)]
     (update-in state [:organization/by-vcs-type-and-name [(:vcs_type org) (:name org)]] merge {:plan resp})))
+
+(defmethod api-event [:enterprise-site-status :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state [:enterprise :site-status] resp))

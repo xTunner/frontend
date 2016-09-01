@@ -8,12 +8,14 @@
             [frontend.components.test-statuspage]
             [frontend.components.test-insights]
             [frontend.utils-test]
+            [frontend.utils.test-seq]
             [frontend.controllers.test-controls]
             [frontend.controllers.test-ws]
             [frontend.controllers.test-api]
             [frontend.models.test-build]
             [frontend.models.test-plan]
             [frontend.models.test-project]
+            [frontend.models.test-user]
             [frontend.models.test-feature]
             [frontend.models.test-action]
             [frontend.test-datetime]
@@ -34,9 +36,12 @@
            'frontend.components.test-statuspage
            'frontend.components.test-insights
            'frontend.utils-test
+           'frontend.utils.test-seq
            'frontend.controllers.test-controls
            'frontend.controllers.test-ws
            'frontend.controllers.test-api
+           'frontend.models.test-project
+           'frontend.models.test-user
            'frontend.models.test-plan
            'frontend.models.test-feature
            'frontend.models.test-action

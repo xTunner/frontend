@@ -22,10 +22,41 @@
 
         border-radius: 50%;
         border: 3px solid @white;
+        background-color: @white;
 
         &:last-child {
           margin-right: 0;
         }
+      }
+    });
+  });
+
+  .ui("invite-teammates-modal", {}, {
+    .el("body", {
+
+      @body-height: 27vh;
+
+      > .loading-spinner {
+        .flexy(center, center);
+        height: @body-height;
+      }
+
+      > .members-table {
+        overflow: auto;
+        max-height: @body-height;
+        margin-top: 1em;
+      }
+    });
+
+    .el("email-field", {
+      padding: 5px 0;
+    });
+
+    .el("username", {
+      > img.invite-gravatar {
+        max-height: 1.7em;
+        width: auto;
+        border-radius: 50%;
       }
     });
   });

@@ -4,7 +4,7 @@
             [goog.string :as gstring]
             [frontend.models.plan :as plan-model]
             [frontend.config :as config]
-            [frontend.routes :as routes]
+            [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]))
 
 (defn project-name [project]
@@ -22,7 +22,7 @@
     (vcs-url/vcs-type (:vcs_url project))))
 
 (defn settings-path [project]
-  (str "/" (-> project vcs-type routes/->short-vcs) "/" (vcs-url/project-name project) "/edit"))
+  (str "/" (-> project vcs-type vcs/->short-vcs) "/" (vcs-url/project-name project) "/edit"))
 
 (defn repo-name [project]
   (:reponame project))

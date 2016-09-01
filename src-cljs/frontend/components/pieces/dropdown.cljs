@@ -17,11 +17,13 @@
   [{:keys [on-change value options]}]
   (let [values (map first options)
         labels (map second options)]
-    [:select {:data-component `dropdown
-              :on-change #(on-change (nth values (-> % .-target .-value int)))
-              :value (find-index #(= value %) values)}
-     (for [[index label] (map-indexed vector labels)]
-       [:option {:value index} label])]))
+    (html
+     [:select {:data-component `dropdown
+               :on-change #(on-change (nth values (-> % .-target .-value int)))
+               :value (find-index #(= value %) values)}
+      (for [[index label] (map-indexed vector labels)]
+        [:option {:value index} label])])))
+
 
 (dc/do
   (defn dropdown-parent [{:keys [selected-value] :as data} owner]

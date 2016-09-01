@@ -7,6 +7,10 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
+            [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.form :as form]
+            [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
@@ -24,12 +28,45 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.html :refer [hiccup->html-str open-ext]]
             [frontend.utils.state :as state-utils]
+            [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true]
-            [frontend.components.pieces.button :as button])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
+
+(defn- remove-action-button
+  "Renders a \"Remove\" action button suitable for a settings table row which
+  presents a confirmation dialog before actually removing the row.
+
+  :confirmation-question - The content of the dialog. Should ask the user if
+                           they're sure they want to remove the row, clearly
+                           describing what the user is about to remove.
+
+  :remove-fn             - The function which will actually remove the row once
+                           confirmed."
+  [{:keys [confirmation-question remove-fn]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (html
+       [:span
+        (table/action-button
+         "Remove"
+         (icon/delete)
+         #(om/set-state! owner :show-modal? true))
+        (when show-modal?
+          (let [close-fn #(om/set-state! owner :show-modal? false)]
+            (modal/modal-dialog {:title "Are you sure?"
+                                 :body confirmation-question
+                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                           (button/button {:primary? true
+                                                           :on-click remove-fn}
+                                                          "Remove")]
+                                 :close-fn close-fn})))]))))
 
 (defn branch-names [project-data]
   (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
@@ -180,7 +217,7 @@
                                        "Note: this option only works if the project builds under an OS X plan. "
                                        "Configure that option "
                                        [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
-                                                                                :vcs_type (:vcs_type plan)
+                                                                                :vcs_type (-> plan :org :vcs_type)
                                                                                 :_fragment "osx-pricing"})} "here"]
                                        "."]]
                                      [:p
@@ -280,19 +317,29 @@
                                                  :_fragment "linux-pricing"})}
          "Upgrade"]]))))
 
+(defn get-offered-parallelism
+  "In enterprise, offer whatever their plan's setting is (since they cannot upgrade).
+  Otherwise, offer at least 24 and up to their plan's setting."
+  [project plan]
+  (let [plan-parallelism (plan-model/max-parallelism plan)]
+    (if (config/enterprise?)
+      (max plan-parallelism (project-model/parallelism project))
+      (max 24 plan-parallelism))))
+
 (defn parallelism-picker [project-data owner]
   [:div.parallelism-picker
    (if-not (:plan project-data)
      [:div.loading-spinner common/spinner]
      (let [plan (:plan project-data)
            project (:project project-data)
-           project-id (project-model/id project)]
+           project-id (project-model/id project)
+           number-tiles (get-offered-parallelism project plan)]
        (list
         (when (:parallelism-edited project-data)
           [:div.try-out-build
            (om/build branch-picker project-data {:opts {:button-text (str "Try a build!")}})])
         [:form.parallelism-items
-         (for [parallelism (range 1 (inc (max 24 (plan-model/max-parallelism plan))))]
+         (for [parallelism (range 1 (inc number-tiles))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
             parallelism
@@ -409,66 +456,86 @@
 
 (defn env-vars [project-data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [project (:project project-data)
             inputs (inputs/get-inputs-from-app-state owner)
             new-env-var-name (:new-env-var-name inputs)
             new-env-var-value (:new-env-var-value inputs)
             project-id (project-model/id project)]
         (html
-          [:section
-           [:article
-            [:h2 "Environment Variables for " (vcs-url/project-name (:vcs_url project))]
-            [:div
-             [:p
-              "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
-              "The values can be any bash expression and can reference other variables, such as setting "
-              [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
+         ;; The :section and :article here are artifacts of the legacy styling
+         ;; of the settings pages, and should go away as the structure of the
+         ;; settings pages is addressed.
+         [:section
+          [:article
+           (card/titled
+            {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
+             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                     :primary? true
+                                     :size :medium}
+                                    "Add Variable")}
+            (html
+             [:div
+              [:p
+               "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
+               "The values can be any bash expression and can reference other variables, such as setting "
+               [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
 
-             [:p
-              " To disable string substitution you need to escape the " [:code "$"]
-              " characters by prefixing them with " [:code "\\"] "."
-              " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "." ]
-             [:form
-              [:div.form-group
-               [:label "Name"]
-               [:input.form-control#env-var-name
-                {:required true, :type "text", :value new-env-var-name
-                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)}]]
-              [:div.form-group
-               [:label "Value"]
-               [:input.form-control#env-var-value
-                {:required true
-                 :type "text"
-                 :value new-env-var-value
-                 :auto-complete "off"
-                 :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}]]
+              (when show-modal?
+                (let [close-fn #(om/set-state! owner :show-modal? false)]
+                  (modal/modal-dialog {:title "Add an Environment Variable"
+                                       :body (html
+                                              [:div
+                                               [:p
+                                                " To disable string substitution you need to escape the " [:code "$"]
+                                                " characters by prefixing them with " [:code "\\"] "."
+                                                " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
+                                               (form/form {}
+                                                          (om/build form/text-field {:label "Name"
+                                                                                     :required true
+                                                                                     :value new-env-var-name
+                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
+                                                          (om/build form/text-field {:label "Value"
+                                                                                     :required true
+                                                                                     :value new-env-var-value
+                                                                                     :auto-complete "off"
+                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
+                                       :actions [(button/button {:on-click close-fn} "Cancel")
+                                                 (button/managed-button {:failed-text "Failed"
+                                                                         :success-text "Added" 
+                                                                         :loading-text "Adding..." 
+                                                                         :primary? true
+                                                                         :on-click #(raise! owner [:created-env-var
+                                                                                                   {:project-id project-id
+                                                                                                    :on-success close-fn}])}
+                                                                        "Add Variable")]
+                                       :close-fn close-fn})))
+              (when-let [env-vars (seq (:envvars project-data))]
+                (om/build table/table
+                          {:rows env-vars
+                           :key-fn :name
+                           :columns [{:header "Name"
+                                      :cell-fn :name}
+                                     {:header "Value"
+                                      :cell-fn :value}
+                                     {:header "Remove"
+                                      :type #{:shrink :right}
+                                      :cell-fn
+                                      (fn [env-var]
+                                        (om/build remove-action-button
+                                                  {:confirmation-question
+                                                   (str
+                                                    "Are you sure you want to remove the environment variable \""
+                                                    (:name env-var)
+                                                    "\"?")
 
-              [:div.form-group
-               (forms/managed-button
-                 [:input.btn.btn-primary {:data-failed-text "Failed",
-                                          :data-success-text "Added",
-                                          :data-loading-text "Adding...",
-                                          :value "Add Variable",
-                                          :type "submit"
-                                          :on-click #(raise! owner [:created-env-var {:project-id project-id}])}])]]
-             (when-let [env-vars (seq (:envvars project-data))]
-               (om/build table/table
-                         {:rows env-vars
-                          :columns [{:header "Name"
-                                     :cell-fn :name}
-                                    {:header "Value"
-                                     :cell-fn :value}
-                                    {:header "Remove"
-                                     :type #{:shrink :right}
-                                     :cell-fn
-                                     (fn [env-var]
-                                       (table/action-button
-                                        "Remove"
-                                        (icon/delete)
-                                        #(raise! owner [:deleted-env-var {:project-id project-id
-                                                                          :env-var-name (:name env-var)}])))}]}))]]])))))
+                                                   :remove-fn
+                                                   #(raise! owner [:deleted-env-var {:project-id project-id
+                                                                                     :env-var-name (:name env-var)}])}))}]}))]))]])))))
 
 (defn advance [project-data owner]
   (reify
@@ -546,20 +613,17 @@
                                      "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                      "untrusted forks can make pull requests against your repo, then this option "
                                      "isn't for you!"])})
-            (when (feature/enabled? :build-prs-only)
-              (describe-flag {:flag :build-prs-only
-                              :title "Only build pull requests"
-                              :blurb [:p
-                                      "By default, we will build all the commits for this project. Once turned on, we will only build branches "
-                                      "that have associated pull requests open. Note: For your default branch, we will always build all commits."]}))
-            ;; TODO remove the LD flag once shipped
-            (when (feature/enabled? :autocancel-builds)
-              (describe-flag {:flag :autocancel-builds
-                              :title "Auto-cancel redundant builds"
-                              :blurb [:p
-                                      "With the exception of your default branch, we will automatically cancel any queued or running builds on "
-                                      "a branch when a newer build is triggered on that same branch. This feature will only apply to builds "
-                                      "triggered by pushes to GitHub."]}))
+            (describe-flag {:flag :build-prs-only
+                            :title "Only build pull requests"
+                            :blurb [:p
+                                    "By default, we will build all the commits for this project. Once turned on, we will only build branches "
+                                    "that have associated pull requests open. Note: For your default branch, we will always build all commits."]})
+            (describe-flag {:flag :autocancel-builds
+                            :title "Auto-cancel redundant builds"
+                            :blurb [:p
+                                    "With the exception of your default branch, we will automatically cancel any queued or running builds on "
+                                    "a branch when a newer build is triggered on that same branch. This feature will only apply to builds "
+                                    "triggered by pushes to GitHub."]})
             (describe-flag {:flag :osx-code-signing-enabled
                             :title "Code Signing Support"
                             :blurb [:p
@@ -862,7 +926,7 @@
         ;; Generate the status badge with current settings.
         project-name (vcs-url/project-name (:vcs_url project))
         vcs-path (if (seq branch) (str project-name "/tree/" (gstring/urlEncode branch)) project-name)
-        short-vcs-type (routes/->short-vcs (vcs-url/vcs-type (:vcs_url project)))
+        short-vcs-type (vcs/->short-vcs (vcs-url/vcs-type (:vcs_url project)))
         target (str (.. js/window -location -origin) "/" short-vcs-type "/" vcs-path)
         style (get-in project-data [:status-badges :style] "svg")
         image (str target (get-in status-styles [style :string]))
@@ -923,52 +987,78 @@
 
 (defn ssh-keys [project-data owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [project (:project project-data)
             project-id (project-model/id project)
             {:keys [hostname private-key]
              :or {hostname "" private-key ""}} (:new-ssh-key project-data)]
         (html
-         [:section.sshkeys-page
+         [:section
           [:article
-           [:h2 "SSH keys for " (vcs-url/project-name (:vcs_url project))]
-           [:div.sshkeys-inner
-            [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
-            [:form
-             [:input#hostname {:required true, :type "text" :value (str hostname)
-                               :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)}]
-             [:label {:placeholder "Hostname"}]
-             [:textarea#privateKey {:required true :value (str private-key)
-                                    :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}]
-             [:label {:placeholder "Private Key"}]
-             (forms/managed-button
-              [:input#submit.btn
-               {:data-failed-text "Failed",
-                :data-success-text "Saved",
-                :data-loading-text "Saving..",
-                :value "Submit",
-                :type "submit"
-                :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
-                                                          :ssh-key {:hostname hostname
-                                                                    :private_key private-key}}])}])]
-            (when-let [ssh-keys (seq (:ssh_keys project))]
-              (om/build table/table
-                        {:rows ssh-keys
-                         :columns [{:header "Hostname"
-                                    :cell-fn :hostname}
-                                   {:header "Fingerprint"
-                                    :cell-fn :fingerprint}
-                                   {:header "Remove"
-                                    :type #{:shrink :right}
-                                    :cell-fn
-                                    (fn [key]
-                                      (table/action-button
-                                       "Remove"
-                                       (icon/delete)
-                                       #(raise! owner [:deleted-ssh-key (-> key
-                                                                            (select-keys [:hostname :fingerprint])
-                                                                            (assoc :project-id project-id))])))}]}))]]])))))
+           (card/titled
+            {:title (str "SSH keys for " (vcs-url/project-name (:vcs_url project)))
+             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                     :primary? true
+                                     :size :medium}
+                                    "Add SSH Key")}
+            (html
+             [:div
+              [:p "Add keys to the build VMs that you need to deploy to your machines. If the hostname field is blank, the key will be used for all hosts."]
+              (when show-modal?
+                (let [close-fn #(om/set-state! owner :show-modal? false)]
+                  (modal/modal-dialog
+                   {:title "Add an SSH Key"
+                    :body
+                    (form/form {}
+                               (om/build form/text-field {:label "Hostname"
+                                                          :value hostname
+                                                          :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :hostname) %)})
+                               (om/build form/text-area {:label "Private Key"
+                                                         :required true
+                                                         :value private-key
+                                                         :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}))
+                    :actions [(button/button {:on-click close-fn} "Cancel")
+                              (forms/managed-button
+                               [:input.btn.btn-primary
+                                {:data-failed-text "Failed"
+                                 :data-success-text "Saved"
+                                 :data-loading-text "Saving..."
+                                 :value "Add SSH Key"
+                                 :type "submit"
+                                 :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
+                                                                           :ssh-key {:hostname hostname
+                                                                                     :private_key private-key}
+                                                                           :on-success close-fn}])}])]
+                    :close-fn close-fn})))
+              (when-let [ssh-keys (seq (:ssh_keys project))]
+                (let [remove-key-button
+                      (fn [ssh-key]
+                        (om/build remove-action-button
+                                  {:confirmation-question
+                                   (str "Are you sure you want to remove the SSH key \"" (:fingerprint ssh-key) "\""
+                                        (if (:hostname ssh-key)
+                                          (str " for the hostname \"" (:hostname ssh-key) "\"")
+                                          " for all hosts")
+                                        "?")
+
+                                   :remove-fn
+                                   #(raise! owner [:deleted-ssh-key (-> ssh-key
+                                                                        (select-keys [:hostname :fingerprint])
+                                                                        (assoc :project-id project-id))])}))]
+                  (om/build table/table
+                            {:rows ssh-keys
+                             :key-fn (comp hash (juxt :hostname :fingerprint))
+                             :columns [{:header "Hostname"
+                                        :cell-fn :hostname}
+                                       {:header "Fingerprint"
+                                        :cell-fn :fingerprint}
+                                       {:header "Remove"
+                                        :type #{:shrink :right}
+                                        :cell-fn remove-key-button}]})))]))]])))))
 
 (defn checkout-key-link [key project user]
   (cond (= "deploy-key" (:type key))
@@ -1110,6 +1200,7 @@
                    "we will automatically fall back to the other keys if the preferred key is revoked."]
                   (om/build table/table
                             {:rows checkout-keys
+                             :key-fn :fingerprint
                              :columns [{:header "Description"
                                         :cell-fn #(if-let [vcs-link (checkout-key-link % project user)]
                                                     [:a {:href vcs-link :target "_blank"}
@@ -1211,16 +1302,11 @@
 
 (defn api-tokens [project-data owner]
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (utils/popover "#scope-popover-hack" {:html true
-                                            :delay 0
-                                            :animation false
-                                            :placement "left"
-                                            :title "Scope"
-                                            :content (scope-popover-html)}))
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [project (:project project-data)
             project-id (project-model/id project)
             {:keys [scope label]
@@ -1228,51 +1314,71 @@
         (html
          [:section.circle-api-page
           [:article
-           [:h2 "API tokens for " (vcs-url/project-name (:vcs_url project))]
-           [:div.circle-api-page-inner
-            [:p "Create and revoke project-specific API tokens to access this project's details using our API. First choose a scope "
-             [:i.fa.fa-question-circle#scope-popover-hack {:title "Scope"}]
-             " and then create a label."]
-            [:form
-             [:select.form-control {:name "scope" :value scope
-                                    :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :scope) %)}
-              [:option {:value "status"} "Status"]
-              [:option {:value "view-builds"} "Build Artifacts"]
-              [:option {:value "all"} "All"]]
-             [:input
-              {:required true, :type "text" :value (str label)
-               :on-change #(utils/edit-input owner (conj state/project-data-path :new-api-token :label) %)}]
-             [:label {:placeholder "Token label"}]
-             (forms/managed-button
-              [:input
-               {:data-failed-text "Failed",
-                :data-success-text "Created",
-                :data-loading-text "Creating...",
-                :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
-                                                                    :api-token {:scope scope
-                                                                                :label label}}])
-                :value "Create token",
-                :type "submit"}])]
-            (when-let [tokens (seq (:tokens project-data))]
-              (om/build table/table
-                        {:rows tokens
-                         :columns [{:header "Scope"
-                                    :cell-fn :scope}
-                                   {:header "Label"
-                                    :cell-fn :label}
-                                   {:header "Token"
-                                    :cell-fn :token}
-                                   {:header "Created"
-                                    :cell-fn :time}
-                                   {:header "Remove"
-                                    :type #{:shrink :right}
-                                    :cell-fn
-                                    (fn [token]
-                                      (table/action-button
-                                       "Remove"
-                                       (icon/delete)
-                                       #(raise! owner [:deleted-project-api-token {:project-id project-id
-                                                                                   :token (:token token)}])))}]}))]]])))))
+           (card/titled
+            {:title (str "API tokens for " (vcs-url/project-name (:vcs_url project)))
+             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                     :primary? true
+                                     :size :medium}
+                                    "Create Token")}
+            (html
+             [:div
+              [:p "Create and revoke project-specific API tokens to access this project's details using our API."]
+              (when show-modal?
+                (let [close-fn #(om/set-state! owner :show-modal? false)]
+                  (modal/modal-dialog {:title "Add an API token"
+                                       :body (html
+                                              [:div
+                                               [:p "First choose a scope and then create a label."]
+                                               (form/form {}
+                                                          (dropdown/dropdown {:options [["status" "Status"]
+                                                                                        ["view-builds" "Build Artifacts"]
+                                                                                        ["all" "All"]]
+                                                                              :on-change #(raise! owner [:set-project-api-token-scope {:scope %}])
+                                                                              :name "scope"
+                                                                              :value scope})
+                                                          (om/build form/text-field {:value (str label)
+                                                                                     :on-change #(utils/edit-input owner
+                                                                                                                   (conj state/project-data-path
+                                                                                                                         :new-api-token
+                                                                                                                         :label)
+                                                                                                                   %)
+                                                                                     :label "Token Label"}))])
+                                       :close-fn close-fn
+                                       :actions [(button/button {:on-click close-fn} "Cancel")
+                                                 (forms/managed-button
+                                                  [:input.btn.btn-primary {:data-failed-text "Failed" ,
+                                                                           :data-success-text "Added" ,
+                                                                           :data-loading-text "Adding..." ,
+                                                                           :value "Create Token" ,
+                                                                           :type "submit"
+                                                                           :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
+                                                                                                                               :api-token {:scope scope
+                                                                                                                                           :label label}
+                                                                                                                               :on-success close-fn}])}])]})))
+              (when-let [tokens (seq (:tokens project-data))]
+                (om/build table/table
+                          {:rows tokens
+                           :key-fn :token
+                           :columns [{:header "Scope"
+                                      :cell-fn :scope}
+                                     {:header "Label"
+                                      :cell-fn :label}
+                                     {:header "Token"
+                                      :cell-fn :token}
+                                     {:header "Created"
+                                      :cell-fn :time}
+                                     {:header "Remove"
+                                      :type #{:shrink :right}
+                                      :cell-fn
+                                      (fn [token]
+                                        (om/build remove-action-button
+                                                  {:confirmation-question
+                                                   (str "Are you sure you want to remove the API token \""
+                                                        (:label token)
+                                                        "\"?")
+                                                   :remove-fn
+                                                   #(raise! owner [:deleted-project-api-token {:project-id project-id
+                                                                                               :token (:token token)}])}))}]}))]))]])))))
 
 (defn heroku [data owner]
   (reify
@@ -1602,41 +1708,13 @@
             (om/build common/flashes error-message)
             (om/build body-component body-params)]]]]))))
 
-(defn remove-key-button [row owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:show-modal? false})
-    om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
-      (html
-       [:span
-        (table/action-button
-         "Remove"
-         (icon/delete)
-         #(om/set-state! owner :show-modal? true))
-        (when show-modal?
-          (let [close-fn #(om/set-state! owner :show-modal? false)]
-            (modal/modal-dialog {:title "Are you sure?"
-                                 :body (html
-                                        [:span
-                                         "Are you sure you want to remove the \""
-                                         (:description row)
-                                         "\" Apple Code Signing Key?"])
-                                 :actions [(button/button {:on-click close-fn} "Cancel")
-                                           (button/button {:primary? true
-                                                           :on-click #(raise! owner
-                                                                              [:delete-p12
-                                                                               (select-keys row [:project-name :vcs-type :id])])}
-                                                          "Delete")]
-                                 :close-fn close-fn})))]))))
-
 (defn p12-key-table [{:keys [rows]} owner]
   (reify
     om/IRender
     (render [_]
       (om/build table/table
                 {:rows rows
+                 :key-fn :id
                  :columns [{:header "Description"
                             :cell-fn :description}
                            {:header "Filename"
@@ -1650,9 +1728,18 @@
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
                            {:header "Remove"
                             :type #{:shrink :right}
-                            :cell-fn
-                            (fn [row]
-                              (om/build remove-key-button row))}]}))))
+                            :cell-fn (fn [key]
+                                       (om/build remove-action-button
+                                                 {:confirmation-question
+                                                  (str
+                                                   "Are you sure you want to remove the \""
+                                                   (:description key)
+                                                   "\" Apple Code Signing Key?")
+
+                                                  :remove-fn
+                                                  #(raise! owner
+                                                           [:delete-p12
+                                                            (select-keys key [:project-name :vcs-type :id])])}))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name add-key]} owner]
   (reify
@@ -1671,84 +1758,52 @@
          [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
 
 
-(defn p12-upload-modal [{:keys [show-modal? close-fn error-message project-name vcs-type]} owner]
+(defn p12-upload-modal [{:keys [close-fn error-message project-name vcs-type]} owner]
   (reify
     om/IInitState
     (init-state [_]
       {:description nil
        :password nil
        :file-name nil
-       :file-content nil
-       :dragged-over? false})
+       :file-content nil})
 
     om/IRenderState
-    (render-state [_ {:keys [description password file-name file-content dragged-over?]}]
-      (let [file-selected-fn
-            (fn [file]
-              (om/set-state! owner :file-name (aget file "name"))
-              (doto (js/FileReader.)
-                (aset "onload" #(om/set-state! owner :file-content (aget % "target" "result")))
-                (.readAsBinaryString file)))
-
-            upload-form
-            (html
-             [:div {:data-component `p12-upload-form}
-              [:div
-               [:label.label "Description"]
-               [:input.dumb.text-input
-                {:type "text" :value description
-                 :on-change #(om/set-state! owner :description (aget % "target" "value"))}]]
-
-              [:div
-               [:label.label "Password (Optional)"]
-               [:input.dumb.text-input
-                {:type "password" :value password
-                 :on-change #(om/set-state! owner :password (aget % "target" "value"))}]]
-
-              [:div
-               [:label.label "File"]
-               [:div.drag-and-drop-area {:class (when dragged-over? "dragged-over")
-                                         :on-drag-over #(do (.stopPropagation %)
-                                                            (.preventDefault %)
-                                                            (om/set-state! owner :dragged-over? true))
-                                         :on-drag-leave #(om/set-state! owner :dragged-over? false)
-                                         :on-drop #(do (.stopPropagation %)
-                                                       (.preventDefault %)
-                                                       (om/set-state! owner :dragged-over? false)
-                                                       (file-selected-fn (aget % "dataTransfer" "files" 0)))}
-                (if file-name
-                  [:div file-name]
-                  [:div "Drop your files here or click " [:b "Choose file"] " below to select them manually!"])
-                [:label.p12-file-input
-                 [:input.hidden-p12-file-input {:type "file"
-                                                :on-change #(file-selected-fn (aget % "target" "files" 0))}]
-                 [:i.material-icons "file_upload"]
-                 "Choose file"]]]])
-
-            upload-button
-            (forms/managed-button
-             [:input.upload-p12-button
-              {:data-failed-text "Failed" ,
-               :data-success-text "Uploaded" ,
-               :data-loading-text "Uploading..." ,
-               :value "Upload" ,
-               :type "submit"
-               :disabled (not (and file-content description))
-               :on-click #(raise! owner [:upload-p12 {:project-name project-name
-                                                      :vcs-type vcs-type
-                                                      :description description
-                                                      :password (or password "")
-                                                      :file-content (base64/encodeString file-content)
-                                                      :file-name file-name
-                                                      :on-success close-fn}])}])]
-
-        (when show-modal?
-          (modal/modal-dialog {:title "Upload a New Apple Code Signing Key"
-                               :body [:div
-                                      (om/build common/flashes error-message)
-                                      upload-form]
-                               :actions [upload-button]
-                               :close-fn close-fn}))))))
+    (render-state [_ {:keys [description password file-name file-content]}]
+      (modal/modal-dialog
+       {:title "Upload a New Apple Code Signing Key"
+        :body
+        (html
+         [:div
+          (om/build common/flashes error-message)
+          (form/form {}
+                     (om/build form/text-field {:label "Description"
+                                                :value description
+                                                :on-change #(om/set-state! owner :description (.. % -target -value))})
+                     (om/build form/text-field {:label "Password (Optional)"
+                                                :password? true
+                                                :value password
+                                                :on-change #(om/set-state! owner :password (.. % -target -value))})
+                     (om/build form/file-selector {:label "Key File"
+                                                   :file-name file-name
+                                                   :on-change (fn [{:keys [file-name file-content]}]
+                                                                (om/update-state! owner #(merge % {:file-name file-name
+                                                                                                   :file-content file-content})))}))])
+        :actions [(forms/managed-button
+                   [:input.upload-p12-button
+                    {:data-failed-text "Failed" ,
+                     :data-success-text "Uploaded" ,
+                     :data-loading-text "Uploading..." ,
+                     :value "Upload" ,
+                     :type "submit"
+                     :disabled (not (and file-content description))
+                     :on-click #(raise! owner [:upload-p12 {:project-name project-name
+                                                            :vcs-type vcs-type
+                                                            :description description
+                                                            :password (or password "")
+                                                            :file-content (base64/encodeString file-content)
+                                                            :file-name file-name
+                                                            :on-success close-fn}])}])]
+        :close-fn close-fn}))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
   (reify
@@ -1780,11 +1835,11 @@
                                                                       :vcs-type vcs-type})))})
              (om/build no-keys-empty-state {:project-name project-name
                                             :add-key #(om/set-state! owner :show-modal? true)}))
-           (om/build p12-upload-modal {:show-modal? show-modal?
-                                       :close-fn #(om/set-state! owner :show-modal? false)
-                                       :error-message error-message
-                                       :project-name project-name
-                                       :vcs-type vcs-type})]])))))
+           (when show-modal?
+             (om/build p12-upload-modal {:close-fn #(om/set-state! owner :show-modal? false)
+                                         :error-message error-message
+                                         :project-name project-name
+                                         :vcs-type vcs-type}))]])))))
 
 (defn project-settings [data owner]
   (reify

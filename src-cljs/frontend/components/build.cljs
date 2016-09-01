@@ -20,9 +20,9 @@
             [frontend.config :as config]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.html :refer [open-ext]]
             [frontend.utils.seq :refer [find-index]]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html defrender]]))
@@ -49,7 +49,7 @@
        "Looks like we had a bug in our infrastructure, or that of our providers (generally "
        [:a {:href "https://status.github.com/"} "GitHub"]
        " or "
-       [:a {:href "https://status.aws.amazon.com/"} "AWS"]
+       [:a {:href "http://status.aws.amazon.com/"} "AWS"]
        ") We should have automatically retried this build. We've been alerted of"
        " the issue and are almost certainly looking into it, please "
        (common/contact-us-inner owner)
@@ -154,7 +154,7 @@
             (when (build-model/display-build-invite build)
               (om/build invites/build-invites
                         (:invite-data data)
-                        {:opts {:vcs-type (vcs-url/vcs-type (:vcs_url build))
+                        {:opts {:vcs_type (vcs-url/vcs-type (:vcs_url build))
                                 :project-name (vcs-url/project-name (:vcs_url build))}}))]]])))))
 
 (defn container-result-icon [{:keys [name]} owner]
@@ -223,7 +223,7 @@
     (:status override-status)
     real-status))
 
-(defn container-pill [{:keys [container status current-container-id build-running?]} owner]
+(defn container-pill [{:keys [container status current-container-id build-running? build-finished?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -241,7 +241,6 @@
     (render-state [_ {:keys [override-status]}]
       (html
        (let [container-id (container-model/id container)
-             duration-ms (container-utilization-duration container)
              status (maybe-override-status status override-status)
              icon-name (case status
                          :failed "Status-Failed"
@@ -258,7 +257,8 @@
            [:span.container-index (str (:index container))]
            [:span.status-icon
             (om/build container-result-icon {:name icon-name})]]
-          (om/build container-duration-label {:actions (:actions container)})])))))
+          (when build-finished?
+            (om/build container-duration-label {:actions (:actions container)}))])))))
 
 (def paging-width 10)
 
@@ -351,6 +351,7 @@
                     (om/build container-pill
                               {:container container
                                :build-running? build-running?
+                               :build-finished? (build-model/finished? build)
                                :current-container-id current-container-id
                                :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
@@ -432,7 +433,7 @@
       (let [build (get-in app state/build-path)
             build-data (get-in app state/build-data-path)
             container-data (get-in app state/container-data-path)
-            invite-data (:invite-data app)
+            invite-data (get-in app state/build-invite-data-path)
             project-data (get-in app state/project-data-path)
             user (get-in app state/user-path)]
         (html

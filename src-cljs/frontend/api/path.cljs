@@ -73,15 +73,15 @@
    "%s/%s/enable"
    (base-project-url-path vcs-type) project))
 
-(defn project-users [vcs-type project-name]
+(defn project-users [vcs-type project]
   (gstring/format "%s/%s/users"
                   (base-project-url-path vcs-type)
-                  project-name))
+                  project))
 
-(defn project-users-invite [vcs-type project-name]
+(defn project-users-invite [vcs-type project]
   (gstring/format "%s/%s/users/invite"
                   (base-project-url-path vcs-type)
-                  project-name))
+                  project))
 
 (defn project-cache [vcs-type project-name cache-type]
   (gstring/format "%s/%s/%s-cache"
@@ -137,3 +137,8 @@
                   (base-project-url-path vcs-type)
                   project-name
                   build-num))
+
+(defn org-members [vcs-type org-name]
+  (gstring/format
+    "%s/members"
+    (base-organization-url-path vcs-type org-name)))

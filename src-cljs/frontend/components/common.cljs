@@ -25,8 +25,10 @@
                  (not (config/elevio-enabled?)))
              (not (config/zd-widget-enabled?)))
       {:href (str "mailto:" (config/support-email))
-       :target "_blank"}
-      {:on-click #(raise! owner tags)})
+       :target "_blank"
+       :class "disabled"}
+      {:href ""
+       :on-click #(raise! owner tags)})
     {:href "https://discuss.circleci.com/t/community-support/1470"
      :target "_blank"}))
 
@@ -66,6 +68,13 @@
 (def messages-default-opts
   {:show-warning-text? true})
 
+(defn message-severity-display-options [message]
+  (get {"error"    ["alert-danger"  "Info-Error"]
+        "warning"  ["alert-warning" "Info-Warning"]
+        "info"     ["alert-info"    "Info-Info"]}
+       (:type message)
+       ["alert-info" "Info-Info"]))
+
 (defn messages
   ([msgs]
    (messages msgs {}))
@@ -74,11 +83,12 @@
      (when (pos? (count msgs))
        [:div.col-xs-12
         (map (fn [message]
-               [:div.row
-                [:div.alert.alert-info.iconified
-                 [:div.alert-icon
-                  [:img {:src (icon-path "Info-Info")}]]
-                 [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]])
+               (let [[alert-class alert-icon] (message-severity-display-options message)]
+                 [:div.row
+                  [:div {:class ["alert" alert-class "iconified"]}
+                   [:div.alert-icon
+                    [:img {:src (icon-path alert-icon)}]]
+                   [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]]))
              msgs)]))))
 
 ;; TODO: Why do we have ico and icon?
@@ -130,7 +140,10 @@
       [:svg {:xmlns "http://www.w3.org/2000/svg" :viewBox "0 0 100 100"
              :class (name ico-name)}
        (for [path (:paths template)]
-         (html [:path {:class (name path) :d (get ico-paths path)}]))]])))
+         (html
+          [:path {:key path
+                  :class (name path)
+                  :d (get ico-paths path)}]))]])))
 
 (def spinner
   (ico :spinner))
