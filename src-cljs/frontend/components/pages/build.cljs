@@ -109,7 +109,7 @@
                 "cancel build"]))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
-           (when (build-model/can-merge? build)
+           (when (build-model/can-merge-at-least-one-pr? build)
              (om/build merge-actions {:build build}))
            (when can-write-settings?
              [:div.build-settings

@@ -168,7 +168,7 @@
 (defn has-pull-requests? [build]
   (seq (:pull_request_urls build)))
 
-(defn can-merge? [build]
+(defn can-merge-at-least-one-pr? [build]
   (and (= "success" (:outcome build))
        (has-pull-requests? build)))
 
