@@ -521,8 +521,7 @@
   (let [vcs-type (vcs-url/vcs-type vcs-url)
         uuid frontend.async/*uuid*]
     (go
-      (let [api-result (<! (ajax/managed-ajax :put (gstring/format "/api/v1.1/project/%s/%s/%s/pulls/%s/merge"
-                                                                   vcs-type owner repo number)
+      (let [api-result (<! (ajax/managed-ajax :put (api-path/merge-pull-request vcs-type owner repo number)
                                               :params {:sha sha}))]
         (if (= :success (:status api-result))
           (.log js/console "SUCCESS" (-> api-result :resp :body :message))
