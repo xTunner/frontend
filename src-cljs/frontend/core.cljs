@@ -17,9 +17,9 @@
             [frontend.controllers.ws :as ws-con]
             [frontend.controllers.errors :as errors-con]
             [frontend.extensions]
-            [frontend.instrumentation :as instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
-            [goog.events]
+            [goog.events :as gevents]
             [om.core :as om :include-macros true]
             [frontend.pusher :as pusher]
             [frontend.history :as history]
@@ -73,47 +73,31 @@
   ws-ch
   (chan))
 
-(defn get-ab-overrides []
-  (merge (some-> js/window
-                 (aget "renderContext")
-                 (aget "abOverrides")
-                 (utils/js->clj-kw))))
-
-(defn set-ab-override [test-name value]
-  (when (nil? (aget js/window "renderContext" "abOverrides"))
-    (aset js/window "renderContext" "abOverrides" #js {}))
-  (aset js/window "renderContext" "abOverrides" (name test-name) value))
-
-(defn get-ab-tests [ab-test-definitions]
-  (let [overrides (get-ab-overrides)]
-    (ab/setup! ab-test-definitions :overrides overrides)))
-
 (defn app-state []
-  (let [initial-state (state/initial-state)]
-    (atom (assoc initial-state
-                 :current-user (-> js/window
+  (atom (assoc state/initial-state
+               :current-user (-> js/window
+                                 (aget "renderContext")
+                                 (aget "current_user")
+                                 utils/js->clj-kw)
+               :render-context (-> js/window
                                    (aget "renderContext")
-                                   (aget "current_user")
                                    utils/js->clj-kw)
-                 :render-context (-> js/window
-                                     (aget "renderContext")
-                                     utils/js->clj-kw)
-                 :comms {:controls  controls-ch
-                         :api       api-ch
-                         :errors    errors-ch
-                         :nav       navigation-ch
-                         :ws        ws-ch
-                         :controls-mult (async/mult controls-ch)
-                         :api-mult (async/mult api-ch)
-                         :errors-mult (async/mult errors-ch)
-                         :nav-mult (async/mult navigation-ch)
-                         :ws-mult (async/mult ws-ch)
-                         :mouse-move {:ch mouse-move-ch
-                                      :mult (async/mult mouse-move-ch)}
-                         :mouse-down {:ch mouse-down-ch
-                                      :mult (async/mult mouse-down-ch)}
-                         :mouse-up {:ch mouse-up-ch
-                                    :mult (async/mult mouse-up-ch)}}))))
+               :comms {:controls  controls-ch
+                       :api       api-ch
+                       :errors    errors-ch
+                       :nav       navigation-ch
+                       :ws        ws-ch
+                       :controls-mult (async/mult controls-ch)
+                       :api-mult (async/mult api-ch)
+                       :errors-mult (async/mult errors-ch)
+                       :nav-mult (async/mult navigation-ch)
+                       :ws-mult (async/mult ws-ch)
+                       :mouse-move {:ch mouse-move-ch
+                                    :mult (async/mult mouse-move-ch)}
+                       :mouse-down {:ch mouse-down-ch
+                                    :mult (async/mult mouse-down-ch)}
+                       :mouse-up {:ch mouse-up-ch
+                                  :mult (async/mult mouse-up-ch)}})))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
@@ -185,25 +169,15 @@
        (swap! state (partial errors-con/error container (first value) (second value)))
        (errors-con/post-error! container (first value) (second value) previous-state @state)))))
 
-(declare reinstall-om!)
-
-(defn install-om [state ab-tests container comms instrument?]
+(defn mount-om [state container comms]
   (om/root
    app/app
    state
    {:target container
     :shared {:comms comms
-             ;; note that changing ab-tests dynamically requires reinstalling om
-             :ab-tests ab-tests
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state
-             :track-event #(analytics/track (assoc % :current-state @state))}
-    ;; :instrument (let [methods (cond-> om/pure-methods
-    ;;                             instrument? instrumentation/instrument-methods)
-    ;;                   descriptor (om/specify-state-methods! (clj->js methods))]
-    ;;               (fn [f cursor m]
-    ;;                 (om/build* f cursor (assoc m :descriptor descriptor))))
-    :opts {:reinstall-om! reinstall-om!}}))
+             :track-event #(analytics/track (assoc % :current-state @state))}}))
 
 (defn find-top-level-node []
   (.-body js/document))
@@ -211,7 +185,7 @@
 (defn find-app-container []
   (goog.dom/getElement "app"))
 
-(defn main [state ab-tests top-level-node history-imp instrument?]
+(defn main [state top-level-node history-imp]
   (let [comms       (:comms @state)
         container   (find-app-container)
         uri-path    (.getPath utils/parsed-uri)
@@ -222,7 +196,14 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state ab-tests container comms instrument?)
+
+    (mount-om state container comms)
+
+    (when config/client-dev?
+      ;; Re-mount Om app when Figwheel reloads.
+      (gevents/listen js/document.body
+                      "figwheel.js-reload"
+                      #(mount-om state container comms)))
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -239,10 +220,7 @@
            nav-tap ([v] (nav-handler v state history-imp))
            api-tap ([v] (api-handler v state container))
            ws-tap ([v] (ws-handler v state pusher-imp))
-           errors-tap ([v] (errors-handler v state container))
-           ;; Capture the current history for playback in the absence
-           ;; of a server to store it
-           (async/timeout 10000) (do #_(print "TODO: print out history: ")))))))
+           errors-tap ([v] (errors-handler v state container)))))))
 
 (defn subscribe-to-user-channel [user ws-ch]
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
@@ -258,29 +236,12 @@
   (swallow-errors
     (assoc [] :deliberate :exception)))
 
-(defn ^:export set-ab-test
-  "Debug function for setting ab-tests, call from the js console as frontend.core.set_ab_test('new_test', false)"
-  [test-name value]
-  (let [test-key (keyword (name test-name))]
-    (println "starting value for" test-name "was" (-> @state/debug-state
-                                                      :ab-test-definitions
-                                                      get-ab-tests
-                                                      test-key))
-    (set-ab-override (name test-name) value)
-    (reinstall-om!)
-    (println "value for" test-name "is now" (-> @state/debug-state
-                                                :ab-test-definitions
-                                                get-ab-tests
-                                                test-key))))
-
-(aset js/window "set_ab_test" set-ab-test)
-
 (defn ^:export app-state-to-js
   "Used for inspecting app state in the console."
   []
   (clj->js @state/debug-state))
 
-(aset js/window "app_state_to_js" set-ab-test)
+(aset js/window "app_state_to_js" app-state-to-js)
 
 
 ;; Figwheel offers an event when JS is reloaded, but not when CSS is reloaded. A
@@ -289,9 +250,6 @@
 (defn handle-css-reload [files]
   (figwheel.client.utils/dispatch-custom-event "figwheel.css-reload" files))
 
-
-(defn ^:export reinstall-om! []
-  (install-om state/debug-state (get-ab-tests (:ab-test-definitions @state/debug-state)) (find-app-container) (:comms @state/debug-state) true))
 
 (defn add-css-link [path]
   (let [link (goog.dom/createDom "link"
@@ -303,15 +261,11 @@
   (support/enable-one!)
   (let [state (app-state)
         top-level-node (find-top-level-node)
-        history-imp (history/new-history-imp top-level-node)
-        instrument? (get-in @state [:render-context :instrument])
-        ab-tests (get-ab-tests (:ab-test-definitions @state))]
+        history-imp (history/new-history-imp top-level-node)]
     ;; globally define the state so that we can get to it for debugging
     (set! state/debug-state state)
-    (when instrument?
-      (instrumentation/setup-component-stats!))
     (browser-settings/setup! state)
-    (main state ab-tests top-level-node history-imp instrument?)
+    (main state top-level-node history-imp)
     (if-let [error-status (get-in @state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (get-in @state [:comms :nav]) [:error {:status error-status}])

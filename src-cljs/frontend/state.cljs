@@ -2,7 +2,7 @@
 
 (def debug-state)
 
-(defn initial-state []
+(def initial-state
   {:error-message nil
    :general-message nil
    ;; A/B test instructions:
@@ -208,7 +208,6 @@
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 (def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
-(def logging-enabled-path (conj browser-settings-path :logging-enabled))
 (def dismissed-osx-usage-level (conj browser-settings-path :dismissed-osx-usage-level))
 (def dismissed-osx-command-change-banner-path (conj browser-settings-path :dismissed-osx-command-change-banner))
 (def dismissed-trial-offer-banner (conj browser-settings-path :dismissed-trial-offer-banner))

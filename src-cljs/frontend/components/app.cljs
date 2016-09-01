@@ -12,7 +12,6 @@
             [frontend.components.inspector :as inspector]
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.invites :as invites]
-            [frontend.components.key-queue :as keyq]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
             [frontend.components.pages.add-projects :as add-projects]
@@ -34,9 +33,6 @@
             [goog.dom :as gdom]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
-
-(def keymap
-  (atom nil))
 
 (defn templated
   "Takes an old-world \"dominant component\" function and returns a new-world
@@ -84,8 +80,7 @@
             expanded? (get-in app state/show-instrumentation-line-items-path)
             inspector? (get-in app state/show-inspector-path)
             user-session-settings (get-in app [:render-context :user_session_settings])
-            env (config/env)
-            local-storage-logging-enabled? (get-in app state/logging-enabled-path)]
+            env (config/env)]
         (html
           [:div
            [:div.environment {:class (str "env-" env)
@@ -115,12 +110,7 @@
                    [:span (str "om " build-id " ")]]))
               [:a {:on-click #(raise! owner [:show-inspector-toggled])}
                (if inspector? "inspector off " "inspector on ")]
-              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]
-              [:a {:on-click #(raise! owner [:logging-enabled-clicked])}
-               (str (if local-storage-logging-enabled?
-                      "turn OFF "
-                      "turn ON ")
-                    "logging-enabled?")]]
+              [:a {:on-click #(raise! owner [:clear-instrumentation-data-clicked])} "clear stats"]]
              (om/build instrumentation/summary (:instrumentation app))]
             (when (and open? expanded?)
               (om/build instrumentation/line-items (:instrumentation app)))]])))))
@@ -145,7 +135,7 @@
   (and (config/enterprise?)
        (= "blocked" (get-in app [:enterprise :site-status :status]))))
 
-(defn app* [app owner {:keys [reinstall-om!]}]
+(defn app* [app owner]
   (reify
     om/IDisplayName (display-name [_] "App")
     om/IRender
@@ -153,11 +143,7 @@
       (if (app-blocked? app)
         (blocked-page app owner)
         (when (:navigation-point app)
-          (let [persist-state! #(raise! owner [:state-persisted])
-                restore-state! #(do (raise! owner [:state-restored])
-                                    ;; Components are not aware of external state changes.
-                                    (reinstall-om!))
-                logged-in? (get-in app state/user-path)
+          (let [logged-in? (get-in app state/user-path)
                 admin? (if (config/enterprise?)
                          (get-in app [:current-user :dev-admin])
                          (get-in app [:current-user :admin]))
@@ -165,8 +151,6 @@
                 ;; simple optimzation for real-time updates when the build is running
                 app-without-container-data (dissoc-in app state/container-data-path)
                 page (nav-point->page (:navigation-point app))]
-            (reset! keymap {["ctrl+s"] persist-state!
-                            ["ctrl+r"] restore-state!})
             (html
              (let [inner? (get-in app state/inner?-path)]
 
@@ -193,9 +177,6 @@
                                    ;; prevent that submission.
                                    (when (and button (.-form button))
                                      (.preventDefault %)))}
-                (om/build keyq/KeyboardHandler app-without-container-data
-                          {:opts {:keymap keymap
-                                  :error-ch (get-in app [:comms :errors])}})
                 (when admin?
                   (om/build head-admin app))
 

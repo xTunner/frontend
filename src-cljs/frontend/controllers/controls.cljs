@@ -217,16 +217,6 @@
   [target message _ state]
   (update-in state state/show-inspector-path not))
 
-(defmethod control-event :state-restored
-  [target message path state]
-  (let [str-data (.getItem js/sessionStorage "circle-state")]
-    (if (seq str-data)
-      (-> str-data
-          reader/read-string
-          (assoc :comms (:comms state)))
-      state)))
-
-
 (defmethod control-event :usage-queue-why-toggled
   [target message {:keys [build-id]} state]
   (update-in state state/show-usage-queue-path not))
@@ -489,12 +479,6 @@
   (if-let [url (intercom/user-link)]
     (js/window.open url)
     (print "No matching url could be found from current window.location.pathname")))
-
-
-(defmethod post-control-event! :state-persisted
-  [target message channel-id previous-state current-state]
-  (.setItem js/sessionStorage "circle-state"
-            (pr-str (dissoc current-state :comms))))
 
 
 (defmethod post-control-event! :retry-build-clicked
@@ -1539,10 +1523,6 @@
     (analytics/track {:event-type :project-branch-changed
                       :current-state current-state
                       :properties {:new-branch new-branch}})))
-
-(defmethod control-event :logging-enabled-clicked
-  [_ _ _ state]
-  (update-in state state/logging-enabled-path not))
 
 (defmethod control-event :dismiss-osx-usage-banner
   [_ _ {:keys [current-usage]} current-state]
