@@ -44,22 +44,6 @@
   (s/set-fn-validation! true))
 
 
-(def controls-ch
-  (chan))
-
-(def api-ch
-  (chan))
-
-(def errors-ch
-  (chan))
-
-(def navigation-ch
-  (chan))
-
-(def ^{:doc "websocket channel"}
-  ws-ch
-  (chan))
-
 (defn initial-state
   "Builds the initial app state, including :comms and data that comes from the
   renderContext."
@@ -72,11 +56,11 @@
          :render-context (-> js/window
                              (aget "renderContext")
                              utils/js->clj-kw)
-         :comms {:controls  controls-ch
-                 :api       api-ch
-                 :errors    errors-ch
-                 :nav       navigation-ch
-                 :ws        ws-ch}))
+         :comms {:controls  (chan)
+                 :api       (chan)
+                 :errors    (chan)
+                 :nav       (chan)
+                 :ws        (chan)}))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
