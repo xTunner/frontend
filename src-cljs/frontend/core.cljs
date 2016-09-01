@@ -90,17 +90,9 @@
                  :errors    errors-ch
                  :nav       navigation-ch
                  :ws        ws-ch
-                 :controls-mult (async/mult controls-ch)
-                 :api-mult (async/mult api-ch)
-                 :errors-mult (async/mult errors-ch)
-                 :nav-mult (async/mult navigation-ch)
-                 :ws-mult (async/mult ws-ch)
-                 :mouse-move {:ch mouse-move-ch
-                              :mult (async/mult mouse-move-ch)}
-                 :mouse-down {:ch mouse-down-ch
-                              :mult (async/mult mouse-down-ch)}
-                 :mouse-up {:ch mouse-up-ch
-                            :mult (async/mult mouse-up-ch)}}))
+                 :mouse-move {:ch mouse-move-ch}
+                 :mouse-down {:ch mouse-down-ch}
+                 :mouse-up {:ch mouse-up-ch}}))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
@@ -195,9 +187,12 @@
 (defn ^:export setup! []
   (support/enable-one!)
   (let [state (initial-state)
+        comms (:comms state)
         state-atom (atom state)
         top-level-node (find-top-level-node)
-        history-imp (history/new-history-imp top-level-node)]
+        container (find-app-container)
+        history-imp (history/new-history-imp top-level-node)
+        pusher-imp (pusher/new-pusher-instance (config/pusher))]
 
     ;; globally define the state so that we can get to it for debugging
     (set! state/debug-state state-atom)
@@ -206,40 +201,25 @@
 
     (routes/define-routes! state)
 
-    (let [comms (:comms state)
-          container (find-app-container)
-          pusher-imp (pusher/new-pusher-instance (config/pusher))
-          controls-tap (chan)
-          nav-tap (chan)
-          api-tap (chan)
-          ws-tap (chan)
-          errors-tap (chan)]
+    (mount-om state-atom container comms)
 
-      (mount-om state-atom container comms)
+    (when config/client-dev?
+      ;; Re-mount Om app when Figwheel reloads.
+      (gevents/listen js/document.body
+                      "figwheel.js-reload"
+                      #(mount-om state-atom container comms)))
 
-      (when config/client-dev?
-        ;; Re-mount Om app when Figwheel reloads.
-        (gevents/listen js/document.body
-                        "figwheel.js-reload"
-                        #(mount-om state-atom container comms)))
+    (go
+      (while true
+        (alt!
+          (:controls comms) ([v] (controls-handler v state-atom container))
+          (:nav comms) ([v] (nav-handler v state-atom history-imp))
+          (:api comms) ([v] (api-handler v state-atom container))
+          (:ws comms) ([v] (ws-handler v state-atom pusher-imp))
+          (:errors comms) ([v] (errors-handler v state-atom container)))))
 
-      (async/tap (:controls-mult comms) controls-tap)
-      (async/tap (:nav-mult comms) nav-tap)
-      (async/tap (:api-mult comms) api-tap)
-      (async/tap (:ws-mult comms) ws-tap)
-      (async/tap (:errors-mult comms) errors-tap)
-
-      (go
-        (while true
-          (alt!
-            controls-tap ([v] (controls-handler v state-atom container))
-            nav-tap ([v] (nav-handler v state-atom history-imp))
-            api-tap ([v] (api-handler v state-atom container))
-            ws-tap ([v] (ws-handler v state-atom pusher-imp))
-            errors-tap ([v] (errors-handler v state-atom container)))))
-
-      (when (config/enterprise?)
-        (api/get-enterprise-site-status (:api comms))))
+    (when (config/enterprise?)
+      (api/get-enterprise-site-status (:api comms)))
 
     (if-let [error-status (get-in state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
