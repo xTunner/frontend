@@ -32,9 +32,9 @@
   (fn [history-imp navigation-point args state] navigation-point))
 
 (defmulti post-navigated-to!
-  (fn [history-imp navigation-point args previous-state current-state]
+  (fn [history-imp navigation-point args previous-state current-state comms]
     (frontend.favicon/reset!)
-    (put! (get-in current-state [:comms :ws]) [:unsubscribe-stale-channels])
+    (put! (:ws comms) [:unsubscribe-stale-channels])
     navigation-point))
 
 ;; --- Navigation Multimethod Implementations ---
@@ -57,7 +57,7 @@
   (scroll! args))
 
 (defmethod post-navigated-to! :default
-  [history-imp navigation-point args previous-state current-state]
+  [history-imp navigation-point args previous-state current-state comms]
   (post-default navigation-point args))
 
 (defmethod navigated-to :navigate!
@@ -65,7 +65,7 @@
   state)
 
 (defmethod post-navigated-to! :navigate!
-  [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state]
+  [history-imp navigation-point {:keys [path replace-token?]} previous-state current-state comms]
   (let [path (if (= \/ (first path))
                (subs path 1)
                path)]
@@ -86,8 +86,8 @@
       state-utils/reset-current-project))
 
 (defmethod post-navigated-to! :dashboard
-  [history-imp navigation-point args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
+  [history-imp navigation-point args previous-state current-state comms]
+  (let [api-ch (:api comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)]
     (mlog (str "post-navigated-to! :dashboard with current-user? " (not (empty? current-user))
@@ -98,8 +98,7 @@
     (go (let [builds-url (api/dashboard-builds-url (assoc (state/navigation-data current-state)
                                                           :builds-per-page (:builds-per-page current-state)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
-              scopes (:scopes api-resp)
-              comms (get-in current-state [:comms])]
+              scopes (:scopes api-resp)]
           (mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
           (condp = (:status api-resp)
             :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
@@ -120,8 +119,8 @@
   (set-page-title!))
 
 (defmethod post-navigated-to! :build-state
-  [history-imp navigation-point args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  [history-imp navigation-point args previous-state current-state comms]
+  (let [api-ch (:api comms)]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (api/get-build-state api-ch))
@@ -168,8 +167,8 @@
   pusher channel, and the new \"@all\" style channel. This should be
   removed as soon it has been rolled in all environments including
   enterprise sites."
-  [state parts]
-  (let [ws-ch (get-in state [:comms :ws])
+  [state comms parts]
+  (let [ws-ch (:ws comms)
         parts (assoc parts :container-index 0)
         subscribe (fn [channel messages]
                     (put! ws-ch [:subscribe {:channel-name channel :messages messages}]))]
@@ -179,10 +178,10 @@
                                                              pusher/container-messages))))
 
 (defmethod post-navigated-to! :build
-  [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
-        nav-ch (get-in current-state [:comms :nav])
-        err-ch (get-in current-state [:comms :errors])
+  [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state comms]
+  (let [api-ch (:api comms)
+        nav-ch (:nav comms)
+        err-ch (:errors comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)]
     (mlog (str "post-navigated-to! :build current-user? " (not (empty? current-user))
@@ -236,10 +235,11 @@
           (when (build-model/finished? build)
             (api/get-build-tests build api-ch))))
     (let [[username project] (str/split project-name #"/")]
-      (initialize-pusher-subscriptions current-state {:username username
-                                                      :project project
-                                                      :build-num build-num
-                                                      :vcs-type vcs_type})))
+      (initialize-pusher-subscriptions current-state comms
+                                       {:username username
+                                        :project project
+                                        :build-num build-num
+                                        :vcs-type vcs_type})))
   (set-page-title! (str project-name " #" build-num)))
 
 (defmethod navigated-to :add-projects
@@ -258,8 +258,8 @@
         (state-utils/reset-current-org))))
 
 (defmethod post-navigated-to! :add-projects
-  [history-imp navigation-point _ previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
+  [history-imp navigation-point _ previous-state current-state comms]
+  (let [api-ch (:api comms)
         load-gh-repos? (get-in current-state state/github-repos-loading-path)
         load-bb-repos? (get-in current-state state/bitbucket-repos-loading-path)]
     ;; load orgs, collaborators, and repos.
@@ -284,9 +284,9 @@
         (assoc-in state/crumbs-path [{:type :projects}]))))
 
 (defmethod post-navigated-to! :projects
-  [history-imp navigation-point _ previous-state current-state]
+  [history-imp navigation-point _ previous-state current-state comms]
   (set-page-title! "Projects")
-  (let [api-ch (get-in current-state [:comms :api])
+  (let [api-ch (:api comms)
         current-org-ident (get-in current-state state/current-org-ident)
         previous-org-ident (get-in previous-state state/current-org-ident)]
     (api/get-orgs api-ch :include-user? true)
@@ -304,8 +304,8 @@
       (assoc-in state/crumbs-path [{:type :build-insights}])))
 
 (defmethod post-navigated-to! :build-insights
-  [history-imp navigation-point _ previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  [history-imp navigation-point _ previous-state current-state comms]
+  (let [api-ch (:api comms)]
     (api/get-projects api-ch)
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
@@ -331,8 +331,8 @@
                                     :vcs_type vcs_type}])))
 
 (defmethod post-navigated-to! :project-insights
-  [history-imp navigation-point args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  [history-imp navigation-point args previous-state current-state comms]
+  (let [api-ch (:api comms)]
     (api/get-projects api-ch)
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
@@ -347,8 +347,8 @@
         (assoc-in state/crumbs-path [{:type :team}]))))
 
 (defmethod post-navigated-to! :invite-teammates
-  [history-imp navigation-point args previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
+  [history-imp navigation-point args previous-state current-state comms]
+  (let [api-ch (:api comms)
         org (:org args)
         vcs_type (:vcs_type args)]
     ;; get the list of orgs
@@ -379,8 +379,8 @@
           %))))
 
 (defmethod post-navigated-to! :project-settings
-  [history-imp navigation-point {:keys [project-name vcs_type subpage]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])
+  [history-imp navigation-point {:keys [project-name vcs_type subpage]} previous-state current-state comms]
+  (let [api-ch (:api comms)
         navigation-data (state/navigation-data current-state)
         vcs-type (:vcs_type navigation-data)
         org (:org navigation-data)
@@ -433,7 +433,7 @@
   (set-page-title! (str "Project settings - " project-name)))
 
 (defmethod post-navigated-to! :landing
-  [history-imp navigation-point _ previous-state current-state]
+  [history-imp navigation-point _ previous-state current-state comms]
   (set-page-title! "Continuous Integration and Deployment")
   (set-page-description! "Free Hosted Continuous Integration and Deployment for web and mobile applications. Build better apps and ship code faster with CircleCI."))
 
@@ -457,8 +457,8 @@
           %))))
 
 (defmethod post-navigated-to! :org-settings
-  [history-imp navigation-point {:keys [vcs_type org subpage]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  [history-imp navigation-point {:keys [vcs_type org subpage]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
     (if (get-in current-state state/org-plan-path)
@@ -495,7 +495,7 @@
   (state-utils/clear-page-state state))
 
 (defmethod post-navigated-to! :logout
-  [history-imp navigation-point _ previous-state current-state]
+  [history-imp navigation-point _ previous-state current-state comms]
   (go (let [api-result (<! (ajax/managed-ajax :post "/logout"))]
         (set! js/window.location "/"))))
 
@@ -511,7 +511,7 @@
                :original-navigation-point orig-nav-point))))
 
 (defmethod post-navigated-to! :error
-  [history-imp navigation-point {:keys [status] :as args} previous-state current-state]
+  [history-imp navigation-point {:keys [status] :as args} previous-state current-state comms]
   (set-page-title! (condp = status
                      401 "Login required"
                      404 "Page not found"
@@ -534,10 +534,10 @@
          state))))
 
 (defmethod post-navigated-to! :account
-  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
     (when-not (seq (get-in current-state state/projects-path))
-      (api/get-projects (get-in current-state [:comms :api])))
+      (api/get-projects (:api comms)))
     (ajax/ajax :get "/api/v1/sync-github" :me api-ch)
     (api/get-orgs api-ch :include-user? true)
     (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
@@ -553,8 +553,8 @@
              :recent-builds nil)))
 
 (defmethod post-navigated-to! :admin-settings
-  [history-imp navigation-point {:keys [subpage tab]} previous-state current-state]
-  (let [api-ch (get-in current-state [:comms :api])]
+  [history-imp navigation-point {:keys [subpage tab]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
     (case subpage
       :fleet-state (do
                      (api/get-fleet-state api-ch)

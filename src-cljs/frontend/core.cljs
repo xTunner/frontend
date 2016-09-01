@@ -73,14 +73,14 @@
        (controls-con/post-control-event! container (first value) (second value) previous-state @state comms)))))
 
 (defn nav-handler
-  [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
+  [[navigation-point {:keys [inner? query-params] :as args} :as value] state history comms]
   (when (log-channels?)
     (mlog "Navigation Verbose: " value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial nav-con/navigated-to history navigation-point args))
-       (nav-con/post-navigated-to! history navigation-point args previous-state @state)
+       (nav-con/post-navigated-to! history navigation-point args previous-state @state comms)
        (set-canonical! (:_canonical args))
        (when-not (= navigation-point :navigate!)
          (analytics/track {:event-type :pageview
@@ -180,7 +180,7 @@
       (while true
         (alt!
           (:controls comms) ([v] (controls-handler v state-atom container comms))
-          (:nav comms) ([v] (nav-handler v state-atom history-imp))
+          (:nav comms) ([v] (nav-handler v state-atom history-imp comms))
           (:api comms) ([v] (api-handler v state-atom container))
           (:ws comms) ([v] (ws-handler v state-atom pusher-imp))
           (:errors comms) ([v] (errors-handler v state-atom container)))))
