@@ -521,17 +521,11 @@
 (defmethod navigated-to :account
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (mlog "Navigated to account subpage:" subpage)
-  (let [logged-in? (get-in state state/user-path)
-        nav-ch (get-in state [:comms :nav])]
-    (if logged-in?
-       (-> state
-           state-utils/clear-page-state
-           (assoc state/current-view navigation-point
-                  state/navigation-data (assoc args :show-aside-menu? true))
-           (assoc-in state/crumbs-path [{:type :account}]))
-       (do
-         (routes/open-to-outer! nav-ch :error {:status 401})
-         state))))
+  (-> state
+      state-utils/clear-page-state
+      (assoc state/current-view navigation-point
+             state/navigation-data (assoc args :show-aside-menu? true))
+      (assoc-in state/crumbs-path [{:type :account}])))
 
 (defmethod post-navigated-to! :account
   [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state comms]
