@@ -43,19 +43,6 @@
   (require-devtools!)
   (s/set-fn-validation! true))
 
-;; Overcome some of the browser limitations around DnD
-(def mouse-move-ch
-  (chan (sliding-buffer 1)))
-
-(def mouse-down-ch
-  (chan (sliding-buffer 1)))
-
-(def mouse-up-ch
-  (chan (sliding-buffer 1)))
-
-(js/window.addEventListener "mousedown" #(put! mouse-down-ch %))
-(js/window.addEventListener "mouseup"   #(put! mouse-up-ch   %))
-(js/window.addEventListener "mousemove" #(put! mouse-move-ch %))
 
 (def controls-ch
   (chan))
@@ -89,10 +76,7 @@
                  :api       api-ch
                  :errors    errors-ch
                  :nav       navigation-ch
-                 :ws        ws-ch
-                 :mouse-move {:ch mouse-move-ch}
-                 :mouse-down {:ch mouse-down-ch}
-                 :mouse-up {:ch mouse-up-ch}}))
+                 :ws        ws-ch}))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
