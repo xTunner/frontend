@@ -19,16 +19,28 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn- table [users]
-  (om/build table/table
-            {:rows users
-             :key-fn :login
-             :columns [{:header "Login"
-                        :cell-fn :login}
+(defn- add-follow-counts [users projects]
+  (for [user users
+        :let [followings
+              (group-by :follower
+                        (for [project projects
+                              follower (:followers project)]
+                          {:follower follower
+                           :project project}))]]
+    (assoc user ::follow-count (count (get followings user)))))
 
-                       {:header "Projects Followed"
-                        :type #{:right :shrink}
-                        :cell-fn ::follow-count}]}))
+(defn- table [{:keys [users projects admin] :as selected-org}]
+  (let [rows (cond-> users
+               admin (add-follow-counts projects))
+        columns (cond-> [{:header "Login"
+                          :cell-fn :login}]
+                  admin (conj {:header "Projects Followed"
+                               :type #{:right :shrink}
+                               :cell-fn ::follow-count}))]
+    (om/build table/table
+              {:rows rows
+               :key-fn :login
+               :columns columns})))
 
 (defn- no-org-selected [available-orgs bitbucket-enabled?]
   (component
@@ -56,16 +68,6 @@
   ;; simple unique id available on the frontend for Om Next.
   [:organization/by-vcs-type-and-name
    [(:vcs_type org) (:login org)]])
-
-(defn- add-follow-counts [users projects]
-  (for [user users
-        :let [followings
-              (group-by :follower
-                        (for [project projects
-                              follower (:followers project)]
-                          {:follower follower
-                           :project project}))]]
-    (assoc user ::follow-count (count (get followings user)))))
 
 ;; functions for invite-teammates-modal component state manipulation
 
@@ -291,8 +293,8 @@
                          (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
                                                            :close-fn #(om/set-state! owner :show-invite-modal? false)
                                                            :show-modal? show-invite-modal?})]}
-               (if-let [users (:users selected-org)]
-                 (table (add-follow-counts users (:projects selected-org)))
+               (if (:users selected-org)
+                 (table (select-keys selected-org [:users :projects :admin]))
                  (html [:div.loading-spinner common/spinner])))
               (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
 
