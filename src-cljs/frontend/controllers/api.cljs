@@ -296,11 +296,15 @@
   (if (empty? (:resp args))
     ;; this is the last api request, update the loading flag.
     (assoc-in state state/github-repos-loading-path false)
-    ;; otherwise trigger a fetch for the next page, and return the state
-    ;; with the items we got here added.
+    ;; Add the items on this page of results to the state.
+    (update-in state state/repos-path #(into % (:resp args)))))
+
+(defmethod post-api-event! [:github-repos :success]
+  [target message status args previous-state current-state comms]
+  (when-not (empty? (:resp args))
+    ;; fetch the next page
     (let [page (-> args :context :page)]
-      (api/get-github-repos (get-in state [:comms :api]) :page (inc page))
-      (update-in state state/repos-path #(into % (:resp args))))))
+      (api/get-github-repos (:api comms) :page (inc page)))))
 
 (defmethod api-event [:github-repos :failed]
   [target message status {:keys [status-code]} state]
@@ -671,10 +675,11 @@
 
 (defmethod api-event [:stop-building-project :success]
   [target message status {:keys [resp context]} state]
-  (let [updated-state
-        (update-in state state/projects-path (fn [projects] (remove #(= (:project-id context) (project-model/id %)) projects)))]
-    (put! (get-in state [:comms :nav]) [:navigate! {:path (routes/v1-dashboard)}])
-    updated-state))
+  (update-in state state/projects-path (fn [projects] (remove #(= (:project-id context) (project-model/id %)) projects))))
+
+(defmethod post-api-event! [:stop-building-project :success]
+  [target message status args previous-state current-state comms]
+  (put! (:nav comms) [:navigate! {:path (routes/v1-dashboard)}]))
 
 (defn org-selectable?
   [state org-name vcs-type]
