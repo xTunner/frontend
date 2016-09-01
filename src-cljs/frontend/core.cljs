@@ -19,7 +19,7 @@
             [frontend.extensions]
             [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.state :as state]
-            [goog.events]
+            [goog.events :as gevents]
             [om.core :as om :include-macros true]
             [frontend.pusher :as pusher]
             [frontend.history :as history]
@@ -169,9 +169,7 @@
        (swap! state (partial errors-con/error container (first value) (second value)))
        (errors-con/post-error! container (first value) (second value) previous-state @state)))))
 
-(declare reinstall-om!)
-
-(defn install-om [state container comms]
+(defn mount-om [state container comms]
   (om/root
    app/app
    state
@@ -179,8 +177,7 @@
     :shared {:comms comms
              :timer-atom (timer/initialize)
              :_app-state-do-not-use state
-             :track-event #(analytics/track (assoc % :current-state @state))}
-    :opts {:reinstall-om! reinstall-om!}}))
+             :track-event #(analytics/track (assoc % :current-state @state))}}))
 
 (defn find-top-level-node []
   (.-body js/document))
@@ -199,7 +196,14 @@
         ws-tap (chan)
         errors-tap (chan)]
     (routes/define-routes! state)
-    (install-om state container comms)
+
+    (mount-om state container comms)
+
+    (when config/client-dev?
+      ;; Re-mount Om app when Figwheel reloads.
+      (gevents/listen js/document.body
+                      "figwheel.js-reload"
+                      #(mount-om state container comms)))
 
     (async/tap (:controls-mult comms) controls-tap)
     (async/tap (:nav-mult comms) nav-tap)
@@ -246,9 +250,6 @@
 (defn handle-css-reload [files]
   (figwheel.client.utils/dispatch-custom-event "figwheel.css-reload" files))
 
-
-(defn ^:export reinstall-om! []
-  (install-om state/debug-state (find-app-container) (:comms @state/debug-state)))
 
 (defn add-css-link [path]
   (let [link (goog.dom/createDom "link"

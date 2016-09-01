@@ -134,7 +134,7 @@
   (and (config/enterprise?)
        (= "blocked" (get-in app [:enterprise :site-status :status]))))
 
-(defn app* [app owner {:keys [reinstall-om!]}]
+(defn app* [app owner]
   (reify
     om/IDisplayName (display-name [_] "App")
     om/IRender
