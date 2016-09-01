@@ -92,7 +92,7 @@
          (set! (.-scrollTop main-body) 0))))))
 
 (defn api-handler
-  [value state container]
+  [value state container comms]
   (when (log-channels?)
     (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
@@ -105,7 +105,7 @@
                                               api-data))
        (when-let [date-header (get-in api-data [:response-headers "Date"])]
          (datetime/update-server-offset date-header))
-       (api-con/post-api-event! container message status api-data previous-state @state)))))
+       (api-con/post-api-event! container message status api-data previous-state @state comms)))))
 
 (defn ws-handler
   [value state pusher]
@@ -181,7 +181,7 @@
         (alt!
           (:controls comms) ([v] (controls-handler v state-atom container comms))
           (:nav comms) ([v] (nav-handler v state-atom history-imp comms))
-          (:api comms) ([v] (api-handler v state-atom container))
+          (:api comms) ([v] (api-handler v state-atom container comms))
           (:ws comms) ([v] (ws-handler v state-atom pusher-imp))
           (:errors comms) ([v] (errors-handler v state-atom container)))))
 

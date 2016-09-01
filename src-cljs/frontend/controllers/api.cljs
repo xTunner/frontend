@@ -45,7 +45,7 @@
   (fn [target message status args state] [message status]))
 
 (defmulti post-api-event!
-  (fn [target message status args previous-state current-state] [message status]))
+  (fn [target message status args previous-state current-state comms] [message status]))
 
 ;; --- API Multimethod Implementations ---
 
@@ -59,7 +59,7 @@
           state))))
 
 (defmethod post-api-event! :default
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   ;; subdispatching for state defaults
   (let [submethod (get-method post-api-event! [:default status])]
     (if submethod
@@ -72,7 +72,7 @@
   state)
 
 (defmethod post-api-event! [:default :started]
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   (mlog "No post-api for: " [message status]))
 
 (defmethod api-event [:default :success]
@@ -81,7 +81,7 @@
   state)
 
 (defmethod post-api-event! [:default :success]
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   (mlog "No post-api for: " [message status]))
 
 (defmethod api-event [:default :failed]
@@ -90,8 +90,8 @@
   state)
 
 (defmethod post-api-event! [:default :failed]
-  [target message status args previous-state current-state]
-  (put! (get-in current-state [:comms :errors]) [:api-error args])
+  [target message status args previous-state current-state comms]
+  (put! (:errors comms) [:api-error args])
   (mlog "No post-api for: " [message status]))
 
 (defmethod api-event [:default :finished]
@@ -100,7 +100,7 @@
   state)
 
 (defmethod post-api-event! [:default :finished]
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   (mlog "No post-api for: " [message status]))
 
 
@@ -123,21 +123,21 @@
     (assoc-in current-state state/projects-path processed-new-projects)))
 
 (def projects-success-thens
-  {:build-insights (fn [state]
+  {:build-insights (fn [state comms]
                      (let [projects (get-in state state/projects-path)
                            build-keys (map api/project-build-key projects)
-                           api-ch (get-in state [:comms :api])]
+                           api-ch (:api comms)]
                          (api/get-projects-builds build-keys 60 api-ch)))
-   :project-insights (fn [{:keys [navigation-data] :as state}]
+   :project-insights (fn [{:keys [navigation-data] :as state} comms]
                        (let [build-key (api/project-build-key navigation-data)
-                             api-ch (get-in state [:comms :api])]
+                             api-ch (:api comms)]
                          (api/get-projects-builds [build-key] 100 api-ch)
                          (api/get-branch-build-times build-key api-ch)))})
 
 (defmethod post-api-event! [:projects :success]
-  [target message status args previous-state {:keys [navigation-point] :as current-state}]
+  [target message status args previous-state {:keys [navigation-point] :as current-state} comms]
   (when-let [then (projects-success-thens navigation-point)]
-    (then current-state)))
+    (then current-state comms)))
 
 (defmethod api-event [:me :success]
   [target message status args state]
@@ -226,7 +226,7 @@
         state))))
 
 (defmethod post-api-event! [:build-observables :success]
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   (let [build (get-in current-state state/build-path)
         previous-build (get-in previous-state state/build-path)]
     (frontend.favicon/set-color! (build-model/favicon-color build))
@@ -238,18 +238,18 @@
                  ;; behavior for our app?
                  (get-in current-state state/web-notifications-enabled-path))
         (notifications/notify-build-done build))
-      (api/get-build-tests build (get-in current-state [:comms :api])))))
+      (api/get-build-tests build (:api comms)))))
 
 (defn maybe-set-containers-filter!
   "Depending on the status and outcome of the build, set active
   container filter to failed."
-  [state]
+  [state comms]
   (let [build (get-in state state/build-path)
         containers (get-in state state/containers-path)
         build-running? (not (build-model/finished? build))
         failed-containers (filter #(= :failed (container-model/status % build-running?))
                                   containers)
-        controls-ch (get-in state [:comms :controls])]
+        controls-ch (:controls comms)]
     ;; set filter
     (when (and (not build-running?)
                (seq failed-containers))
@@ -258,7 +258,7 @@
 
 (defn fetch-visible-output
   "Only fetch the output that is shown by default and is shown in this container."
-  [current-state build-num vcs-url]
+  [current-state comms build-num vcs-url]
   (let [visible-actions-with-output (->> (get-in current-state state/containers-path)
                                          (mapcat :actions)
                                          (filter #(action-model/visible-with-output? % (get-in current-state state/current-container-path)))
@@ -271,18 +271,18 @@
                               :build-num build-num
                               :step (:step action)
                               :index (:index action)}
-                             (get-in current-state [:comms :api])))))
+                             (:api comms)))))
 
 (defmethod post-api-event! [:build :success]
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   (let [{:keys [build-num project-name]} (:context args)]
     ;; This is slightly different than the api-event because we don't want to have to
     ;; convert the build from steps to containers again.
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
-      (fetch-visible-output current-state build-num (get-in args [:resp :vcs_url]))
+      (fetch-visible-output current-state comms build-num (get-in args [:resp :vcs_url]))
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
-      (maybe-set-containers-filter! current-state))))
+      (maybe-set-containers-filter! current-state comms))))
 
 (defmethod api-event [:cancel-build :success]
   [target message status {:keys [context resp]} state]
@@ -343,9 +343,9 @@
       (assoc-in state state/usage-queue-path usage-queue-builds))))
 
 (defmethod post-api-event! [:usage-queue :success]
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   (let [usage-queue-builds (get-in current-state state/usage-queue-path)
-        ws-ch (get-in current-state [:comms :ws])]
+        ws-ch (:ws comms)]
     (doseq [build usage-queue-builds
             :let [parts (state-utils/build-parts build)]]
       (put! ws-ch [:subscribe {:channel-name (pusher/build-all-channel parts)
@@ -387,8 +387,8 @@
             (assoc-in state/containers-path (vec (build-model/containers build))))))))
 
 (defn update-pusher-subscriptions
-  [state old-index new-index]
-  (let [ws-ch (get-in state [:comms :ws])
+  [state comms old-index new-index]
+  (let [ws-ch (:ws comms)
         build (get-in state state/build-path)]
     (put! ws-ch [:unsubscribe (-> build
                                   (state-utils/build-parts old-index)
@@ -399,14 +399,14 @@
                              :messages pusher/container-messages}])))
 
 (defmethod post-api-event! [:action-steps :success]
-  [target message status args previous-state current-state]
+  [target message status args previous-state current-state comms]
   (let [{:keys [build-num project-name old-container-id new-container-id]} (:context args)
         build (get-in current-state state/build-path)
         vcs-url (:vcs_url build)]
     (when (and (= build-num (:build_num build))
                (= project-name (vcs-url/project-name vcs-url)))
-      (fetch-visible-output current-state build-num vcs-url)
-      (update-pusher-subscriptions current-state old-container-id new-container-id)
+      (fetch-visible-output current-state comms build-num vcs-url)
+      (update-pusher-subscriptions current-state comms old-container-id new-container-id)
       (frontend.favicon/set-color! (build-model/favicon-color build)))))
 
 (defmethod api-event [:action-log :success]
@@ -530,7 +530,7 @@
         (state/add-flash-notification "Environment variable added successfully."))))
 
 (defmethod post-api-event! [:create-env-var :success]
-  [target message status {:keys [context]} previous-state current-state]
+  [target message status {:keys [context]} previous-state current-state comms]
   ((:on-success context)))
 
 
@@ -555,11 +555,11 @@
         (state/add-flash-notification "Your key has been successfully added."))))
 
 (defmethod post-api-event! [:save-ssh-key :success]
-  [target message status {:keys [context resp]} previous-state current-state]
+  [target message status {:keys [context resp]} previous-state current-state comms]
   (when (= (:project-id context) (project-model/id (get-in current-state state/project-path)))
     ((:on-success context))
     (let [project-name (vcs-url/project-name (:project-id context))
-          api-ch (get-in current-state [:comms :api])
+          api-ch (:api comms)
           vcs-type (vcs-url/vcs-type (:project-id context))
           org-name (vcs-url/org-name (:project-id context))
           repo-name (vcs-url/repo-name (:project-id context))]
@@ -594,7 +594,7 @@
 
 
 (defmethod post-api-event! [:save-project-api-token :success]
-  [target message status {:keys [context]} previous-state current-state]
+  [target message status {:keys [context]} previous-state current-state comms]
   (forms/release-button! (:uuid context) status)
   ((:on-success context)))
 
@@ -725,10 +725,10 @@
     state))
 
 (defmethod post-api-event! [:follow-repo :success]
-  [target message status args previous-state current-state]
-  (api/get-projects (get-in current-state [:comms :api]))
+  [target message status args previous-state current-state comms]
+  (api/get-projects (:api comms))
   (if-let [first-build (get-in args [:resp :first_build])]
-    (let [nav-ch (get-in current-state [:comms :nav])
+    (let [nav-ch (:nav comms)
           build-path (-> first-build
                          :build_url
                          (goog.Uri.)
@@ -741,7 +741,7 @@
                                  (-> args :context :vcs_type)
                                  (vcs-url/project-name (:vcs_url (:context args))))
                  :start-build
-                 (get-in current-state [:comms :api])))))
+                 (:api comms)))))
 
 (defmethod api-event [:unfollow-repo :success]
   [target message status {:keys [resp context]} state]
@@ -752,30 +752,30 @@
     state))
 
 (defmethod post-api-event! [:unfollow-repo :success]
-  [target message status args previous-state current-state]
-  (api/get-projects (get-in current-state [:comms :api])))
+  [target message status args previous-state current-state comms]
+  (api/get-projects (:api comms)))
 
 
 (defmethod post-api-event! [:start-build :success]
-  [target message status args previous-state current-state]
-  (let [nav-ch (get-in current-state [:comms :nav])
+  [target message status args previous-state current-state comms]
+  (let [nav-ch (:nav comms)
         build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
     (put! nav-ch [:navigate! {:path build-url}])))
 
 
 (defmethod post-api-event! [:retry-build :success]
-  [target message status args previous-state current-state]
-  (let [nav-ch (get-in current-state [:comms :nav])
+  [target message status args previous-state current-state comms]
+  (let [nav-ch (:nav comms)
         build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
     (put! nav-ch [:navigate! {:path build-url}])))
 
 
 (defmethod post-api-event! [:save-dependencies-commands :success]
-  [target message status {:keys [context resp]} previous-state current-state]
+  [target message status {:keys [context resp]} previous-state current-state comms]
   (when (and (= (project-model/id (get-in current-state state/project-path))
                 (:project-id context))
              (= :setup (:project-settings-subpage current-state)))
-    (let [nav-ch (get-in current-state [:comms :nav])
+    (let [nav-ch (:nav comms)
           org (vcs-url/org-name (:project-id context))
           repo (vcs-url/repo-name (:project-id context))
           vcs-type (vcs-url/vcs-type (:project-id context))]
@@ -786,8 +786,8 @@
 
 
 (defmethod post-api-event! [:save-test-commands-and-build :success]
-  [target message status {:keys [context resp]} previous-state current-state]
-  (let [controls-ch (get-in current-state [:comms :controls])]
+  [target message status {:keys [context resp]} previous-state current-state comms]
+  (let [controls-ch (:controls comms)]
     (put! controls-ch [:started-edit-settings-build context])))
 
 
@@ -808,10 +808,10 @@
       (assoc-in state state/org-plan-path resp))))
 
 (defmethod post-api-event! [:create-plan :success]
-  [target message status {:keys [resp context]} previous-state current-state]
+  [target message status {:keys [resp context]} previous-state current-state comms]
   (let [{:keys [org-name vcs-type]} context]
     (when (org-selectable? current-state org-name vcs-type)
-      (let [nav-ch (get-in current-state [:comms :nav])]
+      (let [nav-ch (:nav comms)]
         (put! nav-ch [:navigate! {:path (routes/v1-org-settings-path {:org org-name
                                                                       :vcs_type vcs-type
                                                                       :_fragment (name (get-in current-state state/org-settings-subpage-path))})
@@ -937,14 +937,14 @@
         (state/add-flash-notification "Your key has been successfully added."))))
 
 (defmethod post-api-event! [:set-code-signing-keys :success]
-  [target message status {:keys [context]} previous-state current-state]
-  (api/get-project-code-signing-keys (:project-name context) (:vcs-type context) (-> current-state :comms :api))
+  [target message status {:keys [context]} previous-state current-state comms]
+  (api/get-project-code-signing-keys (:project-name context) (:vcs-type context) (:api comms))
   ((:on-success context))
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:set-code-signing-keys :failed]
-  [target message status {:keys [context] :as args} previous-state current-state]
-  (put! (get-in current-state [:comms :errors]) [:api-error args])
+  [target message status {:keys [context] :as args} previous-state current-state comms]
+  (put! (:errors comms) [:api-error args])
   (forms/release-button! (:uuid context) status))
 
 (defmethod api-event [:delete-code-signing-key :success]
@@ -957,12 +957,12 @@
         (state/add-flash-notification "Your key has been successfully removed."))))
 
 (defmethod post-api-event! [:delete-code-signing-keys :success]
-  [target message status {:keys [context]} previous-state current-state]
+  [target message status {:keys [context]} previous-state current-state comms]
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:delete-code-signing-keys :failed]
-  [target message status {:keys [context] :as args} previous-state current-state]
-  (put! (get-in current-state [:comms :errors]) [:api-error args])
+  [target message status {:keys [context] :as args} previous-state current-state comms]
+  (put! (:errors comms) [:api-error args])
   (forms/release-button! (:uuid context) status))
 
 (defmethod api-event [:org-settings-normalized :success]
