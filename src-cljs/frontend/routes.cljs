@@ -292,9 +292,8 @@
   (defroute v1-not-found "*" []
     (open-to-outer! nav-ch :error {:status 404})))
 
-(defn define-routes! [state]
-  (let [nav-ch (get-in state [:comms :nav])
-        authenticated? (boolean (get-in state [:current-user]))]
+(defn define-routes! [state nav-ch]
+  (let [authenticated? (boolean (get-in state [:current-user]))]
     (define-user-routes! nav-ch authenticated?)
     (when (get-in state [:current-user :admin])
       (define-admin-routes! nav-ch))

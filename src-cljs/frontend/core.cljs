@@ -166,7 +166,7 @@
 
     (browser-settings/setup! state-atom)
 
-    (routes/define-routes! state)
+    (routes/define-routes! state (:nav comms))
 
     (mount-om state-atom container comms)
 
