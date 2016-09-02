@@ -394,42 +394,45 @@
                                 tab tab
                                 github-authorized? "github"
                                 :else "bitbucket")
-            tabs (when bitbucket-possible?
-                   [{:name "github"
-                     :icon (html [:i.octicon.octicon-mark-github])
-                     :label "GitHub"}
-                    {:name "bitbucket"
-                     :icon (html [:i.fa.fa-bitbucket])
-                     :label "Bitbucket"}])]
-        (card/tabbed
-         {:tab-row (om/build tabs/tab-row {:tabs tabs
-                                           :selected-tab-name selected-vcs-type
-                                           :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})}
-         (html
-          [:div
-           (when (= "github" selected-vcs-type)
-             (if github-authorized?
-               (missing-org-info owner)
-               [:div
-                [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
-                [:a.btn.btn-primary {:href (gh-utils/auth-url)
-                                     :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                     :properties {:vcs-type selected-vcs-type}})}
-                 "Authorize with GitHub"]]))
-           (when (and (= "bitbucket" selected-vcs-type)
-                      (not bitbucket-authorized?))
-             [:div
-              [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
-              [:a.btn.btn-primary {:href (bitbucket/auth-url)
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                   :properties {:vcs-type selected-vcs-type}})}
-               "Authorize with Bitbucket"]])
-           (om/build org-picker/picker {:orgs (filter (partial select-vcs-type selected-vcs-type) orgs)
-                                        :selected-org selected-org
-                                        :on-org-click #(raise! owner [:selected-add-projects-org %])})
-           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
-             [:div.orgs-loading
-              [:div.loading-spinner common/spinner]])]))))))
+            tab-content (html
+                         [:div
+                          (when (= "github" selected-vcs-type)
+                            (if github-authorized?
+                              (missing-org-info owner)
+                              [:div
+                               [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
+                               [:a.btn.btn-primary {:href (gh-utils/auth-url)
+                                                    :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                                    :properties {:vcs-type selected-vcs-type}})}
+                                "Authorize with GitHub"]]))
+                          (when (and (= "bitbucket" selected-vcs-type)
+                                     (not bitbucket-authorized?))
+                            [:div
+                             [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
+                             [:a.btn.btn-primary {:href (bitbucket/auth-url)
+                                                  :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                                  :properties {:vcs-type selected-vcs-type}})}
+                              "Authorize with Bitbucket"]])
+                          (om/build org-picker/picker {:orgs (filter (partial select-vcs-type selected-vcs-type) orgs)
+                                                       :selected-org selected-org
+                                                       :on-org-click #(raise! owner [:selected-add-projects-org %])})
+                          (when (get-in user [:repos-loading (keyword selected-vcs-type)])
+                            [:div.orgs-loading
+                             [:div.loading-spinner common/spinner]])])]
+        (if bitbucket-possible?
+          (let [tabs [{:name "github"
+                       :icon (html [:i.octicon.octicon-mark-github])
+                       :label "GitHub"}
+                      {:name "bitbucket"
+                       :icon (html [:i.fa.fa-bitbucket])
+                       :label "Bitbucket"}]]
+            (card/tabbed
+             {:tab-row (om/build tabs/tab-row {:tabs tabs
+                                               :selected-tab-name selected-vcs-type
+                                               :on-tab-click #(navigate! owner (routes/v1-add-projects-path {:_fragment %}))})}
+             tab-content))
+          (card/basic
+           tab-content))))))
 
 (defrender add-projects [data owner]
   (let [user (:current-user data)
