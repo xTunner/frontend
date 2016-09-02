@@ -29,14 +29,14 @@
                            :project project}))]]
     (assoc user ::follow-count (count (get followings user)))))
 
-(defn- table [{:keys [users projects admin] :as selected-org}]
+(defn- table [{:keys [users projects] :as selected-org}]
   (let [rows (cond-> users
-               admin (add-follow-counts projects))
+               projects (add-follow-counts projects))
         columns (cond-> [{:header "Login"
                           :cell-fn :login}]
-                  admin (conj {:header "Projects Followed"
-                               :type #{:right :shrink}
-                               :cell-fn ::follow-count}))]
+                  projects (conj {:header "Projects Followed"
+                                  :type #{:right :shrink}
+                                  :cell-fn ::follow-count}))]
     (om/build table/table
               {:rows rows
                :key-fn :login
@@ -294,7 +294,7 @@
                                                            :close-fn #(om/set-state! owner :show-invite-modal? false)
                                                            :show-modal? show-invite-modal?})]}
                (if (:users selected-org)
-                 (table (select-keys selected-org [:users :projects :admin]))
+                 (table (select-keys selected-org [:users :projects]))
                  (html [:div.loading-spinner common/spinner])))
               (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
 
