@@ -118,14 +118,14 @@
        (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state comms)))))
 
 (defn errors-handler
-  [value state container]
+  [value state container comms]
   (when (log-channels?)
     (mlog "Errors Verbose: " value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial errors-con/error container (first value) (second value)))
-       (errors-con/post-error! container (first value) (second value) previous-state @state)))))
+       (errors-con/post-error! container (first value) (second value) previous-state @state comms)))))
 
 (defn mount-om [state-atom container comms]
   (om/root
@@ -183,7 +183,7 @@
           (:nav comms) ([v] (nav-handler v state-atom history-imp comms))
           (:api comms) ([v] (api-handler v state-atom container comms))
           (:ws comms) ([v] (ws-handler v state-atom pusher-imp comms))
-          (:errors comms) ([v] (errors-handler v state-atom container)))))
+          (:errors comms) ([v] (errors-handler v state-atom container comms)))))
 
     (when (config/enterprise?)
       (api/get-enterprise-site-status (:api comms)))
