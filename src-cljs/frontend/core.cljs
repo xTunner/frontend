@@ -108,14 +108,14 @@
        (api-con/post-api-event! container message status api-data previous-state @state comms)))))
 
 (defn ws-handler
-  [value state pusher]
+  [value state pusher comms]
   (when (log-channels?)
     (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
-       (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
+       (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state comms)))))
 
 (defn errors-handler
   [value state container]
@@ -182,7 +182,7 @@
           (:controls comms) ([v] (controls-handler v state-atom container comms))
           (:nav comms) ([v] (nav-handler v state-atom history-imp comms))
           (:api comms) ([v] (api-handler v state-atom container comms))
-          (:ws comms) ([v] (ws-handler v state-atom pusher-imp))
+          (:ws comms) ([v] (ws-handler v state-atom pusher-imp comms))
           (:errors comms) ([v] (errors-handler v state-atom container)))))
 
     (when (config/enterprise?)
