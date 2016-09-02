@@ -149,13 +149,13 @@
 
 (defn ^:export setup! []
   (support/enable-one!)
-  (let [comms {:controls (chan)
+  (let [state (initial-state)
+        state-atom (atom state)
+        comms {:controls (chan)
                :api (chan)
                :errors (chan)
                :nav (chan)
                :ws (chan)}
-        state (assoc (initial-state) :comms comms)
-        state-atom (atom state)
         top-level-node (find-top-level-node)
         container (find-app-container)
         history-imp (history/new-history-imp top-level-node)
