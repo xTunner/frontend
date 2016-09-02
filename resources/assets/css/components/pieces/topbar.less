@@ -1,6 +1,6 @@
 .ns("frontend.components.pieces.topbar", {
   .ui("topbar", {
-    .flexy(row, space-between);
+    .flexy(row);
     background-color: @top-bar-color;
     background-color: @grayDark;
     height: @top-bar-height;
@@ -16,65 +16,82 @@
       }
     }
 
-    > .nav-items {
-      .flexy;
+    > .navs-container {
+      .flexy(stretch, space-between, row);
+      width: 100%;
 
-      > li {
+      > .nav-items {
         .flexy;
 
-        &:hover {
-          background-color: @gray;
-        }
+        margin-bottom: 0;
+        padding-left: 0;
 
-        > button.dropdown-toggle {
-          border: none;
-          background: none;
-        }
+        > li {
+          .flexy;
 
-        > a, > button.dropdown-toggle {
-          display: block;
-          padding: 20px;
-          font-size: @fontSizeSmall;
-          font-weight: 400;
-          line-height: 30px;
-          color: @white;
-          text-decoration: none;
+          &:hover {
+            background-color: @gray;
+          }
 
-          > i {
+          > button.dropdown-toggle {
+            border: none;
+            background: none;
+          }
+
+          > a, > button.dropdown-toggle {
+            display: block;
+            padding: 20px;
+            font-size: @fontSizeSmall;
+            font-weight: 400;
+            line-height: 30px;
             color: @white;
+            text-decoration: none;
+
+            > i {
+              color: @white;
+
+              .material-icons {
+                margin-top: -3px
+              }
+            }
+
+            > span {
+              padding-left: 1ex;
+              vertical-align: middle;
+            }
+
+            // TODO -ac Note, this should become its own component, since we
+            // reuse it - *a lot*
+            > .gravatar {
+              min-width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              border: 1px solid @white;
+            }
           }
 
-          // TODO -ac Note, this should become its own component, since we
-          // reuse it - *a lot*
-          > .gravatar {
-            min-width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1px solid @white;
+          > .dropdown-menu {
+            // Bootstrap Overrides
+            margin-top: -4px;
+            padding: 8px 0;
+            border: none;
+            margin-right: 1em;
+
+            > li > a {
+              padding: 6px 20px;
+              white-space: pre-wrap;
+            }
           }
-        }
 
-        > .dropdown-menu {
-          // Bootstrap Overrides
-          margin-top: -4px;
-          padding: 8px 0;
-          border: none;
-          margin-right: 1em;
+          &.user-menu {
+            margin-left: 9px;
+            padding-left: 9px;
+            border-left: 2px solid fade(@gray, 50%);
 
-          > li > a {
-            padding: 6px 20px;
-            white-space: pre-wrap;
-          }
-        }
-
-        &.user-menu {
-          margin-left: 9px;
-          padding-left: 9px;
-          border-left: 2px solid fade(@gray, 50%);
-
-          @media (max-width: @screen-sm-max) {
-            padding-left: 0;
-            border-left: none;
+            @media (max-width: @screen-sm-max) {
+              padding-left: 0;
+              border-left: none;
+            }
           }
         }
       }

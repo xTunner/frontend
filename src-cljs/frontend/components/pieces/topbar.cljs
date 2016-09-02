@@ -3,6 +3,11 @@
             [frontend.components.common :as common]
             [frontend.config :as config]
             [frontend.utils.html :as html]
+
+            [frontend.models.build :as build-model]
+            [frontend.models.project :as project-model]
+            [frontend.models.plan :as pm]
+
             [frontend.utils.github :as gh-utils])
   (:require-macros [frontend.utils :refer [component html]]))
 
@@ -21,37 +26,56 @@
       [:a.logomark {:href "/dashboard"
                     :aria-label "Dashboard"}
        (common/ico :logo)]
-
-      [:ul.nav-items
-       [:li.dropdown
-        [:button.dropdown-toggle
-         {:data-toggle "dropdown"
-          :aria-haspopup "true"
-          :aria-expanded "false"}
-         "What's New " [:i.material-icons "keyboard_arrow_down"]]
-        [:ul.dropdown-menu.pull-right
-         (when-not (config/enterprise?)
-           [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
-         [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
-       [:li
-        [:a (html/open-ext {:href "https://circleci.com/docs/"})
-         "Docs"]]
-       [:li
-        [:a (html/open-ext {:href "https://discuss.circleci.com/"})
-         "Discuss"]]
-       [:li
-        [:a support-info
-         "Support"]]
-       [:li.dropdown.user-menu
-        [:button.dropdown-toggle
-         {:data-toggle "dropdown"
-          :aria-haspopup "true"
-          :aria-expanded "false"}
-         [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
-         [:i.material-icons "keyboard_arrow_down"]]
-        [:ul.dropdown-menu.pull-right
-         [:li [:a {:href "/logout/"} "Logout"]]
-         [:li [:a {:href "/account"} "User Settings"]]]]]])))
+      [:div.navs-container
+       [:ul.nav-items
+         [:li
+          [:a {:href "/dashboard"
+                    :aria-label "Builds"}
+           [:i.material-icons "storage"] "Builds"]]
+         [:li
+          [:a {:href "/build-insights"
+                    :aria-label "Insights"}
+           [:i.material-icons "assessment"] "Insights"]]
+         [:li
+          [:a {:href "/projects"
+                    :aria-label "Projects"}
+           [:i.material-icons "book"] "Projects"]]
+         [:li
+          [:a {:href "/team"
+                    :aria-label "Teams"}
+           [:i.material-icons "group"] "Teams"]]]
+       [:ul.nav-items
+        [:li.dropdown
+         [:button.dropdown-toggle
+          {:data-toggle "dropdown"
+           :aria-haspopup "true"
+           :aria-expanded "false"}
+          "What's New " [:i.material-icons "keyboard_arrow_down"]]
+         [:ul.dropdown-menu.pull-right
+          (when-not (config/enterprise?)
+            [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
+          [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
+        [:li
+         [:a (html/open-ext {:href "https://circleci.com/docs/"})
+          "Docs"]]
+        [:li
+         [:a (html/open-ext {:href "https://discuss.circleci.com/"})
+          "Discuss"]]
+        [:li
+         [:a support-info
+          "Support"]]
+        [:li.dropdown.user-menu
+         [:button.dropdown-toggle
+          {:data-toggle "dropdown"
+           :aria-haspopup "true"
+           :aria-expanded "false"}
+          [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
+          [:i.material-icons "keyboard_arrow_down"]]
+         [:ul.dropdown-menu.pull-right
+          [:li [:a {:href "/logout/"} "Logout"]]
+          [:li [:a {:href "/account"} "User Settings"]]
+          (when (:admin user)
+            [:li [:a {:href "/admin"} "Admin"]])]]]]])))
 
 (dc/do
   (defcard topbar

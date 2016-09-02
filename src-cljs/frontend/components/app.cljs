@@ -198,9 +198,7 @@
                                       (flash/flash-notification {:react-key number} message))})]]
 
                 [:.below-top
-                 (when (and inner? logged-in?)
-                   [:.left-nav
-                    (om/build aside/aside-nav (dissoc app-without-container-data :current-build-data))])
+
 
                  [:.main
                   (om/build page app)]]]))))))))
