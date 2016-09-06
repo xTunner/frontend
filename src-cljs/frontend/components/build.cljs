@@ -22,6 +22,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.html :refer [open-ext]]
             [frontend.utils.seq :refer [find-index]]
+            [frontend.utils.build :as build-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
@@ -223,7 +224,7 @@
     (:status override-status)
     real-status))
 
-(defn container-pill [{:keys [container status current-container-id build-running? build-finished?]} owner]
+(defn container-pill [{:keys [container status current-container-id scopes current-tab build build-running? build-finished?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -248,9 +249,14 @@
                          :canceled "Status-Canceled"
                          :running "Status-Running"
                          :waiting "Status-Queued"
-                         nil)]
+                         nil)
+             {:keys [vcs_type username reponame build_num]} build]
          [:a.container-selector
-          {:on-click #(raise! owner [:container-selected {:container-id container-id}])
+          {:href (routes/v1-build-path vcs_type username
+                                       reponame build_num
+                                       (or current-tab (build-utils/default-tab build scopes))
+                                       container-id)
+           :on-click #(raise! owner [:container-selected {:container-id container-id}])
            :class (concat (container-model/status->classes status)
                           (when (= container-id current-container-id) ["active"]))}
           [:span.upper-pill-section
@@ -312,7 +318,9 @@
     om/IRender
     (render [_]
       (let [container-data (:container-data data)
+            scopes (:scopes data)
             build-running? (:build-running? data)
+            current-tab (:current-tab data)
             build (:build data)
             {:keys [containers current-container-id current-filter paging-offset]} container-data
             categorized-containers (group-by #(container-model/status % build-running?) containers)
@@ -350,9 +358,12 @@
                                           (min container-count (+ paging-offset paging-width)))]
                     (om/build container-pill
                               {:container container
+                               :build build
                                :build-running? build-running?
                                :build-finished? (build-model/finished? build)
                                :current-container-id current-container-id
+                               :current-tab current-tab
+                               :scopes scopes
                                :status (container-model/status container build-running?)}
                               {:react-key (:index container)}))
                   (cond
@@ -446,6 +457,7 @@
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :current-tab (get-in app state/navigation-tab-path)
+                                              :current-container-id (get-in app state/current-container-path)
                                               :project-data project-data
                                               :user user
                                               :scopes (get-in app state/project-scopes-path)
@@ -459,6 +471,8 @@
                                  :invite-data invite-data})
 
               (om/build container-pills {:container-data container-data
+                                         :current-tab (get-in app state/navigation-tab-path)
+                                         :scopes (get-in app state/project-scopes-path)
                                          :build-running? (build-model/running? build)
                                          :build build
                                          :project-data project-data})
