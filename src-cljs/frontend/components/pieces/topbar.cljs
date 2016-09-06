@@ -51,7 +51,7 @@
            :aria-haspopup "true"
            :aria-expanded "false"}
           "What's New " [:i.material-icons "keyboard_arrow_down"]]
-         [:ul.dropdown-menu.pull-right
+         [:ul.dropdown-menu.pull-right.animated.slideInDown
           (when-not (config/enterprise?)
             [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
           [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
@@ -71,7 +71,7 @@
            :aria-expanded "false"}
           [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
           [:i.material-icons "keyboard_arrow_down"]]
-         [:ul.dropdown-menu.pull-right
+         [:ul.dropdown-menu.pull-right.animated.slideInDown
           [:li [:a {:href "/logout/"} "Logout"]]
           [:li [:a {:href "/account"} "User Settings"]]
           (when (:admin user)
