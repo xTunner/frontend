@@ -2,8 +2,10 @@
   (:require [frontend.config :as config]
             [frontend.models.user :as user]))
 
+(def bitbucket-possible? (complement config/enterprise?))
+
 (defn bitbucket-enabled? [user]
-  (and (not (config/enterprise?))
+  (and (bitbucket-possible?)
        (user/bitbucket-authorized? user)))
 
 (def short-to-long-vcs
