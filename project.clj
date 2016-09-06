@@ -89,8 +89,7 @@
 
   :cljsbuild {:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
                              ;; Port 4444 is proxied (with SSL) to 3449 (the Figwheel server port).
-                             :figwheel {:websocket-url "wss://prod.circlehost:4444/figwheel-ws"
-                                        :on-jsload "frontend.core/reinstall-om!"}
+                             :figwheel {:websocket-url "wss://prod.circlehost:4444/figwheel-ws"}
                              :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                         :output-dir "resources/public/cljs/out"
                                         :optimizations :none

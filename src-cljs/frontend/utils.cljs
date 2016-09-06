@@ -35,7 +35,7 @@
 (defn parse-uri-bool
   "Parses a boolean from a url into true, false, or nil"
   [string]
-  (condp = string
+  (case string
     "true" true
     "false" false
     nil))
@@ -74,14 +74,8 @@
    :invited-by (.getParameterValue parsed-uri "invited-by")})
 
 (defn logging-enabled? []
-  (let [from-query-map (:logging-enabled? initial-query-map)
-        from-browser-settings (and state/debug-state
-                                   (get-in @state/debug-state state/logging-enabled-path))
-        from-config (config/logging-enabled?)]
-    (cond
-      (= (type from-query-map) js/Boolean) from-query-map
-      (= (type from-browser-settings) js/Boolean) from-browser-settings
-      :else from-config)))
+  (:logging-enabled? initial-query-map
+                     (config/logging-enabled?)))
 
 (defn mlog [& messages]
   (when (logging-enabled?)

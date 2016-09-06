@@ -39,7 +39,7 @@
               {:index 3, :step 2, :status "running", :filler-action true}]
     :index 1}])
 
-(def dummy-container-state (assoc-in (state/initial-state) state/containers-path dummy-containers))
+(def dummy-container-state (assoc-in state/initial-state state/containers-path dummy-containers))
 
 (deftest append-action-works
   (testing "we create filler steps if output comes out of order"

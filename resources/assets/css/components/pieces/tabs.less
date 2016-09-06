@@ -4,7 +4,7 @@
 
     margin-bottom: 0;
     padding-left: 0; // Override default ul/ol
-    
+
     > li {
       display: block;
       flex-grow: 1;
@@ -15,18 +15,31 @@
       background: @grayLightest;
       border-right: 1px solid @grayLighter;
 
+      > .tab-label {
+        vertical-align: middle;
+      }
+
       &:last-child {
         border-right: none;
       }
 
       &:hover {
-        color: @grayDarker;
         cursor: pointer;
+        color: @grayDarker;
+        background-color: @whiten;
+
+        > .tab-icon {
+          color: @grayDark;
+        }
       }
 
       &.active {
         background: @white;
         font-weight: 500;
+
+        > .tab-icon {
+          color: @grayDark;
+        }
 
         &:hover {
           cursor: default;
@@ -34,9 +47,10 @@
       }
 
       > .tab-icon {
-        vertical-align: initial;
         margin-right: 1ex;
         margin-left: 0;
+
+        color: @grayLight;
       }
 
       // TODO: This style belongs to a future icon component, not the tab row.

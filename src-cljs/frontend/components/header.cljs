@@ -1,11 +1,10 @@
 (ns frontend.components.header
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.crumbs :as crumbs]
             [frontend.components.forms :as forms]
             [frontend.components.license :as license]
+            [frontend.components.pieces.page-header :as page-header]
             [frontend.components.pieces.top-banner :as top-banner]
-            [frontend.components.statuspage :as statuspage]
             [frontend.components.svg :as svg]
             [frontend.config :as config]
             [frontend.models.feature :as feature]
@@ -29,59 +28,42 @@
          (= (vcs-url/repo-name (:vcs_url project))
             (get-in app [:navigation-data :repo])))))
 
+(defn follow-project-button [project owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project-id (project-model/id project)
+            vcs-url (:vcs_url project)]
+        (forms/managed-button
+         [:button#follow-project-button.btn.btn-primary
+          {:on-click #(do
+                        (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                        ((om/get-shared owner :track-event) {:event-type :header-follow-project-clicked
+                                                             :properties {:vcs-url vcs-url}}))
+           :data-loading-text "Following..."
+           :data-failed-text (str "Failed to Follow " (vcs-url/repo-name vcs-url))
+           :data-success-text "Followed"}
+          "Follow " (vcs-url/repo-name vcs-url)])))))
+
 (defn show-settings-link? [app]
   (and
     (:read-settings (get-in app state/page-scopes-path))
     (not= false (-> app :navigation-data :show-settings-link?))))
 
 (defn settings-link [app owner]
-  (when (show-settings-link? app)
-    (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
-      (cond repo (when (:write-settings (get-in app state/project-scopes-path))
-                   [:a.settings.project-settings
-                    {:href (routes/v1-project-settings-path navigation-data)}
-                    [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                    "Project Settings"])
-            org [:a.settings.org-settings
-                 {:href (routes/v1-org-settings-path navigation-data)
-                  :on-click #((om/get-shared owner :track-event) {:event-type :header-org-settings-link-clicked
-                                                                  :properties {:org org}})}
-                 [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                 "Organization Settings"]
-            :else nil))))
-
-(defn head-user
-  "Builds the header section which contains, among other things, the breadcrumb.
-  actions is an optional component which will be placed on the right of the
-  header; this is where page-wide actions are placed."
-  [{:keys [app actions]} owner]
-  (reify
-    om/IDisplayName (display-name [_] "User Header")
-    om/IRender
-    (render [_]
-      (let [crumbs-data (get-in app state/crumbs-path)
-            project (get-in app state/project-path)
-            project-id (project-model/id project)
-            vcs-url (:vcs_url project)]
-        (html
-         [:div.head-user
-          ;; Avoids a React warning for not giving each `li` a key. Correctly,
-          ;; we should render the `li`s here directly, with a `for`, and give
-          ;; each one a `:key` here. This gets rid of the warning for now and
-          ;; avoids re-architecting the crumbs rendering.
-          (apply vector :ol.breadcrumb (crumbs/crumbs crumbs-data))
-          [:div.actions
-           (settings-link app owner)
-           actions
-           (when (show-follow-project-button? app)
-             (forms/managed-button
-              [:button#follow-project-button.btn.btn-primary
-               {:on-click #(do
-                             (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
-                             ((om/get-shared owner :track-event) {:event-type :header-follow-project-clicked
-                                                                  :properties {:vcs-url vcs-url}}))
-                :data-spinner true}
-               "follow the " (vcs-url/repo-name vcs-url) " project"]))]])))))
+  (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
+    (cond repo (when (:write-settings (get-in app state/project-scopes-path))
+                 [:a.header-settings-link.project-settings
+                  {:href (routes/v1-project-settings-path navigation-data)}
+                  [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+                  "Project Settings"])
+          org [:a.header-settings-link.org-settings
+               {:href (routes/v1-org-settings-path navigation-data)
+                :on-click #((om/get-shared owner :track-event) {:event-type :header-org-settings-link-clicked
+                                                                :properties {:org org}})}
+               [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
+               "Organization Settings"]
+          :else nil)))
 
 (defn maybe-active [current goal]
   {:class (when (= current goal)
@@ -303,7 +285,7 @@
            [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner event-data])}
             [:i.material-icons "clear"]]])))))
 
-(defn inner-header [{:keys [app actions] :as params} owner]
+(defn inner-header [{:keys [app actions]} owner]
   (reify
     om/IDisplayName (display-name [_] "Inner Header")
     om/IRender
@@ -318,8 +300,6 @@
           [:header.main-head (when logged-out? {:class "guest"})
            (when (license/show-banner? license)
              (om/build license/license-banner license))
-           (when (config/statuspage-header-enabled?)
-             (om/build statuspage/statuspage app))
            (when logged-out?
              (om/build outer-header app))
            (when (and (= :build (:navigation-point app))
@@ -374,9 +354,18 @@
                                        "Account Notifications"]]
                             :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
            (when (seq (get-in app state/crumbs-path))
-             (om/build head-user params))])))))
+             (om/build page-header/header {:crumbs (get-in app state/crumbs-path)
+                                           :actions (cond-> []
+                                                      (show-settings-link? app)
+                                                      (conj (settings-link app owner))
 
-(defn header [{:keys [app actions] :as params} owner]
+                                                      true
+                                                      (conj actions)
+
+                                                      (show-follow-project-button? app)
+                                                      (conj (om/build follow-project-button project)))}))])))))
+
+(defn header [{:keys [app actions] :as props} owner]
   (reify
     om/IDisplayName (display-name [_] "Header")
     om/IRender
@@ -386,5 +375,5 @@
             _ (utils/mlog "header render inner? " inner? " logged-in? " logged-in?)]
         (html
           (if inner?
-            (om/build inner-header params)
+            (om/build inner-header props)
             (om/build outer-header app)))))))

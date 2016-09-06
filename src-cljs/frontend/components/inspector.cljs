@@ -11,4 +11,4 @@
     om/IRender
     (render [_]
       (html
-       [:code (om/build ankha/inspector (dissoc app :comms))]))))
+       [:code (om/build ankha/inspector app)]))))

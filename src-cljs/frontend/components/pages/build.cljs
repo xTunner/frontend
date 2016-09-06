@@ -13,14 +13,9 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn- ssh-available?
-  "Always show the SSH button on Linux builds.
-  Only show the SSH button on OS X builds if the Launch Darkly flag is enabled.
-  https://en.wikipedia.org/wiki/Truth_table#Logical_implication
-  osx -> launch-darkly"
+  "Show the SSH button unless it's disabled"
   [project]
-  (and (or (not (project-model/feature-enabled? project :osx))
-           (feature/enabled? :ios-ssh-builds))
-       (not (project-model/feature-enabled? project :disable-ssh))))
+  (not (project-model/feature-enabled? project :disable-ssh)))
 
 (defn- rebuild-actions [{:keys [build project]} owner]
   (reify

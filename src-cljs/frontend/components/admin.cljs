@@ -327,18 +327,24 @@
              (when (:updating item)
                [:div.loading-spinner common/spinner])]))))
 
+(defn get-input-box-type [display-type]
+  (case display-type
+    "text" :input.form-control
+    "textarea" :textarea.form-control))
+
 (defn- setting-entry [item owner type]
   (reify
     om/IRender
     (render [_]
-      (let [field-ref (str (:name item) "-input")
+      (let [input-type (get-input-box-type (or (:display_type item) "text"))
+            field-ref (str (:name item) "-input")
             get-field-value #(some->> field-ref
                                       (om/get-node owner)
                                       .-value
                                       type)]
         (html
          [:div.form-group.details
-          [:input.form-control
+          [input-type
            {:type "text"
             :default-value (:value item)
             :ref field-ref}]
