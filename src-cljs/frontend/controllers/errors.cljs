@@ -20,7 +20,7 @@
   (fn [container message args state] message))
 
 (defmulti post-error!
-  (fn [container message args previous-state current-state] message))
+  (fn [container message args previous-state current-state comms] message))
 
 ;; --- Errors Multimethod Implementations ---
 
@@ -30,7 +30,7 @@
   state)
 
 (defmethod post-error! :default
-  [container message args previous-state current-state]
+  [container message args previous-state current-state comms]
   (utils/mlog "No post-error for: " message))
 
 (defn format-unknown-error [{:keys [status-code status-text url] :as args}]
@@ -48,7 +48,7 @@
     (assoc-in state state/error-message-path message)))
 
 (defmethod post-error! :api-error
-  [container message args previous-state current-state]
+  [container message args previous-state current-state comms]
   (when (get-in current-state state/error-message-path)
     (set! (.-scrollTop (.-body js/document)) 0)))
 
@@ -57,6 +57,6 @@
   (assoc-in state state/error-message-path error))
 
 (defmethod post-error! :error-triggered
-  [container message args previous-state current-state]
+  [container message args previous-state current-state comms]
   (when (get-in current-state state/error-message-path)
     (set! (.-scrollTop (.-body js/document)) 0)))

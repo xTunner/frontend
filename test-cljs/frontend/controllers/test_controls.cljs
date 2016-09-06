@@ -221,11 +221,11 @@
                       :org-name "org"
                       :invitees invitees}
         api-ch "api-ch"
-        current-state {:comms {:api api-ch}}]
+        comms {:api api-ch}]
     (testing "the post-control-event invite-github-users calls button-ajax with the correct parameters"
       (with-redefs [controls/button-ajax (fn [method url message channel & opts]
                                            (swap! calls conj {:args (list method url message channel opts)}))]
-        (controls/post-control-event! {} :invited-team-members control-data {} current-state)
+        (controls/post-control-event! {} :invited-team-members control-data {} {} comms)
         (let [calls @calls
               args (-> calls first :args)]
           (is (= (count calls) 1))
@@ -254,11 +254,11 @@
                       :org-name "org"
                       :invitees invitees}
         api-ch "api-ch"
-        current-state {:comms {:api api-ch}}]
+        comms {:api api-ch}]
     (testing "the post-control-event invite-github-users does nothing for bitbucket projects"
       (with-redefs [controls/button-ajax (fn [method url message channel & opts]
                                            (swap! calls conj {:args (list method url message channel opts)}))]
-        (controls/post-control-event! {} :invited-team-members control-data {} current-state)
+        (controls/post-control-event! {} :invited-team-members control-data {} {} comms)
         (let [calls @calls
               args (-> calls first :args)]
           (is (= (count calls) 1))

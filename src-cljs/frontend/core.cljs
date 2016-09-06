@@ -43,61 +43,19 @@
   (require-devtools!)
   (s/set-fn-validation! true))
 
-;; Overcome some of the browser limitations around DnD
-(def mouse-move-ch
-  (chan (sliding-buffer 1)))
 
-(def mouse-down-ch
-  (chan (sliding-buffer 1)))
-
-(def mouse-up-ch
-  (chan (sliding-buffer 1)))
-
-(js/window.addEventListener "mousedown" #(put! mouse-down-ch %))
-(js/window.addEventListener "mouseup"   #(put! mouse-up-ch   %))
-(js/window.addEventListener "mousemove" #(put! mouse-move-ch %))
-
-(def controls-ch
-  (chan))
-
-(def api-ch
-  (chan))
-
-(def errors-ch
-  (chan))
-
-(def navigation-ch
-  (chan))
-
-(def ^{:doc "websocket channel"}
-  ws-ch
-  (chan))
-
-(defn app-state []
-  (atom (assoc state/initial-state
-               :current-user (-> js/window
-                                 (aget "renderContext")
-                                 (aget "current_user")
-                                 utils/js->clj-kw)
-               :render-context (-> js/window
-                                   (aget "renderContext")
-                                   utils/js->clj-kw)
-               :comms {:controls  controls-ch
-                       :api       api-ch
-                       :errors    errors-ch
-                       :nav       navigation-ch
-                       :ws        ws-ch
-                       :controls-mult (async/mult controls-ch)
-                       :api-mult (async/mult api-ch)
-                       :errors-mult (async/mult errors-ch)
-                       :nav-mult (async/mult navigation-ch)
-                       :ws-mult (async/mult ws-ch)
-                       :mouse-move {:ch mouse-move-ch
-                                    :mult (async/mult mouse-move-ch)}
-                       :mouse-down {:ch mouse-down-ch
-                                    :mult (async/mult mouse-down-ch)}
-                       :mouse-up {:ch mouse-up-ch
-                                  :mult (async/mult mouse-up-ch)}})))
+(defn initial-state
+  "Builds the initial app state, including data that comes from the
+  renderContext."
+  []
+  (assoc state/initial-state
+         :current-user (-> js/window
+                           (aget "renderContext")
+                           (aget "current_user")
+                           utils/js->clj-kw)
+         :render-context (-> js/window
+                             (aget "renderContext")
+                             utils/js->clj-kw)))
 
 (defn log-channels?
   "Log channels in development, can be overridden by the log-channels query param"
@@ -105,24 +63,24 @@
   (:log-channels? utils/initial-query-map (config/log-channels?)))
 
 (defn controls-handler
-  [value state container]
+  [value state container comms]
   (when (log-channels?)
     (mlog "Controls Verbose: " value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial controls-con/control-event container (first value) (second value)))
-       (controls-con/post-control-event! container (first value) (second value) previous-state @state)))))
+       (controls-con/post-control-event! container (first value) (second value) previous-state @state comms)))))
 
 (defn nav-handler
-  [[navigation-point {:keys [inner? query-params] :as args} :as value] state history]
+  [[navigation-point {:keys [inner? query-params] :as args} :as value] state history comms]
   (when (log-channels?)
     (mlog "Navigation Verbose: " value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial nav-con/navigated-to history navigation-point args))
-       (nav-con/post-navigated-to! history navigation-point args previous-state @state)
+       (nav-con/post-navigated-to! history navigation-point args previous-state @state comms)
        (set-canonical! (:_canonical args))
        (when-not (= navigation-point :navigate!)
          (analytics/track {:event-type :pageview
@@ -134,7 +92,7 @@
          (set! (.-scrollTop main-body) 0))))))
 
 (defn api-handler
-  [value state container]
+  [value state container comms]
   (when (log-channels?)
     (mlog "API Verbose: " (first value) (second value) (utils/third value)))
   (swallow-errors
@@ -147,37 +105,37 @@
                                               api-data))
        (when-let [date-header (get-in api-data [:response-headers "Date"])]
          (datetime/update-server-offset date-header))
-       (api-con/post-api-event! container message status api-data previous-state @state)))))
+       (api-con/post-api-event! container message status api-data previous-state @state comms)))))
 
 (defn ws-handler
-  [value state pusher]
+  [value state pusher comms]
   (when (log-channels?)
     (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
-       (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state)))))
+       (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state comms)))))
 
 (defn errors-handler
-  [value state container]
+  [value state container comms]
   (when (log-channels?)
     (mlog "Errors Verbose: " value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial errors-con/error container (first value) (second value)))
-       (errors-con/post-error! container (first value) (second value) previous-state @state)))))
+       (errors-con/post-error! container (first value) (second value) previous-state @state comms)))))
 
-(defn mount-om [state container comms]
+(defn mount-om [state-atom container comms]
   (om/root
    app/app
-   state
+   state-atom
    {:target container
     :shared {:comms comms
              :timer-atom (timer/initialize)
-             :_app-state-do-not-use state
-             :track-event #(analytics/track (assoc % :current-state @state))}}))
+             :_app-state-do-not-use state-atom
+             :track-event #(analytics/track (assoc % :current-state @state-atom))}}))
 
 (defn find-top-level-node []
   (.-body js/document))
@@ -185,46 +143,61 @@
 (defn find-app-container []
   (goog.dom/getElement "app"))
 
-(defn main [state top-level-node history-imp]
-  (let [comms       (:comms @state)
-        container   (find-app-container)
-        uri-path    (.getPath utils/parsed-uri)
-        pusher-imp (pusher/new-pusher-instance (config/pusher))
-        controls-tap (chan)
-        nav-tap (chan)
-        api-tap (chan)
-        ws-tap (chan)
-        errors-tap (chan)]
-    (routes/define-routes! state)
+(defn subscribe-to-user-channel [user ws-ch]
+  (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
+                           :messages [:refresh]}]))
 
-    (mount-om state container comms)
+(defn ^:export setup! []
+  (support/enable-one!)
+  (let [state (initial-state)
+        state-atom (atom state)
+        comms {:controls (chan)
+               :api (chan)
+               :errors (chan)
+               :nav (chan)
+               :ws (chan)}
+        top-level-node (find-top-level-node)
+        container (find-app-container)
+        history-imp (history/new-history-imp top-level-node)
+        pusher-imp (pusher/new-pusher-instance (config/pusher))]
+
+    ;; globally define the state so that we can get to it for debugging
+    (set! state/debug-state state-atom)
+
+    (browser-settings/setup! state-atom)
+
+    (routes/define-routes! state (:nav comms))
+
+    (mount-om state-atom container comms)
 
     (when config/client-dev?
       ;; Re-mount Om app when Figwheel reloads.
       (gevents/listen js/document.body
                       "figwheel.js-reload"
-                      #(mount-om state container comms)))
+                      #(mount-om state-atom container comms)))
 
-    (async/tap (:controls-mult comms) controls-tap)
-    (async/tap (:nav-mult comms) nav-tap)
-    (async/tap (:api-mult comms) api-tap)
-    (async/tap (:ws-mult comms) ws-tap)
-    (async/tap (:errors-mult comms) errors-tap)
+    (go
+      (while true
+        (alt!
+          (:controls comms) ([v] (controls-handler v state-atom container comms))
+          (:nav comms) ([v] (nav-handler v state-atom history-imp comms))
+          (:api comms) ([v] (api-handler v state-atom container comms))
+          (:ws comms) ([v] (ws-handler v state-atom pusher-imp comms))
+          (:errors comms) ([v] (errors-handler v state-atom container comms)))))
 
     (when (config/enterprise?)
       (api/get-enterprise-site-status (:api comms)))
 
-    (go (while true
-          (alt!
-           controls-tap ([v] (controls-handler v state container))
-           nav-tap ([v] (nav-handler v state history-imp))
-           api-tap ([v] (api-handler v state container))
-           ws-tap ([v] (ws-handler v state pusher-imp))
-           errors-tap ([v] (errors-handler v state container)))))))
+    (if-let [error-status (get-in state [:render-context :status])]
+      ;; error codes from the server get passed as :status in the render-context
+      (put! (:nav comms) [:error {:status error-status}])
+      (routes/dispatch! (str "/" (.getToken history-imp))))
+    (when-let [user (:current-user state)]
+      (analytics/track {:event-type :init-user
+                        :current-state state})
+      (subscribe-to-user-channel user (:ws comms)))))
 
-(defn subscribe-to-user-channel [user ws-ch]
-  (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
-                           :messages [:refresh]}]))
+
 
 (defn ^:export toggle-admin []
   (swap! state/debug-state update-in [:current-user :admin] not))
@@ -249,28 +222,3 @@
 ;; See: https://github.com/bhauman/lein-figwheel/pull/463
 (defn handle-css-reload [files]
   (figwheel.client.utils/dispatch-custom-event "figwheel.css-reload" files))
-
-
-(defn add-css-link [path]
-  (let [link (goog.dom/createDom "link"
-               #js {:rel "stylesheet"
-                    :href (str path "?t=" (.getTime (js/Date.)))})]
-    (.appendChild (.-head js/document) link)))
-
-(defn ^:export setup! []
-  (support/enable-one!)
-  (let [state (app-state)
-        top-level-node (find-top-level-node)
-        history-imp (history/new-history-imp top-level-node)]
-    ;; globally define the state so that we can get to it for debugging
-    (set! state/debug-state state)
-    (browser-settings/setup! state)
-    (main state top-level-node history-imp)
-    (if-let [error-status (get-in @state [:render-context :status])]
-      ;; error codes from the server get passed as :status in the render-context
-      (put! (get-in @state [:comms :nav]) [:error {:status error-status}])
-      (routes/dispatch! (str "/" (.getToken history-imp))))
-    (when-let [user (:current-user @state)]
-      (analytics/track {:event-type :init-user
-                        :current-state @state})
-      (subscribe-to-user-channel user (get-in @state [:comms :ws])))))

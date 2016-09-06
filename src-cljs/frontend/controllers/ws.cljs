@@ -52,7 +52,7 @@
   (fn [pusher-imp message args state] message))
 
 (defmulti post-ws-event!
-  (fn [pusher-imp message args previous-state current-state] message))
+  (fn [pusher-imp message args previous-state current-state comms] message))
 
 ;; --- Navigation Multimethod Implementations ---
 
@@ -62,7 +62,7 @@
   state)
 
 (defmethod post-ws-event! :default
-  [pusher-imp message args previous-state current-state]
+  [pusher-imp message args previous-state current-state comms]
   (utils/mlog "No post-ws for: " message))
 
 ;; TODO once the backend change associated with the migration to empty
@@ -81,19 +81,19 @@
           state)))))
 
 (defmethod post-ws-event! :build/update
-  [pusher-imp message {:keys [data channel-name]} previous-state current-state]
+  [pusher-imp message {:keys [data channel-name]} previous-state current-state comms]
   (let [data (utils/js->clj-kw data)]
     (if (empty? data)
       ;; the new path
       (api/get-build-observables (pusher/build-parts-from-channel channel-name)
-                                 (get-in current-state [:comms :api]))
+                                 (:api comms))
       ;; the old path
       (when-not (ignore-build-channel? current-state channel-name)
         (frontend.favicon/set-color! (build-model/favicon-color data))
         (let [build (get-in current-state state/build-path)]
           (when (and (build-model/finished? build)
                      (empty? (get-in current-state state/tests-path)))
-            (api/get-build-tests build (get-in current-state [:comms :api]))))))))
+            (api/get-build-tests build (:api comms))))))))
 
 
 (defmethod ws-event :build/new-action
@@ -143,30 +143,28 @@
                                     (clojure.set/union new-messages)))))))
 
 (defmethod post-ws-event! :build/test-results
-  [pusher-imp message {:keys [data channel-name]} state]
+  [pusher-imp message {:keys [data channel-name]} previous-state current-state comms]
   ;; this event forces a fetch on all of the test results, which is a little weird.
   ;; but test results are large and we can't fit them all in pusher messages,
   ;; and we get them all at once anyway.
-  [pusher-imp message {:keys [data channel-name]} state]
-  (let [build (get-in state state/build-path)]
-    (with-swallow-ignored-build-channels state channel-name
-      (let [api-chan (get-in state [:comms :api])]
-        (api/get-build-tests build api-chan)))))
+  (let [build (get-in current-state state/build-path)]
+    (with-swallow-ignored-build-channels current-state channel-name
+      (api/get-build-tests build (:api comms)))))
 
 (defmethod post-ws-event! :subscribe
-  [pusher-imp message {:keys [channel-name messages context]} previous-state current-state]
-  (let [ws-ch (get-in current-state [:comms :ws])]
+  [pusher-imp message {:keys [channel-name messages context]} previous-state current-state comms]
+  (let [ws-ch (:ws comms)]
     (utils/mlog "subscribing to " channel-name)
     (pusher/subscribe pusher-imp channel-name ws-ch :messages messages :context context)))
 
 
 (defmethod post-ws-event! :unsubscribe
-  [pusher-imp message channel-name previous-state current-state]
+  [pusher-imp message channel-name previous-state current-state comms]
   (utils/mlog "unsubscribing from " channel-name)
   (pusher/unsubscribe pusher-imp channel-name))
 
 (defmethod post-ws-event! :unsubscribe-stale-channels
-  [pusher-imp message _ previous-state current-state]
+  [pusher-imp message _ previous-state current-state comms]
   (doseq [channel-name (clojure.set/difference (pusher/subscribed-channels pusher-imp)
                                                (fresh-channels current-state))]
     (utils/mlog "unsubscribing from " channel-name)
@@ -177,9 +175,9 @@
   (utils/mlog "subscription-error " channel-name status))
 
 (defmethod post-ws-event! :refresh
-  [pusher-imp message _ previous-state current-state]
+  [pusher-imp message _ previous-state current-state comms]
   (let [navigation-point (:navigation-point current-state)
-        api-ch (get-in current-state [:comms :api])]
+        api-ch (:api comms)]
     (api/get-projects api-ch)
     (condp = navigation-point
       :build (when (get-in current-state state/show-usage-queue-path)
