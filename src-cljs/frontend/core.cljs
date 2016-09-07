@@ -21,6 +21,7 @@
             [frontend.state :as state]
             [goog.events :as gevents]
             [om.core :as om :include-macros true]
+            [om.next :as om-next :refer-macros [defui]]
             [frontend.pusher :as pusher]
             [frontend.history :as history]
             [frontend.browser-settings :as browser-settings]
@@ -127,16 +128,6 @@
        (swap! state (partial errors-con/error container (first value) (second value)))
        (errors-con/post-error! container (first value) (second value) previous-state @state comms)))))
 
-(defn mount-om [state-atom container comms]
-  (om/root
-   app/app
-   state-atom
-   {:target container
-    :shared {:comms comms
-             :timer-atom (timer/initialize)
-             :_app-state-do-not-use state-atom
-             :track-event #(analytics/track (assoc % :current-state @state-atom))}}))
-
 (defn find-top-level-node []
   (.-body js/document))
 
@@ -147,10 +138,81 @@
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
                            :messages [:refresh]}]))
 
+(defmulti read om-next/dispatch)
+
+(defmethod read :legacy/state
+  [{:keys [state] :as env} key params]
+  {:value (get (om/root-cursor state) key)})
+
+(def parser (om-next/parser {:read read}))
+
+;; NOMERGE This is only a var so that toggle-admin and toggle-dev-admin can work.
+(defonce reconciler nil)
+
+;; Wraps an atom, but only exposes the portion of its value at path.
+(deftype LensedAtom [atom path]
+  IDeref
+  (-deref [_] (get-in (deref atom) path))
+
+  ISwap
+  (-swap! [_ f] (swap! atom update-in path f))
+  (-swap! [_ f a] (swap! atom update-in path f a))
+  (-swap! [_ f a b] (swap! atom update-in path f a b))
+  (-swap! [_ f a b xs] (apply swap! atom update-in path f a b xs))
+
+  IWatchable
+  ;; We don't need to notify watches, because our parent atom does that.
+  (-notify-watches [_ _ _] nil)
+  (-add-watch [this key f]
+    ;; "Namespace" the key in the parent's watches with this object.
+    (add-watch atom [this key]
+               (fn [[_ key] _ old-state new-state]
+                 (f key this
+                    (get-in old-state path)
+                    (get-in new-state path))))
+    this)
+  (-remove-watch [this key]
+    (remove-watch atom [this key])))
+
+(defui ^:once Root
+  static om-next/IQuery
+  (query [this]
+    [:legacy/state])
+  Object
+  (render [this]
+    ;; The legacy-state-atom is a LensedAtom which we can treat like a
+    ;; normal atom, but which presents only the legacy state.
+    (let [legacy-state-atom (LensedAtom. (om-next/app-state (om-next/get-reconciler this)) [:legacy/state])]
+
+      ;; Om Prev, like Om Next, has a mechanism to queue component state changes.
+      ;; Unfortunately there's no great way to connect the two, so we abandon Om
+      ;; Prev's here by hooking -queue-render! directly to .forceUpdate. That
+      ;; is, Om Prev component state changes will no longer queue and batch.
+      ;;
+      ;; Note that while this is the app state atom, this is about *component*
+      ;; state. Confusing, but Om Prev coordinates component state changes
+      ;; using methods on the *app* state atom, presumably because it's a handy
+      ;; central location to track things.
+      (specify! legacy-state-atom
+        om/IRenderQueue
+        (-queue-render! [_ c]
+          (.forceUpdate c))
+        (-get-queue [_] nil)
+        (-empty-queue! [_] nil))
+
+      ;; Make the legacy-state-atom available to Om Prev as the *state*. Om
+      ;; would normally do this automatically.
+      (binding [om/*state* legacy-state-atom]
+        (om/build app/app*
+                  (:legacy/state (om-next/props this))
+                  ;; Make the Om Next shared values available in Om Prev as well.
+                  {:shared (assoc (om-next/shared this)
+                                  ;; Include the legacy-state-atom for the inputs system.
+                                  :_app-state-do-not-use legacy-state-atom)})))))
+
 (defn ^:export setup! []
   (support/enable-one!)
   (let [state (initial-state)
-        state-atom (atom state)
         comms {:controls (chan)
                :api (chan)
                :errors (chan)
@@ -159,31 +221,44 @@
         top-level-node (find-top-level-node)
         container (find-app-container)
         history-imp (history/new-history-imp top-level-node)
-        pusher-imp (pusher/new-pusher-instance (config/pusher))]
+        pusher-imp (pusher/new-pusher-instance (config/pusher))
+        r (om-next/reconciler {:state {:legacy/state state}
+                               :parser parser
+                               :shared {:comms comms
+                                        :timer-atom (timer/initialize)
+                                        ;; NOMERGE Analytics is going to be
+                                        ;; tricky, as we'll be moving all the
+                                        ;; data around. For spike purposes, just
+                                        ;; disable it
+                                        :track-event (constantly nil)}})
 
-    ;; globally define the state so that we can get to it for debugging
-    (set! state/debug-state state-atom)
+        ;; The legacy-state-atom is a LensedAtom which we can treat like a
+        ;; normal atom, but which presents only the legacy state.
+        legacy-state-atom (LensedAtom. (om-next/app-state r) [:legacy/state])]
 
-    (browser-settings/setup! state-atom)
+    (set! reconciler r)
+
+    (browser-settings/setup! legacy-state-atom)
 
     (routes/define-routes! state (:nav comms))
 
-    (mount-om state-atom container comms)
+    (om-next/add-root! reconciler
+                       Root (goog.dom/getElement "app"))
 
     (when config/client-dev?
-      ;; Re-mount Om app when Figwheel reloads.
+      ;; Re-render when Figwheel reloads.
       (gevents/listen js/document.body
                       "figwheel.js-reload"
-                      #(mount-om state-atom container comms)))
+                      #(.forceUpdate (om-next/class->any reconciler Root))))
 
     (go
       (while true
         (alt!
-          (:controls comms) ([v] (controls-handler v state-atom container comms))
-          (:nav comms) ([v] (nav-handler v state-atom history-imp comms))
-          (:api comms) ([v] (api-handler v state-atom container comms))
-          (:ws comms) ([v] (ws-handler v state-atom pusher-imp comms))
-          (:errors comms) ([v] (errors-handler v state-atom container comms)))))
+          (:controls comms) ([v] (controls-handler v legacy-state-atom container comms))
+          (:nav comms) ([v] (nav-handler v legacy-state-atom history-imp comms))
+          (:api comms) ([v] (api-handler v legacy-state-atom container comms))
+          (:ws comms) ([v] (ws-handler v legacy-state-atom pusher-imp comms))
+          (:errors comms) ([v] (errors-handler v legacy-state-atom container comms)))))
 
     (when (config/enterprise?)
       (api/get-enterprise-site-status (:api comms)))
@@ -198,23 +273,18 @@
       (subscribe-to-user-channel user (:ws comms)))))
 
 
+;; NOMERGE These will transact on the (globally available) reconciler. Until we
+;; get mutations going, let's just disable them.
 
-(defn ^:export toggle-admin []
-  (swap! state/debug-state update-in [:current-user :admin] not))
+;; (defn ^:export toggle-admin []
+;;   (swap! state/debug-state update-in [:current-user :admin] not))
 
-(defn ^:export toggle-dev-admin []
-  (swap! state/debug-state update-in [:current-user :dev-admin] not))
+;; (defn ^:export toggle-dev-admin []
+;;   (swap! state/debug-state update-in [:current-user :dev-admin] not))
 
 (defn ^:export explode []
   (swallow-errors
-    (assoc [] :deliberate :exception)))
-
-(defn ^:export app-state-to-js
-  "Used for inspecting app state in the console."
-  []
-  (clj->js @state/debug-state))
-
-(aset js/window "app_state_to_js" app-state-to-js)
+   (assoc [] :deliberate :exception)))
 
 
 ;; Figwheel offers an event when JS is reloaded, but not when CSS is reloaded. A

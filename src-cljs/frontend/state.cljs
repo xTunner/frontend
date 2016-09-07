@@ -1,7 +1,5 @@
 (ns frontend.state)
 
-(def debug-state)
-
 (def initial-state
   {:error-message nil
    :general-message nil
