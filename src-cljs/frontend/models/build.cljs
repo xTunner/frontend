@@ -279,9 +279,6 @@
    :build-num (:build_num build)})
 
 (defn merge-args [build pull-request-number]
-  (let [last-commit (-> build :all_commit_details last)]
-    {:vcs-url (:vcs_url build)
-     :owner (:username build)
-     :repo (:reponame build)
-     :number pull-request-number
-     :sha (:commit last-commit)}))
+  {:vcs-url (:vcs_url build)
+   :number pull-request-number
+   :sha (:vcs_revision build)})
