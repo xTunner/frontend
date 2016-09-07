@@ -240,7 +240,7 @@
 
     (browser-settings/setup! legacy-state-atom)
 
-    (routes/define-routes! state (:nav comms))
+    (routes/define-routes! (:current-user state) (:nav comms))
 
     (om-next/add-root! reconciler
                        Root (goog.dom/getElement "app"))
