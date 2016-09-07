@@ -20,11 +20,36 @@
       .flexy(stretch, space-between, row);
       width: 100%;
 
+      > .collapsing-nav-container {
+        .flexy(stretch, space-between, row);
+      }
+
+      @media (max-width: @screen-sm-min) {
+        justify-content: flex-end;
+      }
+
+      > button.navbar-toggler {
+        background: inherit;
+        border: none;
+        padding: 0 2ex;
+
+        i.material-icons {
+          margin-left: 0;
+          font-style: @fontSizeLarger;
+        }
+      }
+
       > .nav-items {
         .flexy;
 
         margin-bottom: 0;
         padding-left: 0;
+
+        &.collapsing-nav {
+          @media (max-width: @screen-sm-min) {
+            display: none!important;
+          }
+        }
 
         > li {
           .flexy;
@@ -46,12 +71,21 @@
             line-height: 30px;
             color: @white;
             text-decoration: none;
+            white-space: nowrap;
+
+            @media (max-width: @screen-md-min) {
+              padding: 20px 1em;
+            }
 
             > i {
               color: @white;
 
               .material-icons {
                 margin-top: -3px
+              }
+
+              @media (max-width: @screen-md-min) {
+                display: none!important;
               }
             }
 
