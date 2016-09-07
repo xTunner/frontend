@@ -501,8 +501,8 @@
 
 
 (defmethod post-control-event! :merge-pull-request-clicked
-  [target message {:keys [vcs-url owner repo number sha] :as args} previous-state current-state]
-  (let [api-ch (-> current-state :comms :api)
+  [target message {:keys [vcs-url owner repo number sha] :as args} previous-state current-state comms]
+  (let [api-ch (:api comms)
         vcs-type (vcs-url/vcs-type vcs-url)
         uuid frontend.async/*uuid*]
     (go
