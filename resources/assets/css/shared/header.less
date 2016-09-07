@@ -82,11 +82,14 @@
   @dismiss-icon-size: 14px;
 
   position: relative;
-  .flexy(center, flex-start);
-  height: 70px;
+
+  .flexy(center, space-between);
+
+  height: 40px;
+  min-height: 40px;
 
   &.none {
-    display:none;
+    display: none;
     height: 0px;
     padding: 0px;
   }
@@ -96,9 +99,6 @@
   }
 
   .dismiss-banner {
-    position: absolute;
-    top: @alert-padding;
-    right: @alert-padding;
     width: @dismiss-icon-size;
     height: @dismiss-icon-size;
 
