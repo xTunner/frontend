@@ -16,6 +16,7 @@
             [frontend.models.project :as project-model]
             [frontend.models.test :as test-model]
             [frontend.routes :as routes]
+            [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.build :as build-util]
             [frontend.utils.github :as gh-utils]
@@ -673,6 +674,7 @@
             logged-in? (not (empty? user))
             admin? (:admin user)
             build (:build build-data)
+            current-container-id (:current-container-id data)
             selected-tab-name (or (:current-tab data)
                                   (build-util/default-tab build scopes))
             build-id (build-model/id build)
@@ -736,11 +738,12 @@
                      :selected-tab-name selected-tab-name
                      :on-tab-click #(do
                                       (navigate! owner (routes/v1-build-path
-                                                        (vcs-url/vcs-type (:vcs_url build))
-                                                        (:username build)
-                                                        (:reponame build)
-                                                        (:build_num build)
-                                                        (name %)))
+                                                         (vcs-url/vcs-type (:vcs_url build))
+                                                         (:username build)
+                                                         (:reponame build)
+                                                         (:build_num build)
+                                                         (name %)
+                                                         current-container-id))
                                       ((om/get-shared owner :track-event) {:event-type :build-page-tab-clicked
                                                                            :properties {:selected-tab-name selected-tab-name}}))})}
          (html
@@ -868,6 +871,7 @@
             build-id (build-model/id build)
             build-num (:build_num build)
             vcs-url (:vcs_url build)
+            current-container-id (:current-container-id data)
             usage-queue-data (:usage-queue-data build-data)
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)

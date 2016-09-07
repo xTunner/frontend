@@ -1,5 +1,6 @@
 (ns frontend.routes
   (:require [clojure.string :as str]
+            [goog.string :as gstring]
             [frontend.async :refer [put!]]
             [frontend.config :as config]
             [frontend.utils.vcs :as vcs]
@@ -16,13 +17,33 @@
 (defn logout! [nav-ch]
   (put! nav-ch [:logout]))
 
+(defn parse-build-page-fragment [fragment]
+  (let [fragment-str (str fragment)
+        [_ tab-name _ container-num]
+        (re-find
+          #"(tests|build-timing|artifacts|config|build-parameters|usage-queue|ssh-info)(/containers/(\d+))?"
+          fragment-str)
+        container-id (some-> container-num js/parseInt)
+        tab (some-> tab-name keyword)]
+    {:container-id (or container-id 0)
+     :tab tab}))
+
+(defn build-page-fragment [tab container-id]
+  (cond
+    (and tab container-id) (gstring/format "%s/containers/%s" (name tab) container-id)
+    tab (name tab)
+    :else nil))
+
 (defn v1-build-path
   "Temporary helper method for v1-build until we figure out how to make
    secretary's render-route work for regexes"
   ([vcs_type org repo build-num]
-   (v1-build-path vcs_type org repo build-num nil))
+   (v1-build-path vcs_type org repo build-num nil nil))
   ([vcs_type org repo build-num tab]
-   (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/" build-num (when tab (str "#" tab)))))
+   (v1-build-path vcs_type org repo build-num tab nil))
+  ([vcs_type org repo build-num tab container-id]
+   (let [fragment (build-page-fragment tab container-id)]
+     (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/" build-num (when fragment (str "#" fragment))))))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to
@@ -158,13 +179,15 @@
   (defroute v1-build #"/(gh|bb)/([^/]+)/([^/]+)/(\d+)"
     [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
-    (let [_fragment (:_fragment maybe-fragment)]
+    (let [_fragment (:_fragment maybe-fragment)
+          {:keys [tab container-id]} (parse-build-page-fragment _fragment)]
       (open-to-inner! nav-ch :build {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                      :project-name (str org "/" repo)
                                      :build-num (js/parseInt build-num)
                                      :org org
                                      :repo repo
-                                     :tab (keyword _fragment)})))
+                                     :tab tab
+                                     :container-id container-id})))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
