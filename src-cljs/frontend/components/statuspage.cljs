@@ -94,9 +94,6 @@
                     "none"
                     (severity-class summary-response))]
         (html [:div#statuspage-bar {:class class}
-               [:a.dismiss-banner {:on-click #(raise! owner [:dismiss-statuspage
-                                                             {:last-update updated_at}])}
-                (common/ico :fail-light)]
                [:a.statuspage-content
                 (if (elevio/broken?)
                   {:href (get-in summary-response [:page :url])
@@ -106,4 +103,7 @@
                   [:h4 (str desc " - components affected: "
                             (clojure.string/join ", " (map (comp str :name) components-affected)))])
                 (when updated-incident
-                  (incident-markup updated-incident))]])))))
+                  (incident-markup updated-incident))]
+               [:a.dismiss-banner {:on-click #(raise! owner [:dismiss-statuspage
+                                                             {:last-update updated_at}])}
+                (common/ico :fail-light)]])))))
