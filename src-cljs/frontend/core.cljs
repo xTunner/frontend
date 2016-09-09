@@ -22,6 +22,7 @@
             [goog.events :as gevents]
             [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]
+            [compassus.core :as compassus]
             [frontend.pusher :as pusher]
             [frontend.history :as history]
             [frontend.browser-settings :as browser-settings]
@@ -73,12 +74,6 @@
        (swap! state (partial controls-con/control-event container (first value) (second value)))
        (controls-con/post-control-event! container (first value) (second value) previous-state @state comms)))))
 
-;; NOMERGE
-;; For the purposes of the spike:
-;; - Messages on the nav channel cause a mutation that causes the route to change.
-;; - The mutation calls the nav-handler.
-;; - We throw away the :navigation-point set by the nav-handler.
-;; - We assoc the current route into the legacy state as :navigation-point.
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history comms]
   (when (log-channels?)
@@ -86,8 +81,7 @@
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
-       (swap! state (comp #(dissoc % :navigation-point)
-                          (partial nav-con/navigated-to history navigation-point args)))
+       (swap! state (partial nav-con/navigated-to history navigation-point args))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state comms)
        (set-canonical! (:_canonical args))
        (when-not (= navigation-point :navigate!)
@@ -147,28 +141,19 @@
 
 (defmulti read om-next/dispatch)
 
-(defmethod read :legacy/state
-  [{:keys [state] :as env} key params]
-  {:value (get @state key)})
-
-(defmethod read ::route
-  [{:keys [state]} key _]
-  {:value (get @state key)})
+(defmethod read :app/legacy-page
+  [{:keys [state query] :as env} key _]
+  (let [st @state]
+    {:value (om-next/db->tree query (get st key) st)}))
 
 
 (defmulti mutate om-next/dispatch)
 
-;; Based on Compassus's parser.
-(defmethod mutate `set-route!
-  [{:keys [state] :as env} key params]
-  (let [{:keys [route]} params]
-    {:value {:keys [::route ::route-data]}
-     :action #(swap! state assoc ::route route)}))
 
 (def parser (om-next/parser {:read read :mutate mutate}))
 
 ;; NOMERGE This is only a var so that toggle-admin and toggle-dev-admin can work.
-(defonce reconciler nil)
+(defonce application nil)
 
 ;; Wraps an atom, but only exposes the portion of its value at path.
 (deftype LensedAtom [atom path]
@@ -195,10 +180,10 @@
   (-remove-watch [this key]
     (remove-watch atom [this key])))
 
-(defui ^:once Root
+(defui ^:once LegacyPage
   static om-next/IQuery
   (query [this]
-    [::route :legacy/state])
+    '[[:legacy/state _]])
   Object
   (render [this]
     ;; The legacy-state-atom is a LensedAtom which we can treat like a
@@ -225,17 +210,16 @@
       ;; would normally do this automatically.
       (binding [om/*state* legacy-state-atom]
         (om/build app/app*
-                  (let [{legacy-state :legacy/state
-                         route ::route}
-                        (om-next/props this)]
-                    ;; Assoc the route back in as :navigation-point.
-                    (assoc legacy-state :navigation-point route))
+                  (:legacy/state (om-next/props this))
                   ;; Make the Om Next shared values available in Om Prev as well.
                   {:shared (assoc (om-next/shared this)
                                   ;; Include the legacy-state-atom for the inputs system.
                                   :_app-state-do-not-use legacy-state-atom
                                   ;; NOMERGE Just for debugging.
                                   :om-next-app-state @(om-next/app-state (om-next/get-reconciler this)))})))))
+
+(def routes
+  {:app/legacy-page LegacyPage})
 
 (defn ^:export setup! []
   (support/enable-one!)
@@ -249,53 +233,40 @@
         container (find-app-container)
         history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance (config/pusher))
-        r (om-next/reconciler {:state {:legacy/state state}
-                               :parser parser
-                               :shared {:comms comms
-                                        :timer-atom (timer/initialize)
-                                        ;; NOMERGE Analytics is going to be
-                                        ;; tricky, as we'll be moving all the
-                                        ;; data around. For spike purposes, just
-                                        ;; disable it
-                                        :track-event (constantly nil)}})
+        a (compassus/application {:routes routes
+                                  :reconciler-opts {:state {:legacy/state state}
+                                                    :parser parser
+                                                    :shared {:comms comms
+                                                             :timer-atom (timer/initialize)
+                                                             ;; NOMERGE Analytics is going to be
+                                                             ;; tricky, as we'll be moving all the
+                                                             ;; data around. For spike purposes, just
+                                                             ;; disable it
+                                                             :track-event (constantly nil)}}})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a
         ;; normal atom, but which presents only the legacy state.
-        legacy-state-atom (LensedAtom. (om-next/app-state r) [:legacy/state])]
+        legacy-state-atom (LensedAtom. (om-next/app-state (compassus/get-reconciler a)) [:legacy/state])]
 
-    (set! reconciler r)
+    (set! application a)
 
     (browser-settings/setup! legacy-state-atom)
 
-    (routes/define-routes! (:current-user state) (:nav comms))
+    (routes/define-routes! (:current-user state) application (:nav comms))
 
-    (om-next/add-root! reconciler
-                       Root (goog.dom/getElement "app"))
+    (compassus/mount! application (goog.dom/getElement "app"))
 
     (when config/client-dev?
       ;; Re-render when Figwheel reloads.
       (gevents/listen js/document.body
                       "figwheel.js-reload"
-                      #(.forceUpdate (om-next/class->any reconciler Root))))
+                      #(.forceUpdate (om-next/class->any (compassus/get-reconciler a) (compassus/root-class a)))))
 
     (go
       (while true
         (alt!
           (:controls comms) ([v] (controls-handler v legacy-state-atom container comms))
-
-          (:nav comms)
-          ([[navigation-point _ :as v]]
-           ;; :navigate! is a fake navigation point that's actually an
-           ;; instruction to navigate to a URL. Navigating to the URL then
-           ;; causes a second message on the :nav channel from the history
-           ;; implementation, in reaction to which we actually route. Therefore,
-           ;; we want to skip the :navigate! message.
-           (when-not (= navigation-point :navigate!)
-             ;; Essentially compassus.core/set-route! with queue? always true.
-             (om-next/transact! reconciler (into `[(set-route! {:route ~navigation-point})]
-                                                 (om-next/transform-reads reconciler [::route-data]))))
-           (nav-handler v legacy-state-atom history-imp comms))
-
+          (:nav comms) ([v] (nav-handler v legacy-state-atom history-imp comms))
           (:api comms) ([v] (api-handler v legacy-state-atom container comms))
           (:ws comms) ([v] (ws-handler v legacy-state-atom pusher-imp comms))
           (:errors comms) ([v] (errors-handler v legacy-state-atom container comms)))))

@@ -1,14 +1,17 @@
 (ns frontend.routes
   (:require [clojure.string :as str]
             [goog.string :as gstring]
+            [compassus.core :as compassus]
             [frontend.async :refer [put!]]
             [frontend.config :as config]
             [frontend.utils.vcs :as vcs]
             [secretary.core :as sec :refer-macros [defroute]])
-  (:require-macros [frontend.utils :refer [inspect]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+  (:require-macros
+   [cljs.core.async.macros :as am :refer [alt! go go-loop]]
+   [frontend.utils :refer [inspect]]))
 
-(defn open-to-inner! [nav-ch navigation-point args]
+(defn open-to-inner! [app nav-ch navigation-point args]
+  (compassus/set-route! app :app/legacy-page)
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
 (defn open-to-outer! [nav-ch navigation-point args]
@@ -120,34 +123,34 @@
   [params]
   (generate-url-str "/admin/fleet-state" params))
 
-(defn define-admin-routes! [nav-ch]
+(defn define-admin-routes! [app nav-ch]
   (defroute v1-admin-switch "/admin/switch" []
-    (open-to-inner! nav-ch :switch {:admin true}))
+    (open-to-inner! app nav-ch :switch {:admin true}))
   (defroute v1-admin-recent-builds "/admin/recent-builds" []
-    (open-to-inner! nav-ch :dashboard {:admin true}))
+    (open-to-inner! app nav-ch :dashboard {:admin true}))
   (defroute v1-admin-current-builds "/admin/running-builds" []
-    (open-to-inner! nav-ch :dashboard {:admin true
+    (open-to-inner! app nav-ch :dashboard {:admin true
                                        :query-params {:status "running"}}))
   (defroute v1-admin-queued-builds "/admin/queued-builds" []
-    (open-to-inner! nav-ch :dashboard {:admin true
+    (open-to-inner! app nav-ch :dashboard {:admin true
                                        :query-params {:status "scheduled,queued"}}))
   (defroute v1-admin-deployments "/admin/deployments" []
-    (open-to-inner! nav-ch :dashboard {:deployments true}))
+    (open-to-inner! app nav-ch :dashboard {:deployments true}))
   (defroute v1-admin-build-state "/admin/build-state" []
-    (open-to-inner! nav-ch :build-state {:admin true}))
+    (open-to-inner! app nav-ch :build-state {:admin true}))
 
   (defroute v1-admin "/admin" []
-    (open-to-inner! nav-ch :admin-settings {:admin true
+    (open-to-inner! app nav-ch :admin-settings {:admin true
                                             :subpage nil}))
   (defroute v1-admin-fleet-state "/admin/fleet-state" [_fragment]
-    (open-to-inner! nav-ch :admin-settings {:admin true
+    (open-to-inner! app nav-ch :admin-settings {:admin true
                                             :subpage :fleet-state
                                             :tab (keyword _fragment)}))
   (defroute v1-admin-users "/admin/users" []
-    (open-to-inner! nav-ch :admin-settings {:admin true
+    (open-to-inner! app nav-ch :admin-settings {:admin true
                                             :subpage :users}))
   (defroute v1-admin-config "/admin/system-settings" []
-    (open-to-inner! nav-ch :admin-settings {:admin true
+    (open-to-inner! app nav-ch :admin-settings {:admin true
                                             :subpage :system-settings}))
   (defroute v1-admin-system-management "/admin/management-console" []
     (.replace js/location
@@ -156,36 +159,36 @@
               (str "https://" js/window.location.hostname ":8800/")))
 
   (defroute v1-admin-license "/admin/license" []
-    (open-to-inner! nav-ch :admin-settings {:admin true
+    (open-to-inner! app nav-ch :admin-settings {:admin true
                                             :subpage :license})))
 
 
-(defn define-user-routes! [nav-ch authenticated?]
+(defn define-user-routes! [app nav-ch authenticated?]
   (defroute v1-org-settings #"/(gh|bb)/organizations/([^/]+)/settings"
     [short-vcs-type org _ maybe-fragment]
-    (open-to-inner! nav-ch :org-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+    (open-to-inner! app nav-ch :org-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                           :org org
                                           :subpage (keyword (:_fragment maybe-fragment))}))
 
   (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org params]
-    (open-to-inner! nav-ch :dashboard (merge params
+    (open-to-inner! app nav-ch :dashboard (merge params
                                              {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                               :org org})))
 
   (defroute v1-org-dashboard #"/(gh|bb)/([^/]+)" [short-vcs-type org params]
-    (open-to-inner! nav-ch :dashboard (merge params
+    (open-to-inner! app nav-ch :dashboard (merge params
                                              {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                               :org org})))
 
   (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo params]
-    (open-to-inner! nav-ch :dashboard (merge params
+    (open-to-inner! app nav-ch :dashboard (merge params
                                              {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                               :org org
                                               :repo repo})))
 
   (defroute v1-project-branch-dashboard #"/(gh|bb)/([^/]+)/([^/]+)/tree/(.+)" ; workaround secretary's annoying auto-decode
     [short-vcs-type org repo branch params]
-    (open-to-inner! nav-ch :dashboard (merge params
+    (open-to-inner! app nav-ch :dashboard (merge params
                                              {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                               :org org
                                               :repo repo
@@ -196,7 +199,7 @@
     ;; normal destructuring for this broke the closure compiler
     (let [_fragment (:_fragment maybe-fragment)
           {:keys [tab container-id action-id]} (parse-build-page-fragment _fragment)]
-      (open-to-inner! nav-ch :build {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+      (open-to-inner! app nav-ch :build {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                      :project-name (str org "/" repo)
                                      :build-num (js/parseInt build-num)
                                      :org org
@@ -206,29 +209,29 @@
                                      :action-id action-id})))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
-    (open-to-inner! nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+    (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                               :project-name (str org "/" repo)
                                               :subpage (keyword (:_fragment maybe-fragment))
                                               :org org
                                               :repo repo}))
 
   (defroute v1-add-projects "/add-projects" {:keys [_fragment]}
-    (open-to-inner! nav-ch :add-projects {:tab _fragment}))
+    (open-to-inner! app nav-ch :add-projects {:tab _fragment}))
   (defroute v1-insights "/build-insights" []
-    (open-to-inner! nav-ch :build-insights {}))
+    (open-to-inner! app nav-ch :build-insights {}))
   (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
-    (open-to-inner! nav-ch :project-insights {:org org :repo repo :branch branch :vcs_type (vcs/->lengthen-vcs short-vcs-type)}))
+    (open-to-inner! app nav-ch :project-insights {:org org :repo repo :branch branch :vcs_type (vcs/->lengthen-vcs short-vcs-type)}))
   (defroute v1-account "/account" []
-    (open-to-inner! nav-ch :account {:subpage :notifications}))
+    (open-to-inner! app nav-ch :account {:subpage :notifications}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
-    (open-to-inner! nav-ch :account {:subpage (keyword subpage)}))
+    (open-to-inner! app nav-ch :account {:subpage (keyword subpage)}))
   (defroute v1-organization-projects "/projects/:vcs_type/:org" {:keys [vcs_type org]}
-    (open-to-inner! nav-ch :projects {:vcs_type vcs_type
+    (open-to-inner! app nav-ch :projects {:vcs_type vcs_type
                                       :org org}))
   (defroute v1-projects "/projects" []
-    (open-to-inner! nav-ch :projects {}))
+    (open-to-inner! app nav-ch :projects {}))
   (defroute v1-team "/team" []
-    (open-to-inner! nav-ch :team {}))
+    (open-to-inner! app nav-ch :team {}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
@@ -308,11 +311,11 @@
 
   (defroute v1-root "/" {:as params}
     (if authenticated?
-      (open-to-inner! nav-ch :dashboard params)
+      (open-to-inner! app nav-ch :dashboard params)
       (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-dashboard "/dashboard" {:as params}
-    (open-to-inner! nav-ch :dashboard params))
+    (open-to-inner! app nav-ch :dashboard params))
 
   (defroute v1-home "/home" {:as params}
     (open-to-outer! nav-ch :landing (assoc params :_canonical "/")))
@@ -331,11 +334,11 @@
   (defroute v1-not-found "*" []
     (open-to-outer! nav-ch :error {:status 404})))
 
-(defn define-routes! [current-user nav-ch]
+(defn define-routes! [current-user app nav-ch]
   (let [authenticated? (boolean current-user)]
-    (define-user-routes! nav-ch authenticated?)
+    (define-user-routes! app nav-ch authenticated?)
     (when (:admin current-user)
-      (define-admin-routes! nav-ch))
+      (define-admin-routes! app nav-ch))
     (define-spec-routes! nav-ch)))
 
 (defn parse-uri [uri]
