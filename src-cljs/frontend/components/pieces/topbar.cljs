@@ -44,7 +44,7 @@
          [:a {:href "/team"
                    :aria-label "Teams"}
           [:i.material-icons "group"] "Teams"]]]
-        [:ul.nav-items.collapsing-nav
+        [:ul.nav-items.nav-items-left.collapsing-nav
          [:li.dropdown
           [:button.dropdown-toggle
            {:data-toggle "dropdown"
