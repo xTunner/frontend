@@ -28,9 +28,6 @@
    :selected-home-technology-tab nil
    :modal-video-id nil
    :builds-per-page 30
-   :navigation-point nil
-   :navigation-data nil
-   :navigation-settings {}
    :current-user nil
    :crumbs nil
    :current-repos []

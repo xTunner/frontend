@@ -73,6 +73,12 @@
        (swap! state (partial controls-con/control-event container (first value) (second value)))
        (controls-con/post-control-event! container (first value) (second value) previous-state @state comms)))))
 
+;; NOMERGE
+;; For the purposes of the spike:
+;; - Messages on the nav channel cause a mutation that causes the route to change.
+;; - The mutation calls the nav-handler.
+;; - We throw away the :navigation-point set by the nav-handler.
+;; - We assoc the current route into the legacy state as :navigation-point.
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history comms]
   (when (log-channels?)
@@ -80,7 +86,8 @@
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
-       (swap! state (partial nav-con/navigated-to history navigation-point args))
+       (swap! state (comp #(dissoc % :navigation-point)
+                          (partial nav-con/navigated-to history navigation-point args)))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state comms)
        (set-canonical! (:_canonical args))
        (when-not (= navigation-point :navigate!)
@@ -142,9 +149,23 @@
 
 (defmethod read :legacy/state
   [{:keys [state] :as env} key params]
-  {:value (get (om/root-cursor state) key)})
+  {:value (get @state key)})
 
-(def parser (om-next/parser {:read read}))
+(defmethod read ::route
+  [{:keys [state]} key _]
+  {:value (get @state key)})
+
+
+(defmulti mutate om-next/dispatch)
+
+;; Based on Compassus's parser.
+(defmethod mutate `set-route!
+  [{:keys [state] :as env} key params]
+  (let [{:keys [route]} params]
+    {:value {:keys [::route ::route-data]}
+     :action #(swap! state assoc ::route route)}))
+
+(def parser (om-next/parser {:read read :mutate mutate}))
 
 ;; NOMERGE This is only a var so that toggle-admin and toggle-dev-admin can work.
 (defonce reconciler nil)
@@ -177,7 +198,7 @@
 (defui ^:once Root
   static om-next/IQuery
   (query [this]
-    [:legacy/state])
+    [::route :legacy/state])
   Object
   (render [this]
     ;; The legacy-state-atom is a LensedAtom which we can treat like a
@@ -204,11 +225,17 @@
       ;; would normally do this automatically.
       (binding [om/*state* legacy-state-atom]
         (om/build app/app*
-                  (:legacy/state (om-next/props this))
+                  (let [{legacy-state :legacy/state
+                         route ::route}
+                        (om-next/props this)]
+                    ;; Assoc the route back in as :navigation-point.
+                    (assoc legacy-state :navigation-point route))
                   ;; Make the Om Next shared values available in Om Prev as well.
                   {:shared (assoc (om-next/shared this)
                                   ;; Include the legacy-state-atom for the inputs system.
-                                  :_app-state-do-not-use legacy-state-atom)})))))
+                                  :_app-state-do-not-use legacy-state-atom
+                                  ;; NOMERGE Just for debugging.
+                                  :om-next-app-state @(om-next/app-state (om-next/get-reconciler this)))})))))
 
 (defn ^:export setup! []
   (support/enable-one!)
@@ -255,7 +282,20 @@
       (while true
         (alt!
           (:controls comms) ([v] (controls-handler v legacy-state-atom container comms))
-          (:nav comms) ([v] (nav-handler v legacy-state-atom history-imp comms))
+
+          (:nav comms)
+          ([[navigation-point _ :as v]]
+           ;; :navigate! is a fake navigation point that's actually an
+           ;; instruction to navigate to a URL. Navigating to the URL then
+           ;; causes a second message on the :nav channel from the history
+           ;; implementation, in reaction to which we actually route. Therefore,
+           ;; we want to skip the :navigate! message.
+           (when-not (= navigation-point :navigate!)
+             ;; Essentially compassus.core/set-route! with queue? always true.
+             (om-next/transact! reconciler (into `[(set-route! {:route ~navigation-point})]
+                                                 (om-next/transform-reads reconciler [::route-data]))))
+           (nav-handler v legacy-state-atom history-imp comms))
+
           (:api comms) ([v] (api-handler v legacy-state-atom container comms))
           (:ws comms) ([v] (ws-handler v legacy-state-atom pusher-imp comms))
           (:errors comms) ([v] (errors-handler v legacy-state-atom container comms)))))

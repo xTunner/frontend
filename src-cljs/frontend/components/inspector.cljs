@@ -11,4 +11,4 @@
     om/IRender
     (render [_]
       (html
-       [:code (om/build ankha/inspector app)]))))
+       [:code (om/build ankha/inspector (om/get-shared owner :om-next-app-state))]))))
