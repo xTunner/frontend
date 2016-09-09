@@ -519,6 +519,7 @@
              [:a.aside-item (open-ext {:title "Documentation"
                                        :data-placement "right"
                                        :data-trigger "hover"
+                                       :target "_blank"
                                        :href "https://circleci.com/docs/"})
               [:i.material-icons "description"]
               [:div.nav-label "Docs"]])
@@ -537,6 +538,7 @@
                [:a.aside-item (open-ext {:data-placement "right"
                                          :data-trigger "hover"
                                          :title "Changelog"
+                                         :target "_blank"
                                          :href "/changelog"})
                 [:i.material-icons "receipt"]
                 [:div.nav-label "Changelog"]]))
