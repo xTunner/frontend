@@ -20,6 +20,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.build :as build-util]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.html :refer [open-ext]]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
@@ -131,13 +132,27 @@
         (.replace (js/RegExp. (.-source pseudo-url-pattern) "gim")
                   "$1<a href=\"http://$2\" target=\"_blank\">$2</a>"))))
 
-(defn maybe-project-linkify [text project-name]
+(defn maybe-project-linkify [text vcs-type project-name]
   (if-not project-name
     text
     (let [issue-pattern #"(^|\s)#(\d+)\b"]
-      (-> text
-          (string/replace issue-pattern
-                          (gstring/format "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>" (gh-utils/http-endpoint) project-name))))))
+      (cond
+        (and (= vcs-type "bitbucket") (re-find #"pull request #\d+" text))
+        (string/replace
+          text
+          issue-pattern
+          (gstring/format "$1<a href='%s/%s/pull-requests/$2' target='_blank'>pull request #$2</a>"
+                          (bb-utils/http-endpoint)
+                          project-name))
+        :else
+        (string/replace
+          text
+          issue-pattern
+          (gstring/format "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>"
+                          (case vcs-type
+                            "github" (gh-utils/http-endpoint)
+                            "bitbucket" (bb-utils/http-endpoint))
+                          project-name))))))
 
 (defn ssh-enabled-note
   "Note that SSH has been enabled for the build, with list of users"
@@ -623,10 +638,12 @@
         [:span.commit-message
          {:title body
           :id (str "commit-line-tooltip-hack-" commit)
-          :dangerouslySetInnerHTML {:__html (-> subject
-                                                (gstring/htmlEscape)
-                                                (linkify)
-                                                (maybe-project-linkify (vcs-url/project-name (:vcs_url build))))}}]]))))
+          :dangerouslySetInnerHTML {:__html (let [vcs-url (:vcs_url build)]
+                                              (-> subject
+                                                  (gstring/htmlEscape)
+                                                  (linkify)
+                                                  (maybe-project-linkify (vcs-url/vcs-type vcs-url)
+                                                                         (vcs-url/project-name vcs-url))))}}]]))))
 
 (def initial-build-commits-count 3)
 
