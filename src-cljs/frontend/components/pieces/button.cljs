@@ -21,6 +21,24 @@
                :on-click on-click}
       content])))
 
+(defn link
+  "A link styled as a button.
+
+  :href         - The link target.
+  :on-click     - A function called when the link is clicked.
+  :primary?     - If true, the link appears as a primary button. (default: false)
+  :size         - The size of the button. One of #{:full :medium}. (default: :full)"
+  [{:keys [href on-click primary? size] :or {size :full}} content]
+  (component
+    (html
+     [:a {:class (remove nil? [(when primary? "primary")
+                               (case size
+                                 :full nil
+                                 :medium "medium")])
+          :href href
+          :on-click on-click}
+      content])))
+
 (defn managed-button
   "A standard button.
 
