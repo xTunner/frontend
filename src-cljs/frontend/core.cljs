@@ -37,7 +37,9 @@
             [cljsjs.react]
             [figwheel.client.utils])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing swallow-errors]]
+                   [frontend.utils :refer [inspect timing swallow-errors
+                                           ;; NOMERGE
+                                           html]]
                    [frontend.devtools :refer [require-devtools!]]))
 
 (when config/client-dev?
@@ -141,7 +143,7 @@
 
 (defmulti read om-next/dispatch)
 
-(defmethod read :app/legacy-page
+(defmethod read :default
   [{:keys [state query] :as env} key _]
   (let [st @state]
     {:value (om-next/db->tree query (get st key) st)}))
@@ -218,8 +220,45 @@
                                   ;; NOMERGE Just for debugging.
                                   :om-next-app-state @(om-next/app-state (om-next/get-reconciler this)))})))))
 
+(defui ^:once ProjectsPage
+  static om-next/IQuery
+  (query [this]
+    '[[:app/current-user _]])
+  Object
+  (render [this]
+    (aset js/window "projects_page" this)
+    (html
+     [:div
+      [:h1 "Info on the current user:"]
+      (pr-str (om-next/props this))])))
+
 (def routes
-  {:app/legacy-page LegacyPage})
+  {:app/legacy-page LegacyPage
+   :app/projects ProjectsPage})
+
+(defn force-update-recursive
+  ".forceUpdate root-component and every component within it.
+
+  This function uses React internals, and should only be used for development
+  tasks, such as code reloading."
+  [root-component]
+  (letfn [(js-vals [o]
+            (map #(aget o %) (js-keys o)))
+          ;; Finds the children of a React internal instance of a component.
+          ;; That could be a single _renderedComponent or several
+          ;; _renderedChildren.
+          (children [ic]
+            (or (some-> (.-_renderedComponent ic) vector)
+                (js-vals (.-_renderedChildren ic))))
+          (descendant-components [c]
+            ;; Walk the tree finding tall of the descendent internal instances...
+            (->> (tree-seq #(seq (children %)) children (.-_reactInternalInstance c))
+                 ;; ...map to the public component instances...
+                 (map #(.-_instance %))
+                 ;; ...and remove the nils, which are from DOM nodes.
+                 (remove nil?)))]
+    (doseq [c (descendant-components root-component)]
+      (.forceUpdate c))))
 
 (defn ^:export setup! []
   (support/enable-one!)
@@ -234,7 +273,11 @@
         history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance (config/pusher))
         a (compassus/application {:routes routes
-                                  :reconciler-opts {:state {:legacy/state state}
+                                  :reconciler-opts {:state {:legacy/state state
+                                                            :app/current-user (-> js/window
+                                                                                  (aget "renderContext")
+                                                                                  (aget "current_user")
+                                                                                  utils/js->clj-kw)}
                                                     :parser parser
                                                     :shared {:comms comms
                                                              :timer-atom (timer/initialize)
@@ -260,7 +303,7 @@
       ;; Re-render when Figwheel reloads.
       (gevents/listen js/document.body
                       "figwheel.js-reload"
-                      #(.forceUpdate (om-next/class->any (compassus/get-reconciler a) (compassus/root-class a)))))
+                      #(force-update-recursive (om-next/app-root (compassus/get-reconciler a)))))
 
     (go
       (while true

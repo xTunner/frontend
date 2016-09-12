@@ -563,7 +563,16 @@
                                            :title "Logout"
                                            :href "/logout"}
               [:i.material-icons "power_settings_new"]
-              [:div.nav-label "Logout"]])])))))
+              [:div.nav-label "Logout"]])
+
+          ;; NOMERGE
+          [:a.aside-item {:data-placement "right"
+                          :data-trigger "hover"
+                          :title "Next Projects"
+                          :href "/next-projects"}
+           [:i.material-icons "book"]
+           [:div.nav-label "Next Projects"]]])))))
+
 
 (defn aside [app owner]
   (reify

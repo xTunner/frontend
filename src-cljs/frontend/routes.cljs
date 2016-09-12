@@ -10,6 +10,9 @@
    [cljs.core.async.macros :as am :refer [alt! go go-loop]]
    [frontend.utils :refer [inspect]]))
 
+(defn open! [app route args]
+  (compassus/set-route! app route))
+
 (defn open-to-inner! [app nav-ch navigation-point args]
   (compassus/set-route! app :app/legacy-page)
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
@@ -230,6 +233,8 @@
                                       :org org}))
   (defroute v1-projects "/projects" []
     (open-to-inner! app nav-ch :projects {}))
+  (defroute next-projects "/next-projects" []
+    (open! app :app/projects {}))
   (defroute v1-team "/team" []
     (open-to-inner! app nav-ch :team {}))
   (defroute v1-logout "/logout" []
