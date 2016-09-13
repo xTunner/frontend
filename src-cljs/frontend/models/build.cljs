@@ -167,7 +167,7 @@
        (#{"not_running" "running" "queued" "scheduled"} (:lifecycle build))))
 
 (defn has-pull-requests? [build]
-  (seq (:pull_request_urls build)))
+  (boolean (seq (:pull_request_urls build))))
 
 (defn can-merge-at-least-one-pr? [build]
   (and (= "success" (:outcome build))
