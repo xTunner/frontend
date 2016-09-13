@@ -34,7 +34,19 @@
 
   > .below-top {
     .flexy;
-    .flex(1 0 auto);
+    .flex(1 1 auto);
+    // This looks weird, but it keeps the .below-top from taking up any more
+    // than the remaining vertical space. Without this, .below-top will compute
+    // its intrinsic height. Depending on its contents, this can be bigger than
+    // the space its parent would like to allot for it, and it will overflow. By
+    // setting the height explicitly to 0, we disable the intrinsic height. The
+    // flex-grow will then allow it to grow to the size its parent allots, but
+    // it will have no reason to grow any *bigger* than that. Then, any
+    // descendents which would have liked to render something bigger will be
+    // forced intoto this height (which is what we want).
+    //
+    // http://stackoverflow.com/questions/7813783/firefox-and-flexbox-when-using-white-space-nowrap-on-child-element-the-flexib#9737602
+    height: 0;
 
     > .left-nav {
       .flex(0 0 auto);
@@ -42,21 +54,8 @@
 
     > .main {
       .flex(1 1 auto);
-      // This looks weird, but it keeps the .main from taking up any more than
-      // the remaining horizontal space. Without this, .main will compute its
-      // intrinsic width. Depending on its contents, this can be bigger than the
-      // space its parent would like to allot for it, and it will overflow. By
-      // setting the width explicitly to 0, we disable the intrinsic width. The
-      // flex-grow will then allow it to grow to the size its parent allots, but
-      // it will have no reason to grow any *bigger* than that. Then, any
-      // descendents which would have liked to render something bigger will be
-      // forced intoto this width (which is what we want).
-      //
-      // This means, for instance, that a very long breadcrumb in the header
-      // will be forced to overflow and use its text-overflow, rather than
-      // pushing its intrinsic width up to the .main element.
-      //
-      // http://stackoverflow.com/questions/7813783/firefox-and-flexbox-when-using-white-space-nowrap-on-child-element-the-flexib#9737602
+      // See note above about `height: 0;`. This is the same, but for the
+      // .main's width.
       width: 0;
     }
   }
