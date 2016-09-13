@@ -110,4 +110,30 @@
        (button {:disabled? true
                 :size :medium
                 :on-click #(js/alert "Clicked!")}
-               "Secondary Disabled")]])))
+               "Secondary Disabled")]]))
+
+  (defcard full-link-buttons
+    "These are our link buttons, when you need to style a link as a button."
+    (html
+     [:div
+      [:div
+       (link {:primary? true
+              :href "#"}
+             "Primary Link")
+       (link {:primary? false
+              :href "#"}
+             "Secondary Link")]]))
+
+  (defcard medium-link-buttons
+    "These are `:medium` size link buttons.''"
+    (html
+     [:div
+      [:div
+       (link {:primary? true
+              :href "#"
+              :size :medium}
+             "Medium Primary Link")
+       (link {:primary? false
+              :href "#"
+              :size :medium}
+             "Medium Secondary Link")]])))
