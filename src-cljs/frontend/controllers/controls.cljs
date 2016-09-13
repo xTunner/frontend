@@ -500,6 +500,18 @@
                             :properties {:no-cache? no-cache?}}))))))
 
 
+(defmethod post-control-event! :merge-pull-request-clicked
+  [target message {:keys [vcs-url number sha] :as args} previous-state current-state comms]
+  (let [api-ch (:api comms)
+        vcs-type (vcs-url/vcs-type vcs-url)
+        owner (vcs-url/org-name vcs-url)
+        repo (vcs-url/repo-name vcs-url)]
+    (ajax/ajax :put
+               (api-path/merge-pull-request vcs-type owner repo number)
+               :merge-pull-request
+               api-ch
+               :params {:sha sha})))
+
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state comms]
   (let [api-ch (:api comms)

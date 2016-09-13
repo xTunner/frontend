@@ -61,3 +61,8 @@
         (assoc-in [:query "s"] size)
         (assoc-in [:query "d"] (str "https://identicons.github.com/" login ".png"))
         str)))
+
+(defn pull-request-number [url]
+  "Takes a URL and returns the pull request number"
+  (let [[_ number] (re-find #"/(\d+)$" url)]
+    (or number "?")))
