@@ -125,7 +125,7 @@
              "Secondary Link")]]))
 
   (defcard medium-link-buttons
-    "These are `:medium` size link buttons.''"
+    "These are `:medium` size link buttons."
     (html
      [:div
       [:div
