@@ -55,16 +55,14 @@
   });
 
   .ui("link", {
-    .button-styles();
+    // We need to include the element name in the selector to get the
+    // a.exception rules to work correctly.
+    a& {
+      .button-styles();
 
-    display: inline-block;
-    text-align: center;
-    vertical-align: middle;
-    line-height: 33px;
-
-    &.medium {
-      height: 30px;
-      line-height: 28px;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
     }
   });
 });
