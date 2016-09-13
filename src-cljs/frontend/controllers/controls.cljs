@@ -505,13 +505,12 @@
   (let [api-ch (:api comms)
         vcs-type (vcs-url/vcs-type vcs-url)
         owner (vcs-url/org-name vcs-url)
-        repo (vcs-url/repo-name vcs-url)
-        uuid frontend.async/*uuid*]
-    (go
-      (let [api-result (<! (ajax/managed-ajax :put (api-path/merge-pull-request vcs-type owner repo number)
-                                              :params {:sha sha}))]
-        (put! api-ch [:merge-pull-request (:status api-result) api-result])
-        (release-button! uuid (:status api-result))))))
+        repo (vcs-url/repo-name vcs-url)]
+    (ajax/ajax :put
+               (api-path/merge-pull-request vcs-type owner repo number)
+               :merge-pull-request
+               api-ch
+               :params {:sha sha})))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state comms]
