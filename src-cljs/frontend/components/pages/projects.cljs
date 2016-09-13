@@ -2,6 +2,7 @@
   (:require [frontend.api :as api]
             [frontend.state :as state]
             [frontend.components.common :as common]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.org-picker :as org-picker]
@@ -78,10 +79,10 @@
                                          (empty-state/important (:name org))
                                          " has no projects building on CircleCI"])
                               :subheading "Let's fix that by adding a new project."
-                              :action (html
-                                       [:a.btn.btn-primary
-                                        {:href (routes/v1-add-projects)}
-                                        "Add Project"])})))
+                              :action (button/link
+                                       {:href (routes/v1-add-projects)
+                                        :primary? true}
+                                       "Add Project")})))
 
 (defn- organization-ident
   "Builds an Om Next-like ident for an organization."
@@ -148,10 +149,10 @@
       (om/build main-template/template
                 {:app app
                  :main-content (om/build main-content app)
-                 :header-actions (html
-                                  [:a.btn.btn-primary
-                                   {:href (routes/v1-add-projects)
-                                    :on-click #((om/get-shared owner :track-event)
-                                                {:event-type :add-project-clicked
-                                                 :properties {:view :projects}})}
-                                   "Add Project"])}))))
+                 :header-actions (button/link
+                                  {:href (routes/v1-add-projects)
+                                   :primary? true
+                                   :on-click #((om/get-shared owner :track-event)
+                                               {:event-type :add-project-clicked
+                                                :properties {:view :projects}})}
+                                  "Add Project")}))))
