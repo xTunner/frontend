@@ -4,7 +4,9 @@ body {
   margin: 0;
 }
 
-a {
+// We apply global styles to our a elements, but only if they don't have the
+// class .exception. An a.exception should get no global styles.
+a:not(.exception) {
   color: @blueDark;
   .transition(all .2s ease-in);
   i {
@@ -15,6 +17,21 @@ a {
     i {
       opacity: 1;
     }
+  }
+}
+
+// Override Bootstrap to make sure that a.exception elements get no global
+// styles.
+a.exception {
+  &,
+  &:link,
+  &:visited,
+  &:hover,
+  &:active {
+    color: initial;
+    text-decoration: initial;
+    outline: initial;
+    outline-offset: initial;
   }
 }
 
