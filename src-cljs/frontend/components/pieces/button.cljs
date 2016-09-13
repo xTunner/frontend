@@ -31,12 +31,13 @@
   [{:keys [href on-click primary? size] :or {size :full}} content]
   (component
     (html
-     [:a {:class (remove nil? [(when primary? "primary")
-                               (case size
-                                 :full nil
-                                 :medium "medium")])
-          :href href
-          :on-click on-click}
+     [:a.exception
+      {:class (remove nil? [(when primary? "primary")
+                            (case size
+                              :full nil
+                              :medium "medium")])
+       :href href
+       :on-click on-click}
       content])))
 
 (defn managed-button
