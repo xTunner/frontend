@@ -38,8 +38,9 @@
          [:button#follow-project-button.btn.btn-primary
           {:on-click #(do
                         (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
-                        ((om/get-shared owner :track-event) {:event-type :header-follow-project-clicked
-                                                             :properties {:vcs-url vcs-url}}))
+                        ((om/get-shared owner :track-event) {:event-type :follow-project-clicked
+                                                             :properties {:vcs-url vcs-url
+                                                                          :component "header"}}))
            :data-loading-text "Following..."
            :data-failed-text (str "Failed to Follow " (vcs-url/repo-name vcs-url))
            :data-success-text "Followed"}
@@ -59,8 +60,9 @@
                   "Project Settings"])
           org [:a.header-settings-link.org-settings
                {:href (routes/v1-org-settings-path navigation-data)
-                :on-click #((om/get-shared owner :track-event) {:event-type :header-org-settings-link-clicked
-                                                                :properties {:org org}})}
+                :on-click #((om/get-shared owner :track-event) {:event-type :org-settings-link-clicked
+                                                                :properties {:org org
+                                                                             :component "header"}})}
                [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
                "Organization Settings"]
           :else nil)))
