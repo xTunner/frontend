@@ -57,9 +57,8 @@
     :container-filter-changed
     :container-selected
     :dismiss-trial-offer-banner-clicked
-    :header-follow-project-clicked
-    :header-org-settings-link-clicked
     :expand-repo-toggled
+    :follow-project-clicked
     :insights-bar-clicked
     :insights-header-parallelism-clicked
     :invite-teammates-clicked
@@ -71,6 +70,7 @@
     :new-plan-clicked
     :no-plan-banner-impression
     :org-clicked
+    :org-settings-link-clicked
     :pr-link-clicked
     :parallelism-clicked
     :project-branch-changed
