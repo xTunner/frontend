@@ -71,18 +71,29 @@
                                             (when bitbucket-enabled? "or Bitbucket ")
                                             "organization (or username) to view your projects.")}))))
 
-(defn- no-projects-available [org]
-  (component
-    (empty-state/empty-state {:icon (html [:i.material-icons "book"])
-                              :heading (html
-                                        [:span
-                                         (empty-state/important (:name org))
-                                         " has no projects building on CircleCI"])
-                              :subheading "Let's fix that by adding a new project."
-                              :action (button/link
-                                       {:href (routes/v1-add-projects)
-                                        :primary? true}
-                                       "Add Project")})))
+(defn- add-project-button [{:keys [empty-state?]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (button/link
+        {:href (routes/v1-add-projects)
+         :primary? true
+         :on-click #((om/get-shared owner :track-event)
+                     {:event-type :add-project-clicked
+                      :properties {:is-empty-state empty-state?}})}
+        "Add Project"))))
+
+(defn- no-projects-available [{:keys [org]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (empty-state/empty-state {:icon (html [:i.material-icons "book"])
+                                :heading (html
+                                           [:span
+                                            (empty-state/important (:name org))
+                                            " has no projects building on CircleCI"])
+                                :subheading "Let's fix that by adding a new project."
+                                :action (om/build add-project-button {:empty-state? true})}))))
 
 (defn- organization-ident
   "Builds an Om Next-like ident for an organization."
@@ -138,7 +149,7 @@
                             (if-let [projects-with-followers
                                      (seq (filter #(< 0 (count (:followers %))) projects))]
                               (table projects-with-followers (:plan selected-org))
-                              (no-projects-available selected-org))
+                              (om/build no-projects-available {:org selected-org}))
                             (html [:div.loading-spinner common/spinner])))
              (no-org-selected available-orgs (vcs/bitbucket-enabled? user)))]])))))
 
@@ -149,10 +160,4 @@
       (om/build main-template/template
                 {:app app
                  :main-content (om/build main-content app)
-                 :header-actions (button/link
-                                  {:href (routes/v1-add-projects)
-                                   :primary? true
-                                   :on-click #((om/get-shared owner :track-event)
-                                               {:event-type :add-project-clicked
-                                                :properties {:view :projects}})}
-                                  "Add Project")}))))
+                 :header-actions (om/build add-project-button {:empty-state? false})}))))

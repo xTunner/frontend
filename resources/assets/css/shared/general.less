@@ -5,8 +5,9 @@ body {
 }
 
 // We apply global styles to our a elements, but only if they don't have the
-// class .exception. An a.exception should get no global styles.
-a:not(.exception) {
+// class .exception or .btn. An a.exception should get no global styles, buttons
+// get styled by Bootstrap.
+a:not(.exception):not(.btn) {
   color: @blueDark;
   .transition(all .2s ease-in);
   i {
