@@ -1876,8 +1876,17 @@
                                   :on-change #(utils/edit-input owner (conj state/project-path :aws :services :codedeploy app-name :region) %)}
             [:option {:value ""} "Choose AWS Region..."]
             [:option {:disabled "disabled"} "-----"]
-            [:option {:value "us-east-1"} "us-east-1"]
-            [:option {:value "us-west-2"} "us-west-2"]]
+            [:option {:value "us-east-1"} "us-east-1"]  ;; Virginia
+            [:option {:value "us-west-1"} "us-west-1"]  ;; Northern California
+            [:option {:value "us-west-2"} "us-west-2"]  ;; Oregon
+            [:option {:value "sa-east-1"} "sa-east-1"]  ;; Sao Paulo
+            [:option {:value "eu-west-1"} "eu-west-1"]  ;; Ireland
+            [:option {:value "eu-central-1"} "eu-central-1"]  ;; Frankfurt
+            [:option {:value "ap-northeast-1"} "ap-northeast-1"]  ;; Tokyo
+            [:option {:value "ap-northeast-2"} "ap-northeast-2"]  ;; Seoul
+            [:option {:value "ap-southeast-1"} "ap-southeast-1"]  ;; Singapore
+            [:option {:value "ap-southeast-2"} "ap-southeast-2"]  ;; Sydney
+            [:option {:value "ap-south-1"} "ap-south-1"]] ;; Mumbai
 
            [:div.input-with-help
             [:input#application-root
