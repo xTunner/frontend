@@ -60,7 +60,9 @@
   (let [build-id (build-model/id build)
         build-url (:build_url build)
         fail-reason (:fail_reason build)]
-    (when (:failed build)
+    (when (and (:failed build)
+               (not show-premium-content?)
+               (not (config/enterprise?)))
       [:div.alert.alert-danger.iconified
        [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
        (if (:infrastructure_fail build)
@@ -73,17 +75,7 @@
           [:a {:href "https://discuss.circleci.com/"}
            "community site"]
           "."
-          (let [support-link [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
-                              "contact engineering support"]]
-            (cond
-              (config/enterprise?) [:span "As an enterprise customer, you may also "
-                                    support-link
-                                    " to ask for help. Thanks!"]
-              show-premium-content? [:span
-                                     " As this project builds under a paid plan, you may also "
-                                     support-link
-                                     " to ask for help. Thanks!"]
-              :else [:span " Upgrading to a paid plan unlocks access to CircleCI engineering support, faster builds, and advanced features. Thanks!"]))])])))
+          [:span " Upgrading to a paid plan unlocks access to CircleCI engineering support, faster builds, and advanced features. Thanks!"]])])))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
