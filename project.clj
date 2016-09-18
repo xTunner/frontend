@@ -3,7 +3,7 @@
   :url "https://circleci.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :dependencies [[org.clojure/clojure "1.7.0"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
                  [inflections "0.8.2"]
 
                  [org.clojars.dwwoelfel/stefon "0.5.0-3198d1b33637d6bd79c7415b01cff843891ebfd4"
@@ -19,10 +19,13 @@
                  ;; Prerelease version to avoid conflict with cljs.core/record?
                  ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
                  [ankha "0.1.5.1-64423e"]
-                 [org.clojure/clojurescript "1.8.40"]
+                 [org.clojure/clojurescript "1.9.227"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.3.0-alpha4"]
-                 [cljs-ajax "0.3.13"]
+                 [cljs-ajax "0.3.13" :exclusions [com.cognitect/transit-cljs]]
+                 ;; Use a slightly later version of transit-cljs than cljs-ajax
+                 ;; depends on to avoid a ClojureScript warning.
+                 [com.cognitect/transit-cljs "0.8.239"]
                  [cljsjs/react-with-addons "0.14.5-0"]
                  [cljsjs/react-dom "0.14.5-0"]
                  [cljsjs/c3 "0.4.10-0"]
@@ -31,17 +34,17 @@
                  ;; om.next. The old Om (om.core) is production-ready in the
                  ;; 1.0.0 alphas. We need 1.0 for React 0.14, which in turn is
                  ;; required for devcards.
-                 [org.omcljs/om "1.0.0-alpha41"]
+                 [org.omcljs/om "1.0.0-alpha45"]
 
                  [hiccups "0.3.0"]
                  [sablono "0.7.2"]
                  [secretary "1.2.2"]
                  [com.andrewmcveigh/cljs-time "0.4.0"]
-                 [prismatic/schema "1.0.4"]
+                 [prismatic/schema "1.1.3"]
                  [devcards "0.2.1-6"]
 
                  ;; Frontend tests
-                 [org.clojure/tools.reader "0.9.2"]
+                 [org.clojure/tools.reader "1.0.0-beta3"]
                  [circleci/bond "0.2.9"]
                  [lein-doo "0.1.6"]
 
