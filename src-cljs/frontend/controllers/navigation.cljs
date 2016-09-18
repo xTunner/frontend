@@ -275,31 +275,6 @@
       (api/get-bitbucket-repos api-ch)))
   (set-page-title! "Add projects"))
 
-(defmethod navigated-to :projects
-  [history-imp navigation-point {:keys [vcs_type org inner?] :as args} state]
-  (let [current-user (get-in state state/user-path)
-        vcs_type (vcs/->lengthen-vcs vcs_type)
-        org-ident (when (and vcs_type org) (state/org-ident vcs_type org))]
-    (-> state
-        state-utils/clear-page-state
-        (assoc state/current-view navigation-point
-               state/navigation-data {:inner? inner?
-                                      :show-aside-menu? false})
-        (assoc-in state/current-org-ident org-ident)
-        (assoc-in state/crumbs-path [{:type :projects}]))))
-
-(defmethod post-navigated-to! :projects
-  [history-imp navigation-point _ previous-state current-state comms]
-  (set-page-title! "Projects")
-  (let [api-ch (:api comms)
-        current-org-ident (get-in current-state state/current-org-ident)
-        previous-org-ident (get-in previous-state state/current-org-ident)]
-    (api/get-orgs api-ch :include-user? true)
-    (when (not= current-org-ident previous-org-ident)
-      (let [[vcs-type org-name] (state/org-ident->vcs-type-and-org current-org-ident)]
-        (api/get-org-plan-normalized org-name vcs-type api-ch)
-        (api/get-org-settings-normalized org-name vcs-type api-ch)))))
-
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
   (-> state

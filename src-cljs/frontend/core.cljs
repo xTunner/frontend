@@ -1,46 +1,40 @@
 (ns frontend.core
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.async :refer [put!]]
-            [clojure.string :as string]
-            [goog.dom]
-            [goog.dom.DomHelper]
-            [goog.dom.classlist]
-            [frontend.ab :as ab]
+  (:require [cljs.core.async :as async :refer [chan]]
+            [clojure.zip :as zip]
+            [compassus.core :as compassus]
+            [figwheel.client.utils :as figwheel-utils]
             [frontend.analytics.core :as analytics]
             [frontend.api :as api]
+            [frontend.async :refer [put!]]
+            [frontend.browser-settings :as browser-settings]
             [frontend.components.app :as app]
+            [frontend.components.app.legacy :as legacy]
             [frontend.config :as config]
-            [frontend.controllers.controls :as controls-con]
-            [frontend.controllers.navigation :as nav-con]
-            [frontend.routes :as routes]
             [frontend.controllers.api :as api-con]
-            [frontend.controllers.ws :as ws-con]
+            [frontend.controllers.controls :as controls-con]
             [frontend.controllers.errors :as errors-con]
-            [frontend.extensions]
+            [frontend.controllers.navigation :as nav-con]
+            [frontend.controllers.ws :as ws-con]
+            [frontend.datetime :as datetime]
+            [frontend.history :as history]
             [frontend.instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.parser :as parser]
+            [frontend.pusher :as pusher]
+            [frontend.routes :as routes]
+            [frontend.send :as send]
             [frontend.state :as state]
+            [frontend.support :as support]
+            [frontend.timer :as timer]
+            [frontend.utils :as utils :refer [mlog set-canonical!]]
+            goog.dom
             [goog.events :as gevents]
             [om.core :as om :include-macros true]
-            [om.next :as om-next :refer-macros [defui]]
-            [compassus.core :as compassus]
-            [frontend.pusher :as pusher]
-            [frontend.history :as history]
-            [frontend.browser-settings :as browser-settings]
-            [frontend.utils :as utils :refer [mlog merror third set-canonical!]]
-            [frontend.datetime :as datetime]
-            [frontend.timer :as timer]
-            [frontend.support :as support]
-            [schema.core :as s :include-macros true]
-            [secretary.core :as sec]
-            ;; Extends goog.date.* datatypes to IEquiv and IComparable.
-            [cljs-time.extend]
-            [cljsjs.react]
-            [figwheel.client.utils])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [inspect timing swallow-errors
-                                           ;; NOMERGE
-                                           html]]
-                   [frontend.devtools :refer [require-devtools!]]))
+            [om.next :as om-next]
+            [schema.core :as s :include-macros true])
+  (:require-macros
+   [cljs.core.async.macros :as am :refer [alt! go]]
+   [frontend.devtools :refer [require-devtools!]]
+   [frontend.utils :refer [swallow-errors]]))
 
 (when config/client-dev?
   (enable-console-print!)
@@ -141,20 +135,6 @@
   (put! ws-ch [:subscribe {:channel-name (pusher/user-channel user)
                            :messages [:refresh]}]))
 
-(defmulti read om-next/dispatch)
-
-(defmethod read :default
-  [{:keys [state query] :as env} key _]
-  (let [st @state]
-    {:value (om-next/db->tree query (get st key) st)}))
-
-
-(defmulti mutate om-next/dispatch)
-
-
-(def parser (om-next/parser {:read read :mutate mutate}))
-
-;; NOMERGE This is only a var so that toggle-admin and toggle-dev-admin can work.
 (defonce application nil)
 
 ;; Wraps an atom, but only exposes the portion of its value at path.
@@ -182,65 +162,11 @@
   (-remove-watch [this key]
     (remove-watch atom [this key])))
 
-(defui ^:once LegacyPage
-  static om-next/IQuery
-  (query [this]
-    '[[:legacy/state _]])
-  Object
-  (render [this]
-    ;; The legacy-state-atom is a LensedAtom which we can treat like a
-    ;; normal atom, but which presents only the legacy state.
-    (let [legacy-state-atom (LensedAtom. (om-next/app-state (om-next/get-reconciler this)) [:legacy/state])]
-
-      ;; Om Prev, like Om Next, has a mechanism to queue component state changes.
-      ;; Unfortunately there's no great way to connect the two, so we abandon Om
-      ;; Prev's here by hooking -queue-render! directly to .forceUpdate. That
-      ;; is, Om Prev component state changes will no longer queue and batch.
-      ;;
-      ;; Note that while this is the app state atom, this is about *component*
-      ;; state. Confusing, but Om Prev coordinates component state changes
-      ;; using methods on the *app* state atom, presumably because it's a handy
-      ;; central location to track things.
-      (specify! legacy-state-atom
-        om/IRenderQueue
-        (-queue-render! [_ c]
-          (.forceUpdate c))
-        (-get-queue [_] nil)
-        (-empty-queue! [_] nil))
-
-      ;; Make the legacy-state-atom available to Om Prev as the *state*. Om
-      ;; would normally do this automatically.
-      (binding [om/*state* legacy-state-atom]
-        (om/build app/app*
-                  (:legacy/state (om-next/props this))
-                  ;; Make the Om Next shared values available in Om Prev as well.
-                  {:shared (assoc (om-next/shared this)
-                                  ;; Include the legacy-state-atom for the inputs system.
-                                  :_app-state-do-not-use legacy-state-atom
-                                  ;; NOMERGE Just for debugging.
-                                  :om-next-app-state @(om-next/app-state (om-next/get-reconciler this)))})))))
-
-(defui ^:once ProjectsPage
-  static om-next/IQuery
-  (query [this]
-    '[[:app/current-user _]])
-  Object
-  (render [this]
-    (aset js/window "projects_page" this)
-    (html
-     [:div
-      [:h1 "Info on the current user:"]
-      (pr-str (om-next/props this))])))
-
-(def routes
-  {:app/legacy-page LegacyPage
-   :app/projects ProjectsPage})
-
-(defn force-update-recursive
+(defn- force-update-recursive
   ".forceUpdate root-component and every component within it.
 
-  This function uses React internals, and should only be used for development
-  tasks, such as code reloading."
+  This function uses React internals and should only be used for development
+  tasks such as code reloading."
   [root-component]
   (letfn [(js-vals [o]
             (map #(aget o %) (js-keys o)))
@@ -260,9 +186,34 @@
     (doseq [c (descendant-components root-component)]
       (.forceUpdate c))))
 
+;; http://stackoverflow.com/a/15020649/42188
+(defn- map-zipper [m]
+  (zip/zipper
+    (fn [x] (or (map? x) (map? (nth x 1))))
+    (fn [x] (seq (if (map? x) x (nth x 1))))
+    (fn [x children]
+      (if (map? x)
+        (into {} children)
+        (assoc x 1 (into {} children))))
+    m))
+
+(defn- nils->maps
+  "Turns {:a {:b nil}, :one {:two {:three \"3\"}}} into
+  {:a {:b {}}, :one {:two {:three \"3\"}}}"
+  [m]
+  (loop [z (map-zipper m)]
+    (cond
+      (zip/end? z) (zip/root z)
+
+      (and (implements? IMapEntry (zip/node z))
+           (nil? (val (zip/node z))))
+      (recur (zip/replace z [(key (zip/node z)) {}]))
+
+      :else (recur (zip/next z)))))
+
 (defn ^:export setup! []
   (support/enable-one!)
-  (let [state (initial-state)
+  (let [legacy-state (initial-state)
         comms {:controls (chan)
                :api (chan)
                :errors (chan)
@@ -272,30 +223,62 @@
         container (find-app-container)
         history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance (config/pusher))
-        a (compassus/application {:routes routes
-                                  :reconciler-opts {:state {:legacy/state state
-                                                            :app/current-user (-> js/window
-                                                                                  (aget "renderContext")
-                                                                                  (aget "current_user")
-                                                                                  utils/js->clj-kw)}
-                                                    :parser parser
-                                                    :shared {:comms comms
-                                                             :timer-atom (timer/initialize)
-                                                             ;; NOMERGE Analytics is going to be
-                                                             ;; tricky, as we'll be moving all the
-                                                             ;; data around. For spike purposes, just
-                                                             ;; disable it
-                                                             :track-event (constantly nil)}}})
+        state-atom (atom {:legacy/state legacy-state
+                          :app/current-user (when-let [rc-user (-> js/window
+                                                                   (aget "renderContext")
+                                                                   (aget "current_user"))]
+                                              {:user/bitbucket-authorized (aget rc-user "bitbucket_authorized")})
+                          :organization/by-vcs-type-and-name {}})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a
-        ;; normal atom, but which presents only the legacy state.
-        legacy-state-atom (LensedAtom. (om-next/app-state (compassus/get-reconciler a)) [:legacy/state])]
+        ;; normal atom but which presents only the legacy state.
+        legacy-state-atom (LensedAtom. state-atom [:legacy/state])
+
+        a (compassus/application
+           {:routes app/routes
+            :wrapper app/wrapper
+            :reconciler-opts {:state state-atom
+                              :normalize true
+                              :parser parser/parser
+                              :send send/send
+                              :merge compassus/compassus-merge
+
+                              ;; Workaround for
+                              ;; https://github.com/omcljs/om/issues/781
+                              :merge-tree #(utils/deep-merge %1 (nils->maps %2))
+
+                              ;; Workaround for
+                              ;; https://github.com/omcljs/om/issues/772 with
+                              ;; solution merged in
+                              ;; https://github.com/omcljs/om/pull/775. Should
+                              ;; be able to remove this once we're on Om
+                              ;; 1.0.0-alpha46 or greater.
+                              :indexer (fn []
+                                         (om-next/indexer
+                                          {:index-component (fn [indexes component] indexes)
+                                           :drop-component (fn [indexes component] indexes)
+                                           :ref->components (fn [indexes k]
+                                                              (transduce (map #(get-in indexes [:class->components %]))
+                                                                         (completing into)
+                                                                         (get-in indexes [:ref->components k] #{})
+                                                                         (get-in indexes [:prop->classes k])))}))
+
+                              :shared {:comms comms
+                                       :timer-atom (timer/initialize)
+                                       ;; NOMERGE Analytics
+                                       :track-event (constantly nil)
+                                       ;; Make the legacy-state-atom available to the legacy inputs system.
+                                       :_app-state-do-not-use legacy-state-atom}}})]
 
     (set! application a)
 
+    ;; Tell the parser which keys it should treat as pages.
+    (doseq [[page-key _] app/routes]
+      (parser/register-page-key! page-key))
+
     (browser-settings/setup! legacy-state-atom)
 
-    (routes/define-routes! (:current-user state) application (:nav comms))
+    (routes/define-routes! (:current-user legacy-state) application (:nav comms))
 
     (compassus/mount! application (goog.dom/getElement "app"))
 
@@ -317,32 +300,31 @@
     (when (config/enterprise?)
       (api/get-enterprise-site-status (:api comms)))
 
-    (if-let [error-status (get-in state [:render-context :status])]
+    (if-let [error-status (get-in legacy-state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
       (put! (:nav comms) [:error {:status error-status}])
       (routes/dispatch! (str "/" (.getToken history-imp))))
-    (when-let [user (:current-user state)]
+    (when-let [user (:current-user legacy-state)]
       (analytics/track {:event-type :init-user
-                        :current-state state})
+                        :current-state legacy-state})
       (subscribe-to-user-channel user (:ws comms)))))
 
 
-;; NOMERGE These will transact on the (globally available) reconciler. Until we
-;; get mutations going, let's just disable them.
+(defn ^:export toggle-admin []
+  (swap! (om-next/app-state (compassus/get-reconciler application))
+         update-in [:legacy/state :current-user :admin] not))
 
-;; (defn ^:export toggle-admin []
-;;   (swap! state/debug-state update-in [:current-user :admin] not))
-
-;; (defn ^:export toggle-dev-admin []
-;;   (swap! state/debug-state update-in [:current-user :dev-admin] not))
+(defn ^:export toggle-dev-admin []
+  (swap! (om-next/app-state (compassus/get-reconciler application))
+         update-in [:legacy/state :current-user :dev-admin] not))
 
 (defn ^:export explode []
   (swallow-errors
    (assoc [] :deliberate :exception)))
 
 
-;; Figwheel offers an event when JS is reloaded, but not when CSS is reloaded. A
-;; PR is waiting to add this; until then, fire that event from here.
+;; Figwheel offers an event when JS is reloaded but not when CSS is reloaded. A
+;; PR is waiting to add this; until then fire that event from here.
 ;; See: https://github.com/bhauman/lein-figwheel/pull/463
 (defn handle-css-reload [files]
-  (figwheel.client.utils/dispatch-custom-event "figwheel.css-reload" files))
+  (figwheel-utils/dispatch-custom-event "figwheel.css-reload" files))

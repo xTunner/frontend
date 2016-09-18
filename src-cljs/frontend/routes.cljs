@@ -5,18 +5,25 @@
             [frontend.async :refer [put!]]
             [frontend.config :as config]
             [frontend.utils.vcs :as vcs]
-            [secretary.core :as sec :refer-macros [defroute]])
+            [secretary.core :as sec :refer-macros [defroute]]
+            [om.next :as om-next])
   (:require-macros
    [cljs.core.async.macros :as am :refer [alt! go go-loop]]
    [frontend.utils :refer [inspect]]))
 
-(defn open! [app route args]
+(defn open! [app route data]
+  ;; Shortly, Compassus will let us add this to its own transaction:
+  ;; https://github.com/compassus/compassus/issues/8
+  ;; https://github.com/compassus/compassus/commit/9a92c185d71615284b40a71eb049bbf38d01ec96
+  (om-next/transact! (compassus/get-reconciler app) [`(set-data {:data ~data})])
   (compassus/set-route! app route))
 
 (defn open-to-inner! [app nav-ch navigation-point args]
   (compassus/set-route! app :app/legacy-page)
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
+;; TODO: Remove this and everything that uses it. It should be completely obsolete.
+;; NOMERGE: Make 404 not use outer.
 (defn open-to-outer! [nav-ch navigation-point args]
   (put! nav-ch [navigation-point (assoc args :inner? false)]))
 
@@ -228,12 +235,12 @@
     (open-to-inner! app nav-ch :account {:subpage :notifications}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
     (open-to-inner! app nav-ch :account {:subpage (keyword subpage)}))
-  (defroute v1-organization-projects "/projects/:vcs_type/:org" {:keys [vcs_type org]}
-    (open-to-inner! app nav-ch :projects {:vcs_type vcs_type
-                                      :org org}))
+  (defroute v1-organization-projects "/projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
+    (open! app :app/projects {:projects-page/organization
+                              [:organization/by-vcs-type-and-name
+                               {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+                                :organization/name org-name}]}))
   (defroute v1-projects "/projects" []
-    (open-to-inner! app nav-ch :projects {}))
-  (defroute next-projects "/next-projects" []
     (open! app :app/projects {}))
   (defroute v1-team "/team" []
     (open-to-inner! app nav-ch :team {}))
