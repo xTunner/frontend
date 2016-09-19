@@ -217,16 +217,15 @@
                                                                                                           (deselect! owner user))}]))}]
                                                             :striped? true})]))]))
                                   :actions [(button/button {:on-click close-fn} "Cancel")
-                                            (forms/managed-button
-                                             [:button.btn.btn-primary {:style {:width "155px"}
-                                                                       :data-success-text "Sent"
-                                                                       :on-click #(do
-                                                                                    (raise! owner [:invited-team-members {:invitees (invitees state vcs-users)
-                                                                                                                          :vcs_type (:vcs_type selected-org)
-                                                                                                                          :org-name (:name selected-org)}])
-                                                                                    (close-fn))
-                                                                       :disabled (= 0 count-selected)}
-                                              (invite-button-text count-selected)])]
+                                            (button/managed-button {:success-text "Sent"
+                                                                    :on-click #(do
+                                                                                 (raise! owner [:invited-team-members {:invitees (invitees state vcs-users)
+                                                                                                                       :vcs_type (:vcs_type selected-org)
+                                                                                                                       :org-name (:name selected-org)}])
+                                                                                 (close-fn))
+                                                                    :primary? true
+                                                                    :disabled? (zero? count-selected)}
+                                                                   (invite-button-text count-selected))]
                                   :close-fn close-fn})))])))))
 
 (defn- main-content [app owner]
