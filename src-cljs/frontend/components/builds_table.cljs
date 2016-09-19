@@ -54,8 +54,12 @@
 (defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         raise-build-action! (fn [event] (raise! owner [event (build-model/build-args build)]))
+        raise-merge-action! (fn [] (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
         status-words (build-model/status-words build)
-        should-show-rebuild? (#{"timedout" "failed"} (:outcome build))]
+        should-show-rebuild? (#{"timedout" "failed"} (:outcome build))
+        ;TODO re-enable feature flag
+        should-show-merge? (and ;(feature/enabled? :merge-pull-request)
+                                (build-model/can-merge-at-least-one-pr? build))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
@@ -86,6 +90,16 @@
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :build-row-rebuild-clicked}))})
+
+        should-show-merge?
+        (build-action
+          {:text "merge PR"
+           :loading-text "Merging..."
+           ;TODO use same octicon as in build page button
+           :icon "Rebuild"
+           :on-click #(do
+                        (raise-merge-action!)
+                        ((om/get-shared owner :track-event) {:event-type :build-row-merge-clicked}))})
 
         :else nil)]
 
@@ -183,4 +197,3 @@
                                    :show-branch? show-branch?
                                    :show-project? show-project?})
               builds)]))))
-

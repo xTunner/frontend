@@ -506,6 +506,7 @@
         vcs-type (vcs-url/vcs-type vcs-url)
         owner (vcs-url/org-name vcs-url)
         repo (vcs-url/repo-name vcs-url)]
+    ;TODO change this to make compatible with managed-button state updates
     (ajax/ajax :put
                (api-path/merge-pull-request vcs-type owner repo number)
                :merge-pull-request

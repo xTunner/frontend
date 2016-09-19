@@ -47,6 +47,7 @@
     :build-row-cancel-build-clicked
     :build-row-pr-link-clicked
     :build-row-rebuild-clicked
+    :build-row-merge-clicked
     :build-row-revision-link-clicked
     :build-row-status-clicked
     :build-timing-upsell-clicked

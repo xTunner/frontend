@@ -70,15 +70,14 @@
   (reify
     om/IRender
     (render [_]
-      (let [pull-request-number (last (build-model/pull-request-numbers build))]
-        (html
-         [:div.merge-container
-          [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])
-                    :data-toggle "tooltip"
-                    :data-placement "bottom"
-                    :title (str "Merge PR #" pull-request-number)}
-           [:i.octicon.octicon-git-merge.merge-icon]
-           "Merge PR"]])))))
+      (html
+       [:div.merge-container
+        [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build)])
+                  :data-toggle "tooltip"
+                  :data-placement "bottom"
+                  :title (str "Merge PR #" (build-model/pull-request-number build))}
+         [:i.octicon.octicon-git-merge.merge-icon]
+         "Merge PR"]]))))
 
 (defn- header-actions
   [data owner]
