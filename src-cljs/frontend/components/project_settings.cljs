@@ -124,11 +124,11 @@
                "You can stop these any time from your "
                [:a {:href "/account"} "account settings"]
                "."]
-              (forms/managed-button
-                [:button.btn.btn-warning {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url
-                                                                                         :project-id project-id}])
-                                          :data-loading-text "Unfollowing..."}
-                 "Unfollow"])
+              (button/managed-button
+               {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
+                :loading-text "Unfollowing..."
+                :primary? true}
+               "Unfollow")
                " "
                (forms/managed-button
                  [:button.btn.btn-danger {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
@@ -141,11 +141,11 @@
               [:p
                "We can't update you with personalized build emails unless you follow this project. "
                "Projects are only tested if they have a follower."]
-              (forms/managed-button
-               [:button {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url
-                                                                      :project-id project-id}])
-                         :data-loading-text "Following..."}
-                "Follow"])))]])))))
+              (button/managed-button
+               {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url
+                                                             :project-id project-id}])
+                :loading-text "Following..."}
+               "Follow")))]])))))
 
 (defn overview [project-data owner]
   (reify
@@ -407,20 +407,20 @@
 
 (defn clear-cache-button
   [cache-type project-data owner]
-  (forms/managed-button
-    [:button.btn.btn-primary
-     {:data-loading-text "Clearing cache..."
-      :data-success-text "Cleared"
-      :data-failure-text "Clearing failed"
-      :on-click #(raise! owner
-                         [:clear-cache
-                          {:type cache-type
-                           :project-id (-> project-data
-                                           :project
-                                           project-model/id)}])}
-     (case cache-type
-       "build" "Clear Dependency Cache"
-       "source" "Clear Source Cache")]))
+  (button/managed-button
+    {:loading-text "Clearing cache..."
+     :success-text "Cleared"
+     :failure-text "Clearing failed"
+     :on-click #(raise! owner
+                        [:clear-cache
+                         {:type cache-type
+                          :project-id (-> project-data
+                                          :project
+                                          project-model/id)}])
+     :primary? true}
+    (case cache-type
+      "build" "Clear Dependencies"
+      "source" "Clear Sources")))
 
 (defn clear-caches
   [project-data owner]
@@ -674,11 +674,11 @@
                                              :value (str (:post_dependencies settings))
                                              :on-change #(utils/edit-input owner (conj state/inputs-path :post_dependencies) %)}]
                [:p "Run extra commands after the normal setup, these run after our inferred commands for dependency installation. Use this to run commands that rely on the installed dependencies."]]
-              (forms/managed-button
-               [:input.btn.btn-primary {:value "Next, set up your tests",
-                                        :type "submit"
-                                        :data-loading-text "Saving..."
-                                        :on-click #(raise! owner [:saved-dependencies-commands {:project-id project-id}])}])]]]]])))))
+              (button/managed-button
+               {:loading-text "Saving..."
+                :on-click #(raise! owner [:saved-dependencies-commands {:project-id project-id}])
+                :primary? true}
+               "Next, set up your tests")]]]]])))))
 
 (defn tests [project-data owner]
   (reify
@@ -715,13 +715,12 @@
                                             :value (str (:extra settings))
                                             :on-change #(utils/edit-input owner (conj state/inputs-path :extra) %)}]
               [:p "Run extra test commands after the others finish. Extra test commands run after our inferred commands. Add extra tests that we haven't thought of yet."]]
-
-             (forms/managed-button
-              [:input.btn.btn-primary {:name "save",
-                                       :data-loading-text "Saving...",
-                                       :value "Save commands",
-                                       :type "submit"
-                                       :on-click #(raise! owner [:saved-test-commands {:project-id project-id}])}])
+             (button/managed-button
+              {:loading-text "Saving..."
+               :success-text "Saved"
+               :on-click #(raise! owner [:saved-test-commands {:project-id project-id}])
+               :primary? true}
+              "Save commands")
              [:div.try-out-build
               (om/build branch-picker
                         project-data
@@ -1022,17 +1021,16 @@
                                                          :value private-key
                                                          :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}))
                     :actions [(button/button {:on-click close-fn} "Cancel")
-                              (forms/managed-button
-                               [:input.btn.btn-primary
-                                {:data-failed-text "Failed"
-                                 :data-success-text "Saved"
-                                 :data-loading-text "Saving..."
-                                 :value "Add SSH Key"
-                                 :type "submit"
-                                 :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
-                                                                           :ssh-key {:hostname hostname
-                                                                                     :private_key private-key}
-                                                                           :on-success close-fn}])}])]
+                              (button/managed-button
+                               {:failed-text "Failed"
+                                :success-text "Saved"
+                                :loading-text "Saving..."
+                                :on-click #(raise! owner [:saved-ssh-key {:project-id project-id
+                                                                          :ssh-key {:hostname hostname
+                                                                                    :private_key private-key}
+                                                                          :on-success close-fn}])
+                                :primary? true}
+                               "Add SSH Key")]
                     :close-fn close-fn})))
               (when-let [ssh-keys (seq (:ssh_keys project))]
                 (let [remove-key-button
@@ -1101,11 +1099,9 @@
            (if-not (user-model/public-key-scope? user)
              (list
               [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account."]
-              [:a.btn.ghu-authorize
-               {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
-                :title "Grant admin:public_key authorization so that we can add a new SSH key to your GitHub account"}
-               "Authorize w/ GitHub " [:i.fa.fa-github]])
-
+              (button/link {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
+                            :primary? true}
+                           "Authorize with GitHub"))
              [:div.request-user
               (forms/managed-button
                [:input.btn
@@ -1231,17 +1227,14 @@
                   [:p
                    "Deploy keys are the best option for most projects: they only have access to a single " vcs-name " repository."]
                   [:div.request-user
-                   (forms/managed-button
-                    [:input.btn
-                     {:type "submit"
-                      :on-click #(raise! owner
-                                         [:new-checkout-key-clicked {:project-id project-id
-                                                                     :project-name project-name
-                                                                     :key-type "deploy-key"}])
-                      :title "Create a new deploy key, with access only to this project."
-                      :value (str "Create and add " project-name " deploy key")
-                      :data-loading-text "Saving..."
-                      :data-success-text "Saved"}])]])
+                   (button/managed-button
+                    {:on-click #(raise! owner
+                                        [:new-checkout-key-clicked {:project-id project-id
+                                                                    :project-name project-name
+                                                                    :key-type "deploy-key"}])
+                     :loading-text "Saving..."
+                     :success-text "Saved"}
+                    "Add deploy key")]])
                (when-not (some #{"github-user-key" "bitbucket-user-key"} (map :type checkout-keys))
                  (om/build add-user-key-section data))
                (when-let [bb-user-key (first (filter (fn [key] (and
@@ -1345,16 +1338,16 @@
                                                                                      :label "Token Label"}))])
                                        :close-fn close-fn
                                        :actions [(button/button {:on-click close-fn} "Cancel")
-                                                 (forms/managed-button
-                                                  [:input.btn.btn-primary {:data-failed-text "Failed" ,
-                                                                           :data-success-text "Added" ,
-                                                                           :data-loading-text "Adding..." ,
-                                                                           :value "Create Token" ,
-                                                                           :type "submit"
-                                                                           :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
-                                                                                                                               :api-token {:scope scope
-                                                                                                                                           :label label}
-                                                                                                                               :on-success close-fn}])}])]})))
+                                                 (button/managed-button
+                                                  {:failed-text  "Failed"
+                                                   :success-text "Added"
+                                                   :loading-text "Adding..."
+                                                   :on-click #(raise! owner [:saved-project-api-token {:project-id project-id
+                                                                                                       :api-token {:scope scope
+                                                                                                                   :label label}
+                                                                                                       :on-success close-fn}])
+                                                   :primary? true}
+                                                  "Add Token")]})))
               (when-let [tokens (seq (:tokens project-data))]
                 (om/build table/table
                           {:rows tokens
@@ -1421,14 +1414,13 @@
                   :value "Remove Heroku Deploy User",
                   :type "submit"}])
 
-               (forms/managed-button
-                [:input.btn.btn-primary.set-user
-                 {:data-success-text "Saved",
-                  :data-loading-text "Saving...",
-                  :on-click #(raise! owner [:set-heroku-deploy-user {:project-id project-id
-                                                                     :login login}])
-                  :value (str "Set user to " (:login user)),
-                  :type "submit"}]))]]
+               (button/managed-button
+                {:success-text "Saved"
+                 :loading-text "Saving..."
+                 :on-click #(raise! owner [:set-heroku-deploy-user {:project-id project-id
+                                                                    :login login}])
+                 :primary? true}
+                (str "Set user to " (:login user))))]]
            [:div.heroku-step
             [:h4
              "Step 3: Add deployment settings to your "
@@ -1753,8 +1745,7 @@
           [:span " has no "]
           [:span.highlight "Apple Code Signing Identities"]
           [:span "  yet"]]
-         [:a.btn.upload-key-button {:on-click add-key}
-          "Upload Key"]
+         (button/button {:on-click add-key :primary? true} "Upload Key")
          [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
 
 
@@ -1820,8 +1811,10 @@
           [:article
            [:div.header
             [:div.title "Apple Code Signing Keys"]
-            [:a.btn.upload-key-button {:on-click #(om/set-state! owner :show-modal? true)}
-             "Upload Key"]]
+            (button/button
+             {:on-click #(om/set-state! owner :show-modal? true)
+              :primary? true}
+             "Upload Key")]
            [:hr.divider]
            [:div.info "The following code-signing identities will be added to the system keychain when your build
                         begins, and will be available to sign iOS and OS X apps. For more information about code-signing
