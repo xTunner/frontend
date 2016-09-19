@@ -155,10 +155,10 @@
                         (condp = (get-in state state/show-all-branches-path)
                           true "All"
                           false "Mine"))]
-  (analytics/track {:event-type :show-all-branches-toggled
-                    :current-state current-state
-                    :properties {:current-state (element-state current-state)
-                                 :previous-state (element-state previous-state)}})))
+   (analytics/track {:event-type :show-all-branches-toggled
+                     :current-state current-state
+                     :properties {:current-state (element-state current-state)
+                                  :previous-state (element-state previous-state)}})))
 
 (defmethod control-event :expand-repo-toggled
   [target message {:keys [repo]} state]
@@ -191,10 +191,10 @@
                         (if (get-in state state/sort-branches-by-recency-path)
                           "Recent"
                           "By Repo"))]
-  (analytics/track {:event-type :sort-branches-toggled
-                    :current-state current-state
-                    :properties {:current-state (element-state current-state)
-                                 :previous-state (element-state previous-state)}})))
+   (analytics/track {:event-type :sort-branches-toggled
+                     :current-state current-state
+                     :properties {:current-state (element-state current-state)
+                                  :previous-state (element-state previous-state)}})))
 
 (defmethod control-event :collapse-branches-toggled
   [target message {:keys [collapse-group-id]} state]
@@ -381,12 +381,12 @@
                  api-ch
                  :params {:parallel parallelism}
                  :context {:project-id project-id})
-    (analytics/track {:event-type :update-parallelism-clicked
-                      :current-state current-state
-                      :properties {:previous-parallelism (project-model/parallelism previous-project)
-                                   :new-parallelism (project-model/parallelism new-project)
-                                   :plan-type (analytics-utils/canonical-plan-type :paid)
-                                   :vcs-type vcs-type}}))))
+      (analytics/track {:event-type :update-parallelism-clicked
+                        :current-state current-state
+                        :properties {:previous-parallelism (project-model/parallelism previous-project)
+                                     :new-parallelism (project-model/parallelism new-project)
+                                     :plan-type (analytics-utils/canonical-plan-type :paid)
+                                     :vcs-type vcs-type}}))))
 
 (defmethod post-control-event! :clear-cache
   [target message {:keys [type project-id]} previous-state current-state comms]
