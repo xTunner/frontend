@@ -42,13 +42,15 @@
       (dashboard-icon "Bot-Icon")
       (dashboard-icon "Default-Avatar"))))
 
-(defn build-action [{:keys [text loading-text icon on-click]}]
+(defn build-action [{:keys [text loading-text icon-name icon-class on-click]}]
   [:div.build-action
    (forms/managed-button
      [:button
       {:data-loading-text loading-text
        :on-click on-click}
-      [:img.button-icon {:src (common/icon-path icon)}]
+      (cond
+        icon-name [:img.button-icon {:src (common/icon-path icon-name)}]
+        icon-class [:i.button-icon {:class icon-class}])
       [:span.button-text text]])])
 
 (defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
@@ -77,7 +79,7 @@
         (build-action
           {:text "cancel"
            :loading-text "Cancelling..."
-           :icon "Status-Canceled"
+           :icon-name "Status-Canceled"
            :on-click #(do
                         (raise-build-action! :cancel-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :build-row-cancel-build-clicked}))})
@@ -86,17 +88,16 @@
         (build-action
           {:text "rebuild"
            :loading-text "Rebuilding..."
-           :icon "Rebuild"
+           :icon-name "Rebuild"
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :build-row-rebuild-clicked}))})
 
         should-show-merge?
         (build-action
-          {:text "merge PR"
+          {:text "merge"
            :loading-text "Merging..."
-           ;TODO use same octicon as in build page button
-           :icon "Rebuild"
+           :icon-class "octicon octicon-git-merge"
            :on-click #(do
                         (raise-merge-action!)
                         ((om/get-shared owner :track-event) {:event-type :build-row-merge-clicked}))})
