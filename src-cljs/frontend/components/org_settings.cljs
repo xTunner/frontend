@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [frontend.analytics.track :as analytics-track]
             [frontend.async :refer [navigate! raise!]]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
@@ -335,15 +336,14 @@
   (reify
     om/IRender
     (render [_]
-      (html
-        (forms/managed-button
-          [:a.btn.btn-lg.btn-success
-           {:data-success-text "Success!"
-            :data-loading-text loading-text
-            :data-failed-text "Failed"
-            :on-click on-click-fn
-            :disabled disabled?}
-           text])))))
+      (button/managed-button
+       {:success-text "Success!"
+        :loading-text loading-text
+        :failed-text "Failed"
+        :on-click on-click-fn
+        :primary? true
+        :disabled? disabled?}
+       text))))
 
 (defn osx-plan [{:keys [title price container-count daily-build-count max-minutes support-level team-size
                         plan-id plan trial-starts-here? org-name vcs-type]} owner]
@@ -504,50 +504,48 @@
              (if (and (pm/can-edit-plan? plan org-name vcs-type)
                       (or (config/enterprise?)
                           (pm/stripe-customer? plan)))
-               (forms/managed-button
-                 (let [enterprise-text "Save changes"]
-                   (if (and (zero? new-total)
-                            (not (config/enterprise?))
-                            (not (zero? (pm/paid-linux-containers plan))))
-                     [:a.btn.btn-large.btn-primary.cancel
-                      {:href "#cancel"
-                       :disabled (when-not button-clickable? "disabled")
-                       :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
-                                                                       :properties {:repo nil}})}
-                      "Cancel plan"]
-                     [:button.btn.btn-large.btn-primary.upgrade
-                      {:data-success-text "Saved",
-                       :data-loading-text "Saving...",
-                       :type "submit"
-                       :disabled (when-not button-clickable? "disabled")
-                       :on-click (when button-clickable?
-                                   #(do
-                                      (raise! owner [:update-containers-clicked
-                                                     {:containers selected-paid-containers}])
-                                      (analytics-track/track-update-plan-clicked {:owner owner
-                                                                                  :new-plan selected-paid-containers
-                                                                                  :previous-plan (pm/paid-linux-containers plan)
-                                                                                  :plan-type pm/linux-plan-type
-                                                                                  :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))}
-                      (if (config/enterprise?)
-                        enterprise-text
-                        "Update plan")])))
+               (let [enterprise-text "Save changes"]
+                 (if (and (zero? new-total)
+                          (not (config/enterprise?))
+                          (not (zero? (pm/paid-linux-containers plan))))
+                   (button/link
+                    {:href "#cancel"
+                     :disabled? (not button-clickable?)
+                     :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
+                                                                     :properties {:repo nil}})}
+                    "Cancel plan")
+                   (button/managed-button
+                    {:success-text "Saved"
+                     :loading-text "Saving..."
+                     :disabled? (not button-clickable?)
+                     :on-click (when button-clickable?
+                                 #(do
+                                   (raise! owner [:update-containers-clicked
+                                                  {:containers selected-paid-containers}])
+                                   (analytics-track/track-update-plan-clicked {:owner owner
+                                                                               :new-plan selected-paid-containers
+                                                                               :previous-plan (pm/paid-linux-containers plan)
+                                                                               :plan-type pm/linux-plan-type
+                                                                               :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                     :primary? true}
+                    (if (config/enterprise?)
+                      enterprise-text
+                      "Update plan"))))
                (if-not checkout-loaded?
                  [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
-                 (forms/managed-button
-                  [:button.btn.btn-lg.btn-success
-                   {:data-success-text "Paid!",
-                    :data-loading-text "Paying...",
-                    :data-failed-text "Failed!",
-                    :disabled (when-not button-clickable? "disabled")
-                    :on-click (when button-clickable?
-                                #(raise! owner [:new-plan-clicked
-                                                {:containers selected-paid-containers
-                                                 :linux {:template (:id pm/default-template-properties)}
-                                                 :price new-total
-                                                 :description (str "$" new-total "/month, includes "
-                                                                   (pluralize selected-containers "container"))}]))}
-                   "Pay Now"])))
+                 (button/managed-button
+                  {:success-text "Paid!"
+                   :loading-text "Paying..."
+                   :failed-text "Failed!"
+                   :disabled? (not button-clickable?)
+                   :on-click (when button-clickable?
+                               #(raise! owner [:new-plan-clicked
+                                               {:containers selected-paid-containers
+                                                :linux {:template (:id pm/default-template-properties)}
+                                                :price new-total
+                                                :description (str "$" new-total "/month, includes "
+                                                                  (pluralize selected-containers "container"))}]))}
+                  "Pay Now")))
 
              (when-not (config/enterprise?)
                ;; TODO: Clean up conditional here - super nested and many interactions
@@ -718,15 +716,15 @@
                   (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
                [:div.row
                 [:div.form-actions.span7
-                 (forms/managed-button
-                  [:button.btn.btn-large.btn-primary
-                   {:data-success-text "Saved",
-                    :data-loading-text "Saving...",
-                    :type "submit",
-                    :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
-                                                                             :vcs-type org-vcs_type
-                                                                             :selected-piggieback-orgs selected-piggieback-orgs}])}
-                   "Also pay for these organizations"])]]]])]])))))
+                 (button/managed-button
+                  {:success-text "Saved"
+                   :loading-text "Saving..."
+                   :failed-text "Failed"
+                   :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
+                                                                            :vcs-type org-vcs_type
+                                                                            :selected-piggieback-orgs selected-piggieback-orgs}])
+                   :primary? true}
+                  "Pay for organizations")]]]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
   ;; split user-orgs from orgs and grab the first (and only) user-org
@@ -868,14 +866,13 @@
                 [:form.form-horizontal
                  [:div.control-group
                   [:div.control
-                   (forms/managed-button
-                     [:button#charge-button.btn.btn-primary.submit-button
-                      {:data-success-text "Success",
-                       :data-failed-text "Failed",
-                       :data-loading-text "Updating",
-                       :on-click #(raise! owner [:update-card-clicked])
-                       :type "submit"}
-                      "Change credit card"])]]]]]]))))))
+                   (button/managed-button
+                    {:success-text "Success"
+                     :failed-text "Failed"
+                     :loading-text "Updating"
+                     :on-click #(raise! owner [:update-card-clicked])
+                     :primary? true}
+                    "Change credit card")]]]]]]))))))
 
 ;; Render a friendly human-readable version of a Stripe discount coupon.
 ;; Stripe has a convention for this that does not seem to be documented, so we
@@ -967,13 +964,12 @@
                    :on-change #(utils/edit-input owner (conj state/inputs-path :extra_billing_data) %)}]]]
                [:div.control-group
                 [:div.controls
-                 (forms/managed-button
-                   [:button.btn.btn-primary
-                    {:data-success-text "Saved invoice data",
-                     :data-loading-text "Saving invoice data...",
-                     :on-click #(raise! owner [:save-invoice-data-clicked])
-                     :type "submit",}
-                    "Save invoice data"])]]]]]))))))
+                 (button/managed-button
+                  {:success-text "Saved invoice data"
+                   :loading-text "Saving invoice data..."
+                   :on-click #(raise! owner [:save-invoice-data-clicked])
+                   :primary? true}
+                  "Save invoice data")]]]]]))))))
 
 (defn- invoice-total
   [invoice]
@@ -1040,14 +1036,15 @@
                                    {:type :shrink
                                     :cell-fn
                                     (fn [invoice]
-                                      (forms/managed-button
-                                       [:button.btn.btn-mini.btn-primary
-                                        {:data-failed-text "Failed" ,
-                                         :data-success-text "Sent" ,
-                                         :data-loading-text "Sending..." ,
-                                         :on-click #(raise! owner [:resend-invoice-clicked
-                                                                   {:invoice-id (:id invoice)}])}
-                                        "Resend"]))}]})]]))))))
+                                      (button/managed-button
+                                       {:failed-text "Failed" ,
+                                        :success-text "Sent" ,
+                                        :loading-text "Sending..." ,
+                                        :on-click #(raise! owner [:resend-invoice-clicked
+                                                                  {:invoice-id (:id invoice)}])
+                                        :size :medium
+                                        :primary? true}
+                                       "Resend"))}]})]]))))))
 
 (defn billing [app owner]
   (reify
