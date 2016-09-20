@@ -59,8 +59,8 @@
         raise-merge-action! (fn [] (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
         status-words (build-model/status-words build)
         should-show-rebuild? (#{"timedout" "failed"} (:outcome build))
-        ;TODO re-enable feature flag
-        should-show-merge? (and ;(feature/enabled? :merge-pull-request)
+        ;TODO: re-enable when merge button visibility rules are implemented
+        should-show-merge? (and false ;(feature/enabled? :merge-pull-request)
                                 (build-model/can-merge-at-least-one-pr? build))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
