@@ -75,7 +75,7 @@
         [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build)])
                   :data-toggle "tooltip"
                   :data-placement "bottom"
-                  :title (str "Merge PR #" (build-model/pull-request-number build))}
+                  :title (str "Merge PR #" (last (build-model/pull-request-numbers build)))}
          [:i.octicon.octicon-git-merge.merge-icon]
          "Merge PR"]]))))
 

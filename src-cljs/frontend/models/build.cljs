@@ -176,9 +176,6 @@
 (defn pull-request-numbers [build]
   (map github/pull-request-number (:pull_request_urls build)))
 
-(defn pull-request-number [build]
-  (last (pull-request-numbers build)))
-
 (defn current-user-ssh?
   "Whether the given user has SSH access to the build"
   [build user]
@@ -282,7 +279,7 @@
    :build-num (:build_num build)})
 
 (defn merge-args [build]
-  (let [pull-request-number (pull-request-number build)]
+  (let [pull-request-number (last (pull-request-numbers build))]
     {:vcs-url (:vcs_url build)
      :number pull-request-number
      :sha (:vcs_revision build)}))
