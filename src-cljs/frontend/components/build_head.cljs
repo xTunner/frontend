@@ -761,7 +761,7 @@
                                                        (name %)
                                                        current-container-id))})}
          (html
-          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
+          [:div.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name
 
              :tests (om/build build-tests-list {:build-data build-data
