@@ -69,7 +69,8 @@
 (defn- merge-actions [{:keys [build]} owner]
   (reify
     om/IDidMount
-    ((om/get-shared owner :track-event) {:event-type :merge-impression})
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :merge-impression}))
     om/IRender
     (render [_]
       (let [pull-request-number (last (build-model/pull-request-numbers build))
