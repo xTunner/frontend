@@ -25,6 +25,7 @@
             [frontend.utils.build :as build-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
+            [goog.dom :as dom]
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html defrender]]))
 
@@ -417,20 +418,46 @@
 (defn selected-container-index [data]
   (get-in data [:current-build-data :container-data :current-container-id]))
 
+(defn- maybe-scroll-to-action! [app owner]
+  (when-let [action-id (om/get-state owner :action-id-to-scroll-to)]
+    (when-let [action-node (dom/getElement (str "action-" action-id))]
+      (utils/scroll-to-build-action! action-node)
+      (raise! owner [:action-log-output-toggled
+                     {:index (get-in app state/current-container-path)
+                      :step action-id
+                      :value true}])
+      (om/set-state! owner :action-id-to-scroll-to nil))))
+
 (defn build [{:keys [app ssh-available?]} owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:action-transition-direction "steps-ltr"})
+      {:action-transition-direction "steps-ltr"
+       :action-id-to-scroll-to nil})
+    om/IWillMount
+    (will-mount [_]
+      (when-let [action-id (get-in app state/current-action-id-path)]
+        (om/set-state! owner :action-id-to-scroll-to action-id)))
+    om/IDidMount
+    (did-mount [_]
+      (maybe-scroll-to-action! app owner))
     om/IWillReceiveProps
-    (will-receive-props [_ next-props]
-      (let [old-ix (selected-container-index (om/get-props owner))
-            new-ix (selected-container-index next-props)]
-        (om/set-state! owner
-                       :action-transition-direction
-                       (if (> old-ix new-ix)
-                         "steps-ltr"
-                         "steps-rtl"))))
+    (will-receive-props [this next-props]
+      (let [prev-props (om/get-props owner)]
+        (let [old-ix (selected-container-index prev-props)
+              new-ix (selected-container-index next-props)]
+          (om/set-state! owner
+                         :action-transition-direction
+                         (if (> old-ix new-ix)
+                           "steps-ltr"
+                           "steps-rtl")))
+        (let [prev-action-id (get-in (:app prev-props) state/current-action-id-path)
+              next-action-id (get-in (:app next-props) state/current-action-id-path)]
+          (when (not= prev-action-id next-action-id)
+            (om/set-state! owner :action-id-to-scroll-to next-action-id)))))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (maybe-scroll-to-action! app owner))
     om/IRender
     (render [_]
       (let [build (get-in app state/build-path)
