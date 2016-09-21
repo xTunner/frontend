@@ -68,9 +68,9 @@
     :invite-teammates-select-none-clicked
     :login-clicked
     :merge-clicked
+    :merge-failed
     :merge-impression
     :merge-success
-    :merge-failed
     :new-plan-clicked
     :no-plan-banner-impression
     :org-clicked
