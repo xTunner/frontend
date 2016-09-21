@@ -68,12 +68,17 @@
 
 (defn- merge-actions [{:keys [build]} owner]
   (reify
+    om/IDidMount
+    ((om/get-shared owner :track-event) {:event-type :merge-impression})
     om/IRender
     (render [_]
-      (let [pull-request-number (last (build-model/pull-request-numbers build))]
+      (let [pull-request-number (last (build-model/pull-request-numbers build))
+            raise-merge-action! #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])]
         (html
          [:div.merge-container
-          [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])
+          [:button {:on-click #(do
+                                 (raise-merge-action!)
+                                 ((om/get-shared owner :track-event) {:event-type :merge-clicked}))
                     :data-toggle "tooltip"
                     :data-placement "bottom"
                     :title (str "Merge PR #" pull-request-number)}

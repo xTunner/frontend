@@ -985,8 +985,10 @@
 
 (defmethod api-event [:merge-pull-request :success]
   [target message status {:keys [resp]} state]
+  (analytics/track {:event-type :merge-success})
   (state/add-flash-notification state (-> resp :message)))
 
 (defmethod api-event [:merge-pull-request :failed]
   [target message status {:keys [resp]} state]
+  (analytics/track {:event-type :merge-failed})
   (state/add-flash-notification state (-> resp :message)))
