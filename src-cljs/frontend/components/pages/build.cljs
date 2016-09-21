@@ -114,7 +114,7 @@
              [:div.build-settings
               [:a.build-action
                {:href (routes/v1-project-settings-path (:navigation-data data))
-                :on-click #((om/get-shared owner :track-event) {:event-type :build-page-project-settings-clicked
+                :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
                                                                 :properties {:project (:vcs_url project)
                                                                              :user (:login user)}})}
                [:i.material-icons "settings"]

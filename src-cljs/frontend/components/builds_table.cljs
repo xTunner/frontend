@@ -61,7 +61,7 @@
      [:div.status-area
       [:a {:href url
            :title status-words
-           :on-click #((om/get-shared owner :track-event) {:event-type :build-row-status-clicked
+           :on-click #((om/get-shared owner :track-event) {:event-type :build-status-clicked
                                                            :properties {:status-words status-words}})}
        (build-status-badge build)]
 
@@ -76,7 +76,7 @@
            :icon "Status-Canceled"
            :on-click #(do
                         (raise-build-action! :cancel-build-clicked)
-                        ((om/get-shared owner :track-event) {:event-type :build-row-cancel-build-clicked}))})
+                        ((om/get-shared owner :track-event) {:event-type :cancel-build-clicked}))})
 
         should-show-rebuild?
         (build-action
@@ -85,7 +85,7 @@
            :icon "Rebuild"
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
-                        ((om/get-shared owner :track-event) {:event-type :build-row-rebuild-clicked}))})
+                        ((om/get-shared owner :track-event) {:event-type :rebuild-clicked}))})
 
         :else nil)]
 
@@ -153,7 +153,7 @@
             ", "
             (for [url urls]
               [:a {:href url
-                   :on-click #((om/get-shared owner :track-event) {:event-type :build-row-pr-link-clicked
+                   :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
                                                                    :properties {:repo (:reponame build)
                                                                                 :org (:username build)}})}
                "#"
@@ -165,7 +165,7 @@
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
                 :href (build-model/commit-url build)
-                :on-click #((om/get-shared owner :track-event) {:event-type :build-row-revision-link-clicked
+                :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
                                                                 :properties {:repo (:reponame build)
                                                                              :org (:username build)}})}
             (build-model/github-revision build)])]]]]))
