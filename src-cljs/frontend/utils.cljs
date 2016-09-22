@@ -282,21 +282,33 @@
         (.setAttribute new-link-el "href" canonical-page)
         (dom/appendChild (.-head js/document) new-link-el)))))
 
+(defn node-height [node]
+  (if node
+    (+ (js/parseFloat (style/getComputedStyle node "marginTop"))
+       (.-offsetHeight node)
+       (js/parseFloat (style/getComputedStyle node "marginBottom")))
+    0))
+
 (defn scroll-to-node-bottom [node]
   (when node
     (.scrollIntoView node false)))
 
+(defn scroll-to-build-action!
+  [action-node]
+  ;; FIXME: this should not be looking up the scrolling element by class name
+  (let [scrolling-element (.querySelector js/document ".main-body")
+        node-top (style/getPageOffsetTop action-node)
+        container-list-height (node-height (dom/getElementByClass "container-list"))
+        current-top (style/getPageOffsetTop scrolling-element)]
+    (set! (.-scrollTop scrolling-element) (- node-top current-top container-list-height))))
+
 (defn scroll-to-node!
   [node]
-  (let [scrolling-element (dom/getDocumentScrollElement)
+  ;; FIXME: this should not be looking up the scrolling element by class name
+  (let [scrolling-element (.querySelector js/document ".main-body")
         node-top (style/getPageOffsetTop node)
-        current-top (style/getPageOffsetTop scrolling-element)
-        header-height (if-let [navbar (dom/getElementByClass "navbar-fixed-top")]
-                        (+ (js/parseFloat (style/getComputedStyle navbar "marginTop"))
-                           (.-offsetHeight navbar)
-                           (js/parseFloat (style/getComputedStyle navbar "marginBottom")))
-                        0)]
-    (set! (.-scrollTop scrolling-element) (- node-top current-top header-height))))
+        current-top (style/getPageOffsetTop scrolling-element)]
+    (set! (.-scrollTop scrolling-element) (- node-top current-top))))
 
 (defn scroll-to-id!
   "Scrolls to the element with given id, if node exists"

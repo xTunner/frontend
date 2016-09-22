@@ -511,8 +511,8 @@
       (let [api-result (<! (ajax/managed-ajax :put (api-path/merge-pull-request vcs-type owner repo number)
                                               :params {:sha sha}))]
         (put! api-ch [:merge-pull-request (:status api-result) api-result])
-        (release-button! uuid (:status api-result))))))
-    ;TODO: create new event to track
+        (release-button! uuid (:status api-result))
+        (analytics/track {:event-type :merge-pr-clicked})))))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state comms]

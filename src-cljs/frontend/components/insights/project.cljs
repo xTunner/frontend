@@ -177,7 +177,7 @@
            [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
                                                                                :repo (:reponame project)
                                                                                :_fragment "parallel-builds"})
-                                       :on-click #((om/get-shared owner :track-event) {:event-type :insights-header-parallelism-clicked})}
+                                       :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked})}
             [:i.material-icons "tune"]])]]]]
       [:div.card
        [:div.card-header

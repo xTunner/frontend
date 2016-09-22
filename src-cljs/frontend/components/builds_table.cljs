@@ -59,7 +59,6 @@
         raise-merge-action! (fn [] (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
         status-words (build-model/status-words build)
         should-show-rebuild? (#{"timedout" "failed"} (:outcome build))
-        ;TODO: re-enable when merge button visibility rules are implemented
         should-show-merge? (and (feature/enabled? :merge-pull-request)
                                 (build-model/can-merge-at-least-one-pr? build))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
@@ -67,7 +66,7 @@
      [:div.status-area
       [:a {:href url
            :title status-words
-           :on-click #((om/get-shared owner :track-event) {:event-type :build-row-status-clicked
+           :on-click #((om/get-shared owner :track-event) {:event-type :build-status-clicked
                                                            :properties {:status-words status-words}})}
        (build-status-badge build)]
 
@@ -82,7 +81,7 @@
            :icon-name "Status-Canceled"
            :on-click #(do
                         (raise-build-action! :cancel-build-clicked)
-                        ((om/get-shared owner :track-event) {:event-type :build-row-cancel-build-clicked}))})
+                        ((om/get-shared owner :track-event) {:event-type :cancel-build-clicked}))})
 
         should-show-rebuild?
         (build-action
@@ -91,7 +90,7 @@
            :icon-name "Rebuild"
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
-                        ((om/get-shared owner :track-event) {:event-type :build-row-rebuild-clicked}))})
+                        ((om/get-shared owner :track-event) {:event-type :rebuild-clicked}))})
 
         should-show-merge?
         (build-action
@@ -100,7 +99,7 @@
            :icon-class "octicon octicon-git-merge"
            :on-click #(do
                         (raise-merge-action!)
-                        ((om/get-shared owner :track-event) {:event-type :build-row-merge-clicked}))})
+                        ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked}))})
 
         :else nil)]
 
@@ -168,7 +167,7 @@
             ", "
             (for [url urls]
               [:a {:href url
-                   :on-click #((om/get-shared owner :track-event) {:event-type :build-row-pr-link-clicked
+                   :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
                                                                    :properties {:repo (:reponame build)
                                                                                 :org (:username build)}})}
                "#"
@@ -180,7 +179,7 @@
          (when (:vcs_revision build)
            [:a {:title (build-model/github-revision build)
                 :href (build-model/commit-url build)
-                :on-click #((om/get-shared owner :track-event) {:event-type :build-row-revision-link-clicked
+                :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
                                                                 :properties {:repo (:reponame build)
                                                                              :org (:username build)}})}
             (build-model/github-revision build)])]]]]))

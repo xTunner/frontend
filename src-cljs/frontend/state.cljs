@@ -95,8 +95,8 @@
 
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
-(def current-container-path [:current-build-data :container-data :current-container-id])
 (def current-container-filter-path [:current-build-data :container-data :current-filter])
+(def current-container-path [:current-build-data :container-data :current-container-id])
 (def container-paging-offset-path [:current-build-data :container-data :paging-offset])
 (def build-header-tab-path [:current-build-data :selected-header-tab])
 
@@ -196,6 +196,7 @@
 (def navigation-org-path (conj navigation-data-path :org))
 (def navigation-subpage-path (conj navigation-data-path :subpage))
 (def navigation-tab-path (conj navigation-data-path :tab))
+(def current-action-id-path (conj navigation-data-path :current-action-id-path))
 
 (def instrumentation-path [:instrumentation])
 

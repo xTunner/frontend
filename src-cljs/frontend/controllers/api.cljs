@@ -594,7 +594,8 @@
     state
     (-> state
         (assoc-in (conj state/project-data-path :new-api-token) {})
-        (update-in state/project-tokens-path (fnil conj []) resp))))
+        (update-in state/project-tokens-path (fnil conj []) resp)
+        (state/add-flash-notification "Your token has been successfully added."))))
 
 
 (defmethod post-api-event! [:save-project-api-token :success]
@@ -607,10 +608,12 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state state/project-tokens-path
-               (fn [tokens]
-                 (remove #(= (:token %) (:token context))
-                         tokens)))))
+    (-> state
+        (update-in state/project-tokens-path
+                   (fn [tokens]
+                     (remove #(= (:token %) (:token context))
+                             tokens)))
+        (state/add-flash-notification "Your token has been successfully deleted."))))
 
 
 (defmethod api-event [:set-heroku-deploy-user :success]
@@ -985,8 +988,10 @@
 
 (defmethod api-event [:merge-pull-request :success]
   [target message status {:keys [resp]} state]
+  (analytics/track {:event-type :merge-pr-success})
   (state/add-flash-notification state (-> resp :message)))
 
 (defmethod api-event [:merge-pull-request :failed]
   [target message status {:keys [resp]} state]
+  (analytics/track {:event-type :merge-pr-failed})
   (state/add-flash-notification state (-> resp :message)))

@@ -33,23 +33,14 @@
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
+    :revision-link-clicked
     :branch-clicked
-    :branch-picker-project-settings-clicked
-    :build-head-parallelism-clicked
-    :build-page-project-settings-clicked
-    :build-page-tab-clicked
     :build-canceled
-    :build-head-pr-link-clicked
-    :build-head-revision-link-clicked
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
     :build-link-clicked
-    :build-row-cancel-build-clicked
-    :build-row-pr-link-clicked
-    :build-row-rebuild-clicked
-    :build-row-merge-clicked
-    :build-row-revision-link-clicked
-    :build-row-status-clicked
+    :rebuild-clicked
+    :build-status-clicked
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
     :cancel-build-clicked
@@ -61,13 +52,16 @@
     :expand-repo-toggled
     :follow-project-clicked
     :insights-bar-clicked
-    :insights-header-parallelism-clicked
     :invite-teammates-clicked
     :invite-teammates-dismissed
     :invite-teammates-impression
     :invite-teammates-select-all-clicked
     :invite-teammates-select-none-clicked
     :login-clicked
+    :merge-pr-clicked
+    :merge-pr-failed
+    :merge-pr-impression
+    :merge-pr-success
     :new-plan-clicked
     :no-plan-banner-impression
     :org-clicked
