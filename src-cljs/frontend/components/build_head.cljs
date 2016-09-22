@@ -19,6 +19,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.build :as build-util]
+            [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.html :refer [open-ext]]
@@ -789,13 +790,14 @@
              ;; avoid errors if a nonexistent tab is typed in the URL
              nil)]))))))
 
-(defn build-canceler [canceler github-endpoint]
+(defn build-canceler [{:keys [type name handle]}]
   [:span.summary-label
    (list "Canceled by: "
-         [:a  {:href  (str  (github-endpoint) "/"  (:login canceler))}
-          (if  (not-empty  (:name canceler))
-            (:name canceler)
-            (:login canceler))])])
+         [:a {:href (case type
+                      "github" (str (github-endpoint) "/" handle)
+                      "bitbucket" (bb-utils/user-profile-url handle)
+                      nil)}
+          (if (not-empty name) name handle)])])
 
 (defn pull-requests [{:keys [urls]} owner]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
@@ -949,7 +951,7 @@
             [:div.summary-header
              [:div.summary-items
               [:div.summary-item
-               (build-canceler canceler github-endpoint)]]])
+               (build-canceler canceler)]]])
           [:div.card
            [:div.small-emphasis
             (let [n (-> build :all_commit_details count)]

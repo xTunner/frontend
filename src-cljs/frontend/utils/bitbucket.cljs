@@ -19,3 +19,6 @@
                        "response_type" "code"
                        "client_id" (aget js/window "renderContext" "bitbucketClientId")})
         str)))
+
+(defn user-profile-url [username]
+  (str (http-endpoint) "/" username))
