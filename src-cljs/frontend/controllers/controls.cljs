@@ -512,7 +512,11 @@
                                               :params {:sha sha}))]
         (put! api-ch [:merge-pull-request (:status api-result) api-result])
         (release-button! uuid (:status api-result))
-        (analytics/track {:event-type :merge-pr-clicked})))))
+        (if (= :success (:status api-result))
+          (analytics/track {:event-type :merge-pr-success
+                            :current-state current-state})
+          (analytics/track {:event-type :merge-pr-failed
+                            :current-state current-state}))))))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state comms]
