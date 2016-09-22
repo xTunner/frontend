@@ -3,6 +3,7 @@
             [compojure.core :refer (defroutes GET ANY)]
             [compojure.handler :refer (site)]
             [compojure.route]
+            [figwheel-sidecar.repl-api :as fig.repl]
             [frontend.less :as less]
             [frontend.util.docs :as doc-utils]
             [frontend.proxy :as proxy]
@@ -134,4 +135,7 @@
   []
   (println "Starting less compiler.")
   (less/init)
+  (println "Starting figwheel.")
+  (fig.repl/start-figwheel!)
+  (println "Starting the server.")
   (start-server))
