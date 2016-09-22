@@ -73,13 +73,10 @@
       ((om/get-shared owner :track-event) {:event-type :merge-pr-impression}))
     om/IRender
     (render [_]
-      (let [pull-request-number (last (build-model/pull-request-numbers build))
-            raise-merge-action! #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])]
+      (let [pull-request-number (last (build-model/pull-request-numbers build))]
         (html
          [:div.merge-container
-          [:button {:on-click #(do
-                                 (raise-merge-action!)
-                                 ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked}))
+          [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])
                     :data-toggle "tooltip"
                     :data-placement "bottom"
                     :title (str "Merge PR #" pull-request-number)}
