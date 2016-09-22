@@ -67,10 +67,10 @@
     :invite-teammates-select-all-clicked
     :invite-teammates-select-none-clicked
     :login-clicked
-    :merge-clicked
-    :merge-failed
-    :merge-impression
-    :merge-success
+    :merge-pr-clicked
+    :merge-pr-failed
+    :merge-pr-impression
+    :merge-pr-success
     :new-plan-clicked
     :no-plan-banner-impression
     :org-clicked

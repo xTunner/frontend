@@ -70,7 +70,7 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :merge-impression}))
+      ((om/get-shared owner :track-event) {:event-type :merge-pr-impression}))
     om/IRender
     (render [_]
       (let [pull-request-number (last (build-model/pull-request-numbers build))
@@ -79,7 +79,7 @@
          [:div.merge-container
           [:button {:on-click #(do
                                  (raise-merge-action!)
-                                 ((om/get-shared owner :track-event) {:event-type :merge-clicked}))
+                                 ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked}))
                     :data-toggle "tooltip"
                     :data-placement "bottom"
                     :title (str "Merge PR #" pull-request-number)}
