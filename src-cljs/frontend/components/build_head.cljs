@@ -928,7 +928,7 @@
              [:span (trigger-html build)]]
 
             (when (build-model/has-pull-requests? build)
-              (pull-requests {:urls (:pull_request_urls build)} owner))]]
+              (pull-requests {:urls (map :url (:pull_requests build))} owner))]]
 
           (when-let  [canceler  (and  (=  (:status build) "canceled")
                                       (:canceler build))]

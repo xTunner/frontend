@@ -60,7 +60,7 @@
         status-words (build-model/status-words build)
         should-show-rebuild? (#{"timedout" "failed"} (:outcome build))
         ;TODO: re-enable when merge button visibility rules are implemented
-        should-show-merge? (and false ;(feature/enabled? :merge-pull-request)
+        should-show-merge? (and (feature/enabled? :merge-pull-request)
                                 (build-model/can-merge-at-least-one-pr? build))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
@@ -161,7 +161,7 @@
                  (om/build common/updating-duration {:start (:start_time build)
                                                      :stop (:stop_time build)})]))]
       [:div.metadata-row.pull-revision
-        (when-let [urls (seq (:pull_request_urls build))]
+        (when-let [urls (seq (map :url (:pull_requests build)))]
           [:div.metadata-item.pull-requests {:title "Pull Requests"}
            [:i.octicon.octicon-git-pull-request]
            (interpose
