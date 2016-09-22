@@ -66,7 +66,7 @@ EOF
     haproxy -f /etc/haproxy/haproxy.cfg
 
     lein repl :headless &
-    lein run
+    lein run -m frontend.core-dev
 fi
 
 exec "$@"
