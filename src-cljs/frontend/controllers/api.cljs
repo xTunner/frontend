@@ -469,7 +469,7 @@
     state
     (assoc-in state
               state/project-envvars-path
-              (state-utils/envvars-seq-to-map resp))))
+              (into {} (map (juxt :name :value)) resp))))
 
 
 (defmethod api-event [:update-project-parallelism :success]
@@ -529,7 +529,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fnil state-utils/add-envvar-to-map {}) resp)
+        (update-in state/project-envvars-path (fnil conj {}) [(:name resp) (:value resp)])
         (assoc-in (conj state/inputs-path :new-env-var-name) "")
         (assoc-in (conj state/inputs-path :new-env-var-value) "")
         (state/add-flash-notification "Environment variable added successfully."))))

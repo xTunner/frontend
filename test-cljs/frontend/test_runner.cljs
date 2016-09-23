@@ -24,8 +24,7 @@
             [frontend.test-routes]
             [frontend.utils-test]
             [frontend.utils.test-build]
-            [frontend.utils.test-seq]
-            [frontend.utils.test-state]))
+            [frontend.utils.test-seq]))
 
 (aset js/window "renderContext" "{}")
 (aset js/window "SVGInjector" (fn [node] node))
@@ -52,5 +51,4 @@
            'frontend.test-routes
            'frontend.utils-test
            'frontend.utils.test-build
-           'frontend.utils.test-seq
-           'frontend.utils.test-state)
+           'frontend.utils.test-seq)
