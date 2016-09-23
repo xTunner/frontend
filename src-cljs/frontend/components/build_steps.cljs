@@ -107,6 +107,7 @@
       ;; should decide which actions are visible and pass that information in.
       ;; See discussion here - https://github.com/circleci/frontend-private/pull/1269/files
       (let [visible? (action-model/visible? action current-container-id)
+            step-id (str "action-" (:step action))
             header-classes  (concat [(:status action)]
                                     (when visible?
                                       ["open"])
@@ -115,7 +116,7 @@
                                     (when (action-model/failed? action)
                                       ["failed"]))]
         (html
-         [:div {:class (str "type-" (or (:type action) "none"))}
+         [:div {:class (str "type-" (or (:type action) "none")) :id step-id}
           [:div.type-divider
            [:span (:type action)]]
           [:div.build-output

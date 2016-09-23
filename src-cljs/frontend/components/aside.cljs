@@ -88,7 +88,7 @@
                                  :title  (str
                                            (project-model/project-name project)
                                            " settings")
-                                 :on-click #((om/get-shared owner :track-event) {:event-type :branch-picker-project-settings-clicked
+                                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
                                                                                  :properties {:org org-name
                                                                                               :repo repo-name}})}
        [:i.material-icons "settings"]])))

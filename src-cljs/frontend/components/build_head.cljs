@@ -19,6 +19,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.build :as build-util]
+            [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.html :refer [open-ext]]
@@ -633,7 +634,7 @@
         [:i.octicon.octicon-git-commit]
         [:a.metadata-item.sha-one {:href commit_url
                                    :title commit
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :build-head-revision-link-clicked})}
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked})}
          (subs commit 0 7)]
         [:span.commit-message
          {:title body
@@ -753,18 +754,15 @@
                              (seq build-params)
                              (conj {:name :build-parameters :label "Build Parameters"}))
                      :selected-tab-name selected-tab-name
-                     :on-tab-click #(do
-                                      (navigate! owner (routes/v1-build-path
-                                                         (vcs-url/vcs-type (:vcs_url build))
-                                                         (:username build)
-                                                         (:reponame build)
-                                                         (:build_num build)
-                                                         (name %)
-                                                         current-container-id))
-                                      ((om/get-shared owner :track-event) {:event-type :build-page-tab-clicked
-                                                                           :properties {:selected-tab-name selected-tab-name}}))})}
+                     :on-tab-click #(navigate! owner (routes/v1-build-path
+                                                       (vcs-url/vcs-type (:vcs_url build))
+                                                       (:username build)
+                                                       (:reponame build)
+                                                       (:build_num build)
+                                                       (name %)
+                                                       current-container-id))})}
          (html
-          [:div.card.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
+          [:div.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name
 
              :tests (om/build build-tests-list {:build-data build-data
@@ -792,13 +790,14 @@
              ;; avoid errors if a nonexistent tab is typed in the URL
              nil)]))))))
 
-(defn build-canceler [canceler github-endpoint]
+(defn build-canceler [{:keys [type name handle]}]
   [:span.summary-label
    (list "Canceled by: "
-         [:a  {:href  (str  (github-endpoint) "/"  (:login canceler))}
-          (if  (not-empty  (:name canceler))
-            (:name canceler)
-            (:login canceler))])])
+         [:a {:href (case type
+                      "github" (str (github-endpoint) "/" handle)
+                      "bitbucket" (bb-utils/user-profile-url handle)
+                      nil)}
+          (if (not-empty name) name handle)])])
 
 (defn pull-requests [{:keys [urls]} owner]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
@@ -812,7 +811,7 @@
      ", "
      (for [url urls]
        [:a {:href url
-            :on-click #((om/get-shared owner :track-event) {:event-type :build-head-pr-link-clicked})}
+            :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
         "#"
         (gh-utils/pull-request-number url)]))]])
 
@@ -918,7 +917,7 @@
                [:div.summary-item
                 [:span.summary-label "Parallelism: "]
                 [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :build-head-parallelism-clicked
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
                                                                                            :properties {:repo (project-model/repo-name project)
                                                                                                         :org (project-model/org-name project)}})
                                            :href (build-model/path-for-parallelism build)}
@@ -952,7 +951,7 @@
             [:div.summary-header
              [:div.summary-items
               [:div.summary-item
-               (build-canceler canceler github-endpoint)]]])
+               (build-canceler canceler)]]])
           [:div.card
            [:div.small-emphasis
             (let [n (-> build :all_commit_details count)]
