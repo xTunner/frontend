@@ -91,8 +91,8 @@
               (assoc-in dummy-state
                         state/project-envvars-path
                         {"a" 1})
-               :inputs {:new-env-var-name "" :new-env-var-value ""}
-               :flash-notification {:number 1 :message "Environment variable added successfully."})
+              :inputs {:new-env-var-name "" :new-env-var-value ""}
+              :flash-notification {:number 1 :message "Environment variable added successfully."})
              (test-fn {:resp {:name "a" :value 1}
                        :context {:project-id dummy-project-id}}
                       dummy-state))))
@@ -101,8 +101,8 @@
               (assoc-in dummy-state
                         state/project-envvars-path
                         {"a" 1})
-               :inputs {:new-env-var-name "" :new-env-var-value ""}
-               :flash-notification {:number 1 :message "Environment variable added successfully."})
+              :inputs {:new-env-var-name "" :new-env-var-value ""}
+              :flash-notification {:number 1 :message "Environment variable added successfully."})
              (test-fn {:resp {:name "a" :value 1}
                        :context {:project-id dummy-project-id}}
                       (assoc-in dummy-state
