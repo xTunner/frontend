@@ -50,8 +50,8 @@
   :loading-text - Text to display indicating that the button action is in progress. (default: \"...\")
   :success-text - Text to display indicating that the button action was successful. (default: \"Saved\")
   :failed-text  - Text to display indicating that the button action failed. (default: \"Failed\")"
-  [{:keys [primary? size failed-text success-text loading-text on-click]
-    :or {size :full}}
+  [{:keys [primary? disabled? size failed-text success-text loading-text on-click]
+    :or {size :full disabled? false}}
    content]
   (forms/managed-button
    ;; Normally, manually adding :data-component is not recommended. We
@@ -61,6 +61,7 @@
              :data-failed-text failed-text
              :data-success-text success-text
              :data-loading-text loading-text
+             :disabled disabled?
              :on-click on-click
              :class (remove nil? [(when primary? "primary")
                                   (case size

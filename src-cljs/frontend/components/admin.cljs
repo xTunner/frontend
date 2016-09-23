@@ -56,14 +56,13 @@
                     :name "CSRFToken",
                     :type "hidden"}]
            [:div.col-lg-9
-            [:button.btn.btn-primary {:value "Switch user"
-                                               :type "submit"
-                                               :on-click (fn [event]
-                                                           ;; a higher level handler will stop all form submissions
-                                                           ;;
-                                                           ;; see frontend.components.app/app*
-                                                           (.stopPropagation event))}
-             "Switch user"]]]]]]))))
+            (button/button {:on-click (fn [event]
+                                        ;; a higher level handler will stop all form submissions
+                                        ;;
+                                        ;; see frontend.components.app/app*
+                                        (.stopPropagation event))
+                            :primary? true}
+                           "Switch user")]]]]]))))
 
 (defn current-seat-usage [active-users total-seats]
   [:span
@@ -358,13 +357,13 @@
             :ref field-ref}]
           (when-let [error-message (:error item)]
             (om/build common/flashes (str error-message ". ")))
-          [:button.btn.btn-primary
-           {:on-click #(raise! owner [:system-setting-changed
-                                      (assoc item
-                                             :value (get-field-value))])}
-           (if-not (:updating item)
-                   "Save"
-                   common/spinner)]])))))
+          (button/button {:on-click #(raise! owner [:system-setting-changed
+                                                    (assoc item
+                                                           :value (get-field-value))])
+                          :primary? true}
+                         (if-not (:updating item)
+                           "Save"
+                           common/spinner))])))))
 
 (defn number-setting-entry [item owner]
   (setting-entry item owner js/Number))
