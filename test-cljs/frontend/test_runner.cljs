@@ -1,54 +1,56 @@
 (ns frontend.test-runner
-  (:require [doo.runner :refer-macros [doo-tests]]
-            [cljs.test :refer-macros [use-fixtures]]
+  (:require [cljs.test :refer-macros [use-fixtures]]
             [clojure.string]
+            [doo.runner :refer-macros [doo-tests]]
+            [frontend.analytics.test-core]
+            [frontend.analytics.test-segment]
+            [frontend.analytics.test-track]
             [frontend.components.project.test-common]
             [frontend.components.test-build-head]
+            [frontend.components.test-insights]
             [frontend.components.test-org-settings]
             [frontend.components.test-statuspage]
-            [frontend.components.test-insights]
-            [frontend.utils-test]
-            [frontend.utils.test-seq]
+            [frontend.controllers.test-api]
             [frontend.controllers.test-controls]
             [frontend.controllers.test-ws]
-            [frontend.controllers.test-api]
+            [frontend.models.test-action]
             [frontend.models.test-build]
+            [frontend.models.test-feature]
             [frontend.models.test-plan]
             [frontend.models.test-project]
             [frontend.models.test-user]
-            [frontend.models.test-feature]
-            [frontend.models.test-action]
             [frontend.test-datetime]
-            [frontend.test-routes]
             [frontend.test-pusher]
-            [frontend.analytics.test-track]
-            [frontend.analytics.test-segment]
-            [frontend.analytics.test-core]
-            [frontend.utils.test-build]))
+            [frontend.test-routes]
+            [frontend.utils-test]
+            [frontend.utils.test-build]
+            [frontend.utils.test-seq]
+            [frontend.utils.test-state]))
 
 (aset js/window "renderContext" "{}")
 (aset js/window "SVGInjector" (fn [node] node))
 
-(doo-tests 'frontend.test-pusher
+(doo-tests 'frontend.analytics.test-core
+           'frontend.analytics.test-segment
+           'frontend.analytics.test-track
            'frontend.components.project.test-common
            'frontend.components.test-build-head
+           'frontend.components.test-insights
            'frontend.components.test-org-settings
            'frontend.components.test-statuspage
-           'frontend.components.test-insights
-           'frontend.utils-test
-           'frontend.utils.test-seq
+           'frontend.controllers.test-api
            'frontend.controllers.test-controls
            'frontend.controllers.test-ws
-           'frontend.controllers.test-api
-           'frontend.models.test-project
-           'frontend.models.test-user
-           'frontend.models.test-plan
-           'frontend.models.test-feature
            'frontend.models.test-action
            'frontend.models.test-build
+           'frontend.models.test-feature
+           'frontend.models.test-plan
+           'frontend.models.test-project
+           'frontend.models.test-user
            'frontend.test-datetime
+           'frontend.test-pusher
            'frontend.test-routes
-           'frontend.analytics.test-track
-           'frontend.analytics.test-segment
-           'frontend.analytics.test-core
-           'frontend.utils.test-build)
+           'frontend.utils-test
+           'frontend.utils.test-build
+           'frontend.utils.test-seq
+           'frontend.utils.test-state)

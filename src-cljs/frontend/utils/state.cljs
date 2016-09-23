@@ -109,10 +109,10 @@
     name value))
 
 (defn envvars-seq-to-map
-  [envvar-resp]
+  [envvar-seq]
   (reduce add-envvar-to-map
           {}
-          envvar-resp))
+          envvar-seq))
 
 (defn envvars-map-to-seq
   [envvar-map]
