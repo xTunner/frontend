@@ -514,9 +514,9 @@
                                                                                                     :on-success close-fn}])}
                                                                         "Add Variable")]
                                        :close-fn close-fn})))
-              (when-let [env-vars (seq (:envvars project-data))]
+              (when-let [envvars-seq (seq (state-utils/envvars-map-to-seq (:envvars project-data)))]
                 (om/build table/table
-                          {:rows env-vars
+                          {:rows envvars-seq
                            :key-fn :name
                            :columns [{:header "Name"
                                       :cell-fn :name}

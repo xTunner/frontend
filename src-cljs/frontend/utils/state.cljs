@@ -102,3 +102,19 @@
   matches the provided build-id."
   (when-let [builds (seq (get-in state state/usage-queue-path))]
     (find-index #(= parts (build-parts %)) builds)))
+
+(defn add-envvar-to-map
+  [m {:keys [name value]}]
+  (assoc m
+    name value))
+
+(defn envvars-seq-to-map
+  [envvar-resp]
+  (reduce add-envvar-to-map
+          {}
+          envvar-resp))
+
+(defn envvars-map-to-seq
+  [envvar-map]
+  (for [[k v] envvar-map]
+    {:name k :value v}))

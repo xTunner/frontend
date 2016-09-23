@@ -463,12 +463,13 @@
     state
     (assoc-in state state/project-checkout-keys-path resp)))
 
-
 (defmethod api-event [:project-envvar :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (assoc-in state state/project-envvars-path resp)))
+    (assoc-in state
+              state/project-envvars-path
+              (state-utils/envvars-seq-to-map resp))))
 
 
 (defmethod api-event [:update-project-parallelism :success]
@@ -528,7 +529,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fnil conj []) resp)
+        (update-in state/project-envvars-path (fnil state-utils/add-envvar-to-map {}) resp)
         (assoc-in (conj state/inputs-path :new-env-var-name) "")
         (assoc-in (conj state/inputs-path :new-env-var-value) "")
         (state/add-flash-notification "Environment variable added successfully."))))
