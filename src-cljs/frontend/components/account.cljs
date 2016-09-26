@@ -2,6 +2,7 @@
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project]
@@ -94,14 +95,12 @@
               :value     heroku-api-key-input
               :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
             [:label {:placeholder "Add new key"}]
-            (forms/managed-button
-             [:input.btn
-              {:data-loading-text "Saving...",
-               :data-failed-text  "Failed to save Heroku key",
-               :data-success-text "Saved",
-               :type "submit"
-               :value "Save Heroku key"
-               :on-click submit-form!}])]]])))))
+            (button/managed-button
+             {:loading-text "Saving..."
+              :failed-text "Failed to save key"
+              :success-text "Saved"
+              :on-click submit-form!}
+             "Save Heroku key")]]])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -127,14 +126,12 @@
               :value     (str new-user-token)
               :on-change #(utils/edit-input owner state/new-user-token-path %)}]
             [:label {:placeholder "Token name"}]
-            (forms/managed-button
-             [:input.btn
-              {:data-loading-text "Creating...",
-               :data-failed-text  "Failed to add token",
-               :data-success-text "Created",
-               :on-click          #(create-token! new-user-token)
-               :type "submit"
-               :value "Create new token"}])]
+            (button/managed-button
+             {:loading-text "Creating..."
+              :failed-text "Failed to add token"
+              :success-text "Created"
+              :on-click #(create-token! new-user-token)}
+             "Create new token")]
 
           [:div.api-item
            (when (seq tokens)
@@ -163,10 +160,9 @@
 
 
 (def available-betas
-  [;; {:id "insights"
-   ;;  :name "Insights"
-   ;;  :description "Also this text. Insights is super fun for the whole family! "}
-   ])
+  [(comment {:id "insights"
+             :name "Insights"
+             :description "Also this text. Insights is super fun for the whole family! "})])
 
 (defn set-beta-preference! [owner betas id value]
   (raise! owner [:preferences-updated {state/user-betas-key
@@ -193,12 +189,11 @@
                     (om/build svg {:class "badge-enrolled"
                                    :src (common/icon-path "Status-Passed")}))]
                  [:p (:description program)]
-                 [:input.btn.btn-info
-                  {:on-click #(set-beta-preference! owner betas (:id program) (not participating?))
-                   :type "submit"
-                   :value (if participating?
-                            (str "Leave " (:name program) " Beta")
-                            (str "Join " (:name program) " Beta"))}]]))
+                 (button/button
+                  {:on-click #(set-beta-preference! owner betas (:id program) (not participating?))}
+                  (if participating?
+                    (str "Leave " (:name program) " Beta")
+                    (str "Join " (:name program) " Beta")))]))
             available-betas))])))))
 
 (defn set-beta-program-preference! [owner pref]
@@ -216,12 +211,12 @@
          features and settings before they are released publicly!"]
         [:form
          (if (not clicked-join?)
-           [:input.btn
+           (button/button
             {:on-click #(do
-                          (om/set-state! owner :clicked-join? true)
-                          ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
-             :type "submit"
-             :value "Join Beta Program"}]
+                         (om/set-state! owner :clicked-join? true)
+                         ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
+             :primary? true}
+            "Join Beta Program")
            [:div
             [:div.card
              [:h1 "Beta Terms"]
@@ -238,12 +233,11 @@
                     posting, but we do encourage you to talk with your
                     coworkers!"]]]
             [:p]
-            [:input.btn
-            {:on-click #(do
+            (button/button
+             {:on-click #(do
                           (set-beta-program-preference! owner true)
-                          ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked}))
-             :type "submit"
-             :value "Accept"}]])]]))))
+                          ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked}))}
+             "Accept")])]]))))
 
 (defn beta-program-member [app owner]
   (reify
@@ -254,13 +248,12 @@
         [:div
          [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
          [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
-         [:form
-          [:input.btn.btn-danger
-           {:on-click #(do
-                         (set-beta-program-preference! owner false)
-                         ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
-            :type "submit"
-            :value "Leave Beta Program"}]]]
+         (button/button
+          {:on-click #(do
+                       (set-beta-program-preference! owner false)
+                       ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
+           :primary? true}
+          "Leave Beta Program")]
         (comment
           ;; uncomment to turn on beta sub programs
           [:hr]

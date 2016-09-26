@@ -3,6 +3,7 @@
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
@@ -53,10 +54,9 @@
   (reify
     om/IRender
     (render [_]
-      (html
-       [:button.btn.btn-primary
-        {:on-click #(raise! owner [:refreshed-user-orgs {}])} ;; TODO: spinner while working?
-        "Reload Organizations"]))))
+      (button/button {:on-click #(raise! owner [:refreshed-user-orgs {}])
+                      :primary? true}
+                     "Reload Organizations"))))
 
 (defn- repo-title [repo link?]
   (let [repo-name (vcs-url/repo-name (:vcs_url repo))
@@ -155,32 +155,29 @@
   (reify
     om/IRender
     (render [_]
-      (html
-       [:a.btn.btn-primary.plan {:href (routes/v1-org-settings-path {:org login
-                                                                     :vcs_type vcs_type
-                                                                     :_fragment "osx-pricing"})
-                                 :on-click #((om/get-shared owner :track-event)
-                                             {:event-type :select-plan-clicked
-                                              :properties {:org login
-                                                           :vcs-type vcs_type
-                                                           :plan-type pm/osx-plan-type}})}
-        "Select Plan"]))))
+      (button/link {:href (routes/v1-org-settings-path {:org login
+                                                        :vcs_type vcs_type
+                                                        :_fragment "osx-pricing"})
+                    :on-click #((om/get-shared owner :track-event)
+                                {:event-type :select-plan-clicked
+                                 :properties {:org login
+                                              :vcs-type vcs_type
+                                              :plan-type pm/osx-plan-type}})
+                    :primary? true}
+                   "Select Plan"))))
 
 (defn free-trial-button [{{:keys [login vcs_type]} :selected-org} owner]
   (reify
     om/IRender
     (render [_]
-      (html
-       (managed-button
-        (let [plan-type :osx
-              template "osx-trial"]
-          [:a.btn.trial {:on-click #(do
-                                      (raise! owner [:activate-plan-trial {:plan-type plan-type
-                                                                           :template template
-                                                                           :org {:name login
-                                                                                 :vcs_type vcs_type}}]))
-                         :data-spinner true}
-           "Start 2 Week Trial"]))))))
+      (button/managed-button
+       {:on-click #(do
+                    (raise! owner
+                            [:activate-plan-trial {:plan-type :osx
+                                                   :template "osx-trial"
+                                                   :org {:name login
+                                                         :vcs_type vcs_type}}]))}
+       "Start 2 Week Trial"))))
 
 (defn no-plan-empty-state [{{:keys [login vcs_type] :as selected-org} :selected-org} owner]
   (reify
@@ -201,6 +198,7 @@
          "Select a plan to build your OS X projects now."]
         [:div.buttons
          (om/build select-plan-button {:selected-org selected-org})
+         " "
          (om/build free-trial-button {:selected-org selected-org})]]))))
 
 (defmulti repo-list (fn [{:keys [type]}] type))
@@ -395,30 +393,32 @@
                                 github-authorized? "github"
                                 :else "bitbucket")
             tab-content (html
-                         [:div
-                          (when (= "github" selected-vcs-type)
-                            (if github-authorized?
-                              (missing-org-info owner)
-                              [:div
-                               [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
-                               [:a.btn.btn-primary {:href (gh-utils/auth-url)
-                                                    :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                                    :properties {:vcs-type selected-vcs-type}})}
-                                "Authorize with GitHub"]]))
-                          (when (and (= "bitbucket" selected-vcs-type)
-                                     (not bitbucket-authorized?))
-                            [:div
-                             [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
-                             [:a.btn.btn-primary {:href (bitbucket/auth-url)
-                                                  :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                                  :properties {:vcs-type selected-vcs-type}})}
-                              "Authorize with Bitbucket"]])
-                          (om/build org-picker/picker {:orgs (filter (partial select-vcs-type selected-vcs-type) orgs)
-                                                       :selected-org selected-org
-                                                       :on-org-click #(raise! owner [:selected-add-projects-org %])})
-                          (when (get-in user [:repos-loading (keyword selected-vcs-type)])
-                            [:div.orgs-loading
-                             [:div.loading-spinner common/spinner]])])]
+                          [:div
+                           (when (= "github" selected-vcs-type)
+                             (if github-authorized?
+                               (missing-org-info owner)
+                               [:div
+                                [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
+                                (button/link {:href (gh-utils/auth-url)
+                                              :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                              :properties {:vcs-type selected-vcs-type}})
+                                              :primary? true}
+                                             "Authorize GitHub")]))
+                           (when (and (= "bitbucket" selected-vcs-type)
+                                      (not bitbucket-authorized?))
+                             [:div
+                              [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
+                              (button/link {:href (bitbucket/auth-url)
+                                            :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                            :properties {:vcs-type selected-vcs-type}})
+                                            :primary? true}
+                                           "Authorize Bitbucket")])
+                           (om/build org-picker/picker {:orgs (filter (partial select-vcs-type selected-vcs-type) orgs)
+                                                        :selected-org selected-org
+                                                        :on-org-click #(raise! owner [:selected-add-projects-org %])})
+                           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
+                             [:div.orgs-loading
+                              [:div.loading-spinner common/spinner]])])]
         (if bitbucket-possible?
           (let [tabs [{:name "github"
                        :icon (html [:i.octicon.octicon-mark-github])
