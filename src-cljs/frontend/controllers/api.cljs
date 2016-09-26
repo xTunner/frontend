@@ -545,9 +545,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fn [vars]
-                                                (remove #(= (:env-var-name context) (:name %))
-                                                        vars)))
+        (update-in state/project-envvars-path dissoc (:env-var-name context))
         (state/add-flash-notification (gstring/format "Environment variable '%s' deleted successfully."
                                                       (:env-var-name context))))))
 
