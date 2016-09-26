@@ -137,9 +137,7 @@
     (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
-               state/navigation-data (assoc args
-                                       :show-aside-menu? false
-                                       :show-settings-link? false)
+               state/navigation-data (assoc args :show-settings-link? false)
                :project-settings-project-name project-name)
         (assoc-in state/crumbs-path [{:type :dashboard}
                                      {:type :org :username org :vcs_type vcs_type}
@@ -253,7 +251,7 @@
     (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
-               state/navigation-data (assoc args :show-aside-menu? false))
+               state/navigation-data args)
         ;; force a reload of repos.
         (assoc-in state/repos-path [])
         (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
@@ -279,7 +277,7 @@
   [history-imp navigation-point args state]
   (-> state
       (assoc state/current-view navigation-point
-             state/navigation-data (assoc args :show-aside-menu? false))
+             state/navigation-data args)
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}])))
 
@@ -294,7 +292,7 @@
   [history-imp navigation-point {:keys [org repo branch vcs_type] :as args} state]
   (-> state
       (assoc state/current-view navigation-point
-             state/navigation-data (assoc args :show-aside-menu? false))
+             state/navigation-data args)
       state-utils/clear-page-state
       (assoc-in state/crumbs-path [{:type :build-insights}
                                    {:type :org
@@ -323,7 +321,7 @@
     (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
-               state/navigation-data (assoc args :show-aside-menu? false))
+               state/navigation-data args)
         (assoc-in state/crumbs-path [{:type :team}]))))
 
 (defmethod post-navigated-to! :invite-teammates
@@ -504,7 +502,7 @@
   (-> state
       state-utils/clear-page-state
       (assoc state/current-view navigation-point
-             state/navigation-data (assoc args :show-aside-menu? true))
+             state/navigation-data args)
       (assoc-in state/crumbs-path [{:type :account}])))
 
 (defmethod post-navigated-to! :account
