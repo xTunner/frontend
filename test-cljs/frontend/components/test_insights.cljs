@@ -1,14 +1,14 @@
 (ns frontend.components.test-insights
-  (:require [frontend.test-utils :as test-utils]
-            [frontend.utils :as utils :refer [sel1 sel]]
-            [frontend.models.test-project :as test-project]
-            [frontend.utils.docs :as doc-utils]
-            [frontend.stefon :as stefon]
-            [frontend.timer :as timer]
-            [goog.dom]
+  (:require [cljs.test :refer-macros [are deftest is testing]]
             [frontend.components.insights :as insights]
-            [om.core :as om :include-macros true]
-            [cljs.test :refer-macros [deftest is testing are]]))
+            [frontend.models.test-project :as test-project]
+            [frontend.stefon :as stefon]
+            [frontend.test-utils :as test-utils]
+            [frontend.timer :as timer]
+            [frontend.utils :as utils :refer [sel sel1]]
+            [frontend.utils.docs :as doc-utils]
+            [goog.dom :as gdom]
+            [om.core :as om :include-macros true]))
 
 (def insights-plot-info
   {:top 30
@@ -86,12 +86,12 @@
 
 (deftest can-render-feature-container
   (testing "Simple render of feature container."
-    (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
+    (let [test-node (gdom/createDom "div")]
       (om/root insights/build-insights test-projects-data {:target test-node}))))
 
 (deftest can-render-insights-cards
   (testing "Simple render of cards."
-    (let [test-node (goog.dom/htmlToDocumentFragment "<div></div>")]
+    (let [test-node (gdom/createDom "div")]
       (om/root insights/cards
                {:projects [(insights/decorate-project insights-plot-info test-utils/example-user-plans-paid test-project/private-project)]
                 :selected-filter :all
@@ -107,19 +107,3 @@
        2 [1 2 3]
        1.5 [1 1 2 3]
        1 [1 1 1 2 3]))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; TODO: Async testing does not work right now, it's not in scope to fix it ;;
-;; here                                                                     ;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; (deftest can-render-insights-bar
-;;   (let [test-node (goog.dom/htmlToDocumentFragment "<div class=\"test-chart\"></div>")
-;;         chartable-builds (insights/chartable-builds (:recent-builds (first test-projects-data)))]
-;;     (.appendChild (.-body js/document) test-node)
-;;     (insights/visualize-insights-bar! test-node chartable-builds)
-;;     (testing "Renders legend."
-;;       (is (= "Passed"
-;;              (utils/text (sel1 ".test-chart .legend.left")))))
-;;     (testing "Renders correct number of bars."
-;;       (is (= 4 (.-length (sel "rect.bar")))))))

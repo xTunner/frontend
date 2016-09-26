@@ -896,8 +896,8 @@
         discount-period (cond (= duration "forever") "forever"
                               (= duration-in-months 1) "for 1 month"
                               :else (gstring/format "for %d months" duration-in-months))]
-    [:p "Your plan includes " discount-amount " off " discount-period
-        " from coupon code " [:strong id]]))
+    [:p (str "Your plan includes " discount-amount " off " discount-period " from coupon code ")
+     [:strong id]]))
 
 ;; Show a 'Discount' section showing any Stripe discounts that are being appied
 ;; the current plan.
