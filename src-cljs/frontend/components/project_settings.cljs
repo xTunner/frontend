@@ -843,13 +843,6 @@
                               :show-fixed-failed? true
                               :settings-keys project-model/slack-keys}
 
-                              {:service "JIRA"
-                              :doc (list [:p "Create JIRA issues" ])
-                              :inputs [{:field :jira_username :placeholder "JIRA username"}
-                                       {:field :jira_password :placeholder "JIRA password"}
-                                       {:field :jira_base_url :placeholder "JIRA base URL"} ]
-                              :settings-keys project-model/jira-keys}
-
                              {:service "Hipchat"
                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                           [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
@@ -1537,7 +1530,8 @@
             project-id (project-model/id project)
             input-path (fn [& ks] (apply conj state/inputs-path :jira ks))]
         (html
-         [:div.aws-page-inner
+         [:div.jira-settings-inner
+          [:p "Create JIRA issues from the build page."]
           [:form
            [:input#jira-username
             {:required true, :type "text", :value (or username "")
@@ -1561,24 +1555,24 @@
            [:label {:placeholder "JIRA base URL"}]
 
            [:div.buttons
-            (forms/managed-button
-             [(if (and username password base-url) :input.save :input)
-              {:data-failed-text "Failed"
-               :data-success-text "Saved"
-               :data-loading-text "Saving..."
-               :value "Save JIRA settings"
+            (button/managed-button
+              {:failed-text "Failed"
+               :success-text "Saved"
+               :loading-text "Saving..."
                :type "submit"
-               :on-click #(raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:jira]]}])}])
+               :primary? true
+               :on-click #(raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:jira]]}])}
+              "Save JIRA settings")
             (when (or username password base-url)
-              (forms/managed-button
-               [:input.remove {:data-failed-text "Failed"
-                               :data-success-text "Cleared"
-                               :data-loading-text "Clearing..."
-                               :value "Clear JIRA settings"
-                               :type "submit"
-                               :on-click #(do
-                                            (raise! owner [:edited-input {:path (input-path) :value nil}])
-                                            (raise! owner [:saved-project-settings {:project-id project-id}]))}]))]]])))))
+              (button/managed-button
+                {:failed-text "Failed"
+                 :success-text "Cleared"
+                 :loading-text "Clearing..."
+                 :type "submit"
+                 :on-click #(do
+                              (raise! owner [:edited-input {:path (input-path) :value nil}])
+                              (raise! owner [:saved-project-settings {:project-id project-id}]))}
+                "Clear JIRA settings"))]]])))))
 
 (defn integrations [project-data owner]
   (reify

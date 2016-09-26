@@ -20,5 +20,6 @@
            "img/logo.png"
            "img/status-logos/success.svg"
            "img/status-logos/failure.svg"
-           "img/status-logos/logo.svg"]
+           "img/status-logos/logo.svg"
+           "img/add-jira-issue.svg"]
           (map :path hosted-scripts)))
