@@ -12,6 +12,7 @@
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise?]]

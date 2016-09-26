@@ -11,6 +11,12 @@
                   (or vcs-type "github")
                   org-name))
 
+(defn base-project-jira-path [vcs-type project-name]
+  (gstring/format
+    "%s/%s/jira"
+    (base-project-url-path vcs-type)
+    project-name))
+
 (defn branch-path [vcs-type org-name repo-name branch]
   (gstring/format
     "%s/%s/%s/tree/%s"
@@ -147,3 +153,18 @@
   (gstring/format
     "%s/members"
     (base-organization-url-path vcs-type org-name)))
+
+(defn jira-projects [vcs-type project-name]
+  (gstring/format
+    "%s/projects"
+    (base-project-jira-path vcs-type project-name)))
+
+(defn jira-issue-types [vcs-type project-name]
+  (gstring/format
+    "%s/issue-types"
+    (base-project-jira-path vcs-type project-name)))
+
+(defn jira-issues [vcs-type project-name]
+  (gstring/format
+    "%s/issues"
+    (base-project-jira-path vcs-type project-name)))

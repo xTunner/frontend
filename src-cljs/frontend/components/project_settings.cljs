@@ -843,6 +843,13 @@
                               :show-fixed-failed? true
                               :settings-keys project-model/slack-keys}
 
+                              {:service "JIRA"
+                              :doc (list [:p "Create JIRA issues" ])
+                              :inputs [{:field :jira_username :placeholder "JIRA username"}
+                                       {:field :jira_password :placeholder "JIRA password"}
+                                       {:field :jira_base_url :placeholder "JIRA base URL"} ]
+                              :settings-keys project-model/jira-keys}
+
                              {:service "Hipchat"
                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
                                           [:a {:href "https://hipchat.com/admin/api"} "HipChat site"] "."]
@@ -1516,6 +1523,73 @@
            [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
            (om/build aws-keys-form project-data)]])))))
 
+(defn jira-settings-form [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+
+            settings (utils/deep-merge (get-in project [:jira])
+                                       (get-in inputs [:jira]))
+            {:keys [username password base-url]} settings
+
+            project-id (project-model/id project)
+            input-path (fn [& ks] (apply conj state/inputs-path :jira ks))]
+        (html
+         [:div.aws-page-inner
+          [:form
+           [:input#jira-username
+            {:required true, :type "text", :value (or username "")
+             :on-change #(utils/edit-input owner (input-path :username) %)}]
+           [:label {:placeholder "JIRA username"}]
+
+           [:input#jira-password
+            {:required true,
+             :type "text",
+             :value (or password "")
+             :auto-complete "off"
+             :on-change #(utils/edit-input owner (input-path :password) %)}]
+           [:label {:placeholder "JIRA password"}]
+
+           [:input#jira-base-url
+            {:required true,
+             :type "text",
+             :value (or base-url "")
+             :auto-complete "off"
+             :on-change #(utils/edit-input owner (input-path :base-url) %)}]
+           [:label {:placeholder "JIRA base URL"}]
+
+           [:div.buttons
+            (forms/managed-button
+             [(if (and username password base-url) :input.save :input)
+              {:data-failed-text "Failed"
+               :data-success-text "Saved"
+               :data-loading-text "Saving..."
+               :value "Save JIRA settings"
+               :type "submit"
+               :on-click #(raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:jira]]}])}])
+            (when (or username password base-url)
+              (forms/managed-button
+               [:input.remove {:data-failed-text "Failed"
+                               :data-success-text "Cleared"
+                               :data-loading-text "Clearing..."
+                               :value "Clear JIRA settings"
+                               :type "submit"
+                               :on-click #(do
+                                            (raise! owner [:edited-input {:path (input-path) :value nil}])
+                                            (raise! owner [:saved-project-settings {:project-id project-id}]))}]))]]])))))
+
+(defn integrations [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)]
+        (html
+         [:section.integrations
+          [:article
+           [:h2 "JIRA integration"]
+           (om/build jira-settings-form project-data)]])))))
 
 (defn aws-codedeploy-app-name [project-data owner]
   (reify
@@ -1871,6 +1945,7 @@
                :heroku (om/build heroku {:project-data project-data :user user})
                :deployment (om/build other-deployment project-data)
                :aws (om/build aws project-data)
+               :integrations (om/build integrations project-data)
                :aws-codedeploy (om/build aws-codedeploy project-data)
                :code-signing (om/build code-signing {:project-data project-data :error-message error-message})
                (om/build overview project-data))]]))))))

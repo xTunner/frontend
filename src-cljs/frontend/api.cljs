@@ -263,14 +263,45 @@
                        :uuid uuid
                        :on-success on-success}))
 
-(defn delete-project-code-signing-key [project-name vcs-type id api-ch uuid]
+(defn delete-project-code-signing-key [project-name vcs-type id api-ch on-success uuid]
   (ajax/ajax :delete
              (gstring/format "%s/%s/code-signing/osx-keys/%s" (path/base-project-url-path vcs-type) project-name id)
              :delete-code-signing-key
              api-ch
              :context {:project-name project-name
                        :id id
-                       :uuid uuid}))
+                       :uuid uuid
+                       :on-success on-success}))
 
 (defn get-enterprise-site-status [api-ch]
   (ajax/ajax :get "/api/v1/enterprise/site-status" :enterprise-site-status api-ch))
+
+(defn get-jira-projects [project-name vcs-type api-ch]
+  (ajax/ajax :get
+             (path/jira-projects vcs-type project-name)
+             :get-jira-projects
+             api-ch
+             :context {:project-name project-name
+                       :vcs-type vcs-type}))
+
+(defn get-jira-issue-types [project-name vcs-type api-ch]
+  (ajax/ajax :get
+             (path/jira-issue-types vcs-type project-name)
+             :get-jira-issue-types
+             api-ch
+             :context {:project-name project-name
+                       :vcs-type vcs-type}))
+
+(defn create-jira-issue [project-name vcs-type {:keys [project type summary description]} api-ch uuid on-success]
+  (ajax/ajax :post
+             (path/jira-issues vcs-type project-name)
+             :create-jira-issue
+             api-ch
+             :params {:jira-project-name project
+                      :issue-type type
+                      :issue-summary summary
+                      :issue-description description}
+             :context {:project-name project-name
+                       :vcs-type vcs-type
+                       :uuid uuid
+                       :on-success on-success}))

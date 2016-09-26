@@ -996,3 +996,11 @@
 (defmethod api-event [:merge-pull-request :failed]
   [target message status {:keys [resp]} state]
   (state/add-flash-notification state (-> resp :message)))
+
+(defmethod api-event [:get-jira-projects :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/jira-projects-path (-> resp :message)))
+
+(defmethod api-event [:get-jira-issue-types :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/jira-issue-types-path (-> resp :message)))
