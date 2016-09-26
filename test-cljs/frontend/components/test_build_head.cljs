@@ -16,7 +16,7 @@
 (deftest test-build-tree-renders
   (let [artifacts (:artifacts test-build-data)
         tree      {:artifacts (bh/artifacts-tree "Container 0" artifacts)}
-        test-node (goog.dom/htmlToDocumentFragment "<div class='content'></div>")]
+        test-node (goog.dom/createDom "div" "content")]
     (om/root bh/artifacts-node tree {:target test-node})
     (testing "Simple render test"
       (is (re-find #"Container 0"
@@ -27,12 +27,12 @@
 
 (deftest previous-build-label
   (testing "should hide previous label if no previous build"
-    (let [n (goog.dom/htmlToDocumentFragment "<div></div>")]
+    (let [n (goog.dom/createDom "div")]
       (om/root bh/previous-build-label {:previous nil} {:target n})
       (is (nil? (.querySelector n ".summary-item")))))
 
   (testing "should link to previous build"
-    (let [n (goog.dom/htmlToDocumentFragment "<div></div>")]
+    (let [n (goog.dom/createDom "div")]
       (om/root bh/previous-build-label {:previous {:build_num 4}
                                         :vcs_url "http://host/orgname/reponame"}
                {:target n})
