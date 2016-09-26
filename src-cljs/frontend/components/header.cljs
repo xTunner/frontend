@@ -383,4 +383,6 @@
     om/IDisplayName (display-name [_] "Header")
     om/IRender
     (render [_]
-      (om/build inner-header props))))
+      (if (#{:landing :error} (:navigation-point app))
+        (om/build outer-header app)
+        (om/build inner-header props)))))

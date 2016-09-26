@@ -23,7 +23,6 @@
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
 ;; TODO: Remove this and everything that uses it. It should be completely obsolete.
-;; NOMERGE: Make 404 not use outer.
 (defn open-to-outer! [nav-ch navigation-point args]
   (put! nav-ch [navigation-point (assoc args :inner? false)]))
 
@@ -324,7 +323,11 @@
   (defroute v1-root "/" {:as params}
     (if authenticated?
       (open-to-inner! app nav-ch :dashboard params)
-      (open-to-outer! nav-ch :landing (assoc params :_canonical "/"))))
+      ;; Note: This actually uses the outer styles, but rather than use
+      ;; `open-to-outer!`, it's special-cased in
+      ;; `frontend.components.app/Wrapper`. Meanwhile `open-to-outer!` simply
+      ;; doesn't work anymore, and needs to be cleaned up.
+      (open-to-inner! app nav-ch :landing (assoc params :_canonical "/"))))
 
   (defroute v1-dashboard "/dashboard" {:as params}
     (open-to-inner! app nav-ch :dashboard params))
@@ -340,18 +343,18 @@
   (defroute v1-signup "/signup" {:as params}
     (open-to-outer! nav-ch :signup params)))
 
-(defn define-spec-routes! [nav-ch]
+(defn define-spec-routes! [app nav-ch]
   (defroute trailing-slash #"(.+)/$" [path]
     (put! nav-ch [:navigate! {:path path :replace-token? true}]))
   (defroute v1-not-found "*" []
-    (open-to-outer! nav-ch :error {:status 404})))
+    (open-to-inner! app nav-ch :error {:status 404})))
 
 (defn define-routes! [current-user app nav-ch]
   (let [authenticated? (boolean current-user)]
     (define-user-routes! app nav-ch authenticated?)
     (when (:admin current-user)
       (define-admin-routes! app nav-ch))
-    (define-spec-routes! nav-ch)))
+    (define-spec-routes! app nav-ch)))
 
 (defn parse-uri [uri]
   (let [[uri-path fragment] (str/split (sec/uri-without-prefix uri) "#")

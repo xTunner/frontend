@@ -113,31 +113,35 @@
                        (get-in app [:current-user :dev-admin])
                        (get-in app [:current-user :admin]))
               show-inspector? (get-in app state/show-inspector-path)
+              ;; :landing is still used by Enterprise. It and :error are
+              ;; still "outer" pages.
+              outer? (contains? #{:landing :error} (:navigation-point app))
               ;; simple optimzation for real-time updates when the build is running
               app-without-container-data (dissoc-in app state/container-data-path)]
           (html
-           [:.inner {;; Disable natural form submission. This keeps us from having to
-                     ;; .preventDefault every submit button on every form.
-                     ;;
-                     ;; To let a button actually submit a form naturally, handle its click
-                     ;; event and call .stopPropagation on the event. That will stop the
-                     ;; event from bubbling to here and having its default behavior
-                     ;; prevented.
-                     :on-click #(let [target (.-target %)
-                                      button (if (or (= (.-tagName target) "BUTTON")
-                                                     (and (= (.-tagName target) "INPUT")
-                                                          (= (.-type target) "submit")))
-                                               ;; If the clicked element was a button or an
-                                               ;; input.submit, that's the button.
-                                               target
-                                               ;; Otherwise, it's the button (if any) that
-                                               ;; contains the clicked element.
-                                               (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
-                                  ;; Finally, if we found an applicable button and that
-                                  ;; button is associated with a form which it would submit,
-                                  ;; prevent that submission.
-                                  (when (and button (.-form button))
-                                    (.preventDefault %)))}
+           [:div {:class (if outer? "outer" "inner")
+                  ;; Disable natural form submission. This keeps us from having to
+                  ;; .preventDefault every submit button on every form.
+                  ;;
+                  ;; To let a button actually submit a form naturally, handle its click
+                  ;; event and call .stopPropagation on the event. That will stop the
+                  ;; event from bubbling to here and having its default behavior
+                  ;; prevented.
+                  :on-click #(let [target (.-target %)
+                                   button (if (or (= (.-tagName target) "BUTTON")
+                                                  (and (= (.-tagName target) "INPUT")
+                                                       (= (.-type target) "submit")))
+                                            ;; If the clicked element was a button or an
+                                            ;; input.submit, that's the button.
+                                            target
+                                            ;; Otherwise, it's the button (if any) that
+                                            ;; contains the clicked element.
+                                            (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
+                               ;; Finally, if we found an applicable button and that
+                               ;; button is associated with a form which it would submit,
+                               ;; prevent that submission.
+                               (when (and button (.-form button))
+                                 (.preventDefault %)))}
             (when admin?
               (build-legacy head-admin app))
 
@@ -158,7 +162,7 @@
                                   (flash/flash-notification {:react-key number} message))})]]
 
             [:.below-top
-             (when logged-in?
+             (when (and (not outer?) logged-in?)
                [:.left-nav
                 (build-legacy aside/aside-nav (dissoc app-without-container-data :current-build-data))])
 
