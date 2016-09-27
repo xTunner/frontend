@@ -118,9 +118,9 @@
                 (when (show-additional-containers-offer? plan build)
                   (new-additional-containers-offer plan build))])]
 
-              (when (seq builds)
-               [:div.queued-builds
-                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})])]))))))
+            (when (seq builds)
+             [:div.queued-builds
+              (om/build builds-table/builds-table builds {:opts {:show-actions? true}})])]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -203,12 +203,12 @@
 (defn ssh-ad
   "Note about why you might want to SSH into a build and buttons to do so"
   [build owner]
-    [:div.ssh-ad
-     [:p
-      "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
+  [:div.ssh-ad
+   [:p
+    "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
        This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
        More information " [:a (open-ext {:href "https://circleci.com/docs/ssh-build/"}) "in our docs"] "."
-     (om/build ssh-buttons build)]])
+    (om/build ssh-buttons build)]])
 
 (defn ssh-command [node]
   (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node)))
@@ -470,9 +470,9 @@
                    (om/build-all build-tests-file-block bottom-map))))))]]]]))))
 
 (defn build-tests-list [{project :project
-                        {{:keys [tests exceptions]} :tests-data
-                         {build-status :status} :build
-                         :as data} :build-data}
+                         {{:keys [tests exceptions]} :tests-data
+                          {build-status :status} :build
+                          :as data} :build-data}
                         owner]
   (reify
     om/IWillMount
@@ -503,7 +503,7 @@
             [:div.loading-spinner common/spinner]
             (list
              (when (> (count exceptions) 0)
-               [:div.alert.iconified {:class "alert-danger" }
+               [:div.alert.iconified {:class "alert-danger"}
                 [:div [:img.alert-icon {:src (common/icon-path
                                               "Info-Error")}]]
                 (om/build parse-errors exceptions)])
@@ -523,7 +523,7 @@
                                  (:classname slowest)
                                  (:name slowest)
                                  (:run_time slowest))]])]
-               :else [:div.alert.iconified {:class "alert-info" }
+               :else [:div.alert.iconified {:class "alert-info"}
                       [:div [:img.alert-icon {:src (common/icon-path
                                                     (if build-succeeded? "Info-Info" "Info-Error"))}]]
                       (tests-ad owner (:language project))])))])))))
@@ -932,33 +932,33 @@
                                     0))
                                (plan-model/max-parallelism plan))
                           "x")))]])]
-           (when (:usage_queued_at build)
-             [:div.summary-items
-              [:div.summary-item
-               [:span.summary-label "Queued: "]
-               [:span (queued-time build)]]])
+            (when (:usage_queued_at build)
+              [:div.summary-items
+               [:div.summary-item
+                [:span.summary-label "Queued: "]
+                [:span (queued-time build)]]])
 
-           [:div.summary-build-contents
-            [:div.summary-item
-             [:span.summary-label "Triggered by: "]
-             [:span (trigger-html build)]]
+            [:div.summary-build-contents
+             [:div.summary-item
+              [:span.summary-label "Triggered by: "]
+              [:span (trigger-html build)]]
 
-            (when (build-model/has-pull-requests? build)
-              (pull-requests {:urls (:pull_request_urls build)} owner))]]
+             (when (build-model/has-pull-requests? build)
+               (pull-requests {:urls (:pull_request_urls build)} owner))]]
 
-          (when-let  [canceler  (and  (=  (:status build) "canceled")
-                                      (:canceler build))]
-            [:div.summary-header
-             [:div.summary-items
-              [:div.summary-item
-               (build-canceler canceler)]]])
-          [:div.card
-           [:div.small-emphasis
-            (let [n (-> build :all_commit_details count)]
-              (if (:all_commit_details_truncated build)
-                (gstring/format "Last %d Commits" n)
-                (gstring/format "Commits (%d)" n)))]
-           (om/build build-commits build-data)]
-          [:div.build-head-wrapper
-           [:div.build-head
-            (om/build build-sub-head data)]]])))))
+           (when-let  [canceler  (and  (=  (:status build) "canceled")
+                                       (:canceler build))]
+             [:div.summary-header
+              [:div.summary-items
+               [:div.summary-item
+                (build-canceler canceler)]]])
+           [:div.card
+            [:div.small-emphasis
+             (let [n (-> build :all_commit_details count)]
+               (if (:all_commit_details_truncated build)
+                 (gstring/format "Last %d Commits" n)
+                 (gstring/format "Commits (%d)" n)))]
+            (om/build build-commits build-data)]
+           [:div.build-head-wrapper
+            [:div.build-head
+             (om/build build-sub-head data)]]])))))
