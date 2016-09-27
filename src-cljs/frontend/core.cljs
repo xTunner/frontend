@@ -265,8 +265,7 @@
 
                               :shared {:comms comms
                                        :timer-atom (timer/initialize)
-                                       ;; NOMERGE Analytics
-                                       :track-event (constantly nil)
+                                       :track-event #(analytics/track (assoc % :current-state @legacy-state-atom))
                                        ;; Make the legacy-state-atom available to the legacy inputs system.
                                        :_app-state-do-not-use legacy-state-atom}}})]
 
