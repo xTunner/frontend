@@ -35,9 +35,9 @@
          (list
           " "
           description))])
-    [:a.contact-sales
+    [:a.contact-sales.btn
      {:href "mailto:enterprise@circleci.com"}
-     "Contact Sales…"])))
+     "Contact Sales"])))
 
 (defn- banner-for-license
   "Returns the banner for the given license, or nil if no banner applies."
