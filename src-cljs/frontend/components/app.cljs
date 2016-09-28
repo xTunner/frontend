@@ -101,7 +101,7 @@
   (and (config/enterprise?)
        (= "blocked" (get-in app [:enterprise :site-status :status]))))
 
-(defui Wrapper
+(defui ^:once Wrapper
   Object
   (render [this]
     (let [{:keys [factory props]} (om-next/props this)

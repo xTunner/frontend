@@ -7,7 +7,7 @@
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defui Organization
+(defui ^:once Organization
   static om-next/Ident
   (ident [this {:keys [organization/vcs-type organization/name]}]
     [:organization/by-vcs-type-and-name {:organization/vcs-type vcs-type :organization/name name}])
@@ -37,7 +37,7 @@
 
 (def organization (om-next/factory Organization))
 
-(defui Picker
+(defui ^:once Picker
   "Shows an org picker: a list of orgs, one of which can be selected.
 
   :orgs         - The orgs to display.

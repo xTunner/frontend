@@ -22,7 +22,7 @@
   (-inspect [this]
     (ankha/coll-view this "{" "}" "map persistent-hash-map" sort-map-by-pr)))
 
-(defui Inspector
+(defui ^:once Inspector
   Object
   (render [this]
     (html

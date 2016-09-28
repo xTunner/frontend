@@ -74,7 +74,7 @@
                                             (when bitbucket-enabled? "or Bitbucket ")
                                             "organization (or username) to view your projects.")}))))
 
-(defui AddProjectButton
+(defui ^:once AddProjectButton
   Object
   (render [this]
     (let [{:keys [empty-state?]} (om-next/props this)]
