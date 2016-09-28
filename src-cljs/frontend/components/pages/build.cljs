@@ -68,14 +68,20 @@
 
 (defn- merge-actions [{:keys [build]} owner]
   (reify
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :merge-pr-impression}))
     om/IRender
     (render [_]
       (let [pull-request-number (last (build-model/pull-request-numbers build))]
         (html
          [:div.merge-container
-          [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])}
+          [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])
+                    :data-toggle "tooltip"
+                    :data-placement "bottom"
+                    :title (str "Merge PR #" pull-request-number)}
            [:i.octicon.octicon-git-merge.merge-icon]
-           (str "Merge PR #" pull-request-number)]])))))
+           "Merge PR"]])))))
 
 (defn- header-actions
   [data owner]
@@ -111,7 +117,7 @@
              [:div.build-settings
               [:a.build-action
                {:href (routes/v1-project-settings-path (:navigation-data data))
-                :on-click #((om/get-shared owner :track-event) {:event-type :build-page-project-settings-clicked
+                :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
                                                                 :properties {:project (:vcs_url project)
                                                                              :user (:login user)}})}
                [:i.material-icons "settings"]

@@ -10,6 +10,7 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.shared :as shared]
+            [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -45,17 +46,23 @@
           [:p "Switch user"]
           [:form.form-inline {:method "post", :action "/admin/switch-user"}
            [:input.input-medium {:name "login", :type "text"}]
+           (when-not (config/enterprise?)
+             [:div.col-lg-3
+              [:label
+               [:input {:type "checkbox"
+                        :name "bitbucket"}]
+               "Bitbucket"]])
            [:input {:value (utils/csrf-token)
                     :name "CSRFToken",
                     :type "hidden"}]
-           [:button.btn.btn-primary {:value "Switch user"
-                                     :type "submit"
-                                     :on-click (fn [event]
-                                                 ;; a higher level handler will stop all form submissions
-                                                 ;;
-                                                 ;; see frontend.components.app/app*
-                                                 (.stopPropagation event))}
-            "Switch user"]]]]]))))
+           [:div.col-lg-9
+            (button/button {:on-click (fn [event]
+                                        ;; a higher level handler will stop all form submissions
+                                        ;;
+                                        ;; see frontend.components.app/app*
+                                        (.stopPropagation event))
+                            :primary? true}
+                           "Switch user")]]]]]))))
 
 (defn current-seat-usage [active-users total-seats]
   [:span
@@ -350,13 +357,13 @@
             :ref field-ref}]
           (when-let [error-message (:error item)]
             (om/build common/flashes (str error-message ". ")))
-          [:button.btn.btn-primary
-           {:on-click #(raise! owner [:system-setting-changed
-                                      (assoc item
-                                             :value (get-field-value))])}
-           (if-not (:updating item)
-                   "Save"
-                   common/spinner)]])))))
+          (button/button {:on-click #(raise! owner [:system-setting-changed
+                                                    (assoc item
+                                                           :value (get-field-value))])
+                          :primary? true}
+                         (if-not (:updating item)
+                           "Save"
+                           common/spinner))])))))
 
 (defn number-setting-entry [item owner]
   (setting-entry item owner js/Number))

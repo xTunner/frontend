@@ -468,7 +468,9 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (assoc-in state state/project-envvars-path resp)))
+    (assoc-in state
+              state/project-envvars-path
+              (into {} (map (juxt :name :value)) resp))))
 
 
 (defmethod api-event [:update-project-parallelism :success]
@@ -528,7 +530,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fnil conj []) resp)
+        (update-in state/project-envvars-path (fnil conj {}) [(:name resp) (:value resp)])
         (assoc-in (conj state/inputs-path :new-env-var-name) "")
         (assoc-in (conj state/inputs-path :new-env-var-value) "")
         (state/add-flash-notification "Environment variable added successfully."))))
@@ -543,9 +545,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fn [vars]
-                                                (remove #(= (:env-var-name context) (:name %))
-                                                        vars)))
+        (update-in state/project-envvars-path dissoc (:env-var-name context))
         (state/add-flash-notification (gstring/format "Environment variable '%s' deleted successfully."
                                                       (:env-var-name context))))))
 
@@ -594,7 +594,8 @@
     state
     (-> state
         (assoc-in (conj state/project-data-path :new-api-token) {})
-        (update-in state/project-tokens-path (fnil conj []) resp))))
+        (update-in state/project-tokens-path (fnil conj []) resp)
+        (state/add-flash-notification "Your token has been successfully added."))))
 
 
 (defmethod post-api-event! [:save-project-api-token :success]
@@ -607,10 +608,12 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (update-in state state/project-tokens-path
-               (fn [tokens]
-                 (remove #(= (:token %) (:token context))
-                         tokens)))))
+    (-> state
+        (update-in state/project-tokens-path
+                   (fn [tokens]
+                     (remove #(= (:token %) (:token context))
+                             tokens)))
+        (state/add-flash-notification "Your token has been successfully deleted."))))
 
 
 (defmethod api-event [:set-heroku-deploy-user :success]
@@ -985,8 +988,10 @@
 
 (defmethod api-event [:merge-pull-request :success]
   [target message status {:keys [resp]} state]
+  (analytics/track {:event-type :merge-pr-success})
   (state/add-flash-notification state (-> resp :message)))
 
 (defmethod api-event [:merge-pull-request :failed]
   [target message status {:keys [resp]} state]
+  (analytics/track {:event-type :merge-pr-failed})
   (state/add-flash-notification state (-> resp :message)))

@@ -506,6 +506,7 @@
         vcs-type (vcs-url/vcs-type vcs-url)
         owner (vcs-url/org-name vcs-url)
         repo (vcs-url/repo-name vcs-url)]
+    (analytics/track {:event-type :merge-pr-clicked})
     (ajax/ajax :put
                (api-path/merge-pull-request vcs-type owner repo number)
                :merge-pull-request

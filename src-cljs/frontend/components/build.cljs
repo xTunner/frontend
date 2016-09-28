@@ -25,6 +25,7 @@
             [frontend.utils.build :as build-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
+            [goog.dom :as dom]
             [om.core :as om :include-macros true])
     (:require-macros [frontend.utils :refer [html defrender]]))
 
@@ -60,7 +61,9 @@
   (let [build-id (build-model/id build)
         build-url (:build_url build)
         fail-reason (:fail_reason build)]
-    (when (:failed build)
+    (when (and (:failed build)
+               (not show-premium-content?)
+               (not (config/enterprise?)))
       [:div.alert.alert-danger.iconified
        [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
        (if (:infrastructure_fail build)
@@ -73,17 +76,7 @@
           [:a {:href "https://discuss.circleci.com/"}
            "community site"]
           "."
-          (let [support-link [:a (common/contact-support-a-info owner :tags [:report-build-clicked {:build-url build-url}])
-                              "contact engineering support"]]
-            (cond
-              (config/enterprise?) [:span "As an enterprise customer, you may also "
-                                    support-link
-                                    " to ask for help. Thanks!"]
-              show-premium-content? [:span
-                                     " As this project builds under a paid plan, you may also "
-                                     support-link
-                                     " to ask for help. Thanks!"]
-              :else [:span " Upgrading to a paid plan unlocks access to CircleCI engineering support, faster builds, and advanced features. Thanks!"]))])])))
+          [:span " Upgrading to a paid plan unlocks access to CircleCI engineering support, faster builds, and advanced features. Thanks!"]])])))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
@@ -96,7 +89,7 @@
                              :top (:top stick)
                              :left (:left stick)
                              :width (:width stick)
-                             :background-color "#f5f5f5"})]
+                             :backgroundColor "#f5f5f5"})]
         (html [:div {:ref "wrapper" :class wrapper-class :style wrapper-style}
                [:div {:ref "content" :class content-class :style content-style}
                 content]])))
@@ -425,20 +418,46 @@
 (defn selected-container-index [data]
   (get-in data [:current-build-data :container-data :current-container-id]))
 
+(defn- maybe-scroll-to-action! [app owner]
+  (when-let [action-id (om/get-state owner :action-id-to-scroll-to)]
+    (when-let [action-node (dom/getElement (str "action-" action-id))]
+      (utils/scroll-to-build-action! action-node)
+      (raise! owner [:action-log-output-toggled
+                     {:index (get-in app state/current-container-path)
+                      :step action-id
+                      :value true}])
+      (om/set-state! owner :action-id-to-scroll-to nil))))
+
 (defn build [{:keys [app ssh-available?]} owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:action-transition-direction "steps-ltr"})
+      {:action-transition-direction "steps-ltr"
+       :action-id-to-scroll-to nil})
+    om/IWillMount
+    (will-mount [_]
+      (when-let [action-id (get-in app state/current-action-id-path)]
+        (om/set-state! owner :action-id-to-scroll-to action-id)))
+    om/IDidMount
+    (did-mount [_]
+      (maybe-scroll-to-action! app owner))
     om/IWillReceiveProps
-    (will-receive-props [_ next-props]
-      (let [old-ix (selected-container-index (om/get-props owner))
-            new-ix (selected-container-index next-props)]
-        (om/set-state! owner
-                       :action-transition-direction
-                       (if (> old-ix new-ix)
-                         "steps-ltr"
-                         "steps-rtl"))))
+    (will-receive-props [this next-props]
+      (let [prev-props (om/get-props owner)]
+        (let [old-ix (selected-container-index prev-props)
+              new-ix (selected-container-index next-props)]
+          (om/set-state! owner
+                         :action-transition-direction
+                         (if (> old-ix new-ix)
+                           "steps-ltr"
+                           "steps-rtl")))
+        (let [prev-action-id (get-in (:app prev-props) state/current-action-id-path)
+              next-action-id (get-in (:app next-props) state/current-action-id-path)]
+          (when (not= prev-action-id next-action-id)
+            (om/set-state! owner :action-id-to-scroll-to next-action-id)))))
+    om/IDidUpdate
+    (did-update [_ _ _]
+      (maybe-scroll-to-action! app owner))
     om/IRender
     (render [_]
       (let [build (get-in app state/build-path)
