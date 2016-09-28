@@ -236,43 +236,20 @@
     om/IRenderState
     (render-state [_ {:keys [clicked-join?]}]
       (html
-       [:div.card
-        [:div.header [:h2 "Beta Program"]]
-        [:div.body
-         [:div.section
-          [:p
-           "We invite you to join Inner Circle, our new beta program. As a
+       (card/titled {:title "Beta Program"}
+                    [:div
+                     (om/build beta-terms-modal {:close-fn #(om/set-state! owner :clicked-join? false)
+                                                 :show-modal? clicked-join?})
+                     [:p
+                      "We invite you to join Inner Circle, our new beta program. As a
          member of CircleCI’s Inner Circle you get exclusive access to new
          features and settings before they are released publicly!"]
-          [:form
-           (if (not clicked-join?)
-             (button/button
-              {:on-click #(do
-                            (om/set-state! owner :clicked-join? true)
-                            ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
-               :primary? true}
-              "Join Beta Program")
-             [:div
-              [:div.card
-               [:h1 "Beta Terms"]
-               [:p
-                "Our beta program is a way to engage with our most
-               thoughtful and dedicated users. We want to build the
-               best features with your help. To that end, in joining
-               the beta program you should be comfortable with these
-               expectations:"]
-               [:ul
-                [:li "You’ll find out about new features through e-mail and in-app messages"]
-                [:li "Please give us feedback about new features when we release them"]
-                [:li "Keep the private beta, private. Please no tweets, blogs, or other public
-                    posting, but we do encourage you to talk with your
-                    coworkers!"]]]
-              [:p]
-              (button/button
-               {:on-click #(do
-                             (set-beta-program-preference! owner true)
-                             ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked}))}
-               "Accept")])]]]]))))
+                     (button/button
+                      {:on-click #(do
+                                    (om/set-state! owner :clicked-join? true)
+                                    ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
+                       :primary? true}
+                      "Join Beta Program")])))))
 
 (defn beta-program-member [app owner]
   (reify
