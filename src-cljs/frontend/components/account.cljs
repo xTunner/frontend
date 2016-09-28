@@ -223,7 +223,8 @@
                                                     posting, but we do encourage you to talk with your coworkers!"]]]))
                             :actions [(button/button {:on-click close-fn} "Cancel")
                                       (button/button
-                                       {:on-click #(do
+                                       {:primary? true
+                                        :on-click #(do
                                                      (set-beta-program-preference! owner true)
                                                      ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked})
                                                      (close-fn))}
