@@ -3,6 +3,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project]
@@ -18,7 +19,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [defrender html]]))
 
 (defn active-class-if-active [current-subpage subpage-link]
   (if (= current-subpage subpage-link)
@@ -192,11 +193,8 @@
           (map
            (fn [program]
              (let [participating? (contains? (set betas) (:id program))]
-               [:div.card
-                [:div.header
-                 [:h2 (:name program)]]
-                [:div.body
-                 [:div.section (:description program)]]]))
+               (card/titled {:title (:name program)}
+                            (:description program))))
            available-betas)])))))
 
 (defn set-beta-program-preference! [owner pref]
