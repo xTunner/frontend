@@ -180,12 +180,10 @@
                                                      (select-keys % [:organization/vcs-type :organization/name]))
                                                  orgs))
                     :on-org-click (fn [{:keys [organization/vcs-type organization/name]}]
-                                    (navigate! this (routes/v1-organization-projects-path {:org name :vcs_type vcs-type}))
-                                    ;; NOMERGE: Analytics
-                                    #_((om/get-shared owner :track-event) {:event-type :org-clicked
-                                                                           :properties {:view :projects
-                                                                                        :login name
-                                                                                        :vcs_type vcs-type}}))})
+                                    (analytics/track! this {:event-type :org-clicked
+                                                            :properties {:login name
+                                                                         :vcs_type vcs-type}})
+                                    (navigate! this (routes/v1-organization-projects-path {:org name :vcs_type vcs-type})))})
                   (html [:div.loading-spinner common/spinner])))]
               [:.main
                (if selected-org
