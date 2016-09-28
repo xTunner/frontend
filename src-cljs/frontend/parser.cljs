@@ -6,13 +6,6 @@
             [om.next.impl.parser :as parser]
             [om.util :as om-util]))
 
-(defn register-page-key!
-  "Registers a key as a routing key for a page. These should be the keys of the
-  Compassus route map. Reading keys under a page key will function like reading
-  that key from the root."
-  [page-key]
-  (derive page-key ::page))
-
 (defn- recalculate-query
   "Each node of an AST has a :query key which is the query form of
   its :children. This is a kind of denormalization. If we change the :children,
@@ -46,38 +39,16 @@
 
 ;; Most keys pass their queries on to the remote. We add :query-root true so
 ;; that the key will be sent to the remote as one of the root keys in the
-;; query (using om-next/process-roots). This only matters when the parser is
-;; being called recursively--that is, when another read-remote implementation
-;; calls the parser on its subquery, as ::page does. (If the parser isn't being
-;; called recursively, that means this is already a root key, and
-;; adding :query-root changes nothing.)
+;; query (using om-next/process-roots).
+;;
+;; This matters because our parser sits inside Compassus. The query that goes to
+;; the send function will have a single root key, which will be the route key,
+;; and the route component's remote query will be joined on that key. The send
+;; function will then use om-next/process-roots to raise the :query-roots to the
+;; root, so it can ignore UI concerns.
 (defmethod read-remote :default
   [{:keys [ast] :as env} key params]
   (assoc ast :query-root true))
-
-;; Page queries flatten their reads by calling the parser recursively. That is,
-;; any key which can be read from the root can also be read from here. So if
-;;
-;; [{:some/data [:some/property]}]
-;; ;; => {:some/data {:some/property "a value"}}
-;;
-;; [{:a/page-key [{:some/data [:some/property]}]}]
-;; ;; => {:a/page-key {:some/data {:some/property "a value"}}}
-(defmethod read-local ::page
-  [{:keys [parser query] :as env} key params]
-  (parser env query))
-
-;; Similarly, page queries call the parser recursively to build the remote
-;; query. If all of the subquery keys eliminate themselves from the remote query
-;; entirely, we eliminate this key as well by returning nil. Therefore, we never
-;; end up with an empty subquery--that is, something like:
-;;
-;; [{:a/page-key []}]
-(defmethod read-remote ::page
-  [{:keys [parser query target] :as env} key params]
-  (let [subquery (parser env query target)]
-    (when (seq subquery)
-      (parser/expr->ast {key subquery}))))
 
 
 (def
@@ -203,5 +174,49 @@
                                              :view route
                                              :org (get-in params [:organization :organization/name])}}))})
 
+(defn flattening-parser
+  "Takes a parser. Returns a parser which ignores the root keys of the queries
+  it's given, and reads the keys joined to those keys as if they were root keys,
+  using the given parser.
 
-(def parser (om-next/parser {:read read :mutate mutate}))
+  This is particularly useful when using Compassus. Compassus has its own parser
+  which calls your parser. The root query it passes to your parser has a single
+  key, which is the current route, which is joined to that route component's
+  query. That is, if the current route is :app/home and that route matches the
+  following component:
+
+  (defui Home
+    static IQuery
+    (query [this]
+      [{:some/data [:some/property]}]))
+
+  then Compassus will ask your parser to read the query:
+
+  [{:app/home [{:some/data [:some/property]}]}]
+
+  If you don't care about the route key, and you'd like your parser to
+  treat :some/data as a root-level key in the query, wrap your parser in
+  flattening-parser. Your parser will instead read the query:
+
+  [{:some/data [:some/property]}]"
+  [parser]
+  (om-next/parser
+   {:read (fn [{:keys [query target] :as env} key params]
+            (if-not target
+              {:value (parser env query)}
+              {target (let [subquery (parser env query target)]
+                        (when (seq subquery)
+                          (parser/expr->ast {key subquery})))}))
+    :mutate (fn [{:keys [ast target] :as env} key params]
+              (let [tx [(om-next/ast->query ast)]]
+                (if-not target
+                  (let [{:keys [result ::om-next/error] :as ret}
+                        (get (parser env tx) key)]
+                    {:value (dissoc ret :result ::om-next/error)
+                     :action #(or result (throw error))})
+                  (let [[ret] (parser env tx target)]
+                    {target (cond-> ret
+                              (some? ret) parser/expr->ast)}))))}))
+
+
+(def parser (flattening-parser (om-next/parser {:read read :mutate mutate})))

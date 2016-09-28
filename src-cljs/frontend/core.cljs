@@ -272,10 +272,6 @@
 
     (set! application a)
 
-    ;; Tell the parser which keys it should treat as pages.
-    (doseq [[page-key _] app/routes]
-      (parser/register-page-key! page-key))
-
     (browser-settings/setup! legacy-state-atom)
 
     (routes/define-routes! (:current-user legacy-state) application (:nav comms))
