@@ -1221,6 +1221,7 @@
                                                      :_fragment "osx-pricing"})} "here"] "."]
            (when (pm/osx? plan)
              (let [plan-name (some-> plan :osx :template :name)]
+               [:div
                [:p
                 (cond
                   (pm/osx-trial-active? plan)
@@ -1234,7 +1235,8 @@
                                                             :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
                   :else
-                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]])))))
+                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]
+               (om/build osx-usage-table {:plan plan})]))]])))))
 
 (defn overview [app owner]
   (om/component
@@ -1298,9 +1300,7 @@
         (when-not (config/enterprise?)
           [:div
            [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
-           (om/build osx-overview {:plan plan})])
-        (when (pm/osx? plan)
-          (om/build osx-usage-table {:plan plan}))]]))))
+           (om/build osx-overview {:plan plan})])]]))))
 
 (def main-component
   {:overview overview
