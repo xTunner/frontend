@@ -166,8 +166,6 @@
         (element :main-content
           (let [current-user (:app/current-user (om-next/props this))
                 orgs (get-in (om-next/props this) [:app/current-user :user/organizations])
-                ;; selected-org-ident (:selected-org (om-next/get-params this))
-                ;; selected-org (get (om-next/props this) selected-org-ident)
                 selected-org (get-in (om-next/props this) [:app/route-data :route-data/organization])]
             (html
              [:div
