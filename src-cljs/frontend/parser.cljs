@@ -186,7 +186,7 @@
   [{:keys [state] :as env} key params]
   {:action #(let [route-data (cond-> {}
                                (contains? params :organization)
-                               (assoc :projects-page/organization
+                               (assoc :route-data/organization
                                       [:organization/by-vcs-type-and-name
                                        (select-keys (:organization params)
                                                     [:organization/vcs-type :organization/name])]))

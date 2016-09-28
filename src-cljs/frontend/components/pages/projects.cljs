@@ -143,14 +143,14 @@
      {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
                          :user/login
                          :user/bitbucket-authorized]}
-     {:app/route-data [{:projects-page/organization (into (om-next/get-query OrgProjects)
-                                                          [:organization/name])}]}])
+     {:app/route-data [{:route-data/organization (into (om-next/get-query OrgProjects)
+                                                       [:organization/name])}]}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
       {:user (get-in props [:app/current-user :user/login])
        :view :projects
-       :org (get-in props [:app/route-data :projects-page/organization :organization/name])}))
+       :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
   Object
   (componentDidMount [this]
     (set-page-title! "Projects"))
@@ -168,7 +168,7 @@
                 orgs (get-in (om-next/props this) [:app/current-user :user/organizations])
                 ;; selected-org-ident (:selected-org (om-next/get-params this))
                 ;; selected-org (get (om-next/props this) selected-org-ident)
-                selected-org (get-in (om-next/props this) [:app/route-data :projects-page/organization])]
+                selected-org (get-in (om-next/props this) [:app/route-data :route-data/organization])]
             (html
              [:div
               [:.sidebar
