@@ -262,14 +262,15 @@
   (concat
    [{:type :heading :title "Plan"}
     {:type :subpage :title "Overview" :href "#" :subpage :overview}]
-   (if (pm/piggieback? plan org-name org-vcs-type)
-     [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
-     (concat
-      [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
-      (when (pm/transferrable-or-piggiebackable-plan? plan)
-        [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
-      (when (pm/stripe-customer? plan)
-        [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}])))
+   (when-not (config/enterprise?)
+     (if (pm/piggieback? plan org-name org-vcs-type)
+       [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
+       (concat
+         [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
+         (when (pm/transferrable-or-piggiebackable-plan? plan)
+           [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}])
+         (when (pm/stripe-customer? plan)
+           [{:type :subpage :title "Billing info" :href "#billing" :subpage :billing}]))))
    [{:type :heading :title "Organization"}
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
