@@ -257,19 +257,16 @@
     (render [_]
       (html
        [:div
-        [:div.card
-         [:div.header [:h2 "Beta Program"]]
-         [:div.body
-          [:div.section
-           [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
-           [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
-           (button/button
-            {:on-click #(do
-                          (set-beta-program-preference! owner false)
-                          ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
-             :primary? true}
-            "Leave Beta Program")]]]
-
+        (card/titled {:title "Beta Program"}
+                     [:div
+                      [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
+                      [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
+                      (button/button
+                       {:on-click #(do
+                                     (set-beta-program-preference! owner false)
+                                     ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
+                        :primary? true}
+                       "Leave Beta Program")])
         (om/build beta-programs app)]))))
 
 (defn beta-program [app owner]
@@ -280,11 +277,10 @@
         (html
          [:div#settings-beta-program
           [:div
-           (let [message (get-in app state/general-message-path)
-                 enrolled? (get-in app state/user-in-beta-path)])
-           (if (get-in app state/user-in-beta-path)
-             (om/build beta-program-member app)
-             (om/build join-beta-program app))]])))))
+           (let [enrolled? (get-in app state/user-in-beta-path)]
+             (if enrolled?
+               (om/build beta-program-member app)
+               (om/build join-beta-program app)))]])))))
 
 (defn preferred-email-address [owner user]
   [:div.card
