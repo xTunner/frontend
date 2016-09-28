@@ -187,16 +187,14 @@
   (reify
     om/IRender
     (render [_]
-      (let [betas (get-in app state/user-betas-path)]
-        (html
-         [:div
-          [:h4.beta-programs "Current Beta Features"]
-          (map
-           (fn [program]
-             (let [participating? (contains? (set betas) (:id program))]
-               (card/titled {:title (:name program)}
-                            (:description program))))
-           available-betas)])))))
+      (html
+       [:div
+        [:h4.beta-programs "Current Beta Features"]
+        (map
+         (fn [program]
+           (card/titled {:title (:name program)}
+                        (:description program)))
+         available-betas)]))))
 
 (defn set-beta-program-preference! [owner pref]
   (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
