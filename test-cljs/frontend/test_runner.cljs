@@ -19,6 +19,7 @@
             [frontend.models.test-plan]
             [frontend.models.test-project]
             [frontend.models.test-user]
+            [frontend.test-analytics]
             [frontend.test-datetime]
             [frontend.test-pusher]
             [frontend.test-routes]
@@ -46,6 +47,7 @@
            'frontend.models.test-plan
            'frontend.models.test-project
            'frontend.models.test-user
+           'frontend.test-analytics
            'frontend.test-datetime
            'frontend.test-pusher
            'frontend.test-routes

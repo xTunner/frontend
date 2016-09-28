@@ -1,5 +1,6 @@
 (ns frontend.components.pages.projects
-  (:require [frontend.async :refer [navigate!]]
+  (:require [frontend.analytics :as analytics]
+            [frontend.async :refer [navigate!]]
             [frontend.components.app.legacy :as legacy]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
@@ -73,18 +74,18 @@
                                             (when bitbucket-enabled? "or Bitbucket ")
                                             "organization (or username) to view your projects.")}))))
 
-;; NOMERGE Analytics
-(defn- add-project-button [{:keys [empty-state?]} owner]
-  (reify
-    om/IRender
-    (render [_]
+(defui AddProjectButton
+  Object
+  (render [this]
+    (let [{:keys [empty-state?]} (om-next/props this)]
       (button/link
        {:href (routes/v1-add-projects)
         :primary? true
-        :on-click #((om/get-shared owner :track-event)
-                    {:event-type :add-project-clicked
-                     :properties {:is-empty-state empty-state?}})}
+        :on-click #(analytics/track! this {:event-type :add-project-clicked
+                                           :properties {:is-empty-state empty-state?}})}
        "Add Project"))))
+
+(def add-project-button (om-next/factory AddProjectButton))
 
 (defn- no-projects-available [org-name]
   (empty-state/empty-state {:icon (html [:i.material-icons "book"])
@@ -93,7 +94,7 @@
                                        (empty-state/important org-name)
                                        " has no projects building on CircleCI"])
                             :subheading "Let's fix that by adding a new project."
-                            :action (build-legacy add-project-button {:empty-state? true})}))
+                            :action (add-project-button {:empty-state? true})}))
 
 
 (defui ^:once OrgProjects
@@ -140,8 +141,16 @@
     ;; https://github.com/compassus/compassus/issues/3
     ['{:legacy/state [*]}
      {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
+                         :user/login
                          :user/bitbucket-authorized]}
-     {:app/route-data [{:projects-page/organization (om-next/get-query OrgProjects)}]}])
+     {:app/route-data [{:projects-page/organization (into (om-next/get-query OrgProjects)
+                                                          [:organization/name])}]}])
+  analytics/Properties
+  (properties [this]
+    (let [props (om-next/props this)]
+      {:user (get-in props [:app/current-user :user/login])
+       :view :projects
+       :org (get-in props [:app/route-data :projects-page/organization :organization/name])}))
   Object
   (componentDidMount [this]
     (set-page-title! "Projects"))
@@ -151,7 +160,7 @@
        main-template/template
        {:app (:legacy/state (om-next/props this))
         :crumbs [{:type :projects}]
-        :header-actions (build-legacy add-project-button {:empty-state? false})
+        :header-actions (add-project-button {:empty-state? false})
         :show-aside-menu? false
         :main-content
         (element :main-content
