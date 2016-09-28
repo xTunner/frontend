@@ -950,7 +950,6 @@
                                     0))
                                (plan-model/max-parallelism plan))
                           "x")))]])]
-<<<<<<< 108c4a5c3f494ec8df6be6774d96d8b76a6ef587
             (when (:usage_queued_at build)
               [:div.summary-items
                [:div.summary-item

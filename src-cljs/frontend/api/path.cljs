@@ -164,7 +164,7 @@
     "%s/issue-types"
     (base-project-jira-path vcs-type project-name)))
 
-(defn jira-issues [vcs-type project-name]
+(defn jira-issue [vcs-type project-name]
   (gstring/format
-    "%s/issues"
+    "%s/issue"
     (base-project-jira-path vcs-type project-name)))

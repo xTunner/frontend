@@ -294,13 +294,13 @@
 
 (defn create-jira-issue [project-name vcs-type {:keys [project type summary description]} api-ch uuid on-success]
   (ajax/ajax :post
-             (path/jira-issues vcs-type project-name)
+             (path/jira-issue vcs-type project-name)
              :create-jira-issue
              api-ch
-             :params {:jira-project-name project
+             :params {:jira-project project
                       :issue-type type
-                      :issue-summary summary
-                      :issue-description description}
+                      :summary summary
+                      :description description}
              :context {:project-name project-name
                        :vcs-type vcs-type
                        :uuid uuid

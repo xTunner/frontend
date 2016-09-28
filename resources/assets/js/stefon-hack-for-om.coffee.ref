@@ -9,4 +9,3 @@ window.stefon_hack_for_om =
 
   asset_paths:
     "/img/container-oriented.png": '(asset-path "img/container-oriented.png")'
-    "/img/add-jira-issue.svg": '(asset-path "img/add-jira-issue.svg")'

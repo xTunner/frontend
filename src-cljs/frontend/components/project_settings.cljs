@@ -1531,7 +1531,7 @@
             input-path (fn [& ks] (apply conj state/inputs-path :jira ks))]
         (html
          [:div.jira-settings-inner
-          [:p "Create JIRA issues from the build page."]
+          [:p "Configure JIRA to create issues from CircleCI’s build page."]
           [:form
            [:input#jira-username
             {:required true, :type "text", :value (or username "")

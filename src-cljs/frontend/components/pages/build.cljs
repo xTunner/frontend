@@ -3,6 +3,7 @@
             [frontend.components.build :as build-com]
             [frontend.components.build-head :as build-head]
             [frontend.components.forms :as forms]
+            [frontend.components.jira-modal :as jira-modal]
             [frontend.components.templates.main :as main-template]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
@@ -88,13 +89,6 @@
 (defn- header-actions
   [data owner]
   (reify
-    om/IRender
-    (render [_]
-      (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
-            build (get-in data state/build-path)
-            build-id (build-model/id build)
-            build-num (:build_num build)
-            vcs-url (:vcs_url build)))
     om/IInitState
     (init-state [_]
       :show-modal? false)
@@ -108,14 +102,14 @@
             project (get-in data state/project-path)
             user (get-in data state/user-path)
             logged-in? (not (empty? user))
-            jira-data (get-in data [:project-data :jira])
+            jira-data (get-in data state/jira-data-path)
             can-trigger-builds? (project-model/can-trigger-builds? project)
             can-write-settings? (project-model/can-write-settings? project)]
         (html
           [:div.build-actions-v2
-           [:div.jira-modal
+           [:div
             (when show-modal?
-              (om/build build-head/jira-modal {:project project
+              (om/build jira-modal/jira-modal {:project project
                                                :jira-data jira-data
                                                :close-fn #(om/set-state! owner :show-modal? false)}))]
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
@@ -131,16 +125,27 @@
                       (build-model/can-merge-at-least-one-pr? build))
              (om/build merge-actions {:build build}))
            (when can-write-settings?
-             [[:div.jira-button
-               [:img {:src (utils/cdn-path "/img/inner/icons/create-jira-issue.svg")
-                      :on-click #(om/set-state! owner :show-modal? true)}]]
-              [:div.build-settings
-               [:a.build-action
-                {:href (routes/v1-project-settings-path (:navigation-data data))
-                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                 :properties {:project (:vcs_url project)
-                                                                              :user (:login user)}})}
-                [:i.material-icons "settings"]]]])])))))
+             (if (feature/enabled? :jira-integration)
+               (list
+                 [:button.btn-icon.jira-container
+                   {:on-click #(om/set-state! owner :show-modal? true)
+                    :title "Add ticket to JIRA"}
+                   [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]]
+                 [:a.exception.btn-icon.build-settings-container
+                  {:href (routes/v1-project-settings-path (:navigation-data data))
+                   :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                   :properties {:project (:vcs_url project)
+                                                                                :user (:login user)}})
+                    :title "Project settings"}
+                   [:i.material-icons "settings"]])
+               [:div.build-settings
+                [:a.build-action
+                 {:href (routes/v1-project-settings-path (:navigation-data data))
+                  :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                  :properties {:project (:vcs_url project)
+                                                                               :user (:login user)}})}
+                 [:i.material-icons "settings"]
+                 "Project Settings"]]))])))))
 
 (defn page [app owner]
   (reify

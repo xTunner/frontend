@@ -5,6 +5,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.forms :as forms]
             [frontend.models.project :as project-model]
+            [frontend.state :as state]
             [om.core :as om :include-macros true]
             [frontend.async :refer [navigate! raise!]]
             [frontend.utils.vcs-url :as vcs-url])
@@ -14,9 +15,7 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:jira-projects (:projects jira-data)
-       :jira-project nil
-       :issue-types (:issue-types jira-data)
+      {:jira-project nil
        :issue-type nil
        :summary nil
        :description (-> js/window .-location .-href (str "\n"))})
@@ -27,9 +26,13 @@
         (raise! owner [:load-jira-projects {:project-name project-name :vcs-type vcs-type}])
         (raise! owner [:load-jira-issue-types {:project-name project-name :vcs-type vcs-type}])))
     om/IRenderState
-    (render-state [_ {:keys [jira-project jira-projects issue-type issue-types summary description]}]
+    (render-state [_ {:keys [jira-project issue-type summary description] :as state}]
       (let [project-name (vcs-url/project-name (:vcs_url project))
-            vcs-type (project-model/vcs-type project)]
+            vcs-type (project-model/vcs-type project)
+            jira-projects (:projects jira-data)
+            issue-types (:issue-types jira-data)
+            first-jira-project (some-> jira-projects first)
+            first-issue-type (some-> issue-types first)]
         (modal/modal-dialog
           {:title "Create an issue in JIRA"
            :body
@@ -37,39 +40,43 @@
              [:div
               (form/form {}
                          (dropdown/dropdown {:label "Project name"
-                                             :name "project-name"
-                                             :value jira-project
-                                             :options (or (some-> jira-projects
-                                                                  (map #(into [% %] nil)))
+                                             ;; We can't make the first piece of data we
+                                             ;; receive the default choice in the
+                                             ;; dropdown. If the values of the dropdowns
+                                             ;; remain as nil, they haven't been
+                                             ;; interacted with, and so the first item
+                                             ;; from the data we received is the currently
+                                             ;; chosen item.
+                                             :value (or jira-project first-jira-project)
+                                             :options (or (some->> jira-projects
+                                                                   (map #(into [% %] nil)))
                                                           [["No projects" "No projects"]])
-                                             :on-change #(om/set-state! owner :jira-project (.. % -target -value))})
+                                             :on-change #(om/set-state! owner :jira-project %)})
                          (dropdown/dropdown {:label "Issue type"
-                                             :name "issue-type"
-                                             :value issue-type
-                                             :options (or (some-> issue-types
-                                                                  (map #(into [% %] nil)))
+                                             :value (or issue-type first-issue-type)
+                                             :options (or (some->> issue-types
+                                                                   (map #(into [% %] nil)))
                                                           [["No issue types" "No issue types"]])
-                                             :on-change #(om/set-state! owner :type (.. % -target -value))})
+                                             :on-change #(om/set-state! owner :issue-type %)})
                          (om/build form/text-field {:label "Issue summary"
                                                     :value summary
                                                     :on-change #(om/set-state! owner :summary (.. % -target -value))})
                          (om/build form/text-area {:label "Description"
                                                    :value description
                                                    :on-change #(om/set-state! owner :description (.. % -target -value))}))])
-           :actions [(forms/managed-button
-                       [:input.create-jira-issue-button
-                        {:data-failed-text "Failed" ,
-                         :data-success-text "Created" ,
-                         :data-loading-text "Creating..." ,
-                         :value "Create" ,
-                         :type "submit"
-                         :disabled (not (and project type summary description))
-                         :on-click #(raise! owner [:create-jira-issue {:project-name project-name
-                                                                       :vcs-type vcs-type
-                                                                       :jira-issue-data {:jira-project jira-project
-                                                                                         :type type
-                                                                                         :summary summary
-                                                                                         :description description}
-                                                                       :on-success close-fn}])}])]
+           :actions [(button/button {:on-click close-fn} "Cancel")
+                     (button/managed-button
+                       {:on-click #(raise! owner [:create-jira-issue {:project-name project-name
+                                                                      :vcs-type vcs-type
+                                                                      :jira-issue-data {:project (or jira-project first-jira-project)
+                                                                                        :type (or issue-type first-issue-type)
+                                                                                        :summary summary
+                                                                                        :description description}
+                                                                      :on-success close-fn}])
+                        :primary? true
+                        :loading-text "Creating..."
+                        :success-text "Created"
+                        :failed-text "Failed"}
+                       "Create JIRA issue")]
            :close-fn close-fn})))))
 
