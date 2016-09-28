@@ -1,4 +1,3 @@
-;; NOMERGE Analytics
 (ns frontend.analytics.core
   (:require [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
@@ -106,7 +105,7 @@
 
 (def CoreAnalyticsEvent
   {:event-type s/Keyword
-   :current-state {s/Any s/Any}
+   (s/optional-key :current-state) {s/Any s/Any}
    (s/optional-key :properties) (s/maybe {s/Keyword s/Any})})
 
 (defn analytics-event-schema
@@ -121,7 +120,8 @@
   (analytics-event-schema {:event SupportedEvents}))
 
 (def PageviewEvent
-  (analytics-event-schema {:navigation-point s/Keyword}))
+  (analytics-event-schema {:navigation-point s/Keyword
+                           (s/optional-key :subpage) s/Keyword}))
 
 (def BuildEvent
   (analytics-event-schema {:build {s/Keyword s/Any}}))
@@ -186,9 +186,9 @@
                                                                          :current-state current-state}))))
 
 (s/defmethod track :pageview [event-data :- PageviewEvent]
-  (let [{:keys [navigation-point properties current-state]} event-data]
+  (let [{:keys [navigation-point subpage properties current-state]} event-data]
     (segment/track-pageview navigation-point
-                            (current-subpage current-state)
+                            (or subpage (current-subpage current-state))
                             (supplement-tracking-properties {:properties properties
                                                              :current-state current-state}))))
 

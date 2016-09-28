@@ -227,7 +227,8 @@
                           :app/current-user (when-let [rc-user (-> js/window
                                                                    (aget "renderContext")
                                                                    (aget "current_user"))]
-                                              {:user/bitbucket-authorized (aget rc-user "bitbucket_authorized")})
+                                              {:user/login (aget rc-user "login")
+                                               :user/bitbucket-authorized (aget rc-user "bitbucket_authorized")})
                           :organization/by-vcs-type-and-name {}})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a

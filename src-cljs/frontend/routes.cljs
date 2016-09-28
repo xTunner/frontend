@@ -15,7 +15,12 @@
   ;; Shortly, Compassus will let us add this to its own transaction:
   ;; https://github.com/compassus/compassus/issues/8
   ;; https://github.com/compassus/compassus/commit/9a92c185d71615284b40a71eb049bbf38d01ec96
-  (om-next/transact! (compassus/get-reconciler app) [`(set-data {:data ~data})])
+  (om-next/transact! (compassus/get-reconciler app)
+                     [`(set-data ~(assoc data
+                                         ;; Once Compassus lets us do this in one
+                                         ;; transaction, we can stop passing the route
+                                         ;; here. See the parser for more info.
+                                         :route route))])
   (compassus/set-route! app route))
 
 (defn open-to-inner! [app nav-ch navigation-point args]
@@ -235,10 +240,9 @@
   (defroute v1-account-subpage "/account/:subpage" [subpage]
     (open-to-inner! app nav-ch :account {:subpage (keyword subpage)}))
   (defroute v1-organization-projects "/projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
-    (open! app :app/projects {:projects-page/organization
-                              [:organization/by-vcs-type-and-name
-                               {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-                                :organization/name org-name}]}))
+    (open! app :app/projects {:organization
+                              {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+                               :organization/name org-name}}))
   (defroute v1-projects "/projects" []
     (open! app :app/projects {}))
   (defroute v1-team "/team" []

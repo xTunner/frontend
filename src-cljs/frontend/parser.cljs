@@ -1,5 +1,6 @@
 (ns frontend.parser
-  (:require [frontend.components.app :as app]
+  (:require [frontend.analytics.core :as analytics]
+            [frontend.components.app :as app]
             [frontend.routes :as routes]
             [om.next :as om-next]
             [om.next.impl.parser :as parser]
@@ -85,7 +86,8 @@
     "Keys under :app/current-user which are fed by the page's renderContext,
      and shouldn't be fetched from the remote by API"}
   render-context-keys
-  #{:user/bitbucket-authorized})
+  #{:user/login
+    :user/bitbucket-authorized})
 
 
 ;; :app/current-user works much like :default, but it's a bit of a special case,
@@ -182,7 +184,24 @@
 ;; frontend.routes/set-data sets the :app/route-data during navigation.
 (defmethod mutate `routes/set-data
   [{:keys [state] :as env} key params]
-  {:action #(swap! state assoc :app/route-data (:data params))})
+  {:action #(let [route-data (cond-> {}
+                               (contains? params :organization)
+                               (assoc :projects-page/organization
+                                      [:organization/by-vcs-type-and-name
+                                       (select-keys (:organization params)
+                                                    [:organization/vcs-type :organization/name])]))
+                  ;; Once Compassus lets us change the route and set route
+                  ;; data in one transaction, we can use the :route from the
+                  ;; env and stop passing it as a param. See
+                  ;; frontend.routes/open for more info.
+                  route (:route params)]
+              (swap! state assoc :app/route-data route-data)
+              (analytics/track {:event-type :pageview
+                                :navigation-point route
+                                :subpage :default
+                                :properties {:user (get-in @state [:app/current-user :user/login])
+                                             :view route
+                                             :org (get-in params [:organization :organization/name])}}))})
 
 
 (def parser (om-next/parser {:read read :mutate mutate}))
