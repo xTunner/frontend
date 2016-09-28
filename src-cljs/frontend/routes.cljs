@@ -24,7 +24,7 @@
   (compassus/set-route! app route))
 
 (defn open-to-inner! [app nav-ch navigation-point args]
-  (compassus/set-route! app :app/legacy-page)
+  (compassus/set-route! app :route/legacy-page)
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
 ;; TODO: Remove this and everything that uses it. It should be completely obsolete.
@@ -240,11 +240,11 @@
   (defroute v1-account-subpage "/account/:subpage" [subpage]
     (open-to-inner! app nav-ch :account {:subpage (keyword subpage)}))
   (defroute v1-organization-projects "/projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
-    (open! app :app/projects {:organization
-                              {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-                               :organization/name org-name}}))
+    (open! app :route/projects {:organization
+                                {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+                                 :organization/name org-name}}))
   (defroute v1-projects "/projects" []
-    (open! app :app/projects {}))
+    (open! app :route/projects {}))
   (defroute v1-team "/team" []
     (open-to-inner! app nav-ch :team {}))
   (defroute v1-logout "/logout" []

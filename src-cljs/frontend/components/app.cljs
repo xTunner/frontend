@@ -33,9 +33,9 @@
   (render [this] nil))
 
 (def routes
-  {:app/loading (compassus/index-route Loading)
-   :app/legacy-page legacy/LegacyPage
-   :app/projects projects/Page})
+  {:route/loading (compassus/index-route Loading)
+   :route/legacy-page legacy/LegacyPage
+   :route/projects projects/Page})
 
 (defn head-admin [app owner]
   (reify
