@@ -5,6 +5,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project]
             [frontend.components.svg :refer [svg]]
@@ -19,7 +20,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+  (:require-macros [frontend.utils :refer [defrender html component element]]))
 
 (defn active-class-if-active [current-subpage subpage-link]
   (if (= current-subpage subpage-link)
@@ -199,6 +200,36 @@
 
 (defn set-beta-program-preference! [owner pref]
   (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
+
+(defrender beta-terms-modal [{:keys [close-fn show-modal?]} owner]
+  (component
+   (html
+    [:div
+     (when show-modal?
+       (modal/modal-dialog {:title "Join Beta Program"
+                            :body (element :body
+                                           (html
+                                            [:div
+                                             [:h1 "Beta Terms"]
+                                             [:p
+                                              "Our beta program is a way to engage with our most
+               thoughtful and dedicated users. We want to build the
+               best features with your help. To that end, in joining
+               the beta program you should be comfortable with these
+               expectations:"]
+                                             [:ul
+                                              [:li "You’ll find out about new features through e-mail and in-app messages"]
+                                              [:li "Please give us feedback about new features when we release them"]
+                                              [:li "Keep the private beta, private. Please no tweets, blogs, or other public
+                    posting, but we do encourage you to talk with your
+                    coworkers!"]]]))
+                            :actions [(button/button {:on-click close-fn} "Cancel")
+                                      (button/button
+                                       {:on-click #(do
+                                                     (set-beta-program-preference! owner true)
+                                                     ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked})
+                                                     (close-fn))}
+                                       "Accept")]}))])))
 
 (defn join-beta-program [app owner]
   (reify
