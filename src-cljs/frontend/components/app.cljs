@@ -91,7 +91,7 @@
         [:section.container
          [:div.row
           [:article.hero-title.center-block
-           [:div.text-center frontend.components.enterprise-landing/enterprise-logo]
+           [:div.text-center (enterprise-landing/enterprise-logo)]
            [:h1.text-center "Error Launching CircleCI"]]]]
         [:div.row.text-center
          [:h2 reason]]]

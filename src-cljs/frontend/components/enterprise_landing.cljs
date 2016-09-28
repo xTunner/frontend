@@ -6,7 +6,7 @@
             [frontend.components.footer :as footer])
   (:require-macros [frontend.utils :refer [html]]))
 
-(def enterprise-logo
+(defn enterprise-logo []
   [:figure.enterprise-logo
    [:img {:src (utils/cdn-path "/img/outer/enterprise/logo-circleci.svg")}]
    [:figcaption "CircleCI Enterprise"]])
@@ -24,7 +24,7 @@
           [:section.container
            [:div.row
             [:article.hero-title.center-block
-             [:div.text-center enterprise-logo]
+             [:div.text-center (enterprise-logo)]
              [:h1.text-center "Welcome to CircleCI"]]]]
           [:div.row.text-center
            [:a.btn.btn-cta.btn-success {:href (auth-url)

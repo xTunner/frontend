@@ -29,7 +29,7 @@
         (om/build main-template/template {:app app
                                           :main-content (om/build old-world-dominant-component-f app)})))))
 
-(def nav-point->page
+(defn nav-point->page []
   (merge
    ;; Page component functions, which are good as they are.
    {:build build/page
@@ -62,6 +62,6 @@
   Object
   (render [this]
     (let [app (:legacy/state (om-next/props this))
-          page (nav-point->page (:navigation-point app))]
+          page (get (nav-point->page) (:navigation-point app))]
       (when page
         (build-legacy page app)))))
