@@ -212,16 +212,15 @@
                                              [:h1 "Beta Terms"]
                                              [:p
                                               "Our beta program is a way to engage with our most
-               thoughtful and dedicated users. We want to build the
-               best features with your help. To that end, in joining
-               the beta program you should be comfortable with these
-               expectations:"]
+                                               thoughtful and dedicated users. We want to build the
+                                               best features with your help. To that end, in joining
+                                               the beta program you should be comfortable with these
+                                               expectations:"]
                                              [:ul
                                               [:li "You’ll find out about new features through e-mail and in-app messages"]
                                               [:li "Please give us feedback about new features when we release them"]
                                               [:li "Keep the private beta, private. Please no tweets, blogs, or other public
-                    posting, but we do encourage you to talk with your
-                    coworkers!"]]]))
+                                                    posting, but we do encourage you to talk with your coworkers!"]]]))
                             :actions [(button/button {:on-click close-fn} "Cancel")
                                       (button/button
                                        {:on-click #(do
@@ -439,8 +438,6 @@
             (for [project projects
                   :when (= [(keyword (:vcs_type project)) (keyword (:username project))] selected-org)]
               (om/build project/email-pref {:project project :user user} {:react-key (:reponame project)}))]]])))))
-
-
 
 (defn notifications [app owner]
   (reify
