@@ -262,7 +262,7 @@
   (concat
    [{:type :heading :title "Plan"}
     {:type :subpage :title "Overview" :href "#" :subpage :overview}]
-   (if-not (pm/can-edit-plan? plan org-name org-vcs-type)
+   (if (pm/piggieback? plan org-name org-vcs-type)
      [{:type :subpage :href "#containers" :title "Add containers" :subpage :containers}]
      (concat
       [{:type :subpage :title "Update plan" :href "#containers" :subpage :containers}]
@@ -334,14 +334,14 @@
   [subpage plan org-name vcs-type]
   (cond ;; Redirect :plan to :containers for paid plans that aren't piggiebacked.
         (and plan
-             (pm/can-edit-plan? plan org-name vcs-type)
+             (not (pm/piggieback? plan org-name vcs-type))
              (= subpage :plan))
         :containers
 
         ;; Redirect :organizations, :billing, and :cancel to the overview page
         ;; for piggiebacked plans.
         (and plan
-             (not (pm/can-edit-plan? plan org-name vcs-type))
+             (pm/piggieback? plan org-name vcs-type)
              (#{:organizations :billing :cancel} subpage))
         :overview
 

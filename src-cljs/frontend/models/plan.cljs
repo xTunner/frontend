@@ -120,11 +120,6 @@
        (paid-linux-containers plan))
      (trial-containers plan)))
 
-(defn can-edit-plan? [plan org-name vcs-type]
-  ;; kill plan pricing page for trial plans by making
-  ;; can-edit-plan?' return true for them
-  (not (piggieback? plan org-name vcs-type)))
-
 (defn transferrable-or-piggiebackable-plan? [plan]
   (or (linux? plan)
       (osx? plan)
