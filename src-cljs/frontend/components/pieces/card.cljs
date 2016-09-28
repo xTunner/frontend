@@ -22,6 +22,16 @@
     (when action
       [:.action action])]))
 
+(defn- group [content]
+  (html
+   [:div {:data-component `group}
+    content]))
+
+(defn- group-item [content]
+  (html
+   [:div {:data-component `group-item}
+    content]))
+
 (defn basic
   "The most basic of cards. The given content appears on a card."
   [content]
@@ -47,6 +57,11 @@
     (list
      tab-row
      (body content)))))
+
+(defn collection
+  "A set of cards to layout together"
+  ([cards]
+   (group (map group-item cards))))
 
 
 (dc/do
@@ -82,4 +97,11 @@
                                          :on-tab-click #(swap! state assoc :selected-tab-name %)})}
        "Some content."))
     {:selected-tab-name :tab-one}
-    {:classname "background-gray"}))
+    {:classname "background-gray"})
+
+  (defcard card-collection
+    (collection
+     [(titled {:title "Card A"}
+              "A bunch of words")
+      (titled {:title "Card B"}
+              "A whole bunch of words")])))
