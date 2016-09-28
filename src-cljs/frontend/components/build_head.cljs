@@ -6,12 +6,14 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.test :as test-model]
@@ -355,23 +357,35 @@
                                    (sort-by first))))
               [:div.loading-spinner common/spinner]))])))))
 
-(defn tests-ad [owner language]
-  [:div
-   "Help us provide better insight around your tests and failures. "
-   [:a (open-ext {:href (case language
-                          "Clojure" "https://circleci.com/docs/test-metadata/#test2junit-for-clojure-tests"
-                          "Ruby" "https://circleci.com/docs/test-metadata/#rspec"
-                          "JavaScript" "https://circleci.com/docs/test-metadata/#js"
-                          "Python" "https://circleci.com/docs/test-metadata#python"
-                          "Java" "https://circleci.com/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-                          "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
-                  :on-mouse-up #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
-                                                                     :properties {:language language}})})
-    "Set up your test runner to output in JUnit-style XML"] ", so we can:"
-   [:ul
-    [:li "Show a summary of all test failures across all containers"]
-    [:li "Identify your slowest tests"]
-    [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) "Balance tests between containers when using properly configured parallelization"]]]])
+(defn tests-ad [owner language build-succeeded?]
+  (let [junit-link (case language
+                         "Clojure" "https://circleci.com/docs/test-metadata/#test2junit-for-clojure-tests"
+                         "Ruby" "https://circleci.com/docs/test-metadata/#rspec"
+                         "JavaScript" "https://circleci.com/docs/test-metadata/#js"
+                         "Python" "https://circleci.com/docs/test-metadata#python"
+                         "Java" "https://circleci.com/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
+                         "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
+        track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
+                                                          :properties {:language language}})] 
+    (if (feature/enabled? :junit-button)
+      (button/link (open-ext {:href junit-link
+                              :id "junit-link"
+                              :primary? true
+                              :on-click track-junit})
+                   "Configure Summary")
+      [:div.alert.iconified {:class "alert-info"}
+       [:div [:img.alert-icon {:src (common/icon-path
+                                     (if build-succeeded? "Info-Info" "Info-Error"))}]]
+       [:div
+         "Help us provide better insight around your tests and failures. "
+         [:a (open-ext {:href junit-link
+                        :id "junit-link"
+                        :on-mouse-up track-junit}) 
+           "Set up your test runner to output in JUnit-style XML"] ", so we can:"
+         [:ul
+           [:li "Show a summary of all test failures across all containers"]
+           [:li "Identify your slowest tests"]
+           [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
   (html
@@ -523,10 +537,7 @@
                                  (:classname slowest)
                                  (:name slowest)
                                  (:run_time slowest))]])]
-               :else [:div.alert.iconified {:class "alert-info"}
-                      [:div [:img.alert-icon {:src (common/icon-path
-                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
-                      (tests-ad owner (:language project))])))])))))
+               :else (tests-ad owner (:language project) build-succeeded?))))])))))
 
 (defn circle-yml-ad []
   [:div
