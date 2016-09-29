@@ -58,10 +58,10 @@
   (let [root (.select js/d3 dom-root)]
     (-> root
         (.attr "width" (+ (timings-width)
-                         left-axis-width
-                         padding-right))
+                          left-axis-width
+                          padding-right))
         (.attr "height" (+ (timings-height number-of-containers)
-                          top-axis-height)))
+                           top-axis-height)))
     (-> root
         (.select "g")
         (.remove))
@@ -115,7 +115,7 @@
         (.selectAll "text")
         (.transition)
         (.duration 200)
-        (.attr "fill-opacity"   #(this-as element (fade-value element step-data))))))
+        (.attr "fill-opacity" #(this-as element (fade-value element step-data))))))
 
 (defn highlight-selected-step! [step selected]
   (-> step
@@ -151,10 +151,10 @@
                         (aget step "step")))
 
 (defn draw-containers! [build x-scale step]
-  (let [step-length         #(- (scaled-time x-scale % "end_time")
-                                (scaled-time x-scale % "start_time"))
-        step-start-pos      #(x-scale (js/Date. (aget % "start_time")))
-        step-duration       #(datetime/as-duration (duration (aget % "start_time") (aget % "end_time")))]
+  (let [step-start-pos #(scaled-time x-scale % "start_time")
+        step-length    #(- (scaled-time x-scale % "end_time")
+                           (step-start-pos %))
+        step-duration  #(datetime/as-duration (duration (aget % "start_time") (aget % "end_time")))]
     (-> step
         (.selectAll "rect")
           (.data #(aget % "actions"))
