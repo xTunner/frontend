@@ -227,13 +227,13 @@
 (defn join-beta-program [app owner]
   (reify
     om/IRenderState
-    (render-state [_ {:keys [clicked-join?]}]
+    (render-state [_ {:keys [show-modal?]}]
       (html
        (card/titled {:title "Beta Program"}
                     (html
                      [:div
-                      (when clicked-join?
-                        (om/build beta-terms-modal {:close-fn #(om/set-state! owner :clicked-join? false)}))
+                      (when show-modal?
+                        (om/build beta-terms-modal {:close-fn #(om/set-state! owner :show-modal? false)}))
                       [:p "We invite you to join Inner Circle, our new
                            beta program. As a member of CircleCI’s
                            Inner Circle you get exclusive access to
@@ -241,7 +241,7 @@
                            released publicly!"]
                       (button/button
                        {:on-click #(do
-                                     (om/set-state! owner :clicked-join? true)
+                                     (om/set-state! owner :show-modal? true)
                                      ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
                         :primary? true}
                        "Join Beta Program")]))))))
