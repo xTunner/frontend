@@ -55,7 +55,7 @@
     (html
      [:div
       (for [card cards]
-        [:div.item card])]))))
+        [:.item card])]))))
 
 (dc/do
   (defcard basic-card
