@@ -5,10 +5,23 @@
             [frontend.models.build :as build]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.events :as gevents]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
+
+(def required-build-keys
+  "Keys which are required from the build model to appropriately render a
+  build timings component."
+  [:parallel
+   :steps
+   :start_time
+   :stop_time
+   :vcs_url
+   :username
+   :reponame
+   :build_num])
 
 (def padding-right 20)
 
@@ -128,12 +141,16 @@
       (.attr "fill-opacity" 1)))
 
 (defn step-href
-  [step]
-  (str "#" (routes/build-page-fragment :build-timing
-                                       (aget step "index")
-                                       (aget step "step"))))
+  [{:keys [vcs_url username reponame build_num] :as build} step]
+  (routes/v1-build-path (vcs-url/vcs-type vcs_url)
+                        username
+                        reponame
+                        build_num
+                        :build-timing
+                        (aget step "index")
+                        (aget step "step")))
 
-(defn draw-containers! [x-scale step]
+(defn draw-containers! [build x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")
                                 (scaled-time x-scale % "start_time"))
         step-start-pos      #(x-scale (js/Date. (aget % "start_time")))
@@ -143,7 +160,7 @@
           (.data #(aget % "actions"))
         (.enter)
           (.append "a")
-            (.attr "href" step-href)
+            (.attr "href" (partial step-href build))
           (.append "rect")
             (.attr "class"     #(str "container-step-" (build/status-class (wrap-status (aget % "status")))))
             (.attr "width"     step-length)
@@ -177,7 +194,7 @@
                            container-bar-height
                            step-start-line-extension)))))
 
-(defn draw-steps! [x-scale chart steps]
+(defn draw-steps! [{:keys [steps] :as build} x-scale chart]
   (let [steps-group       (-> chart
                               (.append "g"))
 
@@ -187,7 +204,7 @@
                               (.enter)
                                 (.append "g"))]
     (draw-step-start-line! x-scale step)
-    (draw-containers! x-scale step)))
+    (draw-containers! build x-scale step)))
 
 (defn draw-label! [chart number-of-containers]
   (let [[x-trans y-trans] [-30 (+ (/ (timings-height number-of-containers) 2) 40)]
@@ -204,7 +221,7 @@
         (.attr "class" class-name)
         (.call axis)))
 
-(defn draw-chart! [root {:keys [parallel steps start_time stop_time] :as build}]
+(defn draw-chart! [root {:keys [parallel start_time stop_time] :as build}]
   (let [x-scale (create-x-scale start_time stop_time)
         chart   (create-root-svg root parallel)
         x-axis  (create-x-axis (duration start_time stop_time))
@@ -212,7 +229,7 @@
     (draw-axis!  chart x-axis "x-axis")
     (draw-axis!  chart y-axis "y-axis")
     (draw-label! chart parallel)
-    (draw-steps! x-scale chart steps)))
+    (draw-steps! build x-scale chart)))
 
 (defn build-timings-chart [build owner]
   (reify
