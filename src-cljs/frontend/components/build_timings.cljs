@@ -1,13 +1,10 @@
 (ns frontend.components.build-timings
-  (:require [frontend.async :as f.async]
-            [frontend.components.common :as common]
+  (:require [frontend.components.common :as common]
             [frontend.datetime :as datetime]
             [frontend.disposable :as disposable]
             [frontend.models.build :as build]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
-            [frontend.utils :as utils]
-            [goog.dom :as dom]
             [goog.events :as gevents]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
@@ -131,12 +128,12 @@
       (.attr "fill-opacity" 1)))
 
 (defn step-href
-  [owner step]
+  [step]
   (str "#" (routes/build-page-fragment :build-timing
                                        (aget step "index")
                                        (aget step "step"))))
 
-(defn draw-containers! [owner x-scale step]
+(defn draw-containers! [x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")
                                 (scaled-time x-scale % "start_time"))
         step-start-pos      #(x-scale (js/Date. (aget % "start_time")))
@@ -146,7 +143,7 @@
           (.data #(aget % "actions"))
         (.enter)
           (.append "a")
-            (.attr "href" (partial step-href owner))
+            (.attr "href" step-href)
           (.append "rect")
             (.attr "class"     #(str "container-step-" (build/status-class (wrap-status (aget % "status")))))
             (.attr "width"     step-length)
@@ -181,7 +178,7 @@
                            container-bar-height
                            step-start-line-extension)))))
 
-(defn draw-steps! [owner x-scale chart steps]
+(defn draw-steps! [x-scale chart steps]
   (let [steps-group       (-> chart
                               (.append "g"))
 
@@ -191,7 +188,7 @@
                               (.enter)
                                 (.append "g"))]
     (draw-step-start-line! x-scale step)
-    (draw-containers! owner x-scale step)))
+    (draw-containers! x-scale step)))
 
 (defn draw-label! [chart number-of-containers]
   (let [[x-trans y-trans] [-30 (+ (/ (timings-height number-of-containers) 2) 40)]
@@ -208,7 +205,7 @@
         (.attr "class" class-name)
         (.call axis)))
 
-(defn draw-chart! [owner {:keys [parallel steps start_time stop_time] :as build}]
+(defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
   (let [root    (om/get-node owner "build-timings-svg")
         x-scale (create-x-scale start_time stop_time)
         chart   (create-root-svg root parallel)
@@ -217,19 +214,18 @@
     (draw-axis!  chart x-axis "x-axis")
     (draw-axis!  chart y-axis "y-axis")
     (draw-label! chart parallel)
-    (draw-steps! owner x-scale chart steps)))
+    (draw-steps! x-scale chart steps)))
 
 (defn build-timings-chart [build owner]
   (reify
     om/IDidMount
     (did-mount [_]
       (when build
-        (draw-chart! owner build))
+        (draw-chart! build))
       (om/set-state! owner [:resize-key]
                      (disposable/register
                       (gevents/listen js/window "resize"
                                       #(draw-chart!
-                                        owner
                                         (om/get-props owner)))
                       gevents/unlistenByKey)))
 
@@ -240,7 +236,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when build
-        (draw-chart! owner build)))
+        (draw-chart! build)))
 
     om/IRenderState
     (render-state [_ _]
