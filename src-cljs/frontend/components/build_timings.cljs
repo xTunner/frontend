@@ -130,29 +130,11 @@
       (.duration 200)
       (.attr "fill-opacity" 1)))
 
-(defn scroll-to-step [owner step]
-  (let [action-id (aget step "step")]
-    (when-let [action-node (dom/getElement (str "action-" action-id))]
-      (utils/scroll-to-build-action! action-node)
-      (f.async/raise! owner [:action-log-output-toggled
-                             {:index (aget step "index")
-                              :step (aget step "step")
-                              :value true}])
-      (om/set-state! owner :action-id-to-scroll-to nil))))
-
-(defn infos
-  [owner & args]
-  (let [container-index (aget (first args) "index")
-        action-id (aget (first args) "step")
-        to-raise [:action-log-output-toggled
-                  {:index container-index
-                   :step action-id
-                   :value true}]]
-    (js/console.log "PRE set value in state:" (om/get-state owner [:action-id-to-scroll-to]))
-    (js/console.log "raising:" to-raise)
-    (om/set-state! owner :action-id-to-scroll-to action-id)
-    (f.async/raise! owner to-raise)
-    (js/console.log "POST set/raise value in state:" (om/get-state owner [:action-id-to-scroll-to]))))
+(defn step-href
+  [owner step]
+  (str "#" (routes/build-page-fragment :build-timing
+                                       (aget step "index")
+                                       (aget step "step"))))
 
 (defn draw-containers! [owner x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")
