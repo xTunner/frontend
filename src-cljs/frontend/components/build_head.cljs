@@ -369,7 +369,7 @@
                                                           :properties {:language language}})] 
     (if (feature/enabled? :junit-button)
       (button/link (open-ext {:href junit-link
-                              :id "junit-link"
+                              :class "junit-link"
                               :primary? true
                               :on-click track-junit})
                    "Configure Summary")
@@ -379,7 +379,7 @@
        [:div
          "Help us provide better insight around your tests and failures. "
          [:a (open-ext {:href junit-link
-                        :id "junit-link"
+                        :class "junit-link"
                         :on-mouse-up track-junit}) 
            "Set up your test runner to output in JUnit-style XML"] ", so we can:"
          [:ul
