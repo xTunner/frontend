@@ -191,11 +191,8 @@
        [:div
         [:h4.beta-programs "Current Beta Features"]
         (card/collection
-         (map
-          (fn [program]
-            (card/titled {:title (:name program)}
-                         (:description program)))
-          available-betas))]))))
+         (for [{:keys [name description]} available-betas]
+          (card/titled {:title name} description)))]))))
 
 (defn set-beta-program-preference! [owner pref]
   (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
