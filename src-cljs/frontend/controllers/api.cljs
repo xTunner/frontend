@@ -249,10 +249,13 @@
         build-running? (not (build-model/finished? build))
         failed-containers (filter #(= :failed (container-model/status % build-running?))
                                   containers)
+        current-container-id (get-in state state/current-container-path)
+        failed-filter-valid? (some #(= current-container-id (container-model/id %)) failed-containers)
         controls-ch (:controls comms)]
     ;; set filter
     (when (and (not build-running?)
-               (seq failed-containers))
+               (seq failed-containers)
+               failed-filter-valid?)
       (put! controls-ch [:container-filter-changed {:new-filter :failed
                                                     :containers failed-containers}]))))
 
