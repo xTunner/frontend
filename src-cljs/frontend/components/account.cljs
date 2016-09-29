@@ -224,23 +224,22 @@
   (reify
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
-      (html
-       (card/titled {:title "Beta Program"}
-                    (html
-                     [:div
-                      (when show-modal?
-                        (om/build beta-terms-modal {:close-fn #(om/set-state! owner :show-modal? false)}))
-                      [:p "We invite you to join Inner Circle, our new
+      (card/titled {:title "Beta Program"}
+                   (html
+                    [:div
+                     (when show-modal?
+                       (om/build beta-terms-modal {:close-fn #(om/set-state! owner :show-modal? false)}))
+                     [:p "We invite you to join Inner Circle, our new
                            beta program. As a member of CircleCI’s
                            Inner Circle you get exclusive access to
                            new features and settings before they are
                            released publicly!"]
-                      (button/button
-                       {:on-click #(do
-                                     (om/set-state! owner :show-modal? true)
-                                     ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
-                        :primary? true}
-                       "Join Beta Program")]))))))
+                     (button/button
+                      {:on-click #(do
+                                    (om/set-state! owner :show-modal? true)
+                                    ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
+                       :primary? true}
+                      "Join Beta Program")])))))
 
 (defn beta-program-member [app owner]
   (reify
