@@ -194,9 +194,6 @@
          (for [{:keys [name description]} available-betas]
           (card/titled {:title name} description)))]))))
 
-(defn set-beta-program-preference! [owner pref]
-  (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
-
 (defrender beta-terms-modal [{:keys [close-fn]} owner]
   (component
    (modal/modal-dialog {:title "Join Beta Program"
@@ -218,7 +215,7 @@
                                   (button/button
                                    {:primary? true
                                     :on-click #(do
-                                                 (set-beta-program-preference! owner true)
+                                                 (raise! owner [:preferences-updated {state/user-in-beta-key true}])
                                                  ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked})
                                                  (close-fn))}
                                    "Accept")]})))
@@ -261,7 +258,7 @@
                        [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
                        (button/button
                         {:on-click #(do
-                                      (set-beta-program-preference! owner false)
+                                      (raise! owner [:preferences-updated {state/user-in-beta-key false}])
                                       ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
                          :primary? true}
                         "Leave Beta Program")]))
