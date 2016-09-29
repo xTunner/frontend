@@ -163,6 +163,8 @@
         (.selectAll "rect")
           (.data #(aget % "actions"))
         (.enter)
+          (.append "a")
+            (.attr "href" (partial step-href owner))
           (.append "rect")
             (.attr "class"     #(str "container-step-" (build/status-class (wrap-status (aget % "status")))))
             (.attr "width"     step-length)
@@ -173,7 +175,7 @@
                                          (highlight-selected-step! step selected)
                                          (highlight-selected-container! %)))
             (.on   "mouseout"  #(reset-selected! step))
-            (.on   "click"     (partial scroll-to-step owner))
+            ;(.on   "click"     (partial scroll-to-step owner))
           (.append "title")
             (.text #(gstring/format "%s (%s:%s) - %s"
                                     (aget % "name")
