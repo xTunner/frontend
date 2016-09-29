@@ -230,10 +230,10 @@
                      (when show-modal?
                        (om/build beta-terms-modal {:close-fn #(om/set-state! owner :show-modal? false)}))
                      [:p "We invite you to join Inner Circle, our new
-                           beta program. As a member of CircleCI’s
-                           Inner Circle you get exclusive access to
-                           new features and settings before they are
-                           released publicly!"]
+                          beta program. As a member of CircleCI’s
+                          Inner Circle you get exclusive access to new
+                          features and settings before they are
+                          released publicly!"]
                      (button/button
                       {:on-click #(do
                                     (om/set-state! owner :show-modal? true)
