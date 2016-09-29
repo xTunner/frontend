@@ -366,13 +366,16 @@
                          "Java" "https://circleci.com/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
                          "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
         track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
-                                                          :properties {:language language}})] 
+                                                          :properties {:language language
+                                                                       :treatment (if (feature/enabled? :junit-button)
+                                                                                    :junit-button
+                                                                                    :junit-banner)}})]  
     (if (feature/enabled? :junit-button)
       (button/link (open-ext {:href junit-link
                               :class "junit-link"
                               :primary? true
                               :on-click track-junit})
-                   "Configure Summary")
+                   "Set Up Test Summary")
       [:div.alert.iconified {:class "alert-info"}
        [:div [:img.alert-icon {:src (common/icon-path
                                      (if build-succeeded? "Info-Info" "Info-Error"))}]]
@@ -385,7 +388,8 @@
          [:ul
            [:li "Show a summary of all test failures across all containers"]
            [:li "Identify your slowest tests"]
-           [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) "Balance tests between containers when using properly configured parallelization"]]]]])))
+           [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) 
+                    "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
   (html
@@ -492,6 +496,12 @@
     om/IWillMount
     (will-mount [_]
       (raise! owner [:tests-showed]))
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :set-up-junit-impression
+                                           :properties {:treatment (if (feature/enabled? :junit-button)
+                                                                     :junit-button
+                                                                     :junit-banner)}})) 
     om/IRender
     (render [_]
       (let [source-hash (->> tests
