@@ -174,7 +174,7 @@
                    [:li (maybe-active nav-point :pricing)
                     [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
-                [:a.menu-item {:href "https://circleci.com/docs"}
+                [:a.menu-item {:href "https://circleci.com/docs/"}
                  (if (config/enterprise?)
                   "CircleCI Documentation"
                   "Documentation")]]

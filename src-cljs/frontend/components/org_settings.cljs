@@ -467,11 +467,11 @@
             vcs-type (get-in app state/org-vcs_type-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                     (pm/paid-linux-containers plan))
+                                    (if (config/enterprise?)
+                                      (pm/enterprise-containers plan)
+                                      (pm/paid-linux-containers plan)))
             login (get-in app state/user-login-path)
             view (get-in app state/current-view-path)
-            min-slider-val 0
-            max-slider-val (max 80 (* 2 (pm/paid-linux-containers plan)))
             selected-paid-containers (max 0 selected-containers)
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
@@ -479,7 +479,8 @@
             linux-container-cost (pm/linux-per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name vcs-type)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
-                                    selected-paid-containers)]
+                                    selected-paid-containers)
+            containers-str (pluralize-no-val selected-containers "container")]
       (html
         [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
          [:div.main-content
@@ -490,18 +491,18 @@
                                    :type "text" :value selected-containers
                                    :on-change #(utils/edit-input owner state/selected-containers-path %
                                                                  :value (int (.. % -target -value)))}]
-             [:span.new-plan-total (str "paid " (pluralize-no-val selected-containers "container")
-                                        (when-not (config/enterprise?)
-                                          (str (when-not (zero? new-total) (str " for $" new-total "/month"))))
-                                        " + 1 free container")]]]
+             [:span.new-plan-total (if (config/enterprise?)
+                                    containers-str
+                                    (str "paid " containers-str
+                                         (str (when-not (zero? new-total) (str " for $" new-total "/month")))
+                                         " + 1 free container"))]]]
            [:form
-            [:div.container-picker
-             [:h1 "More containers means faster builds and lower queue times."]
-             [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]
-             (om/build shared/styled-range-slider
-                       (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
+            (when-not (config/enterprise?)
+              [:div.container-picker
+               [:h1 "More containers means faster builds and lower queue times."]
+               [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]])
             [:fieldset
-             (if (and (pm/can-edit-plan? plan org-name vcs-type)
+             (if (and (not piggiebacked?)
                       (or (config/enterprise?)
                           (pm/stripe-customer? plan)))
                (let [enterprise-text "Save changes"]
@@ -595,7 +596,7 @@
   (get {:osx-pricing :osx
         :linux-pricing :linux} subpage :linux))
 
-(defn pricing [app owner]
+(defn cloud-pricing [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
     ;; from the plan component above, but the billing-card component
@@ -1218,6 +1219,7 @@
                                                      :_fragment "osx-pricing"})} "here"] "."]
            (when (pm/osx? plan)
              (let [plan-name (some-> plan :osx :template :name)]
+               [:div
                [:p
                 (cond
                   (pm/osx-trial-active? plan)
@@ -1231,7 +1233,8 @@
                                                             :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
                   :else
-                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]])))))
+                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]
+               (om/build osx-usage-table {:plan plan})]))]])))))
 
 (defn overview [app owner]
   (om/component
@@ -1253,23 +1256,26 @@
                                                     :vcs_type (:vcs_type plan-org)})}
             (:name plan-org) "'s plan."]])
         [:h2 "Linux"]
-        (cond (> containers 1)
-              [:p (str "All Linux builds will be distributed across " containers " containers.")]
-              (= containers 1)
-              [:div
-               [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
-               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                                  :vcs_type (:vcs_type plan-org)
-                                                                  :_fragment "linux-pricing"})}
-                    "upgrading"]
-                (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
-              :else nil)
+        (if (config/enterprise?)
+          [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
+          (cond (> containers 1)
+                [:p (str "All Linux builds will be distributed across " containers " containers.")]
+                (= containers 1)
+                [:div
+                 [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
+                 [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                    :vcs_type (:vcs_type plan-org)
+                                                                    :_fragment "linux-pricing"})}
+                            "upgrading"]
+                  (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
+                :else nil))
         (when (> (pm/trial-containers plan) 0)
           [:p
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
-        (when (pm/linux? plan)
+        (when (and (not (config/enterprise?))
+                   (pm/linux? plan))
           [:p
            (str (pm/paid-linux-containers plan) " of these are paid")
            (if piggiebacked? ". "
@@ -1296,19 +1302,22 @@
           [:div
            [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
            (om/build osx-overview {:plan plan})])
-        (when (pm/osx? plan)
-          (om/build osx-usage-table {:plan plan}))]]))))
+        (when (config/enterprise?)
+          (om/build linux-plan {:app app})) ]]))))
 
-(def main-component
-  {:overview overview
-   :users users
-   :projects projects
-   :containers pricing
-   :osx-pricing pricing
-   :linux-pricing pricing
-   :organizations organizations
-   :billing billing
-   :cancel cancel})
+(defn main-component []
+  (merge
+    {:overview overview
+     :users users
+     :projects projects
+     :cancel cancel}
+    (if (config/enterprise?)
+      {:containers overview}
+      {:containers cloud-pricing
+       :osx-pricing cloud-pricing
+       :linux-pricing cloud-pricing
+       :organizations organizations
+       :billing billing})))
 
 (defn org-settings [app owner]
   (reify
@@ -1329,7 +1338,7 @@
                   [:div#subpage
                    [:div
                     (if (:authorized? org-data)
-                      (om/build (get main-component subpage projects) app)
+                      (om/build (get (main-component) subpage projects) app)
                       [:div (om/build non-admin-plan
                                       {:login (get-in app [:current-user :login])
                                        :org-name (get-in app state/org-settings-org-name-path)
