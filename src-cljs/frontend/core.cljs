@@ -298,7 +298,7 @@
 
     (if-let [error-status (get-in legacy-state [:render-context :status])]
       ;; error codes from the server get passed as :status in the render-context
-      (put! (:nav comms) [:error {:status error-status}])
+      (routes/open-to-inner! application (:nav comms) :error {:status error-status})
       (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user legacy-state)]
       (analytics/track {:event-type :init-user
