@@ -21,7 +21,12 @@
     }
   });
 
-  .ui("group-item" {
-    margin-bottom: 15px;
+  .ui("collection", {
+    > .item {
+      margin-bottom: @card-padding;
+    }
+    > .item:last-child {
+      margin-bottom: 0;
+    }
   });
 });

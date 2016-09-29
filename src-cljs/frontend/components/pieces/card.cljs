@@ -3,7 +3,7 @@
             [om.core :as om :include-macros true]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.tabs :as tabs])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component html]]))
 
 (defn- exterior [content]
   (html
@@ -21,16 +21,6 @@
     [:.title title]
     (when action
       [:.action action])]))
-
-(defn- group [content]
-  (html
-   [:div {:data-component `group}
-    content]))
-
-(defn- group-item [content]
-  (html
-   [:div {:data-component `group-item}
-    content]))
 
 (defn basic
   "The most basic of cards. The given content appears on a card."
@@ -61,8 +51,11 @@
 (defn collection
   "A set of cards to layout together"
   ([cards]
-   (group (map group-item cards))))
-
+   (component
+    (html
+     [:div
+      (for [card cards]
+        [:div.item card])]))))
 
 (dc/do
   (defcard basic-card
@@ -104,4 +97,6 @@
      [(titled {:title "Card A"}
               "A bunch of words")
       (titled {:title "Card B"}
-              "A whole bunch of words")])))
+              "A whole bunch of words")])
+    {}
+    {:classname "background-gray"}))
