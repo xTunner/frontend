@@ -154,7 +154,6 @@
                                          (highlight-selected-step! step selected)
                                          (highlight-selected-container! %)))
             (.on   "mouseout"  #(reset-selected! step))
-            ;(.on   "click"     (partial scroll-to-step owner))
           (.append "title")
             (.text #(gstring/format "%s (%s:%s) - %s"
                                     (aget % "name")
@@ -205,9 +204,8 @@
         (.attr "class" class-name)
         (.call axis)))
 
-(defn draw-chart! [{:keys [parallel steps start_time stop_time] :as build}]
-  (let [root    (om/get-node owner "build-timings-svg")
-        x-scale (create-x-scale start_time stop_time)
+(defn draw-chart! [root {:keys [parallel steps start_time stop_time] :as build}]
+  (let [x-scale (create-x-scale start_time stop_time)
         chart   (create-root-svg root parallel)
         x-axis  (create-x-axis (duration start_time stop_time))
         y-axis  (create-y-axis parallel)]
@@ -221,11 +219,12 @@
     om/IDidMount
     (did-mount [_]
       (when build
-        (draw-chart! build))
+        (draw-chart! (om/get-node owner "build-timings-svg") build))
       (om/set-state! owner [:resize-key]
                      (disposable/register
                       (gevents/listen js/window "resize"
                                       #(draw-chart!
+                                        (om/get-node owner "build-timings-svg")
                                         (om/get-props owner)))
                       gevents/unlistenByKey)))
 
@@ -236,7 +235,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when build
-        (draw-chart! build)))
+        (draw-chart! (om/get-node owner "build-timings-svg") build)))
 
     om/IRenderState
     (render-state [_ _]
