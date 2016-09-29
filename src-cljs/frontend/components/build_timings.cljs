@@ -142,6 +142,9 @@
 
 (defn step-href
   [{:keys [vcs_url username reponame build_num] :as build} step]
+  ; Due to how our frontend.history/setup-link-dispatcher! intercepts links,
+  ; we cannot use fragments to navigate from an SVG. Using the fully qualified
+  ; path gets around this issue.
   (routes/v1-build-path (vcs-url/vcs-type vcs_url)
                         username
                         reponame

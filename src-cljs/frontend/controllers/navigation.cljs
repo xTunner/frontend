@@ -129,20 +129,6 @@
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args} state]
   (mlog "navigated-to :build with args " args)
-  (js/console.log (gstring/format "state: t|%s c|%s a|%s crumbs|%s"
-                                  (get-in state state/navigation-tab-path)
-                                  (get-in state state/current-container-path)
-                                  (get-in state state/current-action-id-path)
-                                  (get-in state state/crumbs-path)))
-  (js/console.log (gstring/format "args: v|%s p|%s bn|%s o|%s r|%s t|%s c|%s a|%s"
-                                  vcs_type
-                                  project-name
-                                  build-num
-                                  org
-                                  repo
-                                  tab
-                                  container-id
-                                  action-id))
   (if (and (= :build (state/current-view state))
            (not (state-utils/stale-current-build? state project-name build-num)))
     ;; page didn't change, just switched tabs
