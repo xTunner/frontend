@@ -180,8 +180,8 @@
    {:id "merge-pull-request"
     :name "Merge Pull Request"
     :description "Now you can merge pull requests directly from a
-   green build on CircleCI.  To use, look for the \"Merge PR\" button
-   on a build page whose branch has a PR open." } ])
+    green build on CircleCI.  To use, look for the \"Merge PR\" button
+    on a build page whose branch has a PR open." } ])
 
 (defn beta-programs [app owner]
   (reify
@@ -204,12 +204,11 @@
                                        (html
                                         [:div
                                          [:h1 "Beta Terms"]
-                                         [:p
-                                          "Our beta program is a way to engage with our most
-                                               thoughtful and dedicated users. We want to build the
-                                               best features with your help. To that end, in joining
-                                               the beta program you should be comfortable with these
-                                               expectations:"]
+                                         [:p "Our beta program is a way to engage with our
+                                              most thoughtful and dedicated users. We want
+                                              to build the best features with your help.
+                                              To that end, in joining the beta program you should be
+                                              comfortable with these expectations:"]
                                          [:ul
                                           [:li "You’ll find out about new features through e-mail and in-app messages"]
                                           [:li "Please give us feedback about new features when we release them"]
@@ -253,15 +252,19 @@
       (html
        [:div
         (card/titled {:title "Beta Program"}
-                     [:div
-                      [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
-                      [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
-                      (button/button
-                       {:on-click #(do
-                                     (set-beta-program-preference! owner false)
-                                     ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
-                        :primary? true}
-                       "Leave Beta Program")])
+                     (html
+                      [:div
+                       [:p "Thanks for being part of the beta program.
+                            We'll let you know when we release updates
+                            so you'll be the first to see new
+                            features!" ]
+                       [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
+                       (button/button
+                        {:on-click #(do
+                                      (set-beta-program-preference! owner false)
+                                      ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
+                         :primary? true}
+                        "Leave Beta Program")]))
         (om/build beta-programs app)]))))
 
 (defn beta-program [app owner]
@@ -270,12 +273,11 @@
     (render [_]
       (let []
         (html
-         [:div#settings-beta-program
-          [:div
-           (let [enrolled? (get-in app state/user-in-beta-path)]
-             (if enrolled?
-               (om/build beta-program-member app)
-               (om/build join-beta-program app)))]])))))
+         [:div
+          (let [enrolled? (get-in app state/user-in-beta-path)]
+            (if enrolled?
+              (om/build beta-program-member app)
+              (om/build join-beta-program app)))])))))
 
 (defn preferred-email-address [owner user]
   [:div.card
