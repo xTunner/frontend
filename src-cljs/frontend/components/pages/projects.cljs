@@ -160,4 +160,8 @@
       (om/build main-template/template
                 {:app app
                  :main-content (om/build main-content app)
-                 :header-actions (om/build add-project-button {:empty-state? false})}))))
+                 :header-actions (html
+                                  [:div
+                                   [:a {:href "#foo"} "#foo"]
+                                   [:a {:href "#bar"} "#bar"]
+                                   (om/build add-project-button {:empty-state? false})])}))))

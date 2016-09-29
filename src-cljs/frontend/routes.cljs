@@ -226,6 +226,7 @@
     (open-to-inner! nav-ch :projects {:vcs_type vcs_type
                                       :org org}))
   (defroute v1-projects "/projects" []
+    (js/console.debug "v1-projects")
     (open-to-inner! nav-ch :projects {}))
   (defroute v1-team "/team" []
     (open-to-inner! nav-ch :team {}))
