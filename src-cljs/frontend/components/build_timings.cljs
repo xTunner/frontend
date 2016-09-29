@@ -1,13 +1,16 @@
 (ns frontend.components.build-timings
-  (:require [om.core :as om :include-macros true]
-            [goog.string :as gstring]
+  (:require [frontend.async :as f.async]
+            [frontend.components.common :as common]
             [frontend.datetime :as datetime]
+            [frontend.disposable :as disposable]
             [frontend.models.build :as build]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
-            [frontend.components.common :as common]
+            [frontend.utils :as utils]
+            [goog.dom :as dom]
             [goog.events :as gevents]
-            [frontend.disposable :as disposable])
+            [goog.string :as gstring]
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (def padding-right 20)
@@ -127,7 +130,31 @@
       (.duration 200)
       (.attr "fill-opacity" 1)))
 
-(defn draw-containers! [x-scale step]
+(defn scroll-to-step [owner step]
+  (let [action-id (aget step "step")]
+    (when-let [action-node (dom/getElement (str "action-" action-id))]
+      (utils/scroll-to-build-action! action-node)
+      (f.async/raise! owner [:action-log-output-toggled
+                             {:index (aget step "index")
+                              :step (aget step "step")
+                              :value true}])
+      (om/set-state! owner :action-id-to-scroll-to nil))))
+
+(defn infos
+  [owner & args]
+  (let [container-index (aget (first args) "index")
+        action-id (aget (first args) "step")
+        to-raise [:action-log-output-toggled
+                  {:index container-index
+                   :step action-id
+                   :value true}]]
+    (js/console.log "PRE set value in state:" (om/get-state owner [:action-id-to-scroll-to]))
+    (js/console.log "raising:" to-raise)
+    (om/set-state! owner :action-id-to-scroll-to action-id)
+    (f.async/raise! owner to-raise)
+    (js/console.log "POST set/raise value in state:" (om/get-state owner [:action-id-to-scroll-to]))))
+
+(defn draw-containers! [owner x-scale step]
   (let [step-length         #(- (scaled-time x-scale % "end_time")
                                 (scaled-time x-scale % "start_time"))
         step-start-pos      #(x-scale (js/Date. (aget % "start_time")))
@@ -146,8 +173,13 @@
                                          (highlight-selected-step! step selected)
                                          (highlight-selected-container! %)))
             (.on   "mouseout"  #(reset-selected! step))
+            (.on   "click"     (partial scroll-to-step owner))
           (.append "title")
-            (.text #(gstring/format "%s (%s) - %s" (aget % "name") (aget % "index") (step-duration %))))))
+            (.text #(gstring/format "%s (%s:%s) - %s"
+                                    (aget % "name")
+                                    (aget % "index")
+                                    (aget % "step")
+                                    (step-duration %))))))
 
 (defn draw-step-start-line! [x-scale step]
   (let [step-start-position #(scaled-time x-scale % "start_time")]
@@ -165,7 +197,7 @@
                            container-bar-height
                            step-start-line-extension)))))
 
-(defn draw-steps! [x-scale chart steps]
+(defn draw-steps! [owner x-scale chart steps]
   (let [steps-group       (-> chart
                               (.append "g"))
 
@@ -175,7 +207,7 @@
                               (.enter)
                                 (.append "g"))]
     (draw-step-start-line! x-scale step)
-    (draw-containers! x-scale step)))
+    (draw-containers! owner x-scale step)))
 
 (defn draw-label! [chart number-of-containers]
   (let [[x-trans y-trans] [-30 (+ (/ (timings-height number-of-containers) 2) 40)]
@@ -192,27 +224,28 @@
         (.attr "class" class-name)
         (.call axis)))
 
-(defn draw-chart! [root {:keys [parallel steps start_time stop_time] :as build}]
-  (let [x-scale (create-x-scale start_time stop_time)
+(defn draw-chart! [owner {:keys [parallel steps start_time stop_time] :as build}]
+  (let [root    (om/get-node owner "build-timings-svg")
+        x-scale (create-x-scale start_time stop_time)
         chart   (create-root-svg root parallel)
         x-axis  (create-x-axis (duration start_time stop_time))
         y-axis  (create-y-axis parallel)]
     (draw-axis!  chart x-axis "x-axis")
     (draw-axis!  chart y-axis "y-axis")
     (draw-label! chart parallel)
-    (draw-steps! x-scale chart steps)))
+    (draw-steps! owner x-scale chart steps)))
 
 (defn build-timings-chart [build owner]
   (reify
     om/IDidMount
     (did-mount [_]
       (when build
-        (draw-chart! (om/get-node owner "build-timings-svg") build))
+        (draw-chart! owner build))
       (om/set-state! owner [:resize-key]
                      (disposable/register
                       (gevents/listen js/window "resize"
                                       #(draw-chart!
-                                        (om/get-node owner "build-timings-svg")
+                                        owner
                                         (om/get-props owner)))
                       gevents/unlistenByKey)))
 
@@ -223,7 +256,7 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (when build
-        (draw-chart! (om/get-node owner "build-timings-svg") build)))
+        (draw-chart! owner build)))
 
     om/IRenderState
     (render-state [_ _]

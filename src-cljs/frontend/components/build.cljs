@@ -419,6 +419,7 @@
   (get-in data [:current-build-data :container-data :current-container-id]))
 
 (defn- maybe-scroll-to-action! [app owner]
+  (js/console.log "mabye scrolling to:" (om/get-state owner :action-id-to-scroll-to) (om/get-state owner [:action-id-to-scroll-to]))
   (when-let [action-id (om/get-state owner :action-id-to-scroll-to)]
     (when-let [action-node (dom/getElement (str "action-" action-id))]
       (utils/scroll-to-build-action! action-node)
