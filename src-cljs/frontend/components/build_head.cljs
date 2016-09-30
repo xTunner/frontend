@@ -6,12 +6,14 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.models.test :as test-model]
@@ -118,9 +120,9 @@
                 (when (show-additional-containers-offer? plan build)
                   (new-additional-containers-offer plan build))])]
 
-              (when (seq builds)
-               [:div.queued-builds
-                (om/build builds-table/builds-table builds {:opts {:show-actions? true}})])]))))))
+            (when (seq builds)
+             [:div.queued-builds
+              (om/build builds-table/builds-table builds {:opts {:show-actions? true}})])]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -203,12 +205,12 @@
 (defn ssh-ad
   "Note about why you might want to SSH into a build and buttons to do so"
   [build owner]
-    [:div.ssh-ad
-     [:p
-      "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
+  [:div.ssh-ad
+   [:p
+    "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
        This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
        More information " [:a (open-ext {:href "https://circleci.com/docs/ssh-build/"}) "in our docs"] "."
-     (om/build ssh-buttons build)]])
+    (om/build ssh-buttons build)]])
 
 (defn ssh-command [node]
   (gstring/format "ssh -p %s %s@%s " (:port node) (:username node) (:public_ip_addr node)))
@@ -355,23 +357,38 @@
                                    (sort-by first))))
               [:div.loading-spinner common/spinner]))])))))
 
-(defn tests-ad [owner language]
-  [:div
-   "Help us provide better insight around your tests and failures. "
-   [:a (open-ext {:href (case language
-                          "Clojure" "https://circleci.com/docs/test-metadata/#test2junit-for-clojure-tests"
-                          "Ruby" "https://circleci.com/docs/test-metadata/#rspec"
-                          "JavaScript" "https://circleci.com/docs/test-metadata/#js"
-                          "Python" "https://circleci.com/docs/test-metadata#python"
-                          "Java" "https://circleci.com/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-                          "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
-                  :on-mouse-up #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
-                                                                     :properties {:language language}})})
-    "Set up your test runner to output in JUnit-style XML"] ", so we can:"
-   [:ul
-    [:li "Show a summary of all test failures across all containers"]
-    [:li "Identify your slowest tests"]
-    [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) "Balance tests between containers when using properly configured parallelization"]]]])
+(defn tests-ad [owner language build-succeeded?]
+  (let [junit-link (case language
+                         "Clojure" "https://circleci.com/docs/test-metadata/#test2junit-for-clojure-tests"
+                         "Ruby" "https://circleci.com/docs/test-metadata/#rspec"
+                         "JavaScript" "https://circleci.com/docs/test-metadata/#js"
+                         "Python" "https://circleci.com/docs/test-metadata#python"
+                         "Java" "https://circleci.com/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
+                         "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
+        track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
+                                                          :properties {:language language
+                                                                       :junit-ab-test (feature/ab-test-treatment :junit-ab-test)}})]  
+    (case (feature/ab-test-treatment :junit-ab-test)
+      :junit-button (button/link (open-ext {:href junit-link
+                                            :class "junit-link"
+                                            :primary? true
+                                            :on-click track-junit})
+                                 "Set Up Test Summary")
+      :junit-banner [:div.alert.iconified {:class "alert-info"}
+                     [:div [:img.alert-icon {:src (common/icon-path
+                                                   (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                     [:div
+                       "Help us provide better insight around your tests and failures. "
+                       [:a (open-ext {:href junit-link
+                                      :class "junit-link"
+                                      :on-mouse-up track-junit}) 
+                           "Set up your test runner to output in JUnit-style XML"] 
+                       ", so we can:"
+                       [:ul
+                         [:li "Show a summary of all test failures across all containers"]
+                         [:li "Identify your slowest tests"]
+                         [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) 
+                                  "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
   (html
@@ -470,14 +487,18 @@
                    (om/build-all build-tests-file-block bottom-map))))))]]]]))))
 
 (defn build-tests-list [{project :project
-                        {{:keys [tests exceptions]} :tests-data
-                         {build-status :status} :build
-                         :as data} :build-data}
+                         {{:keys [tests exceptions]} :tests-data
+                          {build-status :status} :build
+                          :as data} :build-data}
                         owner]
   (reify
     om/IWillMount
     (will-mount [_]
       (raise! owner [:tests-showed]))
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :set-up-junit-impression
+                                           :properties {:junit-ab-test (feature/ab-test-treatment :junit-ab-test)}})) 
     om/IRender
     (render [_]
       (let [source-hash (->> tests
@@ -503,7 +524,7 @@
             [:div.loading-spinner common/spinner]
             (list
              (when (> (count exceptions) 0)
-               [:div.alert.iconified {:class "alert-danger" }
+               [:div.alert.iconified {:class "alert-danger"}
                 [:div [:img.alert-icon {:src (common/icon-path
                                               "Info-Error")}]]
                 (om/build parse-errors exceptions)])
@@ -523,10 +544,7 @@
                                  (:classname slowest)
                                  (:name slowest)
                                  (:run_time slowest))]])]
-               :else [:div.alert.iconified {:class "alert-info" }
-                      [:div [:img.alert-icon {:src (common/icon-path
-                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
-                      (tests-ad owner (:language project))])))])))))
+               :else (tests-ad owner (:language project) build-succeeded?))))])))))
 
 (defn circle-yml-ad []
   [:div
@@ -932,33 +950,33 @@
                                     0))
                                (plan-model/max-parallelism plan))
                           "x")))]])]
-           (when (:usage_queued_at build)
-             [:div.summary-items
-              [:div.summary-item
-               [:span.summary-label "Queued: "]
-               [:span (queued-time build)]]])
+            (when (:usage_queued_at build)
+              [:div.summary-items
+               [:div.summary-item
+                [:span.summary-label "Queued: "]
+                [:span (queued-time build)]]])
 
-           [:div.summary-build-contents
-            [:div.summary-item
-             [:span.summary-label "Triggered by: "]
-             [:span (trigger-html build)]]
+            [:div.summary-build-contents
+             [:div.summary-item
+              [:span.summary-label "Triggered by: "]
+              [:span (trigger-html build)]]
 
-            (when (build-model/has-pull-requests? build)
-              (pull-requests {:urls (:pull_request_urls build)} owner))]]
+             (when (build-model/has-pull-requests? build)
+               (pull-requests {:urls (:pull_request_urls build)} owner))]]
 
-          (when-let  [canceler  (and  (=  (:status build) "canceled")
-                                      (:canceler build))]
-            [:div.summary-header
-             [:div.summary-items
-              [:div.summary-item
-               (build-canceler canceler)]]])
-          [:div.card
-           [:div.small-emphasis
-            (let [n (-> build :all_commit_details count)]
-              (if (:all_commit_details_truncated build)
-                (gstring/format "Last %d Commits" n)
-                (gstring/format "Commits (%d)" n)))]
-           (om/build build-commits build-data)]
-          [:div.build-head-wrapper
-           [:div.build-head
-            (om/build build-sub-head data)]]])))))
+           (when-let  [canceler  (and  (=  (:status build) "canceled")
+                                       (:canceler build))]
+             [:div.summary-header
+              [:div.summary-items
+               [:div.summary-item
+                (build-canceler canceler)]]])
+           [:div.card
+            [:div.small-emphasis
+             (let [n (-> build :all_commit_details count)]
+               (if (:all_commit_details_truncated build)
+                 (gstring/format "Last %d Commits" n)
+                 (gstring/format "Commits (%d)" n)))]
+            (om/build build-commits build-data)]
+           [:div.build-head-wrapper
+            [:div.build-head
+             (om/build build-sub-head data)]]])))))
