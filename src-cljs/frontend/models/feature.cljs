@@ -65,9 +65,8 @@
       (some? (get-in-cookie feature-name)) (enabled-in-cookie? feature-name))))
 
 (def ab-test-treatments
-  {:junit-button {true :junit-button
-                  false :junit-banner
-                  nil :junit-banner}})
+  {:junit-ab-test {true :junit-button
+                   false :junit-banner}})
 
 (defn ab-test-treatment [feature]
-  (get-in ab-test-treatments [feature (enabled? feature)]))
+  (get-in ab-test-treatments [feature (-> feature enabled? boolean)]))

@@ -367,27 +367,28 @@
                          "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
         track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
                                                           :properties {:language language
-                                                                       :ab-test-treatment (feature/ab-test-treatment :junit-button)}})]  
-    (if (feature/enabled? :junit-button)
-      (button/link (open-ext {:href junit-link
-                              :class "junit-link"
-                              :primary? true
-                              :on-click track-junit})
-                   "Set Up Test Summary")
-      [:div.alert.iconified {:class "alert-info"}
-       [:div [:img.alert-icon {:src (common/icon-path
-                                     (if build-succeeded? "Info-Info" "Info-Error"))}]]
-       [:div
-         "Help us provide better insight around your tests and failures. "
-         [:a (open-ext {:href junit-link
-                        :class "junit-link"
-                        :on-mouse-up track-junit}) 
-           "Set up your test runner to output in JUnit-style XML"] ", so we can:"
-         [:ul
-           [:li "Show a summary of all test failures across all containers"]
-           [:li "Identify your slowest tests"]
-           [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) 
-                    "Balance tests between containers when using properly configured parallelization"]]]]])))
+                                                                       :ab-test-treatment (feature/ab-test-treatment :junit-ab-test)}})]  
+    (case (feature/ab-test-treatment :junit-ab-test)
+      :junit-button (button/link (open-ext {:href junit-link
+                                            :class "junit-link"
+                                            :primary? true
+                                            :on-click track-junit})
+                                 "Set Up Test Summary")
+      :junit-banner [:div.alert.iconified {:class "alert-info"}
+                     [:div [:img.alert-icon {:src (common/icon-path
+                                                   (if build-succeeded? "Info-Info" "Info-Error"))}]]
+                     [:div
+                       "Help us provide better insight around your tests and failures. "
+                       [:a (open-ext {:href junit-link
+                                      :class "junit-link"
+                                      :on-mouse-up track-junit}) 
+                           "Set up your test runner to output in JUnit-style XML"] 
+                       ", so we can:"
+                       [:ul
+                         [:li "Show a summary of all test failures across all containers"]
+                         [:li "Identify your slowest tests"]
+                         [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) 
+                                  "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
   (html
@@ -497,7 +498,7 @@
     om/IDidMount
     (did-mount [_]
       ((om/get-shared owner :track-event) {:event-type :set-up-junit-impression
-                                           :properties {:ab-test-treatment (feature/ab-test-treatment :junit-button)}})) 
+                                           :properties {:ab-test-treatment (feature/ab-test-treatment :junit-ab-test)}})) 
     om/IRender
     (render [_]
       (let [source-hash (->> tests
