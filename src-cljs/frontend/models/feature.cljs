@@ -70,4 +70,4 @@
                   nil :junit-banner}})
 
 (defn ab-test-treatment [feature]
-  (get-in [feature (enabled? feature)] ab-test-treatments))
+  (get-in ab-test-treatments [feature (enabled? feature)]))
