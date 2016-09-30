@@ -367,9 +367,7 @@
                          "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
         track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
                                                           :properties {:language language
-                                                                       :ab-test-treatment (if (feature/enabled? :junit-button)
-                                                                                              :junit-button
-                                                                                              :junit-banner)}})]  
+                                                                       :ab-test-treatment (feature/ab-test-treatment :junit-button)}})]  
     (if (feature/enabled? :junit-button)
       (button/link (open-ext {:href junit-link
                               :class "junit-link"
@@ -499,9 +497,7 @@
     om/IDidMount
     (did-mount [_]
       ((om/get-shared owner :track-event) {:event-type :set-up-junit-impression
-                                           :properties {:ab-test-treatment (if (feature/enabled? :junit-button)
-                                                                               :junit-button
-                                                                               :junit-banner)}})) 
+                                           :properties {:ab-test-treatment (feature/ab-test-treatment :junit-button)}})) 
     om/IRender
     (render [_]
       (let [source-hash (->> tests
