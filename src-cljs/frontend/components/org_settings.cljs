@@ -793,20 +793,17 @@
                 (transfer-organizations-list bb-user-orgs selected-transfer-org owner))]
              [:div.row
               [:div.form-actions.span6
-               (forms/managed-button
-                [:button.btn.btn-danger.btn-large
-                 {:data-success-text "Transferred",
-                  :data-loading-text "Tranferring...",
-                  :type "submit",
-                  :class (when-not selected-transfer-org "disabled")
-                  :on-click #(raise! owner
-                                     [:transfer-plan-clicked
-                                      {:from-org {:org-name org-name
-                                                  :vcs-type vcs_type}
-                                       :to-org selected-transfer-org}])
-                  :data-bind
-                  "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
-                 "Transfer plan" (when selected-transfer-org-name (str " to " selected-transfer-org-name))])]]]])]]]))))
+               (button/managed-button
+                {:success-text "Transferred"
+                 :loading-text "Transferring..."
+                 :disabled? (not selected-transfer-org)
+                 :dangerous? true
+                 :on-click #(raise! owner
+                                    [:transfer-plan-clicked
+                                     {:from-org {:org-name org-name
+                                                 :vcs-type vcs_type}
+                                      :to-org selected-transfer-org}])}
+                "Transfer plan")]]]])]]]))))
 
 (defn organizations [app owner]
   (om/component

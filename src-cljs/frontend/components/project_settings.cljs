@@ -130,12 +130,13 @@
                 :primary? true}
                "Unfollow")
                " "
-               (forms/managed-button
-                 [:button.btn.btn-danger {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
-                                                                                               :project-id project-id}])
-                                          :data-loading-text "Stopping Builds..."
-                                          :data-success-text "Builds Stopped"}
-                  "Stop Building on CircleCI"]))
+               (button/managed-button
+                {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                      :project-id project-id}])
+                 :dangerous? true
+                 :loading-text "Stopping Builds..."
+                 :success-text "Builds Stopped"}
+                "Stop Building"))
              (list
               [:h2 "You're not following this repo"]
               [:p
@@ -1406,13 +1407,12 @@
                :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
             [:form.api
              (if (= (:heroku_deploy_user project) (:login user))
-               (forms/managed-button
-                [:input.btn.btn-danger.remove-user
-                 {:data-success-text "Saved",
-                  :data-loading-text "Saving...",
-                  :on-click #(raise! owner [:removed-heroku-deploy-user {:project-id project-id}])
-                  :value "Remove Heroku Deploy User",
-                  :type "submit"}])
+               (button/managed-button
+                {:dangerous? true
+                 :success-text "Saved"
+                 :loading-text "Saving..."
+                 :on-click #(raise! owner [:removed-heroku-deploy-user {:project-id project-id}])}
+                "Remove Deploy User")
 
                (button/managed-button
                 {:success-text "Saved"
