@@ -1,3 +1,87 @@
+experimental:
+  picard:
+    version: 0.1
+    executorType: docker
+    containerInfo:
+      - image: circleci/build-image:trusty-latest
+
+    stages:
+      build:
+        parallel: 1
+        workDir: /home/ubuntu/frontend
+        environment:
+          CIRCLE_TEST_REPORTS: /tmp/test-reports
+          CIRCLE_ARTIFACTS: /tmp/artifacts
+
+        steps:
+          - type: checkout
+          - type: add-ssh-keys
+          - type: shell
+            shell: /bin/bash
+            command: Xvfb :99 -screen 0 1280x1024x24
+            background: true
+
+          - type: cache-restore
+            key: v2-dependency-jars-{{ checksum "project.clj" }}
+          - type: cache-restore
+            key: v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+
+          - type: shell
+            name: download dependencies
+            command: |
+              source ~/.bashrc
+              set -exu
+              lein deps
+              npm install
+              node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
+              [[ -d resources/components ]] || node_modules/bower/bin/bower install
+
+          - type: cache-save
+            key: v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+            paths:
+              - /home/ubuntu/frontend/node_modules
+              - /home/ubuntu/.cache/bower
+
+          - type: shell
+            name: precompile assets
+            command: |
+              source ~/.bashrc
+              set -exu
+              set -o pipefail
+              lein cljsbuild once test production |& tee cljsbuild.log
+              ! grep WARNING < cljsbuild.log | grep -v "WARNING: Use of undeclared Var \(cljs-time\.format/constructor\|frontend\..\+/x.\+\)"
+              lein run -m frontend.tasks.http/precompile-assets
+
+          - type: cache-save
+            key: v2-dependency-jars-{{ checksum "project.clj" }}
+            paths:
+              - /home/ubuntu/.m2
+
+          - type: shell
+            name: run test
+            command: |
+              source ~/.bashrc
+              set -exu
+              git grep --color TODO | cat
+              lein test
+              lein doo chrome test once
+
+          - type: shell
+            name: deploy and trigger integration tests
+            command: |
+              source ~/.bashrc
+              set -ex
+
+              script/deploy.sh
+              if [[ "${CIRCLE_BRANCH}" == "master" ]]
+              then
+                  curl https://api.rollbar.com/api/1/deploy/ \
+                       --form access_token=$ROLLBAR_ACCESS_TOKEN \
+                       --form environment=production \
+                       --form revision=$CIRCLE_SHA1 \
+                       --form local_username=$CIRCLE_USERNAME
+              fi
+
 dependencies:
   cache_directories:
     - "~/.cache/bower"
@@ -25,12 +109,12 @@ deployment:
     branch: /(?!master).+/
     commands:
       - script/deploy.sh
+  track-master:
+    branch: master
+    commands:
+      - script/deploy.sh
       - curl https://api.rollbar.com/api/1/deploy/
           --form access_token=$ROLLBAR_ACCESS_TOKEN
           --form environment=production
           --form revision=$CIRCLE_SHA1
           --form local_username=$CIRCLE_USERNAME
-  track-master:
-    branch: master
-    commands:
-      - script/deploy.sh

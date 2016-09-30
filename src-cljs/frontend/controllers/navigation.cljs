@@ -132,7 +132,10 @@
   (if (and (= :build (state/current-view state))
            (not (state-utils/stale-current-build? state project-name build-num)))
     ;; page didn't change, just switched tabs
-    (assoc-in state state/navigation-tab-path tab)
+    (-> state
+        (assoc-in state/navigation-tab-path tab)
+        (assoc-in state/current-container-path container-id)
+        (assoc-in state/current-action-id-path action-id))
     ;; navigated to page, load everything
     (-> state
         state-utils/clear-page-state

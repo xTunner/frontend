@@ -189,7 +189,7 @@
     (render [_]
       (html
        [:div
-        [:h4.beta-programs "Current Beta Features"]
+        [:h3.subheading "Current Beta Features"]
         (card/collection
          (for [{:keys [name description]} available-betas]
           (card/titled {:title name} description)))]))))
@@ -218,7 +218,8 @@
                                                  (raise! owner [:preferences-updated {state/user-in-beta-key true}])
                                                  ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked})
                                                  (close-fn))}
-                                   "Accept")]})))
+                                   "Accept")]
+                        :close-fn close-fn})))
 
 (defn join-beta-program [app owner]
   (reify
@@ -261,6 +262,7 @@
                                       ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
                          :primary? true}
                         "Leave Beta Program")]))
+        [:hr]
         (om/build beta-programs app)]))))
 
 (defn beta-program [app owner]
