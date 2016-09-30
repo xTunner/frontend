@@ -12,7 +12,6 @@
     "uri.js": "1.10.2",
     "retina.js": "~1.0.1",
     "css-element-queries": "git://github.com/marcj/css-element-queries.git#6bf1d4a38791b1306b68afe7aca1adf5d7e0b675",
-    "viewport-units-buggyfill": "0.3.1",
     "marked": "0.3.2",
     "d3": "3.5.5",
     "svg-injector": "1.1.3",
