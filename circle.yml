@@ -73,7 +73,7 @@ experimental:
               set -ex
 
               script/deploy.sh
-              if [[ "${CIRCLE_BRANCH}" != "master" ]]
+              if [[ "${CIRCLE_BRANCH}" == "master" ]]
               then
                   curl https://api.rollbar.com/api/1/deploy/ \
                        --form access_token=$ROLLBAR_ACCESS_TOKEN \
@@ -109,12 +109,12 @@ deployment:
     branch: /(?!master).+/
     commands:
       - script/deploy.sh
+  track-master:
+    branch: master
+    commands:
+      - script/deploy.sh
       - curl https://api.rollbar.com/api/1/deploy/
           --form access_token=$ROLLBAR_ACCESS_TOKEN
           --form environment=production
           --form revision=$CIRCLE_SHA1
           --form local_username=$CIRCLE_USERNAME
-  track-master:
-    branch: master
-    commands:
-      - script/deploy.sh
