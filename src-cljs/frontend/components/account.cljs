@@ -218,7 +218,8 @@
                                                  (raise! owner [:preferences-updated {state/user-in-beta-key true}])
                                                  ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked})
                                                  (close-fn))}
-                                   "Accept")]})))
+                                   "Accept")]
+                        :close-fn close-fn})))
 
 (defn join-beta-program [app owner]
   (reify
