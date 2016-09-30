@@ -189,7 +189,7 @@
     (render [_]
       (html
        [:div
-        [:h4.beta-programs "Current Beta Features"]
+        [:h3.subheading "Current Beta Features"]
         (card/collection
          (for [{:keys [name description]} available-betas]
           (card/titled {:title name} description)))]))))
@@ -262,6 +262,7 @@
                                       ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
                          :primary? true}
                         "Leave Beta Program")]))
+        [:hr]
         (om/build beta-programs app)]))))
 
 (defn beta-program [app owner]
