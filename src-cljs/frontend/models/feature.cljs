@@ -63,3 +63,11 @@
       (ld/exists? feature-name) (ld/feature-on? feature-name)
       (contains? feature-manifest feature-name) (get feature-manifest feature-name)
       (some? (get-in-cookie feature-name)) (enabled-in-cookie? feature-name))))
+
+(def ab-test-treatments
+  {:junit-button {true :junit-button
+                  false :junit-banner
+                  nil :junit-banner}})
+
+(defn ab-test-treatment [feature]
+  (get-in [feature (enabled? feature)] ab-test-treatments))
