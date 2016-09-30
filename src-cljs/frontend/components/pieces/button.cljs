@@ -24,10 +24,12 @@
 (defn link
   "A link styled as a button.
 
-  :href         - The link target.
-  :on-click     - A function called when the link is clicked.
-  :primary?     - If true, the link appears as a primary button. (default: false)
-  :size         - The size of the button. One of #{:full :medium}. (default: :full)"
+  :class         - Additional CSS classes to be applied to the button.
+  :data-external - For links that shouldn't render in place. To be used with frontend.utils.html/open-ext.
+  :href          - The link target.
+  :on-click      - A function called when the link is clicked.
+  :primary?      - If true, the link appears as a primary button. (default: false)
+  :size          - The size of the button. One of #{:full :medium}. (default: :full)"
   [{:keys [class href on-click primary? size data-external] :or {size :full}} content]
   (component
     (html
