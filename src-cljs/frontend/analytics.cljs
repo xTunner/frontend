@@ -7,6 +7,11 @@
     "Returns a map of analytics properties to be used with events tracked within
     this component."))
 
+(extend-type default
+  Properties
+  (properties [_] {}))
+
+
 (defn event
   "Builds an analytics event for a component. c is the current component. event
   is an event. The event will be given the properties specified by the component
@@ -15,11 +20,8 @@
   [c event]
   (if-not c
     event
-    (let [component-properties (if (implements? Properties c)
-                                 (properties c)
-                                 {})]
-      (recur (om-next/parent c)
-             (update event :properties (partial merge component-properties))))))
+    (recur (om-next/parent c)
+           (update event :properties (partial merge (properties c))))))
 
 (defn track!
   "Track an analytics event for a component."
