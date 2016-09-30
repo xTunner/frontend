@@ -24,18 +24,22 @@
 (defn link
   "A link styled as a button.
 
-  :href         - The link target.
-  :on-click     - A function called when the link is clicked.
-  :primary?     - If true, the link appears as a primary button. (default: false)
-  :size         - The size of the button. One of #{:full :medium}. (default: :full)"
-  [{:keys [href on-click primary? size] :or {size :full}} content]
+  :class         - Additional CSS classes to be applied to the button.
+  :data-external - For links that shouldn't render in place. To be used with frontend.utils.html/open-ext.
+  :href          - The link target.
+  :on-click      - A function called when the link is clicked.
+  :primary?      - If true, the link appears as a primary button. (default: false)
+  :size          - The size of the button. One of #{:full :medium}. (default: :full)"
+  [{:keys [class href on-click primary? size data-external] :or {size :full}} content]
   (component
     (html
      [:a.exception
-      {:class (remove nil? [(when primary? "primary")
+      {:class (remove nil? [class
+                            (when primary? "primary")
                             (case size
                               :full nil
                               :medium "medium")])
+       :data-external data-external
        :href href
        :on-click on-click}
       content])))
@@ -50,8 +54,8 @@
   :loading-text - Text to display indicating that the button action is in progress. (default: \"...\")
   :success-text - Text to display indicating that the button action was successful. (default: \"Saved\")
   :failed-text  - Text to display indicating that the button action failed. (default: \"Failed\")"
-  [{:keys [primary? size failed-text success-text loading-text on-click]
-    :or {size :full}}
+  [{:keys [primary? disabled? size failed-text success-text loading-text on-click]
+    :or {size :full disabled? false}}
    content]
   (forms/managed-button
    ;; Normally, manually adding :data-component is not recommended. We
@@ -61,6 +65,7 @@
              :data-failed-text failed-text
              :data-success-text success-text
              :data-loading-text loading-text
+             :disabled disabled?
              :on-click on-click
              :class (remove nil? [(when primary? "primary")
                                   (case size

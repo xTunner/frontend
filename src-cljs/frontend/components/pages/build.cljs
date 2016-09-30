@@ -88,15 +88,9 @@
   (reify
     om/IRender
     (render [_]
-      (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
-            build (get-in data state/build-path)
-            build-id (build-model/id build)
-            build-num (:build_num build)
-            vcs-url (:vcs_url build)
+      (let [build (get-in data state/build-path)
             project (get-in data state/project-path)
-            plan (get-in data state/project-plan-path)
             user (get-in data state/user-path)
-            logged-in? (not (empty? user))
             can-trigger-builds? (project-model/can-trigger-builds? project)
             can-write-settings? (project-model/can-write-settings? project)]
         (html

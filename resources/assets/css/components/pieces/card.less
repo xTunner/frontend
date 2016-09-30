@@ -20,4 +20,13 @@
       line-height: 24px;
     }
   });
+
+  .ui("collection", {
+    > .item {
+      margin-bottom: @card-padding;
+    }
+    > .item:last-child {
+      margin-bottom: 0;
+    }
+  });
 });

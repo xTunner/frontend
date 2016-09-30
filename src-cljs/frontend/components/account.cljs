@@ -2,7 +2,10 @@
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project]
             [frontend.components.svg :refer [svg]]
@@ -17,7 +20,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [defrender html component element]]))
 
 (defn active-class-if-active [current-subpage subpage-link]
   (if (= current-subpage subpage-link)
@@ -94,14 +97,12 @@
               :value     heroku-api-key-input
               :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
             [:label {:placeholder "Add new key"}]
-            (forms/managed-button
-             [:input.btn
-              {:data-loading-text "Saving...",
-               :data-failed-text  "Failed to save Heroku key",
-               :data-success-text "Saved",
-               :type "submit"
-               :value "Save Heroku key"
-               :on-click submit-form!}])]]])))))
+            (button/managed-button
+             {:loading-text "Saving..."
+              :failed-text "Failed to save key"
+              :success-text "Saved"
+              :on-click submit-form!}
+             "Save Heroku key")]]])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -127,14 +128,12 @@
               :value     (str new-user-token)
               :on-change #(utils/edit-input owner state/new-user-token-path %)}]
             [:label {:placeholder "Token name"}]
-            (forms/managed-button
-             [:input.btn
-              {:data-loading-text "Creating...",
-               :data-failed-text  "Failed to add token",
-               :data-success-text "Created",
-               :on-click          #(create-token! new-user-token)
-               :type "submit"
-               :value "Create new token"}])]
+            (button/managed-button
+             {:loading-text "Creating..."
+              :failed-text "Failed to add token"
+              :success-text "Created"
+              :on-click #(create-token! new-user-token)}
+             "Create new token")]
 
           [:div.api-item
            (when (seq tokens)
@@ -163,87 +162,85 @@
 
 
 (def available-betas
-  [;; {:id "insights"
-   ;;  :name "Insights"
-   ;;  :description "Also this text. Insights is super fun for the whole family! "}
-   ])
+  [{:id "project-cache-clear-buttons"
+    :name "Clear Project Caches"
+    :description "The Clear Project Caches beta allows you to totally
+    clear the source and dependency caches for your projects.  These
+    options are available on the project settings under the \"Clear
+    Caches\" heading. This is different from the clear cache button
+    when retrying a build which only clears the cache for retried
+    build."}
 
-(defn set-beta-preference! [owner betas id value]
-  (raise! owner [:preferences-updated {state/user-betas-key
-                                       (if value
-                                         (conj (set betas) id)
-                                         (disj (set betas) id))}]))
+   {:id "projects-page"
+    :name "Projects Page"
+    :description "The Projects Page helps give a quick overview of
+    which projects you have building on CircleCI.  Access it by
+    clicking on the \"Projects\" item in the left navigation bar."}
+
+   {:id "merge-pull-request"
+    :name "Merge Pull Request"
+    :description "Now you can merge pull requests directly from a
+    green build on CircleCI.  To use, look for the \"Merge PR\" button
+    on a build page whose branch has a PR open." } ])
 
 (defn beta-programs [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [betas (get-in app state/user-betas-path)]
-        (html
-         [:div
-          [:h4.beta-programs "Available Beta Programs"]
-          (interpose
-           [:hr]
-           (map
-            (fn [program]
-              (let [participating? (contains? (set betas) (:id program))]
-                [:div
-                 [:h1 (:name program)
-                  (when participating?
-                    (om/build svg {:class "badge-enrolled"
-                                   :src (common/icon-path "Status-Passed")}))]
-                 [:p (:description program)]
-                 [:input.btn.btn-info
-                  {:on-click #(set-beta-preference! owner betas (:id program) (not participating?))
-                   :type "submit"
-                   :value (if participating?
-                            (str "Leave " (:name program) " Beta")
-                            (str "Join " (:name program) " Beta"))}]]))
-            available-betas))])))))
+      (html
+       [:div
+        [:h3.subheading "Current Beta Features"]
+        (card/collection
+         (for [{:keys [name description]} available-betas]
+          (card/titled {:title name} description)))]))))
 
-(defn set-beta-program-preference! [owner pref]
-  (raise! owner [:preferences-updated {state/user-in-beta-key pref}]))
+(defrender beta-terms-modal [{:keys [close-fn]} owner]
+  (component
+   (modal/modal-dialog {:title "Join Beta Program"
+                        :body (element :body
+                                       (html
+                                        [:div
+                                         [:h1 "Beta Terms"]
+                                         [:p "Our beta program is a way to engage with our
+                                              most thoughtful and dedicated users. We want
+                                              to build the best features with your help.
+                                              To that end, in joining the beta program you should be
+                                              comfortable with these expectations:"]
+                                         [:ul
+                                          [:li "You’ll find out about new features through e-mail and in-app messages"]
+                                          [:li "Please give us feedback about new features when we release them"]
+                                          [:li "Keep the private beta, private. Please no tweets, blogs, or other public
+                                                    posting, but we do encourage you to talk with your coworkers!"]]]))
+                        :actions [(button/button {:on-click close-fn} "Cancel")
+                                  (button/button
+                                   {:primary? true
+                                    :on-click #(do
+                                                 (raise! owner [:preferences-updated {state/user-in-beta-key true}])
+                                                 ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked})
+                                                 (close-fn))}
+                                   "Accept")]
+                        :close-fn close-fn})))
 
 (defn join-beta-program [app owner]
   (reify
     om/IRenderState
-    (render-state [_ {:keys [clicked-join?]}]
-      (html
-       [:div
-        [:p
-         "We invite you to join Inner Circle, our new beta program. As a
-         member of CircleCI’s Inner Circle you get exclusive access to new
-         features and settings before they are released publicly!"]
-        [:form
-         (if (not clicked-join?)
-           [:input.btn
-            {:on-click #(do
-                          (om/set-state! owner :clicked-join? true)
-                          ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
-             :type "submit"
-             :value "Join Beta Program"}]
-           [:div
-            [:div.card
-             [:h1 "Beta Terms"]
-             [:p
-              "Our beta program is a way to engage with our most
-               thoughtful and dedicated users. We want to build the
-               best features with your help. To that end, in joining
-               the beta program you should be comfortable with these
-               expectations:"]
-             [:ul
-              [:li "You’ll find out about new features through e-mail and in-app messages"]
-              [:li "Please give us feedback about new features when we release them"]
-              [:li "Keep the private beta, private. Please no tweets, blogs, or other public
-                    posting, but we do encourage you to talk with your
-                    coworkers!"]]]
-            [:p]
-            [:input.btn
-            {:on-click #(do
-                          (set-beta-program-preference! owner true)
-                          ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked}))
-             :type "submit"
-             :value "Accept"}]])]]))))
+    (render-state [_ {:keys [show-modal?]}]
+      (card/titled {:title "Beta Program"}
+                   (html
+                    [:div
+                     (when show-modal?
+                       (om/build beta-terms-modal {:close-fn #(om/set-state! owner :show-modal? false)}))
+                     [:p "We invite you to join Inner Circle, our new
+                          beta program. As a member of CircleCI’s
+                          Inner Circle you get exclusive access to new
+                          features and settings before they are
+                          released publicly!"]
+                     (button/button
+                      {:on-click #(do
+                                    (om/set-state! owner :show-modal? true)
+                                    ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
+                       :primary? true}
+                      "Join Beta Program")])))))
 
 (defn beta-program-member [app owner]
   (reify
@@ -251,20 +248,22 @@
     (render [_]
       (html
        [:div
-        [:div
-         [:p "Thanks for being part of the beta program.  We'll let you know when we release updates so you'll be the first to see new features!" ]
-         [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
-         [:form
-          [:input.btn.btn-danger
-           {:on-click #(do
-                         (set-beta-program-preference! owner false)
-                         ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
-            :type "submit"
-            :value "Leave Beta Program"}]]]
-        (comment
-          ;; uncomment to turn on beta sub programs
-          [:hr]
-          (om/build beta-programs app))]))))
+        (card/titled {:title "Beta Program"}
+                     (html
+                      [:div
+                       [:p "Thanks for being part of the beta program.
+                            We'll let you know when we release updates
+                            so you'll be the first to see new
+                            features!" ]
+                       [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
+                       (button/button
+                        {:on-click #(do
+                                      (raise! owner [:preferences-updated {state/user-in-beta-key false}])
+                                      ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
+                         :primary? true}
+                        "Leave Beta Program")]))
+        [:hr]
+        (om/build beta-programs app)]))))
 
 (defn beta-program [app owner]
   (reify
@@ -272,25 +271,11 @@
     (render [_]
       (let []
         (html
-         [:div#settings-beta-program
-          [:div
-           (let [message (get-in app state/general-message-path)
-                 enrolled? (get-in app state/user-in-beta-path)]
-             (list
-              [:legend "Beta Program"
-               (when (and enrolled? (not message))
-                 (om/build svg {:class "badge-enrolled"
-                                :src (common/icon-path "Status-Passed")}))]
-              (when message
-                [:div.alert.alert-success
-                 [:span
-                  (om/build svg {:src (if enrolled?
-                                        (common/icon-path "Status-Passed")
-                                        (common/icon-path "Info-Info"))})
-                  [:span message]]])))
-           (if (get-in app state/user-in-beta-path)
-             (om/build beta-program-member app)
-             (om/build join-beta-program app))]])))))
+         [:div
+          (let [enrolled? (get-in app state/user-in-beta-path)]
+            (if enrolled?
+              (om/build beta-program-member app)
+              (om/build join-beta-program app)))])))))
 
 (defn preferred-email-address [owner user]
   [:div.card

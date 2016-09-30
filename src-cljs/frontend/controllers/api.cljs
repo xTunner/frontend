@@ -249,10 +249,13 @@
         build-running? (not (build-model/finished? build))
         failed-containers (filter #(= :failed (container-model/status % build-running?))
                                   containers)
+        current-container-id (get-in state state/current-container-path)
+        failed-filter-valid? (some #(= current-container-id (container-model/id %)) failed-containers)
         controls-ch (:controls comms)]
     ;; set filter
     (when (and (not build-running?)
-               (seq failed-containers))
+               (seq failed-containers)
+               failed-filter-valid?)
       (put! controls-ch [:container-filter-changed {:new-filter :failed
                                                     :containers failed-containers}]))))
 
@@ -468,7 +471,9 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
-    (assoc-in state state/project-envvars-path resp)))
+    (assoc-in state
+              state/project-envvars-path
+              (into {} (map (juxt :name :value)) resp))))
 
 
 (defmethod api-event [:update-project-parallelism :success]
@@ -528,7 +533,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fnil conj []) resp)
+        (update-in state/project-envvars-path (fnil conj {}) [(:name resp) (:value resp)])
         (assoc-in (conj state/inputs-path :new-env-var-name) "")
         (assoc-in (conj state/inputs-path :new-env-var-value) "")
         (state/add-flash-notification "Environment variable added successfully."))))
@@ -543,9 +548,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fn [vars]
-                                                (remove #(= (:env-var-name context) (:name %))
-                                                        vars)))
+        (update-in state/project-envvars-path dissoc (:env-var-name context))
         (state/add-flash-notification (gstring/format "Environment variable '%s' deleted successfully."
                                                       (:env-var-name context))))))
 

@@ -4,6 +4,7 @@
             [clojure.string :as string]
             [frontend.analytics.track :as analytics-track]
             [frontend.async :refer [navigate! raise!]]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
@@ -335,15 +336,14 @@
   (reify
     om/IRender
     (render [_]
-      (html
-        (forms/managed-button
-          [:a.btn.btn-lg.btn-success
-           {:data-success-text "Success!"
-            :data-loading-text loading-text
-            :data-failed-text "Failed"
-            :on-click on-click-fn
-            :disabled disabled?}
-           text])))))
+      (button/managed-button
+       {:success-text "Success!"
+        :loading-text loading-text
+        :failed-text "Failed"
+        :on-click on-click-fn
+        :primary? true
+        :disabled? disabled?}
+       text))))
 
 (defn osx-plan [{:keys [title price container-count daily-build-count max-minutes support-level team-size
                         plan-id plan trial-starts-here? org-name vcs-type]} owner]
@@ -467,11 +467,11 @@
             vcs-type (get-in app state/org-vcs_type-path)
             plan (get-in app state/org-plan-path)
             selected-containers (or (get-in app state/selected-containers-path)
-                                     (pm/paid-linux-containers plan))
+                                    (if (config/enterprise?)
+                                      (pm/enterprise-containers plan)
+                                      (pm/paid-linux-containers plan)))
             login (get-in app state/user-login-path)
             view (get-in app state/current-view-path)
-            min-slider-val 0
-            max-slider-val (max 80 (* 2 (pm/paid-linux-containers plan)))
             selected-paid-containers (max 0 selected-containers)
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
@@ -479,7 +479,8 @@
             linux-container-cost (pm/linux-per-container-cost plan)
             piggiebacked? (pm/piggieback? plan org-name vcs-type)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
-                                    selected-paid-containers)]
+                                    selected-paid-containers)
+            containers-str (pluralize-no-val selected-containers "container")]
       (html
         [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
          [:div.main-content
@@ -490,64 +491,62 @@
                                    :type "text" :value selected-containers
                                    :on-change #(utils/edit-input owner state/selected-containers-path %
                                                                  :value (int (.. % -target -value)))}]
-             [:span.new-plan-total (str "paid " (pluralize-no-val selected-containers "container")
-                                        (when-not (config/enterprise?)
-                                          (str (when-not (zero? new-total) (str " for $" new-total "/month"))))
-                                        " + 1 free container")]]]
+             [:span.new-plan-total (if (config/enterprise?)
+                                    containers-str
+                                    (str "paid " containers-str
+                                         (str (when-not (zero? new-total) (str " for $" new-total "/month")))
+                                         " + 1 free container"))]]]
            [:form
-            [:div.container-picker
-             [:h1 "More containers means faster builds and lower queue times."]
-             [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]
-             (om/build shared/styled-range-slider
-                       (merge app {:start-val selected-containers :min-val min-slider-val :max-val max-slider-val}))]
+            (when-not (config/enterprise?)
+              [:div.container-picker
+               [:h1 "More containers means faster builds and lower queue times."]
+               [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]])
             [:fieldset
-             (if (and (pm/can-edit-plan? plan org-name vcs-type)
+             (if (and (not piggiebacked?)
                       (or (config/enterprise?)
                           (pm/stripe-customer? plan)))
-               (forms/managed-button
-                 (let [enterprise-text "Save changes"]
-                   (if (and (zero? new-total)
-                            (not (config/enterprise?))
-                            (not (zero? (pm/paid-linux-containers plan))))
-                     [:a.btn.btn-large.btn-primary.cancel
-                      {:href "#cancel"
-                       :disabled (when-not button-clickable? "disabled")
-                       :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
-                                                                       :properties {:repo nil}})}
-                      "Cancel plan"]
-                     [:button.btn.btn-large.btn-primary.upgrade
-                      {:data-success-text "Saved",
-                       :data-loading-text "Saving...",
-                       :type "submit"
-                       :disabled (when-not button-clickable? "disabled")
-                       :on-click (when button-clickable?
-                                   #(do
-                                      (raise! owner [:update-containers-clicked
-                                                     {:containers selected-paid-containers}])
-                                      (analytics-track/track-update-plan-clicked {:owner owner
-                                                                                  :new-plan selected-paid-containers
-                                                                                  :previous-plan (pm/paid-linux-containers plan)
-                                                                                  :plan-type pm/linux-plan-type
-                                                                                  :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))}
-                      (if (config/enterprise?)
-                        enterprise-text
-                        "Update plan")])))
+               (let [enterprise-text "Save changes"]
+                 (if (and (zero? new-total)
+                          (not (config/enterprise?))
+                          (not (zero? (pm/paid-linux-containers plan))))
+                   (button/link
+                    {:href "#cancel"
+                     :disabled? (not button-clickable?)
+                     :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
+                                                                     :properties {:repo nil}})}
+                    "Cancel plan")
+                   (button/managed-button
+                    {:success-text "Saved"
+                     :loading-text "Saving..."
+                     :disabled? (not button-clickable?)
+                     :on-click (when button-clickable?
+                                 #(do
+                                   (raise! owner [:update-containers-clicked
+                                                  {:containers selected-paid-containers}])
+                                   (analytics-track/track-update-plan-clicked {:owner owner
+                                                                               :new-plan selected-paid-containers
+                                                                               :previous-plan (pm/paid-linux-containers plan)
+                                                                               :plan-type pm/linux-plan-type
+                                                                               :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                     :primary? true}
+                    (if (config/enterprise?)
+                      enterprise-text
+                      "Update plan"))))
                (if-not checkout-loaded?
                  [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
-                 (forms/managed-button
-                  [:button.btn.btn-lg.btn-success
-                   {:data-success-text "Paid!",
-                    :data-loading-text "Paying...",
-                    :data-failed-text "Failed!",
-                    :disabled (when-not button-clickable? "disabled")
-                    :on-click (when button-clickable?
-                                #(raise! owner [:new-plan-clicked
-                                                {:containers selected-paid-containers
-                                                 :linux {:template (:id pm/default-template-properties)}
-                                                 :price new-total
-                                                 :description (str "$" new-total "/month, includes "
-                                                                   (pluralize selected-containers "container"))}]))}
-                   "Pay Now"])))
+                 (button/managed-button
+                  {:success-text "Paid!"
+                   :loading-text "Paying..."
+                   :failed-text "Failed!"
+                   :disabled? (not button-clickable?)
+                   :on-click (when button-clickable?
+                               #(raise! owner [:new-plan-clicked
+                                               {:containers selected-paid-containers
+                                                :linux {:template (:id pm/default-template-properties)}
+                                                :price new-total
+                                                :description (str "$" new-total "/month, includes "
+                                                                  (pluralize selected-containers "container"))}]))}
+                  "Pay Now")))
 
              (when-not (config/enterprise?)
                ;; TODO: Clean up conditional here - super nested and many interactions
@@ -597,7 +596,7 @@
   (get {:osx-pricing :osx
         :linux-pricing :linux} subpage :linux))
 
-(defn pricing [app owner]
+(defn cloud-pricing [app owner]
   (reify
     ;; I stole the stateful "did we load stripe checkout code" stuff
     ;; from the plan component above, but the billing-card component
@@ -718,15 +717,15 @@
                   (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
                [:div.row
                 [:div.form-actions.span7
-                 (forms/managed-button
-                  [:button.btn.btn-large.btn-primary
-                   {:data-success-text "Saved",
-                    :data-loading-text "Saving...",
-                    :type "submit",
-                    :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
-                                                                             :vcs-type org-vcs_type
-                                                                             :selected-piggieback-orgs selected-piggieback-orgs}])}
-                   "Also pay for these organizations"])]]]])]])))))
+                 (button/managed-button
+                  {:success-text "Saved"
+                   :loading-text "Saving..."
+                   :failed-text "Failed"
+                   :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
+                                                                            :vcs-type org-vcs_type
+                                                                            :selected-piggieback-orgs selected-piggieback-orgs}])
+                   :primary? true}
+                  "Pay for organizations")]]]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
   ;; split user-orgs from orgs and grab the first (and only) user-org
@@ -868,14 +867,13 @@
                 [:form.form-horizontal
                  [:div.control-group
                   [:div.control
-                   (forms/managed-button
-                     [:button#charge-button.btn.btn-primary.submit-button
-                      {:data-success-text "Success",
-                       :data-failed-text "Failed",
-                       :data-loading-text "Updating",
-                       :on-click #(raise! owner [:update-card-clicked])
-                       :type "submit"}
-                      "Change credit card"])]]]]]]))))))
+                   (button/managed-button
+                    {:success-text "Success"
+                     :failed-text "Failed"
+                     :loading-text "Updating"
+                     :on-click #(raise! owner [:update-card-clicked])
+                     :primary? true}
+                    "Change credit card")]]]]]]))))))
 
 ;; Render a friendly human-readable version of a Stripe discount coupon.
 ;; Stripe has a convention for this that does not seem to be documented, so we
@@ -967,13 +965,12 @@
                    :on-change #(utils/edit-input owner (conj state/inputs-path :extra_billing_data) %)}]]]
                [:div.control-group
                 [:div.controls
-                 (forms/managed-button
-                   [:button.btn.btn-primary
-                    {:data-success-text "Saved invoice data",
-                     :data-loading-text "Saving invoice data...",
-                     :on-click #(raise! owner [:save-invoice-data-clicked])
-                     :type "submit",}
-                    "Save invoice data"])]]]]]))))))
+                 (button/managed-button
+                  {:success-text "Saved invoice data"
+                   :loading-text "Saving invoice data..."
+                   :on-click #(raise! owner [:save-invoice-data-clicked])
+                   :primary? true}
+                  "Save invoice data")]]]]]))))))
 
 (defn- invoice-total
   [invoice]
@@ -1040,14 +1037,15 @@
                                    {:type :shrink
                                     :cell-fn
                                     (fn [invoice]
-                                      (forms/managed-button
-                                       [:button.btn.btn-mini.btn-primary
-                                        {:data-failed-text "Failed" ,
-                                         :data-success-text "Sent" ,
-                                         :data-loading-text "Sending..." ,
-                                         :on-click #(raise! owner [:resend-invoice-clicked
-                                                                   {:invoice-id (:id invoice)}])}
-                                        "Resend"]))}]})]]))))))
+                                      (button/managed-button
+                                       {:failed-text "Failed" ,
+                                        :success-text "Sent" ,
+                                        :loading-text "Sending..." ,
+                                        :on-click #(raise! owner [:resend-invoice-clicked
+                                                                  {:invoice-id (:id invoice)}])
+                                        :size :medium
+                                        :primary? true}
+                                       "Resend"))}]})]]))))))
 
 (defn billing [app owner]
   (reify
@@ -1221,6 +1219,7 @@
                                                      :_fragment "osx-pricing"})} "here"] "."]
            (when (pm/osx? plan)
              (let [plan-name (some-> plan :osx :template :name)]
+               [:div
                [:p
                 (cond
                   (pm/osx-trial-active? plan)
@@ -1234,7 +1233,8 @@
                                                             :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
                   :else
-                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]))]])))))
+                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]
+               (om/build osx-usage-table {:plan plan})]))]])))))
 
 (defn overview [app owner]
   (om/component
@@ -1256,23 +1256,26 @@
                                                     :vcs_type (:vcs_type plan-org)})}
             (:name plan-org) "'s plan."]])
         [:h2 "Linux"]
-        (cond (> containers 1)
-              [:p (str "All Linux builds will be distributed across " containers " containers.")]
-              (= containers 1)
-              [:div
-               [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
-               [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                                  :vcs_type (:vcs_type plan-org)
-                                                                  :_fragment "linux-pricing"})}
-                    "upgrading"]
-                (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
-              :else nil)
+        (if (config/enterprise?)
+          [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
+          (cond (> containers 1)
+                [:p (str "All Linux builds will be distributed across " containers " containers.")]
+                (= containers 1)
+                [:div
+                 [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
+                 [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                    :vcs_type (:vcs_type plan-org)
+                                                                    :_fragment "linux-pricing"})}
+                            "upgrading"]
+                  (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
+                :else nil))
         (when (> (pm/trial-containers plan) 0)
           [:p
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
-        (when (pm/linux? plan)
+        (when (and (not (config/enterprise?))
+                   (pm/linux? plan))
           [:p
            (str (pm/paid-linux-containers plan) " of these are paid")
            (if piggiebacked? ". "
@@ -1299,19 +1302,22 @@
           [:div
            [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
            (om/build osx-overview {:plan plan})])
-        (when (pm/osx? plan)
-          (om/build osx-usage-table {:plan plan}))]]))))
+        (when (config/enterprise?)
+          (om/build linux-plan {:app app})) ]]))))
 
-(def main-component
-  {:overview overview
-   :users users
-   :projects projects
-   :containers pricing
-   :osx-pricing pricing
-   :linux-pricing pricing
-   :organizations organizations
-   :billing billing
-   :cancel cancel})
+(defn main-component []
+  (merge
+    {:overview overview
+     :users users
+     :projects projects
+     :cancel cancel}
+    (if (config/enterprise?)
+      {:containers overview}
+      {:containers cloud-pricing
+       :osx-pricing cloud-pricing
+       :linux-pricing cloud-pricing
+       :organizations organizations
+       :billing billing})))
 
 (defn org-settings [app owner]
   (reify
@@ -1332,7 +1338,7 @@
                   [:div#subpage
                    [:div
                     (if (:authorized? org-data)
-                      (om/build (get main-component subpage projects) app)
+                      (om/build (get (main-component) subpage projects) app)
                       [:div (om/build non-admin-plan
                                       {:login (get-in app [:current-user :login])
                                        :org-name (get-in app state/org-settings-org-name-path)

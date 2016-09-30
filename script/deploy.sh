@@ -3,7 +3,8 @@
 set -ex
 
 # Only deploy for private repository builds.
-if [[ $CIRCLE_PROJECT_REPONAME != 'frontend-private' ]]; then
+if [[ $CIRCLE_PROJECT_REPONAME != 'frontend-private' ]] && [[ "$CIRCLE_REPOSITORY_URL" != *"circleci/frontend-private"* ]]
+then
   exit 0
 fi
 
@@ -16,6 +17,11 @@ echo $CIRCLE_SHA1 | aws s3 cp - s3://$DEPLOY_S3_BUCKET/branch/$CIRCLE_BRANCH
 
 # Keep open source master branch up to date.
 export KEYPATH="$HOME/.ssh/id_frontend"
+if [[ ! -e $KEYPATH ]]
+then
+	export KEYPATH="$HOME/.ssh/id_rsa_d992defa668e71b85c150df00c1a1991"
+fi
+
 public_repo=git@github.com:circleci/frontend
 if [[ $CIRCLE_BRANCH = master ]]; then
   git push $public_repo
@@ -25,6 +31,11 @@ fi
 
 # Check for matching branch name on backend or create one from production branch.
 export KEYPATH="$HOME/.ssh/id_frontend-private"
+if [[ ! -e $KEYPATH ]]
+then
+	export KEYPATH="$HOME/.ssh/id_rsa_92c84680aa0305b33d2c548ac97abe4d"
+fi
+
 backend_repo=git@github.com:circleci/circle
 heads_file=$(mktemp)
 git ls-remote --heads $backend_repo > $heads_file

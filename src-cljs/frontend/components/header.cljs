@@ -3,6 +3,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.license :as license]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.page-header :as page-header]
             [frontend.components.pieces.top-banner :as top-banner]
             [frontend.components.svg :as svg]
@@ -33,18 +34,20 @@
     om/IRender
     (render [_]
       (let [project-id (project-model/id project)
-            vcs-url (:vcs_url project)]
-        (forms/managed-button
-         [:button#follow-project-button.btn.btn-primary
-          {:on-click #(do
-                        (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
-                        ((om/get-shared owner :track-event) {:event-type :follow-project-clicked
-                                                             :properties {:vcs-url vcs-url
-                                                                          :component "header"}}))
-           :data-loading-text "Following..."
-           :data-failed-text (str "Failed to Follow " (vcs-url/repo-name vcs-url))
-           :data-success-text "Followed"}
-          "Follow " (vcs-url/repo-name vcs-url)])))))
+            vcs-url (:vcs_url project)
+            repo-name (vcs-url/repo-name vcs-url)]
+        (button/managed-button
+         {:on-click #(do
+                      (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                      ((om/get-shared owner :track-event) {:event-type :follow-project-clicked
+                                                           :properties {:vcs-url vcs-url
+                                                                        :component "header"}}))
+          :loading-text "Following..."
+          :failed-text "Failed to follow"
+          :success-text "Followed"
+          :primary? true
+          :size :medium}
+          "Follow Project")))))
 
 (defn show-settings-link? [app]
   (and
@@ -171,7 +174,7 @@
                    [:li (maybe-active nav-point :pricing)
                     [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
-                [:a.menu-item {:href "https://circleci.com/docs"}
+                [:a.menu-item {:href "https://circleci.com/docs/"}
                  (if (config/enterprise?)
                   "CircleCI Documentation"
                   "Documentation")]]
