@@ -28,7 +28,7 @@
   :on-click     - A function called when the link is clicked.
   :primary?     - If true, the link appears as a primary button. (default: false)
   :size         - The size of the button. One of #{:full :medium}. (default: :full)"
-  [{:keys [class href on-click primary? size] :or {size :full}} content]
+  [{:keys [class href on-click primary? size data-external] :or {size :full}} content]
   (component
     (html
      [:a.exception
@@ -37,6 +37,7 @@
                             (case size
                               :full nil
                               :medium "medium")])
+       :data-external data-external
        :href href
        :on-click on-click}
       content])))
