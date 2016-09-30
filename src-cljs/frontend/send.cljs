@@ -33,13 +33,13 @@
       (cond
         (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
            expr)
-        (api/get-orgs
-         (callback-api-chan
-          #(let [orgs (for [api-org %]
-                        {:organization/name (:login api-org)
-                         :organization/vcs-type (:vcs_type api-org)
-                         :organization/avatar-url (:avatar_url api-org)})]
-             (cb (rewrite {:app/current-user {:user/organizations (vec orgs)}}) ui-query))))
+        (let [ch (callback-api-chan
+                  #(let [orgs (for [api-org %]
+                                {:organization/name (:login api-org)
+                                 :organization/vcs-type (:vcs_type api-org)
+                                 :organization/avatar-url (:avatar_url api-org)})]
+                     (cb (rewrite {:app/current-user {:user/organizations (vec orgs)}}) ui-query)))]
+          (api/get-orgs ch :include-user? true))
 
         (and (om-util/ident? (om-util/join-key expr))
              (= :organization/by-vcs-type-and-name (first (om-util/join-key expr)))
