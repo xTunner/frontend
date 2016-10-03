@@ -19,7 +19,7 @@
   properties overriding parents'."
   [component evt]
   (if-not component
-    event
+    evt
     (recur (om-next/parent component)
            (update evt :properties #(merge (properties component) %)))))
 
