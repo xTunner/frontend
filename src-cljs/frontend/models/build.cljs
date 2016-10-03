@@ -167,14 +167,25 @@
        (#{"not_running" "running" "queued" "scheduled"} (:lifecycle build))))
 
 (defn has-pull-requests? [build]
-  (boolean (seq (:pull_request_urls build))))
+  (boolean (seq (:pull_requests build))))
+
+(defn is-latest-head-commit? [build]
+  (= (:vcs_revision build) (-> build
+                               :pull_requests
+                               last
+                               :head_sha)))
 
 (defn can-merge-at-least-one-pr? [build]
   (and (= "success" (:outcome build))
-       (has-pull-requests? build)))
+       (has-pull-requests? build)
+       (is-latest-head-commit? build)))
 
 (defn pull-request-numbers [build]
-  (map github/pull-request-number (:pull_request_urls build)))
+  (map (fn [pr]
+         (-> pr
+             :url
+             github/pull-request-number)) 
+       (:pull_requests build)))
 
 (defn current-user-ssh?
   "Whether the given user has SSH access to the build"
@@ -278,7 +289,8 @@
    :vcs-url   (:vcs_url build)
    :build-num (:build_num build)})
 
-(defn merge-args [build pull-request-number]
-  {:vcs-url (:vcs_url build)
-   :number pull-request-number
-   :sha (:vcs_revision build)})
+(defn merge-args [build]
+  (let [pull-request-number (last (pull-request-numbers build))]
+    {:vcs-url (:vcs_url build)
+     :number pull-request-number
+     :sha (:vcs_revision build)}))

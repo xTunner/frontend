@@ -73,30 +73,24 @@
       ((om/get-shared owner :track-event) {:event-type :merge-pr-impression}))
     om/IRender
     (render [_]
-      (let [pull-request-number (last (build-model/pull-request-numbers build))]
-        (html
-         [:div.merge-container
-          [:button {:on-click #(raise! owner [:merge-pull-request-clicked (build-model/merge-args build pull-request-number)])
-                    :data-toggle "tooltip"
-                    :data-placement "bottom"
-                    :title (str "Merge PR #" pull-request-number)}
-           [:i.octicon.octicon-git-merge.merge-icon]
-           "Merge PR"]])))))
+      (html
+       [:div.merge-container
+        [:button {:on-click #(do ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked})
+                                 (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
+                  :data-toggle "tooltip"
+                  :data-placement "bottom"
+                  :title (str "Merge PR #" (last (build-model/pull-request-numbers build)))}
+         [:i.octicon.octicon-git-merge.merge-icon]
+         "Merge PR"]]))))
 
 (defn- header-actions
   [data owner]
   (reify
     om/IRender
     (render [_]
-      (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
-            build (get-in data state/build-path)
-            build-id (build-model/id build)
-            build-num (:build_num build)
-            vcs-url (:vcs_url build)
+      (let [build (get-in data state/build-path)
             project (get-in data state/project-path)
-            plan (get-in data state/project-plan-path)
             user (get-in data state/user-path)
-            logged-in? (not (empty? user))
             can-trigger-builds? (project-model/can-trigger-builds? project)
             can-write-settings? (project-model/can-write-settings? project)]
         (html

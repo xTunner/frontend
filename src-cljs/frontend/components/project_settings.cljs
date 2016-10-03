@@ -506,8 +506,8 @@
                                                                                      :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
                                        :actions [(button/button {:on-click close-fn} "Cancel")
                                                  (button/managed-button {:failed-text "Failed"
-                                                                         :success-text "Added" 
-                                                                         :loading-text "Adding..." 
+                                                                         :success-text "Added"
+                                                                         :loading-text "Adding..."
                                                                          :primary? true
                                                                          :on-click #(raise! owner [:created-env-var
                                                                                                    {:project-id project-id
@@ -530,12 +530,12 @@
                                                   {:confirmation-question
                                                    (str
                                                     "Are you sure you want to remove the environment variable \""
-                                                    (:name env-var)
+                                                    (key env-var)
                                                     "\"?")
 
                                                    :remove-fn
                                                    #(raise! owner [:deleted-env-var {:project-id project-id
-                                                                                     :env-var-name (:name env-var)}])}))}]}))]))]])))))
+                                                                                     :env-var-name (key env-var)}])}))}]}))]))]])))))
 
 (defn advance [project-data owner]
   (reify

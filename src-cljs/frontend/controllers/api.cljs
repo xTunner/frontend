@@ -249,10 +249,14 @@
         build-running? (not (build-model/finished? build))
         failed-containers (filter #(= :failed (container-model/status % build-running?))
                                   containers)
+        {:keys [container-id]} (get-in state state/navigation-data-path)
+        failed-filter-valid? (or (not container-id)
+                                 (some #(= container-id (container-model/id %)) failed-containers))
         controls-ch (:controls comms)]
     ;; set filter
     (when (and (not build-running?)
-               (seq failed-containers))
+               (seq failed-containers)
+               failed-filter-valid?)
       (put! controls-ch [:container-filter-changed {:new-filter :failed
                                                     :containers failed-containers}]))))
 
@@ -545,9 +549,7 @@
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
     (-> state
-        (update-in state/project-envvars-path (fn [vars]
-                                                (remove #(= (:env-var-name context) (:name %))
-                                                        vars)))
+        (update-in state/project-envvars-path dissoc (:env-var-name context))
         (state/add-flash-notification (gstring/format "Environment variable '%s' deleted successfully."
                                                       (:env-var-name context))))))
 
@@ -990,10 +992,8 @@
 
 (defmethod api-event [:merge-pull-request :success]
   [target message status {:keys [resp]} state]
-  (analytics/track {:event-type :merge-pr-success})
   (state/add-flash-notification state (-> resp :message)))
 
 (defmethod api-event [:merge-pull-request :failed]
   [target message status {:keys [resp]} state]
-  (analytics/track {:event-type :merge-pr-failed})
   (state/add-flash-notification state (-> resp :message)))

@@ -53,7 +53,7 @@
                  [environ "1.0.1"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.0-2"]
+            [lein-figwheel "0.5.8"]
             [cider/cider-nrepl "0.11.0"]
             [lein-environ "1.0.1"]
             [lein-doo "0.1.6"]]
@@ -179,6 +179,6 @@
              :dev {:source-paths ["src-cljs" "test-cljs"]
                    :repl-options {:port 8230
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-                   :dependencies [[figwheel-sidecar "0.5.0-2"]
+                   :dependencies [[figwheel-sidecar "0.5.8"]
                                   [com.cemerick/piggieback "0.2.1"]
                                   [org.clojure/tools.nrepl "0.2.12"]]}})

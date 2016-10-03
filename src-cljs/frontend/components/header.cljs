@@ -43,10 +43,11 @@
                                                            :properties {:vcs-url vcs-url
                                                                         :component "header"}}))
           :loading-text "Following..."
-          :failed-text (str "Failed to Follow " repo-name)
+          :failed-text "Failed to follow"
           :success-text "Followed"
-          :primary? true}
-         (str "Follow " repo-name))))))
+          :primary? true
+          :size :medium}
+          "Follow Project")))))
 
 (defn show-settings-link? [app]
   (and
@@ -173,7 +174,7 @@
                    [:li (maybe-active nav-point :pricing)
                     [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
-                [:a.menu-item {:href "https://circleci.com/docs"}
+                [:a.menu-item {:href "https://circleci.com/docs/"}
                  (if (config/enterprise?)
                   "CircleCI Documentation"
                   "Documentation")]]
