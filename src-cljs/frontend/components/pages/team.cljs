@@ -269,6 +269,7 @@
             api-chan (om/get-shared owner [:comms :api])]
         (when (not= (:selected-org-ident (om/get-render-state owner))
                     selected-org-ident)
+          (api/get-org-members name vcs-type api-chan)
           (api/get-org-settings-normalized name vcs-type api-chan))))
 
     om/IRenderState
