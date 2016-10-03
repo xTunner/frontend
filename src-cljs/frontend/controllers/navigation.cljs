@@ -127,7 +127,10 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args} state]
+  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id]
+                                 :as args
+                                 :or {container-id 0}}
+   state]
   (mlog "navigated-to :build with args " args)
   (if (and (= :build (state/current-view state))
            (not (state-utils/stale-current-build? state project-name build-num)))
@@ -141,8 +144,8 @@
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
                state/navigation-data (assoc args
-                                       :show-aside-menu? false
-                                       :show-settings-link? false)
+                                            :show-aside-menu? false
+                                            :show-settings-link? false)
                :project-settings-project-name project-name)
         (assoc-in state/crumbs-path [{:type :dashboard}
                                      {:type :org :username org :vcs_type vcs_type}
@@ -155,9 +158,7 @@
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
             %))
-        (#(if container-id
-            (assoc-in % state/current-container-path container-id)
-            %))
+        (assoc-in state/current-container-path container-id)
         (#(if action-id
             (assoc-in % state/current-action-id-path action-id)
             %))

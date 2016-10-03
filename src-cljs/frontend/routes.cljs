@@ -32,9 +32,10 @@
         container-id (some-> container-num js/parseInt)
         tab (some-> tab-name keyword)
         action-id (some-> action-id js/parseInt)]
-    {:container-id (or container-id 0)
-     :tab tab
-     :action-id action-id}))
+    (merge {:tab tab
+            :action-id action-id}
+           (when container-id
+             {:container-id container-id}))))
 
 (defn build-page-fragment [tab container-id action-id]
   (cond
