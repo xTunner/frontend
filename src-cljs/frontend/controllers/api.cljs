@@ -249,8 +249,9 @@
         build-running? (not (build-model/finished? build))
         failed-containers (filter #(= :failed (container-model/status % build-running?))
                                   containers)
-        current-container-id (get-in state state/current-container-path)
-        failed-filter-valid? (some #(= current-container-id (container-model/id %)) failed-containers)
+        {:keys [container-id]} (get-in state state/navigation-data-path)
+        failed-filter-valid? (or (not container-id)
+                                 (some #(= container-id (container-model/id %)) failed-containers))
         controls-ch (:controls comms)]
     ;; set filter
     (when (and (not build-running?)
@@ -991,10 +992,8 @@
 
 (defmethod api-event [:merge-pull-request :success]
   [target message status {:keys [resp]} state]
-  (analytics/track {:event-type :merge-pr-success})
   (state/add-flash-notification state (-> resp :message)))
 
 (defmethod api-event [:merge-pull-request :failed]
   [target message status {:keys [resp]} state]
-  (analytics/track {:event-type :merge-pr-failed})
   (state/add-flash-notification state (-> resp :message)))
