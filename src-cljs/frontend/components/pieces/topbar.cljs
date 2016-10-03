@@ -29,19 +29,19 @@
       [:div.navs-container
         [:ul.nav-items.collapsing-nav
           [:li
-         [:a {:href "/dashboard"
+         [:a.has-icon {:href "/dashboard"
                    :aria-label "Builds"}
           [:i.material-icons "storage"] "Builds"]]
           [:li
-         [:a {:href "/build-insights"
+         [:a.has-icon {:href "/build-insights"
                    :aria-label "Insights"}
           [:i.material-icons "assessment"] "Insights"]]
           [:li
-         [:a {:href "/projects"
+         [:a.has-icon {:href "/projects"
                    :aria-label "Projects"}
           [:i.material-icons "book"] "Projects"]]
           [:li
-         [:a {:href "/team"
+         [:a.has-icon {:href "/team"
                    :aria-label "Teams"}
           [:i.material-icons "group"] "Teams"]]]
         [:ul.nav-items.nav-items-left.collapsing-nav
