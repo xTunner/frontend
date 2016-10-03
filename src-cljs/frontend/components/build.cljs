@@ -479,6 +479,7 @@
                                               :current-container-id (get-in app state/current-container-path)
                                               :project-data project-data
                                               :user user
+                                              :projects (get-in app state/projects-path)
                                               :scopes (get-in app state/project-scopes-path)
                                               :ssh-available? ssh-available?})
              [:div.card.col-sm-12

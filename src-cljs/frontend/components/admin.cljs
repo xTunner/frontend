@@ -118,7 +118,7 @@
                                   {:header "State"
                                    :cell-fn :state}]})))]))))
 
-(defn admin-builds-table [builds owner {:keys [tab]}]
+(defn admin-builds-table [data owner {:keys [tab]}]
   (reify
     om/IRender
     (render [_]
@@ -132,9 +132,9 @@
            "See more"]
           " / "
           [:a {:on-click #(raise! owner [:refresh-admin-build-list {:tab tab}])} "Refresh"]
-          (if (nil? builds)
+          (if (nil? (:builds data))
             [:div.loading-spinner common/spinner])]
-         (om/build builds-table/builds-table {:builds builds}
+         (om/build builds-table/builds-table data
                    {:opts {:show-actions? true
                            :show-parallelism? true
                            :show-branch? false
@@ -184,7 +184,8 @@
                                     :on-tab-click #(navigate! owner (routes/v1-admin-fleet-state-path {:_fragment (name %)}))})
             (if (#{:running-builds :queued-builds} current-tab)
               (om/build admin-builds-table
-                        (:recent-builds app)
+                        {:builds (:recent-builds app)
+                         :projects (get-in app state/projects-path)}
                         {:opts {:tab current-tab}})
               (om/build builders fleet-state))]])))))
 
