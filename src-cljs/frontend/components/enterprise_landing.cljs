@@ -1,9 +1,9 @@
 (ns frontend.components.enterprise-landing
   (:require [frontend.components.common :as common]
+            [frontend.components.footer :as footer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :refer [auth-url]]
-            [om.core :as om]
-            [frontend.components.footer :as footer])
+            [om.core :as om])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn enterprise-logo []
