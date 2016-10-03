@@ -1,12 +1,9 @@
 (ns frontend.components.test-insights
-  (:require [cljs.test :refer-macros [are deftest is testing]]
+  (:require [cljs.test :refer-macros [are deftest testing]]
             [frontend.components.insights :as insights]
             [frontend.models.test-project :as test-project]
-            [frontend.stefon :as stefon]
             [frontend.test-utils :as test-utils]
             [frontend.timer :as timer]
-            [frontend.utils :as utils :refer [sel sel1]]
-            [frontend.utils.docs :as doc-utils]
             [goog.dom :as gdom]
             [om.core :as om :include-macros true]))
 
