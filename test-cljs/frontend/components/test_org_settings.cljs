@@ -12,8 +12,7 @@
             [cljs.test :as test :refer-macros [deftest is testing]]))
 
 (deftest test-discount-rendering
-  (let [format (fn [plan] (.-innerText (goog.dom/htmlToDocumentFragment (hiccup->html-str (org-settings/format-discount plan)))))
-        fifty-percent {:discount { :coupon {
+  (let [fifty-percent {:discount { :coupon {
                                      :id                 "qJayHMis"
                                      :percent_off        1
                                      :amount_off         nil
@@ -51,12 +50,12 @@
                                      :metadata {},
                                      :object "coupon"}}}]
 
-    (is (=  "Your plan includes 1% off forever from coupon code qJayHMis"
-            (format fifty-percent)))
-    (is (=  "Your plan includes $100.00 off for 1 month from coupon code blog-post"
-            (format blog-post)))
-    (is (=  "Your plan includes 15% off for 3 months from coupon code sweety-high-discount"
-            (format sweety-high)))))
+    (is (=  [:p "Your plan includes 1% off forever from coupon code " [:strong "qJayHMis"]]
+            (org-settings/format-discount fifty-percent)))
+    (is (=  [:p "Your plan includes $100.00 off for 1 month from coupon code " [:strong "blog-post"]]
+            (org-settings/format-discount blog-post)))
+    (is (=  [:p "Your plan includes 15% off for 3 months from coupon code " [:strong "sweety-high-discount"]]
+            (org-settings/format-discount sweety-high)))))
 
 (deftest overview-page-works
   (let [overview #(test-utils/render-to-string (om/build org-settings/overview

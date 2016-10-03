@@ -371,7 +371,7 @@
                2))))
 
 
-(s/defn build-status-bar-chart [{:keys [plot-info builds :- [BarChartableBuild]] :as params} owner]
+(defn build-status-bar-chart [{:keys [plot-info builds] :as params} owner]
   (reify
     om/IDidMount
     (did-mount [_]
