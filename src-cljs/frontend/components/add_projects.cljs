@@ -436,11 +436,9 @@
                                           "Authorize Bitbucket")])
                           (build-next
                            org-picker/picker
-                           {:orgs (sequence
-                                   (comp
-                                    (filter (partial select-vcs-type selected-vcs-type))
-                                    (map legacy-org->modern-org))
-                                   orgs)
+                           {:orgs (->> orgs
+                                       (filter (partial select-vcs-type selected-vcs-type))
+                                       (map legacy-org->modern-org))
                             :selected-org (legacy-org->modern-org selected-org)
                             :on-org-click #(raise! owner [:selected-add-projects-org (modern-org->legacy-org %)])})
                           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
