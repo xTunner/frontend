@@ -99,9 +99,8 @@
 
 (defui ^:once OrgProjects
   static om-next/Ident
-  (ident [this props]
-    (let [{:keys [organization/vcs-type organization/name]} props]
-      [:organization/by-vcs-type-and-name {:organization/vcs-type vcs-type :organization/name name}]))
+  (ident [this {:keys [organization/vcs-type organization/name]}]
+    [:organization/by-vcs-type-and-name {:organization/vcs-type vcs-type :organization/name name}])
   static om-next/IQuery
   (query [this]
     '[:organization/vcs-type
