@@ -13,17 +13,17 @@
 
 
 (defn event
-  "Builds an analytics event for a component. c is the current component. event
-  is an event. The event will be given the properties specified by the component
-  and by components up its parent chain, with children's properties overriding
-  parents'."
-  [c event]
-  (if-not c
+  "Builds a complete analytics event for a component. component is the current
+  component. evt is an event. The event will be given the properties specified
+  by the component and by components up its parent chain, with children's
+  properties overriding parents'."
+  [component evt]
+  (if-not component
     event
-    (recur (om-next/parent c)
-           (update event :properties (partial merge (properties c))))))
+    (recur (om-next/parent component)
+           (update evt :properties #(merge (properties component) %)))))
 
 (defn track!
   "Track an analytics event for a component."
-  [c e]
-  (analytics/track (event c e)))
+  [component evt]
+  (analytics/track (event component evt)))
