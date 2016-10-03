@@ -512,9 +512,10 @@
                    (button/link
                     {:href "#cancel"
                      :disabled? (not button-clickable?)
+                     :kind :dangerous
                      :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
                                                                      :properties {:repo nil}})}
-                    "Cancel plan")
+                    "Cancel Plan")
                    (button/managed-button
                     {:success-text "Saved"
                      :loading-text "Saving..."
@@ -797,7 +798,7 @@
                 {:success-text "Transferred"
                  :loading-text "Transferring..."
                  :disabled? (not selected-transfer-org)
-                 :kind :dangerous
+                 :kind :primary
                  :on-click #(raise! owner
                                     [:transfer-plan-clicked
                                      {:from-org {:org-name org-name
@@ -1112,15 +1113,17 @@
                 (list
                  (when (om/get-state owner [:show-errors?])
                    [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
-                 [:button {:on-click #(om/set-state! owner [:show-errors?] true)}
-                  "Cancel Plan"])
-                (forms/managed-button
-                 [:button {:data-spinner "true"
-                           :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                           :vcs_type vcs_type
-                                                                           :cancel-reasons reasons
-                                                                           :cancel-notes notes}])}
-                  "Cancel Plan"])))]]])))))
+                 (button/button
+                  {:on-click #(om/set-state! owner [:show-errors?] true)
+                   :kind :dangerous}
+                  "Cancel Plan"))
+                (button/managed-button
+                 {:kind :dangerous
+                  :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
+                                                                  :vcs_type vcs_type
+                                                                  :cancel-reasons reasons
+                                                                  :cancel-notes notes}])}
+                 "Cancel Plan")))]]])))))
 
 (defn progress-bar [{:keys [max value]} owner]
   (reify

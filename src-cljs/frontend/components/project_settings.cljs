@@ -1408,7 +1408,7 @@
             [:form.api
              (if (= (:heroku_deploy_user project) (:login user))
                (button/managed-button
-                {:kind :dangerous
+                {:kind :primary
                  :success-text "Saved"
                  :loading-text "Saving..."
                  :on-click #(raise! owner [:removed-heroku-deploy-user {:project-id project-id}])}
