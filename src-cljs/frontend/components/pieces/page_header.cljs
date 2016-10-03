@@ -159,11 +159,11 @@
      {:width "992px"}
      (om/build header {:crumbs crumbs
                        :actions [(button/button {} "Do Something")
-                                 (button/button {:primary? true} "Do Something")]})))
+                                 (button/button {:kind :primary} "Do Something")]})))
 
   (defcard header-with-actions-narrow
     (iframe
      {:width "991px"}
      (om/build header {:crumbs crumbs
                        :actions [(button/button {} "Do Something")
-                                 (button/button {:primary? true} "Do Something")]}))))
+                                 (button/button {:kind :primary} "Do Something")]}))))

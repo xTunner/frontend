@@ -61,7 +61,7 @@
                                         ;;
                                         ;; see frontend.components.app/app*
                                         (.stopPropagation event))
-                            :primary? true}
+                            :kind :primary}
                            "Switch user")]]]]]))))
 
 (defn current-seat-usage [active-users total-seats]
@@ -360,7 +360,7 @@
           (button/button {:on-click #(raise! owner [:system-setting-changed
                                                     (assoc item
                                                            :value (get-field-value))])
-                          :primary? true}
+                          :kind :primary}
                          (if-not (:updating item)
                            "Save"
                            common/spinner))])))))

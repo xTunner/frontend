@@ -55,5 +55,5 @@
                              (important "cake")
                              " is a lie"])
                   :subheading "Let's add some."
-                  :action (button/button {:primary? true}
+                  :action (button/button {:kind :primary}
                                          "Add Cake")})))

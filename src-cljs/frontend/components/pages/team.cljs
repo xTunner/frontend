@@ -223,7 +223,7 @@
                                                                                                                        :vcs_type (:vcs_type selected-org)
                                                                                                                        :org-name (:name selected-org)}])
                                                                                  (close-fn))
-                                                                    :primary? true
+                                                                    :kind :primary
                                                                     :disabled? (zero? count-selected)}
                                                                    (invite-button-text count-selected))]
                                   :close-fn close-fn})))])))))
@@ -281,7 +281,7 @@
                            nil)])
                 :action [:div
                          (button/button
-                          {:primary? true
+                          {:kind :primary
                            :size :medium
                            :on-click #(do
                                         (om/set-state! owner :show-invite-modal? true)

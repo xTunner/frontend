@@ -341,7 +341,7 @@
         :loading-text loading-text
         :failed-text "Failed"
         :on-click on-click-fn
-        :primary? true
+        :kind :primary
         :disabled? disabled?}
        text))))
 
@@ -528,7 +528,7 @@
                                                                                :previous-plan (pm/paid-linux-containers plan)
                                                                                :plan-type pm/linux-plan-type
                                                                                :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
-                     :primary? true}
+                     :kind :primary}
                     (if (config/enterprise?)
                       enterprise-text
                       "Update plan"))))
@@ -724,7 +724,7 @@
                    :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
                                                                             :vcs-type org-vcs_type
                                                                             :selected-piggieback-orgs selected-piggieback-orgs}])
-                   :primary? true}
+                   :kind :primary}
                   "Pay for organizations")]]]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
@@ -797,7 +797,7 @@
                 {:success-text "Transferred"
                  :loading-text "Transferring..."
                  :disabled? (not selected-transfer-org)
-                 :dangerous? true
+                 :kind :dangerous
                  :on-click #(raise! owner
                                     [:transfer-plan-clicked
                                      {:from-org {:org-name org-name
@@ -869,7 +869,7 @@
                      :failed-text "Failed"
                      :loading-text "Updating"
                      :on-click #(raise! owner [:update-card-clicked])
-                     :primary? true}
+                     :kind :primary}
                     "Change credit card")]]]]]]))))))
 
 ;; Render a friendly human-readable version of a Stripe discount coupon.
@@ -966,7 +966,7 @@
                   {:success-text "Saved invoice data"
                    :loading-text "Saving invoice data..."
                    :on-click #(raise! owner [:save-invoice-data-clicked])
-                   :primary? true}
+                   :kind :primary}
                   "Save invoice data")]]]]]))))))
 
 (defn- invoice-total
@@ -1041,7 +1041,7 @@
                                         :on-click #(raise! owner [:resend-invoice-clicked
                                                                   {:invoice-id (:id invoice)}])
                                         :size :medium
-                                        :primary? true}
+                                        :kind :primary}
                                        "Resend"))}]})]]))))))
 
 (defn billing [app owner]

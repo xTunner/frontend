@@ -154,7 +154,7 @@
         (html
          [:div
           [:div {:style {:margin "10px 0"}}
-           (button/button {:primary? true
+           (button/button {:kind :primary
                            :on-click #(swap! state update :counter inc)}
                           "Show Notification")]
           [:div {:style {:overflow "hidden"}}
