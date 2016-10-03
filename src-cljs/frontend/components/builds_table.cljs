@@ -190,20 +190,20 @@
                                                                              :org (:username build)}})}
             (build-model/github-revision build)])]]]]))
 
-(defn builds-table [{:keys [builds projects]}
-                    owner
-                    {:keys [show-actions? show-branch? show-project?]
-                     :or {show-branch? true
-                          show-project? true}}]
-  (reify
-    om/IDisplayName (display-name [_] "Builds Table V2")
-    om/IRender
-    (render [_]
-      (html
-        [:div.container-fluid
-         (map #(build-row {:build %
-                           :project (get projects (:vcs_url %))}
-                          owner {:show-actions? show-actions?
-                                 :show-branch? show-branch?
-                                 :show-project? show-project?})
-              builds)]))))
+(defn builds-table [data owner {:keys [show-actions? show-branch? show-project?]
+                                :or {show-branch? true
+                                     show-project? true}}]
+  (let [{:keys [builds projects]} data
+        projects-by-vcs_url (project-model/by-vcs_url projects)]
+    (reify
+      om/IDisplayName (display-name [_] "Builds Table V2")
+      om/IRender
+      (render [_]
+        (html
+         [:div.container-fluid
+          (map #(build-row {:build %
+                            :project (get projects-by-vcs_url (:vcs_url %))}
+                           owner {:show-actions? show-actions?
+                                  :show-branch? show-branch?
+                                  :show-project? show-project?})
+               builds)])))))

@@ -52,7 +52,7 @@
 
                 (om/build builds-table/builds-table
                           {:builds builds
-                           :projects (project-model/by-vcs_url projects)}
+                           :projects projects}
                           {:opts {:show-actions? true
                                   :show-branch? (not (:branch nav-data))
                                   :show-project? (not (:repo nav-data))}})
