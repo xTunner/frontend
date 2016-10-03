@@ -195,3 +195,9 @@
 (defn parallelism [project]
   (or (:parallel project)
       1))
+
+(defn by-vcs_url [projects]
+  (->> projects
+       (map (fn [p]
+              [(:vcs_url p) p]))
+       (into {})))
