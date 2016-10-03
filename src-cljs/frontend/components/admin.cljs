@@ -134,7 +134,7 @@
           [:a {:on-click #(raise! owner [:refresh-admin-build-list {:tab tab}])} "Refresh"]
           (if (nil? builds)
             [:div.loading-spinner common/spinner])]
-         (om/build builds-table/builds-table builds
+         (om/build builds-table/builds-table {:builds builds}
                    {:opts {:show-actions? true
                            :show-parallelism? true
                            :show-branch? false

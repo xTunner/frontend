@@ -184,9 +184,9 @@
                                                                              :org (:username build)}})}
             (build-model/github-revision build)])]]]]))
 
-(defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
-                                  :or {show-branch? true
-                                       show-project? true}}]
+(defn builds-table [{:keys [builds]} owner {:keys [show-actions? show-branch? show-project?]
+                                            :or {show-branch? true
+                                                 show-project? true}}]
   (reify
     om/IDisplayName (display-name [_] "Builds Table V2")
     om/IRender

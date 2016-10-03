@@ -122,7 +122,7 @@
 
             (when (seq builds)
              [:div.queued-builds
-              (om/build builds-table/builds-table builds {:opts {:show-actions? true}})])]))))))
+              (om/build builds-table/builds-table {:builds builds} {:opts {:show-actions? true}})])]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
