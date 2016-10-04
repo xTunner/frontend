@@ -1523,10 +1523,26 @@
     (api/set-project-code-signing-keys project-name vcs-type file-content file-name password description api-ch uuid on-success)))
 
 (defmethod post-control-event! :delete-p12
-  [_ _ {:keys [project-name vcs-type id]} previous-state current-state comms]
+  [_ _ {:keys [project-name vcs-type id on-success]} previous-state current-state comms]
   (let [uuid frontend.async/*uuid*
         api-ch (:api comms)]
-    (api/delete-project-code-signing-key project-name vcs-type id api-ch uuid)))
+    (api/delete-project-code-signing-key project-name vcs-type id api-ch on-success uuid)))
+
+(defmethod post-control-event! :create-jira-issue
+  [_ _ {:keys [project-name vcs-type jira-issue-data on-success]} previous-state current-state comms]
+  (let [uuid frontend.async/*uuid*
+        api-ch (:api comms)]
+    (api/create-jira-issue project-name vcs-type jira-issue-data api-ch uuid on-success)))
+
+(defmethod post-control-event! :load-jira-projects
+  [_ _ {:keys [project-name vcs-type]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
+    (api/get-jira-projects project-name vcs-type api-ch)))
+
+(defmethod post-control-event! :load-jira-issue-types
+  [_ _ {:keys [project-name vcs-type]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
+    (api/get-jira-issue-types project-name vcs-type api-ch)))
 
 (defmethod post-control-event! :project-insights-branch-changed
   [target message {:keys [new-branch]} _ current-state comms]
