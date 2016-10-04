@@ -124,7 +124,7 @@
       (card/titled {:title (html [:span name vcs-icon])}
                    (if projects
                      (if-let [projects-with-followers
-                              (seq (filter #(< 0 (count (:project/followers %))) projects))]
+                              (seq (filter #(seq (:project/followers %)) projects))]
                        (table projects-with-followers plan)
                        (no-projects-available name))
                      (html [:div.loading-spinner common/spinner]))))))
