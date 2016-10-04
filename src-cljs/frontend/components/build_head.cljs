@@ -90,7 +90,7 @@
 
     om/IRender
     (render [_]
-      (let [{:keys [build builds]} data
+      (let [{:keys [build builds projects]} data
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
             plan (:plan data)]
@@ -122,7 +122,10 @@
 
             (when (seq builds)
              [:div.queued-builds
-              (om/build builds-table/builds-table builds {:opts {:show-actions? true}})])]))))))
+              (om/build builds-table/builds-table
+                        {:builds builds
+                         :projects projects}
+                        {:opts {:show-actions? true}})])]))))))
 
 (defn linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -720,6 +723,7 @@
             run-queued? (build-model/in-run-queue? build)
             usage-queued? (build-model/in-usage-queue? build)
             project (get-in data [:project-data :project])
+            projects (get-in data state/projects-path)
             plan (get-in data [:project-data :plan])
             config-data (:config-data build-data)
             build-params (:build_parameters build)]
@@ -802,7 +806,8 @@
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
-                                                 :plan plan})
+                                                 :plan plan
+                                                 :projects projects})
              :ssh-info (om/build build-ssh {:build build :user user})
 
              ;; avoid errors if a nonexistent tab is typed in the URL

@@ -122,6 +122,7 @@
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
            (when (and (feature/enabled? :merge-pull-request)
+                      can-write-settings?
                       (build-model/can-merge-at-least-one-pr? build))
              (om/build merge-actions {:build build}))
            (when can-write-settings?
