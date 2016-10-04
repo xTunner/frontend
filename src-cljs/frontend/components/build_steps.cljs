@@ -126,8 +126,8 @@
                                     header-classes)
                            ;; TODO: figure out what to put here
                            :on-click #(raise! owner [:action-log-output-toggled
-                                                     {:index (:index @action)
-                                                      :step (:step @action)
+                                                     {:index (:index action)
+                                                      :step (:step action)
                                                       :value (not visible?)}])}
               [:div.button {:class (when (action-model/has-content? action)
                                      header-classes)}
