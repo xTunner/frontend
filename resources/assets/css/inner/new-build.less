@@ -120,12 +120,16 @@
 
       width: @container-width - @container-height - @button-right-margin;
       height: @container-height;
-      border-radius: 3px 0 0 3px;
+      border-radius: 3px;
 
       margin: 0 @button-right-margin 0 0;
       padding: 0;
       text-align: inherit;
       font-size: 14px;
+
+      &.rebuild {
+        border-radius: 3px 0 0 3px;
+      }
 
       > .rebuild-icon, > .merge-icon {
         margin: 6px 10px;
