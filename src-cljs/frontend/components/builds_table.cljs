@@ -194,7 +194,10 @@
                                 :or {show-branch? true
                                      show-project? true}}]
   (let [{:keys [builds projects]} data
-        projects-by-vcs_url (project-model/by-vcs_url projects)]
+        projects-by-vcs_url (->> projects
+                                 (map (fn [p]
+                                        [(:vcs_url p) p]))
+                                 (into {}))]
     (reify
       om/IDisplayName (display-name [_] "Builds Table V2")
       om/IRender
