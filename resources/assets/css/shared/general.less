@@ -286,8 +286,32 @@ button [spinner], button [data-spinner]{
 }
 
 
-.hidden-sm-up {
-  @media (min-width: @screen-sm-min) {
-    display: none!important;
+@media (max-width: 543px) {
+  .hidden-xs-down {
+    display: none !important;
+  }
+}
+
+@media (min-width: 544px) {
+  .hidden-sm-up {
+    display: none !important;
+  }
+}
+
+@media (max-width: @screen-xs-max) {
+  .hidden-sm-down {
+    display: none !important;
+  }
+}
+
+@media (min-width: @screen-sm-min) {
+  .hidden-md-up {
+    display: none !important;
+  }
+}
+
+@media (max-width: @screen-sm-max) {
+  .hidden-md-down {
+    display: none !important;
   }
 }
