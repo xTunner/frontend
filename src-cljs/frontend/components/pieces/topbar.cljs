@@ -23,27 +23,30 @@
   (component
     (html
      [:div
-      [:a.logomark {:href "/dashboard"
-                    :aria-label "Dashboard"}
-       (common/ico :logo)]
       [:div.navs-container
-        [:ul.nav-items.collapsing-nav
-          [:li
-            [:a.has-icon {:href "/dashboard"
-                          :aria-label "Builds"}
-              [:i.material-icons "storage"] "Builds"]]
-          [:li
-            [:a.has-icon {:href "/build-insights"
-                          :aria-label "Insights"}
-              [:i.material-icons "assessment"] "Insights"]]
-          [:li
-            [:a.has-icon {:href "/projects"
-                          :aria-label "Projects"}
-              [:i.material-icons "book"] "Projects"]]
-          [:li
-            [:a.has-icon {:href "/team"
-                          :aria-label "Teams"}
-              [:i.material-icons "group"] "Teams"]]]
+       [:a.logomark.hidden-sm-down {:href "/dashboard"
+                     :aria-label "Dashboard"}
+        (common/ico :logo)]
+       [:a.logomark-narrow.hidden-md-up {:href "/dashboard"
+                     :aria-label "Dashboard"}
+        [:img {:src (common/icon-path "Logo-Wordmark")}]]
+       [:ul.nav-items.collapsing-nav
+         [:li
+           [:a.has-icon {:href "/dashboard"
+                         :aria-label "Builds"}
+             [:i.material-icons "storage"] "Builds"]]
+         [:li
+           [:a.has-icon {:href "/build-insights"
+                         :aria-label "Insights"}
+             [:i.material-icons "assessment"] "Insights"]]
+         [:li
+           [:a.has-icon {:href "/projects"
+                         :aria-label "Projects"}
+             [:i.material-icons "book"] "Projects"]]
+         [:li
+           [:a.has-icon {:href "/team"
+                         :aria-label "Teams"}
+             [:i.material-icons "group"] "Teams"]]]
         [:ul.nav-items.nav-items-left.collapsing-nav
          [:li.dropdown
           [:button.dropdown-toggle
@@ -63,8 +66,7 @@
            "Discuss"]]
          [:li
           [:a support-info
-           "Support"]]]
-        [:ul.nav-items
+           "Support"]]
          [:li.dropdown.user-menu
           [:button.dropdown-toggle
            {:data-toggle "dropdown"
@@ -77,7 +79,7 @@
            [:li [:a {:href "/account"} "User Settings"]]
            (when (:admin user)
              [:li [:a {:href "/admin"} "Admin"]])]]]
-        [:button.navbar-toggler.hidden-sm-up {:type "button"
+        [:button.navbar-toggler.hidden-md-up {:type "button"
                                                       :data-toggle "collapse"
                                                       :data-target "collapsing-nav"
                                                       :aria-controls "collapsing-nav"
