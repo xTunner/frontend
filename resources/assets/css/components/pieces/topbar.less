@@ -5,27 +5,34 @@
     background-color: @grayDark;
     height: @top-bar-height;
 
-    > .logomark {
-      .flexy(center, center);
-      .icon-style(@white, (@em * 2));
-      width: 70px;
-      height: @top-bar-height;
-
-      > i {
-        opacity: 1;
-      }
-    }
-
     > .navs-container {
       .flexy(stretch, space-between, row);
       width: 100%;
 
-      > .collapsing-nav-container {
-        .flexy(stretch, space-between, row);
+      > .logomark {
+        .flexy(center, center);
+        .icon-style(@white, (@em * 2));
+        width: 70px;
+        height: @top-bar-height;
+
+        > i {
+          opacity: 1;
+        }
       }
 
-      @media (max-width: @screen-sm-min) {
-        justify-content: flex-end;
+      > .logomark-narrow {
+        .flexy(center, center);
+        .icon-style(@white, (@em * 2));
+        width: 176px;
+        height: @top-bar-height;
+
+        > img {
+          height: 44px;
+        }
+      }
+
+      > .collapsing-nav-container {
+        .flexy(stretch, space-between, row);
       }
 
       > button.navbar-toggler {
@@ -35,7 +42,7 @@
 
         i.material-icons {
           margin-left: 0;
-          font-style: @fontSizeLarger;
+          font-size: @fontSizeLargest;
         }
       }
 
@@ -66,8 +73,15 @@
             border: none;
             background: none;
           }
-
-          > a, > button.dropdown-toggle {
+          > a {
+            > i {
+              @media (max-width: @screen-md-min) {
+                display: none!important;
+              }
+            }
+          }
+          > a,
+          > button.dropdown-toggle {
             display: block;
             padding: 20px;
             font-size: @fontSizeSmall;
@@ -86,10 +100,6 @@
 
               .material-icons {
                 margin-top: -3px
-              }
-
-              @media (max-width: @screen-md-min) {
-                display: none!important;
               }
             }
 
