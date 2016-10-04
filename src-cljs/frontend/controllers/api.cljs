@@ -997,3 +997,21 @@
 (defmethod api-event [:merge-pull-request :failed]
   [target message status {:keys [resp]} state]
   (state/add-flash-notification state (-> resp :message)))
+
+(defmethod api-event [:get-jira-projects :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/jira-projects-path resp))
+
+(defmethod api-event [:get-jira-issue-types :success]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/jira-issue-types-path resp))
+
+(defmethod post-api-event! [:create-jira-issue :success]
+  [target message status {:keys [context]} previous-state current-state comms]
+  (forms/release-button! (:uuid context) status)
+  ((:on-success context)))
+
+(defmethod post-api-event! [:create-jira-issue :failed]
+  [target message status {:keys [context] :as args} previous-state current-state comms]
+  (put! (:errors comms) [:api-error args])
+  (forms/release-button! (:uuid context) status))

@@ -106,9 +106,11 @@
   "Find closest <a> ancestor of target and add some properties to it."
   (let [a (closest-a-tag target)]
     (cond (instance? js/SVGElement a)   ; SVG
-          (let [href (-> a (.-href) (unexterned-prop "baseVal"))]
+          (let [attributes (.-attributes a)
+                href (some-> attributes .-href .-value)
+                target (some-> attributes .-target .-value)]
             {:attr-href href
-             :attr-target (-> a .-target (unexterned-prop "baseVal"))
+             :attr-target target
              :host-name (let [uri-info (goog.Uri.parse href)
                               domain (.getDomain uri-info)]
                           (if (empty? domain)

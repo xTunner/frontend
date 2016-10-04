@@ -128,8 +128,7 @@
 
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id]
-                                 :as args
-                                 :or {container-id 0}}
+                                 :as args}
    state]
   (mlog "navigated-to :build with args " args)
   (if (and (= :build (state/current-view state))

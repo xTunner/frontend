@@ -57,17 +57,19 @@
 (defn settings-link [app owner]
   (let [{:keys [repo org] :as navigation-data} (:navigation-data app)]
     (cond repo (when (:write-settings (get-in app state/project-scopes-path))
-                 [:a.header-settings-link.project-settings
-                  {:href (routes/v1-project-settings-path navigation-data)}
-                  [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-                  "Project Settings"])
-          org [:a.header-settings-link.org-settings
-               {:href (routes/v1-org-settings-path navigation-data)
-                :on-click #((om/get-shared owner :track-event) {:event-type :org-settings-link-clicked
-                                                                :properties {:org org
-                                                                             :component "header"}})}
-               [:img.dashboard-icon {:src (common/icon-path "QuickLink-Settings")}]
-               "Organization Settings"]
+                 [:div.btn-icon
+                  [:a.header-settings-link.project-settings
+                   {:href (routes/v1-project-settings-path navigation-data)
+                    :title "Project settings"}
+                   [:i.material-icons "settings"]]])
+          org [:div.btn-icon
+               [:a.header-settings-link.org-settings
+                {:href (routes/v1-org-settings-path navigation-data)
+                 :on-click #((om/get-shared owner :track-event) {:event-type :org-settings-link-clicked
+                                                                 :properties {:org org
+                                                                              :component "header"}})
+                 :title "Organization settings"}
+                [:i.material-icons "settings"]]]
           :else nil)))
 
 (defn maybe-active [current goal]

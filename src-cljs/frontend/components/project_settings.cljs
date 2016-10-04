@@ -1516,6 +1516,74 @@
            [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
            (om/build aws-keys-form project-data)]])))))
 
+(defn jira-settings-form [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)
+            inputs (inputs/get-inputs-from-app-state owner)
+
+            settings (utils/deep-merge (get-in project [:jira])
+                                       (get-in inputs [:jira]))
+            {:keys [username password base-url]} settings
+
+            project-id (project-model/id project)
+            input-path (fn [& ks] (apply conj state/inputs-path :jira ks))]
+        (html
+         [:div.jira-settings-inner
+          [:p "Configure JIRA to create issues from CircleCI’s build page."]
+          [:form
+           [:input#jira-username
+            {:required true, :type "text", :value (or username "")
+             :on-change #(utils/edit-input owner (input-path :username) %)}]
+           [:label {:placeholder "JIRA username"}]
+
+           [:input#jira-password
+            {:required true,
+             :type "text",
+             :value (or password "")
+             :auto-complete "off"
+             :on-change #(utils/edit-input owner (input-path :password) %)}]
+           [:label {:placeholder "JIRA password"}]
+
+           [:input#jira-base-url
+            {:required true,
+             :type "text",
+             :value (or base-url "")
+             :auto-complete "off"
+             :on-change #(utils/edit-input owner (input-path :base-url) %)}]
+           [:label {:placeholder "JIRA base URL"}]
+
+           [:div.buttons
+            (button/managed-button
+              {:failed-text "Failed"
+               :success-text "Saved"
+               :loading-text "Saving..."
+               :type "submit"
+               :primary? true
+               :on-click #(raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:jira]]}])}
+              "Save JIRA settings")
+            (when (or username password base-url)
+              (button/managed-button
+                {:failed-text "Failed"
+                 :success-text "Cleared"
+                 :loading-text "Clearing..."
+                 :type "submit"
+                 :on-click #(do
+                              (raise! owner [:edited-input {:path (input-path) :value nil}])
+                              (raise! owner [:saved-project-settings {:project-id project-id}]))}
+                "Clear JIRA settings"))]]])))))
+
+(defn integrations [project-data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project project-data)]
+        (html
+         [:section.integrations
+          [:article
+           [:h2 "JIRA integration"]
+           (om/build jira-settings-form project-data)]])))))
 
 (defn aws-codedeploy-app-name [project-data owner]
   (reify
@@ -1871,6 +1939,7 @@
                :heroku (om/build heroku {:project-data project-data :user user})
                :deployment (om/build other-deployment project-data)
                :aws (om/build aws project-data)
+               :integrations (om/build integrations project-data)
                :aws-codedeploy (om/build aws-codedeploy project-data)
                :code-signing (om/build code-signing {:project-data project-data :error-message error-message})
                (om/build overview project-data))]]))))))

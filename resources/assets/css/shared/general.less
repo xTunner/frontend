@@ -14,11 +14,6 @@ a:not(.exception):not(.btn) {
     opacity: .6;
     .transition(all .1s ease-in);
   }
-  &:hover {
-    i {
-      opacity: 1;
-    }
-  }
 }
 
 // Override Bootstrap to make sure that a.exception elements get no global
@@ -45,30 +40,36 @@ a.exception {
   .flex(0 0 auto);
 }
 
-.header-settings-link {
-  .flexy(center, center);
-  height: initial;
+// FIXME: this should be added to the button component
+.btn-icon {
+  height: 30px;
+  width: 30px;
+  border-radius: 3px;
 
-  color: @blueDark;
+  background-color: @grayLightest;
+  border: solid 1px rgba(0, 0, 0, 0.1);
+
+  position: relative;
 
   &:hover {
-    text-decoration: underline;
-  }
+    background-color: @whiten;
 
-  span {
-    padding: 1px 5px;
-    white-space: nowrap;
-  }
-
-  path {
-    stroke: @grayLight;
-    &:first-child {
-      stroke-width: 5;
+    img,
+    img svg,
+    i {
+      color: @gray;
     }
   }
 
-  &:after {
-    font-size: @baseFontSize;
+  img,
+  img svg,
+  i {
+    height: 18px;
+    margin: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
   }
 }
 
@@ -165,10 +166,6 @@ button [spinner], button [data-spinner]{
   color: @grayLight;
   margin-left: 1ex;
   vertical-align: middle;
-}
-
-.octicon {
-  color: @grayLight;
 }
 
 .center{

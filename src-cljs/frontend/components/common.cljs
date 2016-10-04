@@ -10,7 +10,8 @@
             [frontend.utils.github :refer [auth-url]]
             [frontend.timer :as timer]
             [frontend.elevio :as elevio]
-            [goog.dom.DomHelper]
+            [goog.dom]
+            [goog.dom.BrowserFeature]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -57,13 +58,47 @@
               "Error: " display-message
               " If we can help, " (contact-us-inner owner) "."]]]))))))
 
+;; Translated from Google Closure's htmlToDocumentFragment, which is no longer
+;; available. Note that it's no longer available because inserting strings from
+;; outside the app into the DOM as HTML is inherently unsafe, even if we only do
+;; it with data from our own API. We need to stop doing this.
+;;
+;; goog.dom.htmlToDocumentFragment_ = function(doc, htmlString) {
+;;   var tempDiv = doc.createElement('div');
+;;   if (goog.dom.BrowserFeature.INNER_HTML_NEEDS_SCOPED_ELEMENT) {
+;;     tempDiv.innerHTML = '<br>' + htmlString;
+;;     tempDiv.removeChild(tempDiv.firstChild);
+;;   } else {
+;;     tempDiv.innerHTML = htmlString;
+;;   }
+;;   if (tempDiv.childNodes.length == 1) {
+;;     return /** @type {!Node} */ (tempDiv.removeChild(tempDiv.firstChild));
+;;   } else {
+;;     var fragment = doc.createDocumentFragment();
+;;     while (tempDiv.firstChild) {
+;;       fragment.appendChild(tempDiv.firstChild);
+;;     }
+;;     return fragment;
+;;   }
+;; };
+(defn- html-to-document-fragment [doc html-string]
+  (let [temp-div (.createElement doc "div")]
+    (if goog.dom.BrowserFeature/INNER_HTML_NEEDS_SCOPED_ELEMENT
+      (do
+        (set! (.-innerHTML temp-div) (str "<br>" html-string))
+        (.removeChild temp-div (.-firstChild temp-div)))
+      (set! (.-innerHTML temp-div) html-string))
+    (if (= 1 (.. temp-div -childNodes -length))
+      (.removeChild temp-div (.-firstChild temp-div))
+      (let [fragment (.createDocumentFragment doc)]
+        (while (.-firstChild temp-div)
+          (.appendChild fragment (.-firstChild temp-div)))
+        fragment))))
+
 (defn normalize-html
   "Creates a valid html string given a (possibly) invalid html string."
   [html-string]
-  (let [dom-helper (goog.dom.DomHelper.)]
-    (->> html-string
-         (.htmlToDocumentFragment dom-helper)
-         (.getOuterHtml dom-helper))))
+  (goog.dom/getOuterHtml (html-to-document-fragment js/document html-string)))
 
 (def messages-default-opts
   {:show-warning-text? true})
