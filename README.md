@@ -128,6 +128,11 @@ lein clean
 lein cljsbuild once
 ```
 
+### Adding new SVG icons
+
+To add a new SVG icon, just place it in `resources/public/img/inner/icons`.
+You will then be able to use it as `(utils/cdn-path "/img/inner/icons/<svg-name>.svg")`.
+
 ### Sanity Check
 
 To test that everything worked, visit

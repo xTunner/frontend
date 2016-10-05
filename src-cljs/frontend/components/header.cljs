@@ -45,7 +45,7 @@
           :loading-text "Following..."
           :failed-text "Failed to follow"
           :success-text "Followed"
-          :primary? true
+          :kind :primary
           :size :medium}
           "Follow Project")))))
 

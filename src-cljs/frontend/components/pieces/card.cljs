@@ -72,7 +72,7 @@
   (defcard titled-card-with-action
     (titled
      {:title "Card Title (Generally in Title Case)"
-      :action (button/button {:primary? true
+      :action (button/button {:kind :primary
                               :size :medium}
                              "Action")}
      "Some content.")

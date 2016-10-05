@@ -109,7 +109,7 @@
     (dialog {:title "Are you sure?"
              :body "Are you sure you want to remove the \"Foo\" Apple Code Signing Key?"
              :actions [(button/button {} "Cancel")
-                       (button/button {:primary? true} "Delete")]
+                       (button/button {:kind :primary} "Delete")]
              :close-fn identity})
     {}
     {:classname "background-gray"})
@@ -123,7 +123,7 @@
                       :height "100%"}}
         [:div
          (button/button {:on-click #(swap! state assoc :shown? true)
-                         :primary? true}
+                         :kind :primary}
                         "Show Modal")
          (when (:shown? @state)
            (modal {:close-fn #(swap! state assoc :shown? false)}
@@ -144,12 +144,12 @@
                       :height "100%"}}
         [:div
          (button/button {:on-click #(swap! state assoc :shown? true)
-                         :primary? true}
+                         :kind :primary}
                         "Show Modal")
          (when (:shown? @state)
            (modal-dialog {:title "Are you sure?"
                           :body "Are you sure you want to remove the \"Foo\" Apple Code Signing Key?"
                           :actions [(button/button {} "Cancel")
-                                    (button/button {:primary? true} "Delete")]
+                                    (button/button {:kind :primary} "Delete")]
                           :close-fn #(swap! state assoc :shown? false)}))]]))
     {:shown? false}))

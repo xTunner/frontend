@@ -213,7 +213,7 @@
                                                     posting, but we do encourage you to talk with your coworkers!"]]]))
                         :actions [(button/button {:on-click close-fn} "Cancel")
                                   (button/button
-                                   {:primary? true
+                                   {:kind :primary
                                     :on-click #(do
                                                  (raise! owner [:preferences-updated {state/user-in-beta-key true}])
                                                  ((om/get-shared owner :track-event) {:event-type :beta-accept-terms-clicked})
@@ -239,7 +239,7 @@
                       {:on-click #(do
                                     (om/set-state! owner :show-modal? true)
                                     ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
-                       :primary? true}
+                       :kind :primary}
                       "Join Beta Program")])))))
 
 (defn beta-program-member [app owner]
@@ -260,7 +260,7 @@
                         {:on-click #(do
                                       (raise! owner [:preferences-updated {state/user-in-beta-key false}])
                                       ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
-                         :primary? true}
+                         :kind :primary}
                         "Leave Beta Program")]))
         [:hr]
         (om/build beta-programs app)]))))

@@ -63,7 +63,7 @@
             (modal/modal-dialog {:title "Are you sure?"
                                  :body confirmation-question
                                  :actions [(button/button {:on-click close-fn} "Cancel")
-                                           (button/button {:primary? true
+                                           (button/button {:kind :primary
                                                            :on-click remove-fn}
                                                           "Remove")]
                                  :close-fn close-fn})))]))))
@@ -127,15 +127,16 @@
               (button/managed-button
                {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
                 :loading-text "Unfollowing..."
-                :primary? true}
+                :kind :primary}
                "Unfollow")
                " "
-               (forms/managed-button
-                 [:button.btn.btn-danger {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
-                                                                                               :project-id project-id}])
-                                          :data-loading-text "Stopping Builds..."
-                                          :data-success-text "Builds Stopped"}
-                  "Stop Building on CircleCI"]))
+               (button/managed-button
+                {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                      :project-id project-id}])
+                 :kind :dangerous
+                 :loading-text "Stopping Builds..."
+                 :success-text "Builds Stopped"}
+                "Stop Building"))
              (list
               [:h2 "You're not following this repo"]
               [:p
@@ -417,7 +418,7 @@
                           :project-id (-> project-data
                                           :project
                                           project-model/id)}])
-     :primary? true}
+     :kind :primary}
     (case cache-type
       "build" "Clear Dependencies"
       "source" "Clear Sources")))
@@ -475,7 +476,7 @@
            (card/titled
             {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
-                                     :primary? true
+                                     :kind :primary
                                      :size :medium}
                                     "Add Variable")}
             (html
@@ -508,7 +509,7 @@
                                                  (button/managed-button {:failed-text "Failed"
                                                                          :success-text "Added"
                                                                          :loading-text "Adding..."
-                                                                         :primary? true
+                                                                         :kind :primary
                                                                          :on-click #(raise! owner [:created-env-var
                                                                                                    {:project-id project-id
                                                                                                     :on-success close-fn}])}
@@ -677,7 +678,7 @@
               (button/managed-button
                {:loading-text "Saving..."
                 :on-click #(raise! owner [:saved-dependencies-commands {:project-id project-id}])
-                :primary? true}
+                :kind :primary}
                "Next, set up your tests")]]]]])))))
 
 (defn tests [project-data owner]
@@ -719,7 +720,7 @@
               {:loading-text "Saving..."
                :success-text "Saved"
                :on-click #(raise! owner [:saved-test-commands {:project-id project-id}])
-               :primary? true}
+               :kind :primary}
               "Save commands")
              [:div.try-out-build
               (om/build branch-picker
@@ -1001,7 +1002,7 @@
            (card/titled
             {:title (str "SSH keys for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
-                                     :primary? true
+                                     :kind :primary
                                      :size :medium}
                                     "Add SSH Key")}
             (html
@@ -1029,7 +1030,7 @@
                                                                           :ssh-key {:hostname hostname
                                                                                     :private_key private-key}
                                                                           :on-success close-fn}])
-                                :primary? true}
+                                :kind :primary}
                                "Add SSH Key")]
                     :close-fn close-fn})))
               (when-let [ssh-keys (seq (:ssh_keys project))]
@@ -1100,7 +1101,7 @@
              (list
               [:p "In order to do so, you'll need to grant authorization from GitHub to the \"admin:public_key\" scope. This will allow us to add a new authorized public key to your GitHub account."]
               (button/link {:href (gh-utils/auth-url :scope ["admin:public_key" "user:email" "repo"])
-                            :primary? true}
+                            :kind :primary}
                            "Authorize with GitHub"))
              [:div.request-user
               (forms/managed-button
@@ -1310,7 +1311,7 @@
            (card/titled
             {:title (str "API tokens for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
-                                     :primary? true
+                                     :kind :primary
                                      :size :medium}
                                     "Create Token")}
             (html
@@ -1346,7 +1347,7 @@
                                                                                                        :api-token {:scope scope
                                                                                                                    :label label}
                                                                                                        :on-success close-fn}])
-                                                   :primary? true}
+                                                   :kind :primary}
                                                   "Add Token")]})))
               (when-let [tokens (seq (:tokens project-data))]
                 (om/build table/table
@@ -1406,20 +1407,19 @@
                :title "This will affect all deploys on this project. Skipping this step will result in permission denied errors when deploying."}]]
             [:form.api
              (if (= (:heroku_deploy_user project) (:login user))
-               (forms/managed-button
-                [:input.btn.btn-danger.remove-user
-                 {:data-success-text "Saved",
-                  :data-loading-text "Saving...",
-                  :on-click #(raise! owner [:removed-heroku-deploy-user {:project-id project-id}])
-                  :value "Remove Heroku Deploy User",
-                  :type "submit"}])
+               (button/managed-button
+                {:kind :primary
+                 :success-text "Saved"
+                 :loading-text "Saving..."
+                 :on-click #(raise! owner [:removed-heroku-deploy-user {:project-id project-id}])}
+                "Remove Deploy User")
 
                (button/managed-button
                 {:success-text "Saved"
                  :loading-text "Saving..."
                  :on-click #(raise! owner [:set-heroku-deploy-user {:project-id project-id
                                                                     :login login}])
-                 :primary? true}
+                 :kind :primary}
                 (str "Set user to " (:login user))))]]
            [:div.heroku-step
             [:h4
@@ -1813,7 +1813,7 @@
           [:span " has no "]
           [:span.highlight "Apple Code Signing Identities"]
           [:span "  yet"]]
-         (button/button {:on-click add-key :primary? true} "Upload Key")
+         (button/button {:on-click add-key :kind :primary} "Upload Key")
          [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
 
 
@@ -1881,7 +1881,7 @@
             [:div.title "Apple Code Signing Keys"]
             (button/button
              {:on-click #(om/set-state! owner :show-modal? true)
-              :primary? true}
+              :kind :primary}
              "Upload Key")]
            [:hr.divider]
            [:div.info "The following code-signing identities will be added to the system keychain when your build
