@@ -46,14 +46,6 @@
     }
   }
 
-  .link-button-styles() {
-    .button-styles();
-
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-  }
-
   .ui("button", {
     .button-styles();
   });
@@ -66,7 +58,11 @@
     // We need to include the element name in the selector to get the
     // a.exception rules to work correctly.
     a& {
-      .link-button-styles();
+      .button-styles();
+
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
     }
   });
 });
