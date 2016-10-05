@@ -7,13 +7,17 @@
   "A standard button.
 
   :on-click  - A function called when the button is clicked.
-  :primary?  - If true, the button appears as a primary button. (default: false)
+  :kind      - The kind of button. One of #{:primary :secondary :dangerous}.
+               (default: :secondary)
   :disabled? - If true, the button is disabled. (default: false)
-  :size      - The size of the button. One of #{:full :medium}. (default: :full)"
-  [{:keys [on-click primary? disabled? size] :or {size :full}} content]
+  :size      - The size of the button. One of #{:full :medium}.
+               (default: :full)"
+  [{:keys [on-click kind disabled? size]
+    :or {kind :secondary size :full}}
+   content]
   (component
     (html
-     [:button {:class (remove nil? [(when primary? "primary")
+     [:button {:class (remove nil? [(name kind)
                                     (case size
                                       :full nil
                                       :medium "medium")])
@@ -25,17 +29,20 @@
   "A link styled as a button.
 
   :class         - Additional CSS classes to be applied to the button.
-  :data-external - For links that shouldn't render in place. To be used with frontend.utils.html/open-ext.
+  :data-external - For links that shouldn't render in place. To be used with
+                   frontend.utils.html/open-ext.
   :href          - The link target.
   :on-click      - A function called when the link is clicked.
-  :primary?      - If true, the link appears as a primary button. (default: false)
-  :size          - The size of the button. One of #{:full :medium}. (default: :full)"
-  [{:keys [class href on-click primary? size data-external] :or {size :full}} content]
+  :kind          - The kind of button. One of #{:primary :secondary :dangerous}.
+                   (default: :secondary)"
+  [{:keys [class href on-click kind size data-external]
+    :or {kind :secondary size :full}}
+   content]
   (component
     (html
      [:a.exception
       {:class (remove nil? [class
-                            (when primary? "primary")
+                            (name kind)
                             (case size
                               :full nil
                               :medium "medium")])
@@ -45,17 +52,22 @@
       content])))
 
 (defn managed-button
-  "A standard button.
+  "A managed button.
 
   :on-click     - A function called when the button is clicked.
-  :primary?     - If true, the button appears as a primary button. (default: false)
+  :kind         - The kind of button. One of #{:primary :secondary :dangerous}.
+                  (default: :secondary)
   :disabled?    - If true, the button is disabled. (default: false)
-  :size         - The size of the button. One of #{:full :medium}. (default: :full)
-  :loading-text - Text to display indicating that the button action is in progress. (default: \"...\")
-  :success-text - Text to display indicating that the button action was successful. (default: \"Saved\")
-  :failed-text  - Text to display indicating that the button action failed. (default: \"Failed\")"
-  [{:keys [primary? disabled? size failed-text success-text loading-text on-click]
-    :or {size :full disabled? false}}
+  :size         - The size of the button. One of #{:full :medium}.
+                  (default: :full)
+  :loading-text - Text to display indicating that the button action is in
+                  progress. (default: \"...\")
+  :success-text - Text to display indicating that the button action was
+                  successful. (default: \"Saved\")
+  :failed-text  - Text to display indicating that the button action failed.
+                  (default: \"Failed\")"
+  [{:keys [kind disabled? size failed-text success-text loading-text on-click]
+    :or {kind :secondary size :full disabled? false}}
    content]
   (forms/managed-button
    ;; Normally, manually adding :data-component is not recommended. We
@@ -67,7 +79,7 @@
              :data-loading-text loading-text
              :disabled disabled?
              :on-click on-click
-             :class (remove nil? [(when primary? "primary")
+             :class (remove nil? [(name kind)
                                   (case size
                                     :full nil
                                     :medium "medium")])}
@@ -80,19 +92,26 @@
     (html
      [:div
       [:div
-       (button {:primary? true
+       (button {:kind :primary
                 :on-click #(js/alert "Clicked!")}
                "Primary Button")
        (button {:on-click #(js/alert "Clicked!")}
-               "Secondary Button")]
+               "Secondary Button")
+       (button {:kind :dangerous
+                :on-click #(js/alert "Clicked!")}
+               "Dangerous Button")]
       [:div
        (button {:disabled? true
-                :primary? true
+                :kind :primary
                 :on-click #(js/alert "Clicked!")}
                "Primary Disabled")
        (button {:disabled? true
                 :on-click #(js/alert "Clicked!")}
-               "Secondary Disabled")]]))
+               "Secondary Disabled")
+       (button {:disabled? true
+                :kind :dangerous
+                :on-click #(js/alert "Clicked!")}
+               "Dangerous Disabled")]]))
 
   (defcard medium-buttons
     "These are our buttons in `:medium` size, used in table rows and anywhere
@@ -100,46 +119,60 @@
     (html
      [:div
       [:div
-       (button {:primary? true
+       (button {:kind :primary
                 :size :medium
                 :on-click #(js/alert "Clicked!")}
                "Primary Button")
        (button {:size :medium
                 :on-click #(js/alert "Clicked!")}
-               "Secondary Button")]
+               "Secondary Button")
+       (button {:kind :dangerous
+                :size :medium
+                :on-click #(js/alert "Clicked!")}
+               "Dangerous Disabled")]
       [:div
        (button {:disabled? true
-                :primary? true
+                :kind :primary
                 :size :medium
                 :on-click #(js/alert "Clicked!")}
                "Primary Disabled")
        (button {:disabled? true
                 :size :medium
                 :on-click #(js/alert "Clicked!")}
-               "Secondary Disabled")]]))
+               "Secondary Disabled")
+       (button {:disabled? true
+                :kind :dangerous
+                :size :medium
+                :on-click #(js/alert "Clicked!")}
+               "Dangerous Disabled")]]))
 
   (defcard full-link-buttons
     "These are our link buttons, when you need to style a link as a button."
     (html
      [:div
       [:div
-       (link {:primary? true
+       (link {:kind :primary
               :href "#"}
              "Primary Link")
-       (link {:primary? false
+       (link {:href "#"}
+             "Secondary Link")
+       (link {:kind :dangerous
               :href "#"}
-             "Secondary Link")]]))
+             "Dangerous Link")]]))
 
   (defcard medium-link-buttons
     "These are `:medium` size link buttons."
     (html
      [:div
       [:div
-       (link {:primary? true
+       (link {:kind :primary
               :href "#"
               :size :medium}
              "Medium Primary Link")
-       (link {:primary? false
+       (link {:href "#"
+              :size :medium}
+             "Medium Secondary Link")
+       (link {:kind :dangerous
               :href "#"
               :size :medium}
-             "Medium Secondary Link")]])))
+             "Medium Dangerous Link")]])))

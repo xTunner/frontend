@@ -374,7 +374,7 @@
     (case (feature/ab-test-treatment :junit-ab-test)
       :junit-button (button/link (open-ext {:href junit-link
                                             :class "junit-link"
-                                            :primary? true
+                                            :kind :primary
                                             :on-click track-junit})
                                  "Set Up Test Summary")
       :junit-banner [:div.alert.iconified {:class "alert-info"}

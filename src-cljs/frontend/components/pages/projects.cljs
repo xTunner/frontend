@@ -77,7 +77,7 @@
     (render [_]
       (button/link
         {:href (routes/v1-add-projects)
-         :primary? true
+         :kind :primary
          :on-click #((om/get-shared owner :track-event)
                      {:event-type :add-project-clicked
                       :properties {:is-empty-state empty-state?}})}
