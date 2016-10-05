@@ -3,7 +3,7 @@
             [frontend.components.common :as common]
             [frontend.config :as config]
             [frontend.utils.html :as html]
-
+            [frontend.utils :as utils :include-macros true]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
@@ -29,7 +29,7 @@
         (common/ico :logo)]
        [:a.logomark-narrow.hidden-md-up {:href "/dashboard"
                      :aria-label "Dashboard"}
-        [:img {:src (common/icon-path "Logo-Wordmark")}]]
+        [:img {:src (utils/cdn-path "/img/inner/icons/Logo-Wordmark.svg")}]]
        [:ul.nav-items.collapsing-nav
          [:li
            [:a.has-icon {:href "/dashboard"
