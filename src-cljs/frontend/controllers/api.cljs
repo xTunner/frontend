@@ -1009,9 +1009,15 @@
 (defmethod post-api-event! [:create-jira-issue :success]
   [target message status {:keys [context]} previous-state current-state comms]
   (forms/release-button! (:uuid context) status)
-  ((:on-success context)))
+  ((:on-success context))
+  (analytics/track {:event-type :create-jira-issue-success
+                    :current-state current-state}))
 
 (defmethod post-api-event! [:create-jira-issue :failed]
   [target message status {:keys [context] :as args} previous-state current-state comms]
   (put! (:errors comms) [:api-error args])
-  (forms/release-button! (:uuid context) status))
+  (forms/release-button! (:uuid context) status)
+  (analytics/track {:event-type :create-jira-issue-failed
+                    :current-state current-state
+                    :properties {:status-code (:status-code context)
+                                 :message (-> context :resp :message)}}))
