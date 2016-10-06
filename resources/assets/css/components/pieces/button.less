@@ -75,16 +75,18 @@
     }
 
     &.flat {
-      color: @grayDark;
+      color: @blueDark;
       background-color: transparent;
 
       &:hover {
         background-color: @grayLightest;
+        text-decoration: underline;
       }
 
       &:focus,
       &:active {
         background-color: @grayLightest;
+        text-decoration: underline;
       }
 
       &[disabled] {
@@ -92,6 +94,7 @@
 
         &:hover {
           background-color: transparent;
+          text-decoration: none;
         }
       }
     }
