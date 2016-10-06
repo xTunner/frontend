@@ -237,6 +237,8 @@
        {:type :subpage :href "#ssh" :title "SSH Permissions" :subpage :ssh}
        {:type :subpage :href "#api" :title "API Permissions" :subpage :api}
        {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
+       (when (feature/enabled? :jira-integration)
+         {:type :subpage :href "#integrations" :title "Integrations" :subpage :integrations})
        (when (project-model/osx? project)
          {:type :subpage :href "#code-signing" :title "OS X Code Signing" :subpage :code-signing})
        {:type :heading :title "Continuous Deployment"}

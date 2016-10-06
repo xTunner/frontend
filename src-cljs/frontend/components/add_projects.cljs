@@ -76,7 +76,7 @@
     om/IRender
     (render [_]
       (button/button {:on-click #(raise! owner [:refreshed-user-orgs {}])
-                      :primary? true}
+                      :kind :primary}
                      "Reload Organizations"))))
 
 (defn- repo-title [repo link?]
@@ -184,7 +184,7 @@
                                  :properties {:org login
                                               :vcs-type vcs_type
                                               :plan-type pm/osx-plan-type}})
-                    :primary? true}
+                    :kind :primary}
                    "Select Plan"))))
 
 (defn free-trial-button [{{:keys [login vcs_type]} :selected-org} owner]
@@ -423,7 +423,7 @@
                                (button/link {:href (gh-utils/auth-url)
                                              :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
                                                                                              :properties {:vcs-type selected-vcs-type}})
-                                             :primary? true}
+                                             :kind :primary}
                                             "Authorize GitHub")]))
                           (when (and (= "bitbucket" selected-vcs-type)
                                      (not bitbucket-authorized?))
@@ -432,7 +432,7 @@
                              (button/link {:href (bitbucket/auth-url)
                                            :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
                                                                                            :properties {:vcs-type selected-vcs-type}})
-                                           :primary? true}
+                                           :kind :primary}
                                           "Authorize Bitbucket")])
                           (build-next
                            org-picker/picker

@@ -123,6 +123,10 @@
 (def page-scopes-path [:page-scopes])
 (def project-osx-keys-path (conj project-data-path :osx-keys))
 
+(def jira-data-path (conj project-data-path :jira))
+(def jira-projects-path (conj jira-data-path :projects))
+(def jira-issue-types-path (conj jira-data-path :issue-types))
+
 (def project-new-ssh-key-path (conj project-data-path :new-ssh-key))
 (def project-new-api-token-path (conj project-data-path :new-api-token))
 

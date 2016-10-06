@@ -36,6 +36,19 @@
       }
     }
 
+    &.dangerous {
+      color: @white;
+      background-color: @red;
+
+      &:hover {
+        background-color: #e82e2e;
+      }
+
+      &:active {
+        background-color: #d81e1e;
+      }
+    }
+
     &[disabled] {
       &,
       &:hover,
@@ -45,7 +58,7 @@
       }
     }
   }
-     
+
   .ui("button", {
     .button-styles();
   });

@@ -50,9 +50,12 @@
                   (om/build project-common/suspended-notice {:plan plan
                                                              :vcs_type (:vcs_type project)}))
 
-                (om/build builds-table/builds-table builds {:opts {:show-actions? true
-                                                                   :show-branch? (not (:branch nav-data))
-                                                                   :show-project? (not (:repo nav-data))}})
+                (om/build builds-table/builds-table
+                          {:builds builds
+                           :projects projects}
+                          {:opts {:show-actions? true
+                                  :show-branch? (not (:branch nav-data))
+                                  :show-project? (not (:repo nav-data))}})
                 [:div.recent-builds-pager
                  [:a
                   {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))

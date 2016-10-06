@@ -80,7 +80,7 @@
     (let [{:keys [empty-state?]} (om-next/props this)]
       (button/link
        {:href (routes/v1-add-projects)
-        :primary? true
+        :kind :primary
         :on-click #(analytics/track! this {:event-type :add-project-clicked
                                            :properties {:is-empty-state empty-state?}})}
        "Add Project"))))
