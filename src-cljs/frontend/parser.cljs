@@ -58,7 +58,7 @@
      and shouldn't be fetched from the remote by API"}
   render-context-keys
   #{:user/login
-    :user/bitbucket-authorized})
+    :user/bitbucket-authorized?})
 
 
 ;; :app/current-user works much like :default, but it's a bit of a special case,

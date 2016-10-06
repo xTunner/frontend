@@ -141,7 +141,7 @@
     ['{:legacy/state [*]}
      {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
                          :user/login
-                         :user/bitbucket-authorized]}
+                         :user/bitbucket-authorized?]}
      {:app/route-data [{:route-data/organization (into (om-next/get-query OrgProjects)
                                                        [:organization/name])}]}])
   analytics/Properties
