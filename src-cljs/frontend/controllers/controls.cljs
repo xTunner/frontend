@@ -1532,7 +1532,10 @@
   [_ _ {:keys [project-name vcs-type jira-issue-data on-success]} previous-state current-state comms]
   (let [uuid frontend.async/*uuid*
         api-ch (:api comms)]
-    (api/create-jira-issue project-name vcs-type jira-issue-data api-ch uuid on-success)))
+    (api/create-jira-issue project-name vcs-type jira-issue-data api-ch uuid on-success))
+    (analytics/track {:event-type :create-jira-issue-clicked
+                      :current-state current-state
+                      :properties {:issue-type (:type jira-issue-data)}}))
 
 (defmethod post-control-event! :load-jira-projects
   [_ _ {:keys [project-name vcs-type]} previous-state current-state comms]
