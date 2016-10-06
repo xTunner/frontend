@@ -196,15 +196,13 @@
     [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
     (let [_fragment (:_fragment maybe-fragment)
-          {:keys [tab container-id action-id]} (parse-build-page-fragment _fragment)]
-      (open-to-inner! nav-ch :build {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
-                                     :project-name (str org "/" repo)
-                                     :build-num (js/parseInt build-num)
-                                     :org org
-                                     :repo repo
-                                     :tab tab
-                                     :container-id container-id
-                                     :action-id action-id})))
+          fragment-args (parse-build-page-fragment _fragment)]
+      (open-to-inner! nav-ch :build (merge fragment-args
+                                           {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+                                            :project-name (str org "/" repo)
+                                            :build-num (js/parseInt build-num)
+                                            :org org
+                                            :repo repo}))))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
