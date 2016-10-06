@@ -196,10 +196,9 @@
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (when-not (get-in current-state state/build-path)
-      (ajax/ajax :get build-url :build-fetch
-                 api-ch
-                 :context {:project-name project-name :build-num build-num}))
+    (ajax/ajax :get build-url :build-fetch
+               api-ch
+               :context {:project-name project-name :build-num build-num})
     (let [[username project] (str/split project-name #"/")]
       (initialize-pusher-subscriptions current-state comms
                                        {:username username
