@@ -11,12 +11,24 @@
             goog.string.format)
   (:require-macros [frontend.utils :refer [inspect]]))
 
+(defn id [build]
+  (:build_url build))
+
+(defn owners [build]
+  (:owners build))
+
+(defn num [build]
+  (:build_num build))
+
+(defn vcs-url [build]
+  (:vcs_url build))
+
 ;; TODO paths should use secretary
 (defn path-for [project build]
-  (str "/" (-> project proj/vcs-type vcs/->short-vcs) "/" (proj/project-name project) "/" (:build_num build)))
+  (str "/" (-> project proj/vcs-type vcs/->short-vcs) "/" (proj/project-name project) "/" (num build)))
 
 (defn path-for-parallelism [build]
-  (let [vcs-url (:vcs_url build)]
+  (let [vcs-url (vcs-url build)]
     (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
                                       :org (vcs-url/org-name vcs-url)
                                       :repo (vcs-url/repo-name vcs-url)
@@ -29,10 +41,10 @@
 (defn commit-url [build]
   (when (:vcs_revision build)
     (gstring/format
-      (case (-> build :vcs_url vcs-url/vcs-type)
+      (case (-> build vcs-url vcs-url/vcs-type)
        "github" "%s/commit/%s"
        "bitbucket" "%s/commits/%s")
-      (:vcs_url build) (:vcs_revision build))))
+      (vcs-url build) (:vcs_revision build))))
 
 (defn vcs-ref-name [build]
   (cond
@@ -272,12 +284,6 @@
                                           :filler-action true})
                                        (range (count actions) action-index)))))))))
 
-(defn id [build]
-  (:build_url build))
-
-(defn owners [build]
-  (:owners build))
-
 (defn owner? [build user]
   (->> build (owners) (some #{(:login user)})))
 
@@ -286,11 +292,11 @@
 
 (defn build-args [build]
   {:build-id  (id build)
-   :vcs-url   (:vcs_url build)
-   :build-num (:build_num build)})
+   :vcs-url   (vcs-url build)
+   :build-num (num build)})
 
 (defn merge-args [build]
   (let [pull-request-number (last (pull-request-numbers build))]
-    {:vcs-url (:vcs_url build)
+    {:vcs-url (vcs-url build)
      :number pull-request-number
      :sha (:vcs_revision build)}))
