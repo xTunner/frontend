@@ -34,7 +34,7 @@
         action-id (some-> action-id js/parseInt)]
     (merge {:tab tab
             :action-id action-id}
-           ;; dont' add :container-id key unless it's specified (for later
+           ;; don't add :container-id key unless it's specified (for later
            ;; destructuring with :or)
            (when container-id
              {:container-id container-id}))))
@@ -197,8 +197,8 @@
   (defroute v1-build #"/(gh|bb)/([^/]+)/([^/]+)/(\d+)"
     [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
-    (let [_fragment (:_fragment maybe-fragment)
-          fragment-args (-> _fragment
+    (let [fragment-args (-> maybe-fragment
+                            :_fragment
                             parse-build-page-fragment
                             (select-keys [:tab :action-id :container-id]))]
       (open-to-inner! nav-ch :build (merge fragment-args
