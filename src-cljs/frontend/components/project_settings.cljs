@@ -133,7 +133,7 @@
                (button/managed-button
                 {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
                                                                       :project-id project-id}])
-                 :kind :dangerous
+                 :kind :danger
                  :loading-text "Stopping Builds..."
                  :success-text "Builds Stopped"}
                 "Stop Building"))

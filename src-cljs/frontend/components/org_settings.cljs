@@ -512,7 +512,7 @@
                    (button/link
                     {:href "#cancel"
                      :disabled? (not button-clickable?)
-                     :kind :dangerous
+                     :kind :danger
                      :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
                                                                      :properties {:repo nil}})}
                     "Cancel Plan")
@@ -1115,10 +1115,10 @@
                    [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
                  (button/button
                   {:on-click #(om/set-state! owner [:show-errors?] true)
-                   :kind :dangerous}
+                   :kind :danger}
                   "Cancel Plan"))
                 (button/managed-button
-                 {:kind :dangerous
+                 {:kind :danger
                   :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
                                                                   :vcs_type vcs_type
                                                                   :cancel-reasons reasons
