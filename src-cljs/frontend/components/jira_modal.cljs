@@ -25,6 +25,9 @@
             vcs-type (project-model/vcs-type project)]
         (raise! owner [:load-jira-projects {:project-name project-name :vcs-type vcs-type}])
         (raise! owner [:load-jira-issue-types {:project-name project-name :vcs-type vcs-type}])))
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :jira-modal-impression}))
     om/IRenderState
     (render-state [_ {:keys [jira-project issue-type summary description] :as state}]
       (let [project-name (vcs-url/project-name (:vcs_url project))

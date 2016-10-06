@@ -192,30 +192,6 @@
                                      (assoc-in [:build-timing branch] timing-data)))))]
     (update-in state state/projects-path add-timing-data)))
 
-(defmethod api-event [:build :success]
-  [target message status args state]
-  (mlog "build success: scopes " (:scopes args))
-  (let [build (:resp args)
-        {:keys [build-num project-name]} (:context args)
-        containers (vec (build-model/containers build))]
-    (if-not (and (= build-num (:build_num build))
-                 (= project-name (vcs-url/project-name (:vcs_url build))))
-      state
-      (let [branch (some-> build :branch utils/encode-branch)
-            tag (some-> build :vcs_tag utils/encode-branch)
-            crumb-path (state/project-branch-crumb-path state)
-            tag-crumb-path (conj crumb-path :tag)
-            active-crumb-path (conj crumb-path :active)
-            branch-crumb-path (conj crumb-path :branch)]
-        (cond-> state
-          (and branch (not tag)) (assoc-in branch-crumb-path branch)
-          tag (assoc-in tag-crumb-path tag)
-          tag (assoc-in active-crumb-path true)
-          true (assoc-in state/build-path build)
-          true (assoc-in state/project-scopes-path (:scopes args))
-          true (assoc-in state/page-scopes-path (:scopes args))
-          true (assoc-in state/containers-path containers))))))
-
 (defmethod api-event [:build-observables :success]
   [target message status {:keys [context resp]} state]
   (let [parts (:build-parts context)]
@@ -239,6 +215,37 @@
                  (get-in current-state state/web-notifications-enabled-path))
         (notifications/notify-build-done build))
       (api/get-build-tests build (:api comms)))))
+
+(defmethod post-api-event! [:build-fetch :success]
+  [target message status args previous-state current-state comms]
+  (put! (:api comms) [:build :success args]))
+
+(defmethod post-api-event! [:build-fetch :failed]
+  [target message status {:keys [status-code]} previous-state current-state comms]
+  (put! (:nav comms) [:error {:status status-code :inner? false}]))
+
+(defmethod api-event [:build :success]
+  [target message status args state]
+  (let [build (:resp args)
+        {:keys [build-num project-name]} (:context args)
+        containers (vec (build-model/containers build))]
+    (if-not (and (= build-num (:build_num build))
+                 (= project-name (vcs-url/project-name (:vcs_url build))))
+      state
+      (let [branch (some-> build :branch utils/encode-branch)
+            tag (some-> build :vcs_tag utils/encode-branch)
+            crumb-path (state/project-branch-crumb-path state)
+            tag-crumb-path (conj crumb-path :tag)
+            active-crumb-path (conj crumb-path :active)
+            branch-crumb-path (conj crumb-path :branch)]
+        (cond-> state
+                (and branch (not tag)) (assoc-in branch-crumb-path branch)
+                tag (assoc-in tag-crumb-path tag)
+                tag (assoc-in active-crumb-path true)
+                true (assoc-in state/build-path build)
+                true (assoc-in state/project-scopes-path (:scopes args))
+                true (assoc-in state/page-scopes-path (:scopes args))
+                true (assoc-in state/containers-path containers))))))
 
 (defn maybe-set-containers-filter!
   "Depending on the status and outcome of the build, set active
@@ -278,10 +285,42 @@
                              (:api comms)))))
 
 (defmethod post-api-event! [:build :success]
-  [target message status args previous-state current-state comms]
-  (let [{:keys [build-num project-name]} (:context args)]
+  [target message status {build :resp :keys [scopes context] :as args} previous-state current-state comms]
+  (let [api-ch (:api comms)
+        {:keys [build-num project-name]} context
+        {:keys [org repo vcs_type]} (state/navigation-data current-state)
+        {:keys [read-settings]} scopes
+        plan-url (gstring/format "/api/v1.1/project/%s/%s/plan" vcs_type project-name)]
     ;; This is slightly different than the api-event because we don't want to have to
     ;; convert the build from steps to containers again.
+    (analytics/track {:event-type :view-build
+                      :current-state current-state
+                      :build build})
+    ;; Preemptively make the usage-queued API call if the build is in the
+    ;; usage queue and the user has access to the info
+    (when (and read-settings
+               (build-model/in-usage-queue? build))
+      (api/get-usage-queue build api-ch))
+    (when (and (not (get-in current-state state/project-path))
+               repo
+               read-settings)
+      (ajax/ajax :get
+                 (api-path/project-info vcs_type org repo)
+                 :project-settings
+                 api-ch
+                 :context {:project-name project-name
+                           :vcs-type vcs_type}))
+    (when (and (not (get-in current-state state/project-plan-path))
+               repo
+               read-settings)
+      (ajax/ajax :get
+                 plan-url
+                 :project-plan
+                 api-ch
+                 :context {:project-name project-name
+                           :vcs-type vcs_type}))
+    (when (build-model/finished? build)
+      (api/get-build-tests build api-ch))
     (when (and (= build-num (get-in args [:resp :build_num]))
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
       (fetch-visible-output current-state comms build-num (get-in args [:resp :vcs_url]))
@@ -1009,9 +1048,15 @@
 (defmethod post-api-event! [:create-jira-issue :success]
   [target message status {:keys [context]} previous-state current-state comms]
   (forms/release-button! (:uuid context) status)
-  ((:on-success context)))
+  ((:on-success context))
+  (analytics/track {:event-type :create-jira-issue-success
+                    :current-state current-state}))
 
 (defmethod post-api-event! [:create-jira-issue :failed]
   [target message status {:keys [context] :as args} previous-state current-state comms]
   (put! (:errors comms) [:api-error args])
-  (forms/release-button! (:uuid context) status))
+  (forms/release-button! (:uuid context) status)
+  (analytics/track {:event-type :create-jira-issue-failed
+                    :current-state current-state
+                    :properties {:status-code (:status-code context)
+                                 :message (-> context :resp :message)}}))
