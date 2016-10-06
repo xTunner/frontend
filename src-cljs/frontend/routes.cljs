@@ -34,6 +34,8 @@
         action-id (some-> action-id js/parseInt)]
     (merge {:tab tab
             :action-id action-id}
+           ;; dont' add :container-id key unless it's specified (for later
+           ;; destructuring with :or)
            (when container-id
              {:container-id container-id}))))
 
@@ -196,7 +198,9 @@
     [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
     (let [_fragment (:_fragment maybe-fragment)
-          fragment-args (parse-build-page-fragment _fragment)]
+          fragment-args (-> _fragment
+                            parse-build-page-fragment
+                            (select-keys [:tab :action-id :container-id]))]
       (open-to-inner! nav-ch :build (merge fragment-args
                                            {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                             :project-name (str org "/" repo)
