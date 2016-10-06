@@ -33,12 +33,9 @@
     }
 
     &[disabled] {
+      color: @grayLight;
+      background-color: @grayLightest;
       cursor: not-allowed;
-      opacity: .6;
-
-      &:hover {
-        background-color: @grayLightest;
-      }
     }
 
     // TODO: These colors match the style guide, but the style guide doesn\'t
@@ -58,11 +55,7 @@
       }
 
       &[disabled] {
-        opacity: .6;
-
-        &:hover {
-          background-color: @blue;
-        }
+        background-color: @blueLightest;
       }
     }
 
@@ -80,11 +73,7 @@
       }
 
       &[disabled] {
-        opacity: .6;
-
-        &:hover {
-          background-color: @red;
-        }
+        background-color: @redLight;
       }
     }
 
@@ -103,7 +92,6 @@
 
       &[disabled] {
         cursor: not-allowed;
-        opacity: .6;
 
         &:hover {
           background-color: transparent;
