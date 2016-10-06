@@ -89,33 +89,17 @@
         clj-ajax/transform-opts)))
 
 ;; TODO prefixes not implemented
-(defn ajax [method url message channel & {:keys [context] :as opts}]
+(defn ajax [method url message channel & {:keys [context]
+                                          :as opts}]
   (let [uuid frontend.async/*uuid*
-        ajax-execution-path (atom nil)
         base-opts {:method method
                    :uri url
-                   :handler
-                           #(binding [frontend.async/*uuid* uuid]
-                             (reset! ajax-execution-path :success)
-                             (put! channel [message
-                                            :success
-                                            (assoc %
-                                              :context context
-                                              :scopes (scopes-from-response %))]))
-                   :error-handler
-                           #(binding [frontend.async/*uuid* uuid]
-                             (reset! ajax-execution-path :failed)
-                             (put! channel [message
-                                            :failed
-                                            (normalize-error-response % {:url url :context context})]))
-                   :finally
-                           #(binding [frontend.async/*uuid* uuid]
-                             (put! channel [message
-                                            :finished
-                                            (if (map? context)
-                                              (assoc context
-                                                :ajax-execution-path @ajax-execution-path)
-                                              context)]))}]
+                   :handler #(binding [frontend.async/*uuid* uuid]
+                               (put! channel [message :success (assoc % :context context :scopes (scopes-from-response %))]))
+                   :error-handler #(binding [frontend.async/*uuid* uuid]
+                                     (put! channel [message :failed (normalize-error-response % {:url url :context context})]))
+                   :finally #(binding [frontend.async/*uuid* uuid]
+                               (put! channel [message :finished context]))}]
     (put! channel [message :started context])
     (-> base-opts
         (merge opts)

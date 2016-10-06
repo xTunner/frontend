@@ -218,23 +218,14 @@
 
 (defmethod post-api-event! [:build-fetch :success]
   [target message status args previous-state current-state comms]
-  (mlog "=>" "post-api-event! [:build-fetch :success]" ["API" :build :success args])
   (put! (:api comms) [:build :success args]))
 
 (defmethod post-api-event! [:build-fetch :failed]
   [target message status {:keys [status-code]} previous-state current-state comms]
-  (mlog "=>" "post-api-event! [:build-fetch :failed]" [:error {:status status-code :inner? false}])
   (put! (:nav comms) [:error {:status status-code :inner? false}]))
-
-(defmethod post-api-event! [:build-fetch :finished]
-  [target message status {:keys [ajax-execution-path]} previous-state current-state comms]
-  (when-not ajax-execution-path
-    (mlog "=>" "post-api-event! [:build-fetch :failed]" ["ERR" :api-error nil])
-    (put! (:error comms) [:api-error nil])))
 
 (defmethod api-event [:build :success]
   [target message status args state]
-  (mlog "build success: scopes " (:scopes args))
   (let [build (:resp args)
         {:keys [build-num project-name]} (:context args)
         containers (vec (build-model/containers build))]
