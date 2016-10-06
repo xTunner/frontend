@@ -32,9 +32,12 @@
         container-id (some-> container-num js/parseInt)
         tab (some-> tab-name keyword)
         action-id (some-> action-id js/parseInt)]
-    {:container-id (or container-id 0)
-     :tab tab
-     :action-id action-id}))
+    (merge {:tab tab
+            :action-id action-id}
+           ;; don't add :container-id key unless it's specified (for later
+           ;; destructuring with :or)
+           (when container-id
+             {:container-id container-id}))))
 
 (defn build-page-fragment [tab container-id action-id]
   (cond
@@ -194,16 +197,16 @@
   (defroute v1-build #"/(gh|bb)/([^/]+)/([^/]+)/(\d+)"
     [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
-    (let [_fragment (:_fragment maybe-fragment)
-          {:keys [tab container-id action-id]} (parse-build-page-fragment _fragment)]
-      (open-to-inner! nav-ch :build {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
-                                     :project-name (str org "/" repo)
-                                     :build-num (js/parseInt build-num)
-                                     :org org
-                                     :repo repo
-                                     :tab tab
-                                     :container-id container-id
-                                     :action-id action-id})))
+    (let [fragment-args (-> maybe-fragment
+                            :_fragment
+                            parse-build-page-fragment
+                            (select-keys [:tab :action-id :container-id]))]
+      (open-to-inner! nav-ch :build (merge fragment-args
+                                           {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+                                            :project-name (str org "/" repo)
+                                            :build-num (js/parseInt build-num)
+                                            :org org
+                                            :repo repo}))))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
