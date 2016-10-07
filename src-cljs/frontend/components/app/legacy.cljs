@@ -29,7 +29,7 @@
         (om/build main-template/template {:app app
                                           :main-content (om/build old-world-dominant-component-f app)})))))
 
-(defn nav-point->page []
+(def nav-point->page
   (merge
    ;; Page component functions, which are good as they are.
    {:build build/page
@@ -51,7 +51,13 @@
           :build-state admin/build-state
           :switch admin/switch
 
-          :landing (if (config/enterprise?) enterprise-landing/home landing/home)
+          :landing (fn [app owner]
+                     (reify
+                       om/IRender
+                       (render [_]
+                         (om/build
+                          (if (config/enterprise?) enterprise-landing/home landing/home)
+                          app))))
 
           :error errors/error-page})))
 
@@ -62,6 +68,6 @@
   Object
   (render [this]
     (let [app (:legacy/state (om-next/props this))
-          page (get (nav-point->page) (:navigation-point app))]
+          page (get nav-point->page (:navigation-point app))]
       (when page
         (build-legacy page app)))))
