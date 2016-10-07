@@ -65,21 +65,49 @@
         > li {
           .flexy;
 
-          &:hover {
-            background-color: @gray;
-          }
-
           > button.dropdown-toggle {
             border: none;
             background: none;
           }
+
           > a {
+            position: relative;
+
             > i {
+              margin-left: 0;
               @media (max-width: @screen-md-min) {
                 display: none!important;
               }
             }
+            > .status {
+              position: absolute;
+              top: 20px;
+              right: 6px;
+              z-index: 2;
+              width: 14px;
+              height: 14px;
+              color: #fff;
+              text-align: center;
+              background-image: -webkit-linear-gradient(@greenLightest, @green);
+              background-image: linear-gradient(@greenLightest, @green);
+              background-clip: padding-box;
+              border: 2px solid @grayDark;
+              border-radius: 50%;
+
+              &.operational {
+
+              }
+
+              &.minor {
+
+              }
+
+              &.major {
+
+              }
+            }
           }
+
           > a,
           > button.dropdown-toggle {
             display: block;
@@ -90,6 +118,10 @@
             color: @white;
             text-decoration: none;
             white-space: nowrap;
+
+            &:hover {
+              color: @grayLighter;
+            }
 
             @media (max-width: @screen-md-min) {
               padding: 20px 1em;

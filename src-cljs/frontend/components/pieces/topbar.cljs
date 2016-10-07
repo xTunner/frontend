@@ -48,6 +48,11 @@
                          :aria-label "Teams"}
              [:i.material-icons "group"] "Teams"]]]
         [:ul.nav-items.nav-items-left.collapsing-nav
+         [:li
+           [:a.has-icon {:href "/build-insights"
+                         :aria-label "Status"}
+             [:i.material-icons "blur_on"] "Status"
+             [:span.status.operational]]]
          [:li.dropdown
           [:button.dropdown-toggle
            {:data-toggle "dropdown"
@@ -57,16 +62,24 @@
           [:ul.dropdown-menu.pull-right.animated.slideInDown
            (when-not (config/enterprise?)
              [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
-           [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
-         [:li
-          [:a (html/open-ext {:href "https://circleci.com/docs/"})
-           "Docs"]]
-         [:li
-          [:a (html/open-ext {:href "https://discuss.circleci.com/"})
-           "Discuss"]]
-         [:li
-          [:a support-info
-           "Support"]]
+             [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
+         [:li.dropdown
+          [:button.dropdown-toggle
+           {:data-toggle "dropdown"
+            :aria-haspopup "true"
+            :aria-expanded "false"}
+           "Get Help " [:i.material-icons "keyboard_arrow_down"]]
+          [:ul.dropdown-menu.pull-right.animated.slideInDown
+           [:li
+            [:a (html/open-ext {:href "https://circleci.com/docs/"})
+             "Docs"]]
+           [:li
+            [:a (html/open-ext {:href "https://discuss.circleci.com/"})
+             "Discuss"]]
+           [:li
+            [:a support-info
+             "Support"]]]]
+
          [:li.dropdown.user-menu
           [:button.dropdown-toggle
            {:data-toggle "dropdown"
