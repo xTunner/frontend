@@ -107,8 +107,8 @@
 (def current-container-filter-path [:current-build-data :container-data :current-filter])
 (def current-container-path (conj navigation-data-path :container-id))
 (defn current-container-id
-  [target-state]
-  (get-in target-state current-container-path 0))
+  [target-state & {:keys [allow-nils?]}]
+  (get-in target-state current-container-path (when-not allow-nils? 0)))
 (def container-paging-offset-path [:current-build-data :container-data :paging-offset])
 (def build-header-tab-path [:current-build-data :selected-header-tab])
 

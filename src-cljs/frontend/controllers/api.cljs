@@ -276,7 +276,7 @@
         build-running? (not (build-model/finished? build))
         failed-containers (filter #(= :failed (container-model/status % build-running?))
                                   containers)
-        container-id (state/current-container-id state)
+        container-id (state/current-container-id state :allow-nils? true)
         failed-filter-valid? (or (not container-id)
                                  (some #(= container-id (container-model/id %)) failed-containers))
         controls-ch (:controls comms)]
