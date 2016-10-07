@@ -218,7 +218,7 @@
     (:status override-status)
     real-status))
 
-(defn container-pill [{:keys [container status selected-container-id scopes current-tab build build-running? build-finished?]} owner]
+(defn container-pill [{:keys [container status selected-container-id scopes current-tab build build-finished?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
