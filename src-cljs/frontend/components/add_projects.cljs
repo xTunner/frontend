@@ -222,7 +222,7 @@
        (if (empty? repos)
          (empty-repo-list loading-repos? repo-filter-string (:login selected-org))
          [:ul.proj-list.list-unstyled
-          (if-not (pm/osx? selected-plan)
+          (if (and (:admin selected-org) (not (pm/osx? selected-plan)))
             (om/build no-plan-empty-state {:selected-org selected-org})
             (for [repo repos]
               (om/build repo-item {:repo repo :settings settings})))])))))
