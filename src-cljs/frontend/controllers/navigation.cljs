@@ -127,19 +127,25 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args} state]
+  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id]
+                                 :as args
+                                 :or {container-id 0}}
+   state]
   (mlog "navigated-to :build with args " args)
   (if (and (= :build (state/current-view state))
            (not (state-utils/stale-current-build? state project-name build-num)))
     ;; page didn't change, just switched tabs
-    (assoc-in state state/navigation-tab-path tab)
+    (-> state
+        (assoc-in state/navigation-tab-path tab)
+        (assoc-in state/current-container-path container-id)
+        (assoc-in state/current-action-id-path action-id))
     ;; navigated to page, load everything
     (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
                state/navigation-data (assoc args
-                                       :show-aside-menu? false
-                                       :show-settings-link? false)
+                                            :show-aside-menu? false
+                                            :show-settings-link? false)
                :project-settings-project-name project-name)
         (assoc-in state/crumbs-path [{:type :dashboard}
                                      {:type :org :username org :vcs_type vcs_type}
@@ -152,9 +158,7 @@
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
             %))
-        (#(if container-id
-            (assoc-in % state/current-container-path container-id)
-            %))
+        (assoc-in state/current-container-path container-id)
         (#(if action-id
             (assoc-in % state/current-action-id-path action-id)
             %))
@@ -185,60 +189,17 @@
 (defmethod post-navigated-to! :build
   [history-imp navigation-point {:keys [project-name build-num vcs_type] :as args} previous-state current-state comms]
   (let [api-ch (:api comms)
-        nav-ch (:nav comms)
-        err-ch (:errors comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
-        current-user (get-in current-state state/user-path)]
+        current-user (get-in current-state state/user-path)
+        build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)]
     (mlog (str "post-navigated-to! :build current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
     (when (and (not projects-loaded?)
                (not (empty? current-user)))
       (api/get-projects api-ch))
-    (go (let [build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)
-              api-result (<! (ajax/managed-ajax :get build-url))
-              build (:resp api-result)
-              scopes (:scopes api-result)
-              navigation-data (state/navigation-data current-state)
-              vcs-type (:vcs_type navigation-data)
-              org (:org navigation-data)
-              repo (:repo navigation-data)
-              plan-url (gstring/format "/api/v1.1/project/%s/%s/plan" vcs_type project-name)]
-          (mlog (str "post-navigated-to! :build, " build-url " scopes " scopes))
-          ;; Start 404'ing on non-existent builds, as well as when you
-          ;; try to go to a build page of a project which doesn't
-          ;; exist. This is different than current behaviour, where
-          ;; you see the "regular" inner page, with an error message
-          ;; where the build info would be. Thoughts?
-          (condp = (:status api-result)
-            :success (put! api-ch [:build (:status api-result) (assoc api-result :context {:project-name project-name :build-num build-num})])
-            :failed (put! nav-ch [:error {:status (:status-code api-result) :inner? false}])
-            (put! err-ch [:api-error api-result]))
-          (when (= :success (:status api-result))
-            (analytics/track {:event-type :view-build
-                              :current-state current-state
-                              :build build}))
-          ;; Preemptively make the usage-queued API call if the build is in the
-          ;; usage queue and the user has access to the info
-          (when (and (:read-settings scopes) (build-model/in-usage-queue? build))
-            (api/get-usage-queue build api-ch))
-          (when (and (not (get-in current-state state/project-path))
-                     (:repo args) (:read-settings scopes))
-            (ajax/ajax :get
-                       (api-path/project-info vcs-type org repo)
-                       :project-settings
-                       api-ch
-                       :context {:project-name project-name
-                                 :vcs-type vcs_type}))
-          (when (and (not (get-in current-state state/project-plan-path))
-                     (:repo args) (:read-settings scopes))
-            (ajax/ajax :get
-                       plan-url
-                       :project-plan
-                       api-ch
-                       :context {:project-name project-name
-                                 :vcs-type vcs_type}))
-          (when (build-model/finished? build)
-            (api/get-build-tests build api-ch))))
+    (ajax/ajax :get build-url :build-fetch
+               api-ch
+               :context {:project-name project-name :build-num build-num})
     (let [[username project] (str/split project-name #"/")]
       (initialize-pusher-subscriptions current-state comms
                                        {:username username

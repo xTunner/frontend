@@ -8,6 +8,7 @@
             [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
+            [frontend.models.project :as project-model]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
@@ -42,20 +43,29 @@
       (dashboard-icon "Bot-Icon")
       (dashboard-icon "Default-Avatar"))))
 
-(defn build-action [{:keys [text loading-text icon on-click]}]
+(defn build-action [{:keys [text loading-text icon-name icon-class on-click]}]
   [:div.build-action
    (forms/managed-button
      [:button
       {:data-loading-text loading-text
        :on-click on-click}
-      [:img.button-icon {:src (common/icon-path icon)}]
+      (cond
+        icon-name [:img.button-icon {:src (common/icon-path icon-name)}]
+        icon-class [:i.button-icon {:class icon-class}])
       [:span.button-text text]])])
 
-(defn build-row [build owner {:keys [show-actions? show-branch? show-project?]}]
+(defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         raise-build-action! (fn [event] (raise! owner [event (build-model/build-args build)]))
+        raise-merge-action! (fn [] (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
         status-words (build-model/status-words build)
-        should-show-rebuild? (#{"timedout" "failed"} (:outcome build))]
+        should-show-cancel? (and (project-model/can-trigger-builds? project)
+                                 (build-model/can-cancel? build))
+        should-show-rebuild? (and (project-model/can-trigger-builds? project)
+                                  (#{"timedout" "failed"} (:outcome build)))
+        should-show-merge? (and (feature/enabled? :merge-pull-request)
+                                (project-model/can-write-settings? project)
+                                (build-model/can-merge-at-least-one-pr? build))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
@@ -66,14 +76,15 @@
        (build-status-badge build)]
 
 
-      ;; These two cases should be mutually exclusive. Just in case they aren't,
-      ;; use a cond so it doesn't try to render both in the same place
+      ;; Actions should be mutually exclusive. Just in case they
+      ;; aren't, use a cond so it doesn't try to render both in the
+      ;; same place
       (cond
-        (build-model/can-cancel? build)
+        should-show-cancel?
         (build-action
           {:text "cancel"
            :loading-text "Cancelling..."
-           :icon "Status-Canceled"
+           :icon-name "Status-Canceled"
            :on-click #(do
                         (raise-build-action! :cancel-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :cancel-build-clicked}))})
@@ -82,10 +93,19 @@
         (build-action
           {:text "rebuild"
            :loading-text "Rebuilding..."
-           :icon "Rebuild"
+           :icon-name "Rebuild"
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :rebuild-clicked}))})
+
+        should-show-merge?
+        (build-action
+          {:text "merge"
+           :loading-text "Merging..."
+           :icon-class "octicon octicon-git-merge"
+           :on-click #(do
+                        (raise-merge-action!)
+                        ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked}))})
 
         :else nil)]
 
@@ -146,7 +166,7 @@
                  (om/build common/updating-duration {:start (:start_time build)
                                                      :stop (:stop_time build)})]))]
       [:div.metadata-row.pull-revision
-        (when-let [urls (seq (:pull_request_urls build))]
+        (when-let [urls (seq (map :url (:pull_requests build)))]
           [:div.metadata-item.pull-requests {:title "Pull Requests"}
            [:i.octicon.octicon-git-pull-request]
            (interpose
@@ -170,17 +190,21 @@
                                                                              :org (:username build)}})}
             (build-model/github-revision build)])]]]]))
 
-(defn builds-table [builds owner {:keys [show-actions? show-branch? show-project?]
-                                  :or {show-branch? true
-                                       show-project? true}}]
-  (reify
-    om/IDisplayName (display-name [_] "Builds Table V2")
-    om/IRender
-    (render [_]
-      (html
-        [:div.container-fluid
-         (map #(build-row % owner {:show-actions? show-actions?
-                                   :show-branch? show-branch?
-                                   :show-project? show-project?})
-              builds)]))))
-
+(defn builds-table [data owner {:keys [show-actions? show-branch? show-project?]
+                                :or {show-branch? true
+                                     show-project? true}}]
+  (let [{:keys [builds projects]} data
+        projects-by-vcs_url (into {}
+                                  (map (juxt :vcs_url identity) projects))]
+    (reify
+      om/IDisplayName (display-name [_] "Builds Table V2")
+      om/IRender
+      (render [_]
+        (html
+         [:div.container-fluid
+          (map #(build-row {:build %
+                            :project (get projects-by-vcs_url (:vcs_url %))}
+                           owner {:show-actions? show-actions?
+                                  :show-branch? show-branch?
+                                  :show-project? show-project?})
+               builds)])))))

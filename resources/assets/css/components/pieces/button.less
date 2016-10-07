@@ -1,51 +1,103 @@
 .ns("frontend.components.pieces.button", {
   .button-styles() {
-    height: 35px;
+    font-size: @baseFontSize;
+    line-height: 1;
+
     width: 155px;
-    border-radius: 3px;
+    height: 35px;
+
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+
     color: @grayDark;
+    border: none;
+    border-radius: 3px;
     background-color: @grayLightest;
-    border: solid 1px rgba(0, 0, 0, 0.1);
+
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
     &:hover {
-      background-color: @whiten;
+      background-color: @grayLighter;
     }
 
+    &:focus,
     &:active {
       background-color: @grayLighter;
+      outline: none;
     }
 
     &.medium {
       height: 30px;
-    }
-
-
-    // TODO: These colors match the style guide, but the style guide doesn\'t
-    // match our palette/variables. Reconcile these in CIRCLE-103.
-
-    &.primary {
-      color: @white;
-      background-color: #3dc1d9;
-
-      &:hover {
-        background-color: #27a0bd;
-      }
-
-      &:active {
-        background-color: @blueDarkest;
-      }
+      font-size: @fontSizeSmaller;
     }
 
     &[disabled] {
-      &,
-      &:hover,
+      color: @grayLight;
+      background-color: @grayLightest;
+      cursor: not-allowed;
+    }
+
+    &.primary {
+      color: @white;
+      background-color: @blue;
+
+      &:hover {
+        background-color: @blueDark;
+      }
+
+      &:focus,
       &:active {
-        color: @grayLight;
-        background-color: @grayLighter;
+        background-color: @blueDarkest;
+      }
+
+      &[disabled] {
+        background-color: @blueLightest;
+      }
+    }
+
+    &.danger {
+      color: @white;
+      background-color: @red;
+
+      &:hover {
+        background-color: @redDark;
+      }
+
+      &:focus,
+      &:active {
+        background-color: @redDarkest;
+      }
+
+      &[disabled] {
+        background-color: @redLight;
+      }
+    }
+
+    &.flat {
+      color: @blueDark;
+      background-color: transparent;
+
+      &:hover {
+        background-color: @grayLightest;
+      }
+
+      &:focus,
+      &:active {
+        background-color: @grayLightest;
+      }
+
+      &[disabled] {
+        cursor: not-allowed;
+
+        &:hover {
+          background-color: transparent;
+        }
       }
     }
   }
-     
+
   .ui("button", {
     .button-styles();
   });

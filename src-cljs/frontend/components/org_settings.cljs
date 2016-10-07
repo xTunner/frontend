@@ -341,7 +341,7 @@
         :loading-text loading-text
         :failed-text "Failed"
         :on-click on-click-fn
-        :primary? true
+        :kind :primary
         :disabled? disabled?}
        text))))
 
@@ -512,9 +512,10 @@
                    (button/link
                     {:href "#cancel"
                      :disabled? (not button-clickable?)
+                     :kind :danger
                      :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
                                                                      :properties {:repo nil}})}
-                    "Cancel plan")
+                    "Cancel Plan")
                    (button/managed-button
                     {:success-text "Saved"
                      :loading-text "Saving..."
@@ -528,7 +529,7 @@
                                                                                :previous-plan (pm/paid-linux-containers plan)
                                                                                :plan-type pm/linux-plan-type
                                                                                :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
-                     :primary? true}
+                     :kind :primary}
                     (if (config/enterprise?)
                       enterprise-text
                       "Update plan"))))
@@ -724,7 +725,7 @@
                    :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
                                                                             :vcs-type org-vcs_type
                                                                             :selected-piggieback-orgs selected-piggieback-orgs}])
-                   :primary? true}
+                   :kind :primary}
                   "Pay for organizations")]]]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
@@ -793,20 +794,17 @@
                 (transfer-organizations-list bb-user-orgs selected-transfer-org owner))]
              [:div.row
               [:div.form-actions.span6
-               (forms/managed-button
-                [:button.btn.btn-danger.btn-large
-                 {:data-success-text "Transferred",
-                  :data-loading-text "Tranferring...",
-                  :type "submit",
-                  :class (when-not selected-transfer-org "disabled")
-                  :on-click #(raise! owner
-                                     [:transfer-plan-clicked
-                                      {:from-org {:org-name org-name
-                                                  :vcs-type vcs_type}
-                                       :to-org selected-transfer-org}])
-                  :data-bind
-                  "click: transferPlan, enable: transfer_org_name(), text: transfer_plan_button_text()"}
-                 "Transfer plan" (when selected-transfer-org-name (str " to " selected-transfer-org-name))])]]]])]]]))))
+               (button/managed-button
+                {:success-text "Transferred"
+                 :loading-text "Transferring..."
+                 :disabled? (not selected-transfer-org)
+                 :kind :primary
+                 :on-click #(raise! owner
+                                    [:transfer-plan-clicked
+                                     {:from-org {:org-name org-name
+                                                 :vcs-type vcs_type}
+                                      :to-org selected-transfer-org}])}
+                "Transfer plan")]]]])]]]))))
 
 (defn organizations [app owner]
   (om/component
@@ -872,7 +870,7 @@
                      :failed-text "Failed"
                      :loading-text "Updating"
                      :on-click #(raise! owner [:update-card-clicked])
-                     :primary? true}
+                     :kind :primary}
                     "Change credit card")]]]]]]))))))
 
 ;; Render a friendly human-readable version of a Stripe discount coupon.
@@ -897,8 +895,8 @@
         discount-period (cond (= duration "forever") "forever"
                               (= duration-in-months 1) "for 1 month"
                               :else (gstring/format "for %d months" duration-in-months))]
-    [:p "Your plan includes " discount-amount " off " discount-period
-        " from coupon code " [:strong id]]))
+    [:p (str "Your plan includes " discount-amount " off " discount-period " from coupon code ")
+     [:strong id]]))
 
 ;; Show a 'Discount' section showing any Stripe discounts that are being appied
 ;; the current plan.
@@ -969,7 +967,7 @@
                   {:success-text "Saved invoice data"
                    :loading-text "Saving invoice data..."
                    :on-click #(raise! owner [:save-invoice-data-clicked])
-                   :primary? true}
+                   :kind :primary}
                   "Save invoice data")]]]]]))))))
 
 (defn- invoice-total
@@ -1044,7 +1042,7 @@
                                         :on-click #(raise! owner [:resend-invoice-clicked
                                                                   {:invoice-id (:id invoice)}])
                                         :size :medium
-                                        :primary? true}
+                                        :kind :primary}
                                        "Resend"))}]})]]))))))
 
 (defn billing [app owner]
@@ -1115,15 +1113,17 @@
                 (list
                  (when (om/get-state owner [:show-errors?])
                    [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
-                 [:button {:on-click #(om/set-state! owner [:show-errors?] true)}
-                  "Cancel Plan"])
-                (forms/managed-button
-                 [:button {:data-spinner "true"
-                           :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                           :vcs_type vcs_type
-                                                                           :cancel-reasons reasons
-                                                                           :cancel-notes notes}])}
-                  "Cancel Plan"])))]]])))))
+                 (button/button
+                  {:on-click #(om/set-state! owner [:show-errors?] true)
+                   :kind :danger}
+                  "Cancel Plan"))
+                (button/managed-button
+                 {:kind :danger
+                  :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
+                                                                  :vcs_type vcs_type
+                                                                  :cancel-reasons reasons
+                                                                  :cancel-notes notes}])}
+                 "Cancel Plan")))]]])))))
 
 (defn progress-bar [{:keys [max value]} owner]
   (reify

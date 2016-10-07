@@ -55,7 +55,7 @@
     om/IRender
     (render [_]
       (button/button {:on-click #(raise! owner [:refreshed-user-orgs {}])
-                      :primary? true}
+                      :kind :primary}
                      "Reload Organizations"))))
 
 (defn- repo-title [repo link?]
@@ -163,7 +163,7 @@
                                  :properties {:org login
                                               :vcs-type vcs_type
                                               :plan-type pm/osx-plan-type}})
-                    :primary? true}
+                    :kind :primary}
                    "Select Plan"))))
 
 (defn free-trial-button [{{:keys [login vcs_type]} :selected-org} owner]
@@ -222,7 +222,7 @@
        (if (empty? repos)
          (empty-repo-list loading-repos? repo-filter-string (:login selected-org))
          [:ul.proj-list.list-unstyled
-          (if-not (pm/osx? selected-plan)
+          (if (and (:admin selected-org) (not (pm/osx? selected-plan)))
             (om/build no-plan-empty-state {:selected-org selected-org})
             (for [repo repos]
               (om/build repo-item {:repo repo :settings settings})))])))))
@@ -402,7 +402,7 @@
                                 (button/link {:href (gh-utils/auth-url)
                                               :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
                                                                                               :properties {:vcs-type selected-vcs-type}})
-                                              :primary? true}
+                                              :kind :primary}
                                              "Authorize GitHub")]))
                            (when (and (= "bitbucket" selected-vcs-type)
                                       (not bitbucket-authorized?))
@@ -411,7 +411,7 @@
                               (button/link {:href (bitbucket/auth-url)
                                             :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
                                                                                             :properties {:vcs-type selected-vcs-type}})
-                                            :primary? true}
+                                            :kind :primary}
                                            "Authorize Bitbucket")])
                            (om/build org-picker/picker {:orgs (filter (partial select-vcs-type selected-vcs-type) orgs)
                                                         :selected-org selected-org

@@ -3,7 +3,7 @@
             [om.core :as om :include-macros true]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.tabs :as tabs])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component html]]))
 
 (defn- exterior [content]
   (html
@@ -48,6 +48,14 @@
      tab-row
      (body content)))))
 
+(defn collection
+  "A set of cards to layout together"
+  ([cards]
+   (component
+    (html
+     [:div
+      (for [card cards]
+        [:.item card])]))))
 
 (dc/do
   (defcard basic-card
@@ -64,7 +72,7 @@
   (defcard titled-card-with-action
     (titled
      {:title "Card Title (Generally in Title Case)"
-      :action (button/button {:primary? true
+      :action (button/button {:kind :primary
                               :size :medium}
                              "Action")}
      "Some content.")
@@ -82,4 +90,13 @@
                                          :on-tab-click #(swap! state assoc :selected-tab-name %)})}
        "Some content."))
     {:selected-tab-name :tab-one}
+    {:classname "background-gray"})
+
+  (defcard card-collection
+    (collection
+     [(titled {:title "Card A"}
+              "A bunch of words")
+      (titled {:title "Card B"}
+              "A whole bunch of words")])
+    {}
     {:classname "background-gray"}))

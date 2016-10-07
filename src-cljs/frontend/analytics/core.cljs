@@ -48,6 +48,9 @@
     :change-image-clicked
     :container-filter-changed
     :container-selected
+    :create-jira-issue-clicked
+    :create-jira-issue-success
+    :create-jira-issue-failed
     :dismiss-trial-offer-banner-clicked
     :expand-repo-toggled
     :follow-project-clicked
@@ -57,6 +60,7 @@
     :invite-teammates-impression
     :invite-teammates-select-all-clicked
     :invite-teammates-select-none-clicked
+    :jira-modal-impression
     :login-clicked
     :merge-pr-clicked
     :merge-pr-failed
@@ -75,6 +79,7 @@
     :project-settings-clicked
     :select-plan-clicked
     :set-up-junit-clicked
+    :set-up-junit-impression
     :show-all-branches-toggled
     :signup-clicked
     :signup-impression

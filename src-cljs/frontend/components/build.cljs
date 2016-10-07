@@ -12,6 +12,7 @@
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
+            [frontend.components.forms :as forms]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise?]]
@@ -55,7 +56,7 @@
        ") We should have automatically retried this build. We've been alerted of"
        " the issue and are almost certainly looking into it, please "
        (common/contact-us-inner owner)
-       " if you're interested in the cause of the problem."])))
+       " if you're interested in the cause or if the problem persists."])))
 
 (defn report-error [{:keys [build show-premium-content?]} owner]
   (let [build-id (build-model/id build)
@@ -479,6 +480,7 @@
                                               :current-container-id (get-in app state/current-container-path)
                                               :project-data project-data
                                               :user user
+                                              :projects (get-in app state/projects-path)
                                               :scopes (get-in app state/project-scopes-path)
                                               :ssh-available? ssh-available?})
              [:div.card.col-sm-12

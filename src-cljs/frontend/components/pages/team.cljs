@@ -223,7 +223,7 @@
                                                                                                                        :vcs_type (:vcs_type selected-org)
                                                                                                                        :org-name (:name selected-org)}])
                                                                                  (close-fn))
-                                                                    :primary? true
+                                                                    :kind :primary
                                                                     :disabled? (zero? count-selected)}
                                                                    (invite-button-text count-selected))]
                                   :close-fn close-fn})))])))))
@@ -248,6 +248,7 @@
             api-chan (om/get-shared owner [:comms :api])]
         (when (not= (:selected-org-ident (om/get-render-state owner))
                     selected-org-ident)
+          (api/get-org-members name vcs-type api-chan)
           (api/get-org-settings-normalized name vcs-type api-chan))))
 
     om/IRenderState
@@ -281,7 +282,7 @@
                            nil)])
                 :action [:div
                          (button/button
-                          {:primary? true
+                          {:kind :primary
                            :size :medium
                            :on-click #(do
                                         (om/set-state! owner :show-invite-modal? true)

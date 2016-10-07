@@ -155,10 +155,10 @@
                         (condp = (get-in state state/show-all-branches-path)
                           true "All"
                           false "Mine"))]
-  (analytics/track {:event-type :show-all-branches-toggled
-                    :current-state current-state
-                    :properties {:current-state (element-state current-state)
-                                 :previous-state (element-state previous-state)}})))
+   (analytics/track {:event-type :show-all-branches-toggled
+                     :current-state current-state
+                     :properties {:current-state (element-state current-state)
+                                  :previous-state (element-state previous-state)}})))
 
 (defmethod control-event :expand-repo-toggled
   [target message {:keys [repo]} state]
@@ -191,10 +191,10 @@
                         (if (get-in state state/sort-branches-by-recency-path)
                           "Recent"
                           "By Repo"))]
-  (analytics/track {:event-type :sort-branches-toggled
-                    :current-state current-state
-                    :properties {:current-state (element-state current-state)
-                                 :previous-state (element-state previous-state)}})))
+   (analytics/track {:event-type :sort-branches-toggled
+                     :current-state current-state
+                     :properties {:current-state (element-state current-state)
+                                  :previous-state (element-state previous-state)}})))
 
 (defmethod control-event :collapse-branches-toggled
   [target message {:keys [collapse-group-id]} state]
@@ -235,10 +235,10 @@
       (state-utils/reset-current-org)))
 
 (defmethod post-control-event! :selected-add-projects-org
-  [target message {:keys [vcs_type login]} previous-state current-state comms]
+  [target message {:keys [vcs_type login admin]} previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (when (user-model/has-org? (get-in current-state state/user-path) login vcs_type)
-      (api/get-org-settings login vcs_type api-ch)
+    (when (and admin
+               (user-model/has-org? (get-in current-state state/user-path) login vcs_type))
       (api/get-org-plan login vcs_type api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
@@ -381,12 +381,12 @@
                  api-ch
                  :params {:parallel parallelism}
                  :context {:project-id project-id})
-    (analytics/track {:event-type :update-parallelism-clicked
-                      :current-state current-state
-                      :properties {:previous-parallelism (project-model/parallelism previous-project)
-                                   :new-parallelism (project-model/parallelism new-project)
-                                   :plan-type (analytics-utils/canonical-plan-type :paid)
-                                   :vcs-type vcs-type}}))))
+      (analytics/track {:event-type :update-parallelism-clicked
+                        :current-state current-state
+                        :properties {:previous-parallelism (project-model/parallelism previous-project)
+                                     :new-parallelism (project-model/parallelism new-project)
+                                     :plan-type (analytics-utils/canonical-plan-type :paid)
+                                     :vcs-type vcs-type}}))))
 
 (defmethod post-control-event! :clear-cache
   [target message {:keys [type project-id]} previous-state current-state comms]
@@ -503,15 +503,20 @@
 (defmethod post-control-event! :merge-pull-request-clicked
   [target message {:keys [vcs-url number sha] :as args} previous-state current-state comms]
   (let [api-ch (:api comms)
+        uuid frontend.async/*uuid*
         vcs-type (vcs-url/vcs-type vcs-url)
         owner (vcs-url/org-name vcs-url)
         repo (vcs-url/repo-name vcs-url)]
-    (analytics/track {:event-type :merge-pr-clicked})
-    (ajax/ajax :put
-               (api-path/merge-pull-request vcs-type owner repo number)
-               :merge-pull-request
-               api-ch
-               :params {:sha sha})))
+    (go
+      (let [api-result (<! (ajax/managed-ajax :put (api-path/merge-pull-request vcs-type owner repo number)
+                                              :params {:sha sha}))]
+        (put! api-ch [:merge-pull-request (:status api-result) api-result])
+        (release-button! uuid (:status api-result))
+        (if (= :success (:status api-result))
+          (analytics/track {:event-type :merge-pr-success
+                            :current-state current-state})
+          (analytics/track {:event-type :merge-pr-failed
+                            :current-state current-state}))))))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state comms]
@@ -1518,10 +1523,29 @@
     (api/set-project-code-signing-keys project-name vcs-type file-content file-name password description api-ch uuid on-success)))
 
 (defmethod post-control-event! :delete-p12
-  [_ _ {:keys [project-name vcs-type id]} previous-state current-state comms]
+  [_ _ {:keys [project-name vcs-type id on-success]} previous-state current-state comms]
   (let [uuid frontend.async/*uuid*
         api-ch (:api comms)]
-    (api/delete-project-code-signing-key project-name vcs-type id api-ch uuid)))
+    (api/delete-project-code-signing-key project-name vcs-type id api-ch on-success uuid)))
+
+(defmethod post-control-event! :create-jira-issue
+  [_ _ {:keys [project-name vcs-type jira-issue-data on-success]} previous-state current-state comms]
+  (let [uuid frontend.async/*uuid*
+        api-ch (:api comms)]
+    (api/create-jira-issue project-name vcs-type jira-issue-data api-ch uuid on-success))
+    (analytics/track {:event-type :create-jira-issue-clicked
+                      :current-state current-state
+                      :properties {:issue-type (:type jira-issue-data)}}))
+
+(defmethod post-control-event! :load-jira-projects
+  [_ _ {:keys [project-name vcs-type]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
+    (api/get-jira-projects project-name vcs-type api-ch)))
+
+(defmethod post-control-event! :load-jira-issue-types
+  [_ _ {:keys [project-name vcs-type]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
+    (api/get-jira-issue-types project-name vcs-type api-ch)))
 
 (defmethod post-control-event! :project-insights-branch-changed
   [target message {:keys [new-branch]} _ current-state comms]

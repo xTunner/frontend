@@ -32,9 +32,17 @@
                                         (aget "elevSettings")
                                         (aget "support_enabled"))))
 (defn has-org? [{:keys [organizations]} org-name vcs-type]
-  (boolean (some #(and (= org-name (:login %))
-                       (= vcs-type (:vcs_type %)))
-                 organizations)))
+  (some #(and (= org-name (:login %))
+              (= vcs-type (:vcs_type %)))
+        organizations))
+
+(defn admin-of-org? [{:keys [organizations]} org-name vcs-type]
+  (->> organizations
+       (filter #(and (= org-name (:login %))
+                     (= vcs-type (:vcs_type %))))
+       first
+       :admin
+       boolean))
 
 (defn github-authorized? [user]
   (-> user :github_oauth_scopes empty? not))
