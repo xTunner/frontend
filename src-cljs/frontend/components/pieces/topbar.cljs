@@ -73,7 +73,8 @@
                  [:a (html/open-ext {:href "https://discuss.circleci.com/"})
                   "Discuss"]]
                 [:li
-                 [:a support-info
+                 ;; FIXME: NEED TO ADD THIS AGAIN IN THE DEFN
+                 [:a.support-info
                   "Support"]]]]
 
               [:li.dropdown.user-menu
