@@ -224,6 +224,14 @@
   [target message status {:keys [status-code]} previous-state current-state comms]
   (put! (:nav comms) [:error {:status status-code :inner? false}]))
 
+(defn reset-state-build
+  [state build]
+  (-> state
+      (assoc-in state/build-path
+                build)
+      (assoc-in state/containers-path
+                (vec (build-model/containers build)))))
+
 (defmethod api-event [:build :success]
   [target message status args state]
   (let [build (:resp args)
@@ -242,10 +250,12 @@
                 (and branch (not tag)) (assoc-in branch-crumb-path branch)
                 tag (assoc-in tag-crumb-path tag)
                 tag (assoc-in active-crumb-path true)
-                true (assoc-in state/build-path build)
                 true (assoc-in state/project-scopes-path (:scopes args))
                 true (assoc-in state/page-scopes-path (:scopes args))
-                true (assoc-in state/containers-path containers))))))
+
+                (not= (build-model/id build)
+                      (build-model/id (get-in state state/build-path)))
+                (reset-state-build build))))))
 
 (defn maybe-set-containers-filter!
   "Depending on the status and outcome of the build, set active
