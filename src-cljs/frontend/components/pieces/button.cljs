@@ -88,7 +88,8 @@
 
 (dc/do
   (defcard buttons
-    "These are our buttons in their normal, `:full` size (the default) and in `:medium` size to be used in table rows and anywhere vertical space is at a premium."
+    "These are our buttons in their normal, `:full` size (the default) and in
+    `:medium` size to be used in table rows and anywhere vertical space is at a premium."
 
     (html
      [:div {:style {:display "flex"}}
@@ -154,7 +155,19 @@
                 "Flat Medium")]]]))
 
   (defcard link-buttons
-    "These are our link buttons, when you need to style a link as a button. There are `:medium` size link buttons to be used in table rows and anywhere vertical space is at a premium. <br><br>A link-button's label, like an ordinary button's, should be an action—that is, an imperative verb. Like a normal button, clicking it initiates that action. Clicking a link-button in particular \"initiates\" the action by navigating to a place in the app where the user can continue the action. For instance, \"Add Projects\" is a link, because it navigates to the Add Projects page, but it is a link-button in particular because it takes the user there to perform the \"Add Projects\" action. <br><br>Viewing more information is not an action. \"Build #5\" would not be an appropriate label for a link-button; neither would \"View Build #5\". Instead, \"Build #5\" should be a normal link."
+    "These are our link buttons, when you need to style a link as a button.
+    There are `:medium` size link buttons to be used in table rows and
+    anywhere vertical space is at a premium. <br><br>A link-button's label,
+    like an ordinary button's, should be an action—that is, an imperative
+    verb. Like a normal button, clicking it initiates that action. Clicking
+    a link-button in particular \"initiates\" the action by navigating to a
+    place in the app where the user can continue the action. For instance,
+    \"Add Projects\" is a link, because it navigates to the Add Projects page,
+    but it is a link-button in particular because it takes the user there to
+    perform the \"Add Projects\" action. <br><br>Viewing more information is
+    not an action. \"Build #5\" would not be an appropriate label for a
+    link-button; neither would \"View Build #5\". Instead, \"Build #5\"
+    should be a normal link."
 
     (html
      [:div {:style {:display "flex"}}
