@@ -172,7 +172,8 @@
     (html
      [:div {:style {:display "flex"}}
 
-      [:div.primary {:style {:margin-right "2em"}}
+      ;; Primary buttons
+      [:div {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (link {:kind :primary
               :href "#"}
@@ -183,7 +184,8 @@
               :size :medium}
              "Medium Primary Link")]]
 
-      [:div.secondary {:style {:margin-right "2em"}}
+      ;; Secondary buttons
+      [:div {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (link {:href "#"}
              "Secondary Link")]
@@ -192,7 +194,8 @@
               :size :medium}
              "Medium Secondary Link")]]
 
-      [:div.danger {:style {:margin-right "2em"}}
+      ;; Danger buttons
+      [:div {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (link {:kind :danger
               :href "#"}
@@ -202,7 +205,9 @@
               :href "#"
               :size :medium}
              "Medium Danger Link")]]
-      [:div.flat {:style {:margin-right "2em"}}
+
+      ;; Flat buttons
+      [:div {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (link {:kind :flat
               :href "#"}
