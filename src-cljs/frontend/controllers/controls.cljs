@@ -235,10 +235,10 @@
       (state-utils/reset-current-org)))
 
 (defmethod post-control-event! :selected-add-projects-org
-  [target message {:keys [vcs_type login]} previous-state current-state comms]
+  [target message {:keys [vcs_type login admin]} previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (when (user-model/has-org? (get-in current-state state/user-path) login vcs_type)
-      (api/get-org-settings login vcs_type api-ch)
+    (when (and admin
+               (user-model/has-org? (get-in current-state state/user-path) login vcs_type))
       (api/get-org-plan login vcs_type api-ch)))
   (utils/scroll-to-id! "project-listing"))
 

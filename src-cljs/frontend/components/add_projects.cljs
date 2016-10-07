@@ -1,5 +1,6 @@
 (ns frontend.components.add-projects
-  (:require [clojure.string :as string]
+  (:require [clojure.set :as set]
+            [clojure.string :as string]
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
@@ -15,6 +16,7 @@
             [frontend.utils :as utils]
             [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.legacy :refer [build-next]]
             [frontend.utils.vcs :as vcs-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
@@ -39,6 +41,25 @@
   (case vcs-type
     "bitbucket" (vcs-bitbucket? item)
     "github"    (vcs-github?    item)))
+
+;; This is only the keys that we're interested in in this namespace. We'd give
+;; this a broader scope if we could, but that's the trouble with legacy keys:
+;; they vary from context to context. These are known to be correct here.
+(def ^:private legacy-org-keys->modern-org-keys
+  {:login :organization/name
+   :vcs_type :organization/vcs-type
+   :avatar_url :organization/avatar-url})
+
+(defn- legacy-org->modern-org
+  "Converts an org with legacy keys to the modern equivalent, suitable for
+  our Om Next components."
+  [org]
+  (set/rename-keys org legacy-org-keys->modern-org-keys))
+
+(defn- modern-org->legacy-org
+  "Inverse of legacy-org->modern-org."
+  [org]
+  (set/rename-keys org (set/map-invert legacy-org-keys->modern-org-keys)))
 
 (defn repos-explanation [user]
   [:div.add-repos
@@ -222,7 +243,7 @@
        (if (empty? repos)
          (empty-repo-list loading-repos? repo-filter-string (:login selected-org))
          [:ul.proj-list.list-unstyled
-          (if-not (pm/osx? selected-plan)
+          (if (and (:admin selected-org) (not (pm/osx? selected-plan)))
             (om/build no-plan-empty-state {:selected-org selected-org})
             (for [repo repos]
               (om/build repo-item {:repo repo :settings settings})))])))))
@@ -393,32 +414,36 @@
                                 github-authorized? "github"
                                 :else "bitbucket")
             tab-content (html
-                          [:div
-                           (when (= "github" selected-vcs-type)
-                             (if github-authorized?
-                               (missing-org-info owner)
-                               [:div
-                                [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
-                                (button/link {:href (gh-utils/auth-url)
-                                              :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                              :properties {:vcs-type selected-vcs-type}})
-                                              :kind :primary}
-                                             "Authorize GitHub")]))
-                           (when (and (= "bitbucket" selected-vcs-type)
-                                      (not bitbucket-authorized?))
-                             [:div
-                              [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
-                              (button/link {:href (bitbucket/auth-url)
-                                            :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                            :properties {:vcs-type selected-vcs-type}})
-                                            :kind :primary}
-                                           "Authorize Bitbucket")])
-                           (om/build org-picker/picker {:orgs (filter (partial select-vcs-type selected-vcs-type) orgs)
-                                                        :selected-org selected-org
-                                                        :on-org-click #(raise! owner [:selected-add-projects-org %])})
-                           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
-                             [:div.orgs-loading
-                              [:div.loading-spinner common/spinner]])])]
+                         [:div
+                          (when (= "github" selected-vcs-type)
+                            (if github-authorized?
+                              (missing-org-info owner)
+                              [:div
+                               [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
+                               (button/link {:href (gh-utils/auth-url)
+                                             :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                             :properties {:vcs-type selected-vcs-type}})
+                                             :kind :primary}
+                                            "Authorize GitHub")]))
+                          (when (and (= "bitbucket" selected-vcs-type)
+                                     (not bitbucket-authorized?))
+                            [:div
+                             [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
+                             (button/link {:href (bitbucket/auth-url)
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
+                                                                                           :properties {:vcs-type selected-vcs-type}})
+                                           :kind :primary}
+                                          "Authorize Bitbucket")])
+                          (build-next
+                           org-picker/picker
+                           {:orgs (->> orgs
+                                       (filter (partial select-vcs-type selected-vcs-type))
+                                       (map legacy-org->modern-org))
+                            :selected-org (legacy-org->modern-org selected-org)
+                            :on-org-click #(raise! owner [:selected-add-projects-org (modern-org->legacy-org %)])})
+                          (when (get-in user [:repos-loading (keyword selected-vcs-type)])
+                            [:div.orgs-loading
+                             [:div.loading-spinner common/spinner]])])]
         (if bitbucket-possible?
           (let [tabs [{:name "github"
                        :icon (html [:i.octicon.octicon-mark-github])
