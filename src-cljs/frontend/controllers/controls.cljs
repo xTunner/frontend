@@ -272,7 +272,6 @@
 
 (defmethod control-event :container-selected
   [target message {:keys [container-id]} state]
-  ;; UPDATING CONTAINER PATH
   (assoc-in state state/current-container-path container-id))
 
 (defmethod post-control-event! :container-selected

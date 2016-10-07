@@ -226,7 +226,6 @@
 
 (defn reset-state-build
   [state build]
-  (mlog "=>" "reset-state-build" true)
   (-> state
       (assoc-in state/build-path
                 build)
@@ -250,11 +249,6 @@
         branch-crumb-path (conj crumb-path :branch)
         reset? (not= (build-model/id build)
                      (build-model/id (get-in state state/build-path)))]
-    (mlog "=>"
-          "api-event [:build :success] state preserve"
-          (boolean (or (not (and (= build-num (build-model/num build))
-                                 (= project-name (vcs-url/project-name (build-model/vcs-url build)))))
-                       (not reset?))))
     (if (or (not (and (= build-num (build-model/num build))
                       (= project-name (vcs-url/project-name (build-model/vcs-url build)))))
             (not reset?))
