@@ -21,15 +21,16 @@
                                   :vcs_type vcs_type}])))))
 
 (defn reset-current-build [state]
-  (assoc state :current-build-data {:build nil
-                                    :usage-queue-data {:builds nil
-                                                       :show-usage-queue false}
-                                    :artifact-data {:artifacts nil
-                                                    :show-artifacts false}
-                                    :container-data {:current-container-id 0
-                                                     :current-filter :all
-                                                     :paging-offset 0
-                                                     :containers nil}}))
+  (-> state
+      (assoc :current-build-data {:build nil
+                                  :usage-queue-data {:builds nil
+                                                     :show-usage-queue false}
+                                  :artifact-data {:artifacts nil
+                                                  :show-artifacts false}
+                                  :container-data {:current-filter :all
+                                                   :paging-offset 0
+                                                   :containers nil}})
+      (assoc-in state/current-container-path 0)))
 
 (defn reset-current-project [state]
   (assoc state :current-project-data {:project nil

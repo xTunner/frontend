@@ -226,36 +226,46 @@
 
 (defn reset-state-build
   [state build]
+  (mlog "=>" "reset-state-build" true)
   (-> state
       (assoc-in state/build-path
                 build)
       (assoc-in state/containers-path
                 (vec (build-model/containers build)))))
 
-(defmethod api-event [:build :success]
-  [target message status args state]
-  (let [build (:resp args)
-        {:keys [build-num project-name]} (:context args)
-        containers (vec (build-model/containers build))]
-    (if-not (and (= build-num (:build_num build))
-                 (= project-name (vcs-url/project-name (:vcs_url build))))
-      state
-      (let [branch (some-> build :branch utils/encode-branch)
-            tag (some-> build :vcs_tag utils/encode-branch)
-            crumb-path (state/project-branch-crumb-path state)
-            tag-crumb-path (conj crumb-path :tag)
-            active-crumb-path (conj crumb-path :active)
-            branch-crumb-path (conj crumb-path :branch)]
-        (cond-> state
-                (and branch (not tag)) (assoc-in branch-crumb-path branch)
-                tag (assoc-in tag-crumb-path tag)
-                tag (assoc-in active-crumb-path true)
-                true (assoc-in state/project-scopes-path (:scopes args))
-                true (assoc-in state/page-scopes-path (:scopes args))
+(defn reset-state-scopes
+  [state scopes]
+  (-> state
+      (assoc-in state/project-scopes-path scopes)
+      (assoc-in state/page-scopes-path scopes)))
 
-                (not= (build-model/id build)
-                      (build-model/id (get-in state state/build-path)))
-                (reset-state-build build))))))
+(defmethod api-event [:build :success]
+  [target message status {build :resp :keys [scopes context]} state]
+  (let [{:keys [build-num project-name]} context
+        branch (some-> build :branch utils/encode-branch)
+        tag (some-> build :vcs_tag utils/encode-branch)
+        crumb-path (state/project-branch-crumb-path state)
+        tag-crumb-path (conj crumb-path :tag)
+        active-crumb-path (conj crumb-path :active)
+        branch-crumb-path (conj crumb-path :branch)
+        reset? (not= (build-model/id build)
+                     (build-model/id (get-in state state/build-path)))]
+    (mlog "=>"
+          "api-event [:build :success] state preserve"
+          (boolean (or (not (and (= build-num (build-model/num build))
+                                 (= project-name (vcs-url/project-name (build-model/vcs-url build)))))
+                       (not reset?))))
+    (if (or (not (and (= build-num (build-model/num build))
+                      (= project-name (vcs-url/project-name (build-model/vcs-url build)))))
+            (not reset?))
+      state
+      (cond-> state
+              (and branch (not tag)) (assoc-in branch-crumb-path branch)
+              tag (assoc-in tag-crumb-path tag)
+              tag (assoc-in active-crumb-path true)
+
+              true (reset-state-scopes scopes)
+              true (reset-state-build build)))))
 
 (defn maybe-set-containers-filter!
   "Depending on the status and outcome of the build, set active
@@ -266,7 +276,7 @@
         build-running? (not (build-model/finished? build))
         failed-containers (filter #(= :failed (container-model/status % build-running?))
                                   containers)
-        {:keys [container-id]} (get-in state state/navigation-data-path)
+        container-id (state/current-container-id state)
         failed-filter-valid? (or (not container-id)
                                  (some #(= container-id (container-model/id %)) failed-containers))
         controls-ch (:controls comms)]
@@ -282,7 +292,7 @@
   [current-state comms build-num vcs-url]
   (let [visible-actions-with-output (->> (get-in current-state state/containers-path)
                                          (mapcat :actions)
-                                         (filter #(action-model/visible-with-output? % (get-in current-state state/current-container-path)))
+                                         (filter #(action-model/visible-with-output? % (state/current-container-id current-state)))
                                          ;; Some steps, like deployment, were run on conainer 0 but are on every container.
                                          ;; These steps will be returned every time, since they are duplicated of eachother, and therefore always are visible?
                                          ;; To keep from calling the api once for each duplicate, only call it on distinct actions.
