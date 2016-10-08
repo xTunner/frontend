@@ -162,10 +162,6 @@
                                   (flash/flash-notification {:react-key number} message))})]]
 
             [:.below-top
-             (when (and (not outer?) logged-in?)
-               [:.left-nav
-                (build-legacy aside/aside-nav (dissoc app-without-container-data :current-build-data))])
-
              [:.main
               (factory props)]]]))))))
 
