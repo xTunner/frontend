@@ -47,8 +47,7 @@
               [:li
                 [:a.has-icon {:href "/build-insights"
                               :aria-label "Status"}
-                  [:i.material-icons "blur_on"] "Status"
-                  [:span.status.operational]]]
+                  [:i.material-icons.status.operational "grain"] "Status"]] ;; blur_on leak_add network_check
               [:li.dropdown
                [:button.dropdown-toggle
                 {:data-toggle "dropdown"
@@ -89,6 +88,12 @@
                 [:li [:a {:href "/account"} "User Settings"]]
                 (when (:admin user)
                   [:li [:a {:href "/admin"} "Admin"]])]]]
+
+             [:ul.nav-items.nav-items-left.hidden-md-up
+              [:li
+                [:a.has-icon {:href "/build-insights"
+                              :aria-label "Status"}
+                  [:i.material-icons.status.operational "grain"]]]] ;; blur_on leak_add network_check
              [:button.navbar-toggler.hidden-md-up {:type "button"
                                                            :data-toggle "collapse"
                                                            :data-target "collapsing-nav"
