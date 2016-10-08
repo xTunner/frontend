@@ -301,7 +301,7 @@
            [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-offer-banner event-data])}
             [:i.material-icons "clear"]]])))))
 
-(defn inner-header [{:keys [app crumbs actions]} owner]
+(defn inner-header [{:keys [app actions]} owner]
   (reify
     om/IDisplayName (display-name [_] "Inner Header")
     om/IRender
@@ -313,79 +313,83 @@
             show-web-notif-banner? (not (get-in app state/remove-web-notification-banner-path))
             show-web-notif-banner-follow-up? (not (get-in app state/remove-web-notification-confirmation-banner-path))]
         (html
-         [:header.main-head (when logged-out? {:class "guest"})
-          (when (license/show-banner? license)
-            (om/build license/license-banner license))
-          (when logged-out?
-            (om/build outer-header app))
-          (when (and (= :build (:navigation-point app))
-                     (project-model/feature-enabled? project :osx))
-            (list
-             (when-not (get-in app state/dismissed-osx-command-change-banner-path)
-               (om/build osx-command-change-banner {}))
-             (when (and (plan/osx? plan)
-                        (plan/over-usage-threshold? plan plan/first-warning-threshold)
-                        (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
-               (om/build osx-usage-warning-banner plan))))
-          (when (and (not (plan/trial? plan))
-                     (= :build (:navigation-point app))
-                     (not (project-model/oss? project))
-                     (plan/admin? plan)
-                     (feature/enabled? :offer-linux-trial)
-                     (not (get-in app state/dismissed-trial-offer-banner)))
-            (om/build trial-offer-banner app))
-          (when (:build (get-in app state/build-data-path))
-            (cond
-              (and (= (n/notifications-permission) "default")
-                   show-web-notif-banner?)
-              (om/build top-banner/banner
-                        {:banner-type "warning"
-                         :content [:div
-                                   [:span.banner-alert-icon
-                                    [:img {:src (common/icon-path "Info-Info")}]]
-                                   [:b "  New: "] "You can now get web notifications when your build is done! "
-                                   [:a
-                                    {:href "#"
-                                     :on-click #(n/request-permission
-                                                 (fn [response]
-                                                   (raise! owner [:set-web-notifications-permissions {:enabled? (= response "granted")
-                                                                                                      :response response}])))}
-                                    "Click here to activate web notifications."]]
-                         :impression-event-type :web-notifications-permissions-banner-impression
-                         :dismiss-fn #(raise! owner [:dismiss-web-notifications-permissions-banner {:response (n/notifications-permission)}])})
-              (and (not show-web-notif-banner?)
-                   show-web-notif-banner-follow-up?)
-              (om/build top-banner/banner
-                        (let [response (n/notifications-permission)]
-                          {:banner-type (case (n/notifications-permission)
-                                          "default" "danger"
-                                          "denied" "danger"
-                                          "granted" "success")
-                           :content [:div (let [not-granted-message "If you change your mind you can go to this link to turn web notifications on: "]
-                                            (case (n/notifications-permission)
-                                              "default" not-granted-message
-                                              "denied"  not-granted-message
-                                              "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
-                                     [:a {:on-click #(raise! owner [:web-notifications-confirmation-account-settings-clicked {:response response}])}
-                                      "Account Notifications"]]
-                           :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
-          (when (seq crumbs)
-            (om/build page-header/header {:crumbs crumbs
-                                          :actions (cond-> []
-                                                     (show-settings-link? app)
-                                                     (conj (settings-link app owner))
+          [:header.main-head (when logged-out? {:class "guest"})
+           (when (license/show-banner? license)
+             (om/build license/license-banner license))
+           (when logged-out?
+             (om/build outer-header app))
+           (when (and (= :build (:navigation-point app))
+                      (project-model/feature-enabled? project :osx))
+             (list
+               (when-not (get-in app state/dismissed-osx-command-change-banner-path)
+                 (om/build osx-command-change-banner {}))
+               (when (and (plan/osx? plan)
+                          (plan/over-usage-threshold? plan plan/first-warning-threshold)
+                          (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
+                 (om/build osx-usage-warning-banner plan))))
+           (when (and (not (plan/trial? plan))
+                      (= :build (:navigation-point app))
+                      (not (project-model/oss? project))
+                      (plan/admin? plan)
+                      (feature/enabled? :offer-linux-trial)
+                      (not (get-in app state/dismissed-trial-offer-banner)))
+             (om/build trial-offer-banner app))
+           (when (:build (get-in app state/build-data-path))
+             (cond
+               (and (= (n/notifications-permission) "default")
+                    show-web-notif-banner?)
+               (om/build top-banner/banner
+                         {:banner-type "warning"
+                          :content [:div
+                                    [:span.banner-alert-icon
+                                     [:img {:src (common/icon-path "Info-Info")}]]
+                                    [:b "  New: "] "You can now get web notifications when your build is done! "
+                                    [:a
+                                     {:href "#"
+                                      :on-click #(n/request-permission
+                                                   (fn [response]
+                                                     (raise! owner [:set-web-notifications-permissions {:enabled? (= response "granted")
+                                                                                                        :response response}])))}
+                                     "Click here to activate web notifications."]]
+                          :impression-event-type :web-notifications-permissions-banner-impression
+                          :dismiss-fn #(raise! owner [:dismiss-web-notifications-permissions-banner {:response (n/notifications-permission)}])})
+               (and (not show-web-notif-banner?)
+                    show-web-notif-banner-follow-up?)
+               (om/build top-banner/banner
+                         (let [response (n/notifications-permission)]
+                           {:banner-type (case (n/notifications-permission)
+                                           "default" "danger"
+                                           "denied" "danger"
+                                           "granted" "success")
+                            :content [:div (let [not-granted-message "If you change your mind you can go to this link to turn web notifications on: "]
+                                             (case (n/notifications-permission)
+                                               "default" not-granted-message
+                                               "denied"  not-granted-message
+                                               "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
+                                      [:a {:on-click #(raise! owner [:web-notifications-confirmation-account-settings-clicked {:response response}])}
+                                       "Account Notifications"]]
+                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
+           (when (seq (get-in app state/crumbs-path))
+             (om/build page-header/header {:crumbs (get-in app state/crumbs-path)
+                                           :actions (cond-> []
+                                                      (show-settings-link? app)
+                                                      (conj (settings-link app owner))
 
-                                                     true
-                                                     (conj actions)
+                                                      true
+                                                      (conj actions)
 
-                                                     (show-follow-project-button? app)
-                                                     (conj (om/build follow-project-button project)))}))])))))
+                                                      (show-follow-project-button? app)
+                                                      (conj (om/build follow-project-button project)))}))])))))
 
-(defn header [{:keys [app crumbs actions] :as props} owner]
+(defn header [{:keys [app actions] :as props} owner]
   (reify
     om/IDisplayName (display-name [_] "Header")
     om/IRender
     (render [_]
-      (if (#{:landing :error} (:navigation-point app))
-        (om/build outer-header app)
-        (om/build inner-header props)))))
+      (let [inner? (get-in app state/inner?-path)
+            logged-in? (get-in app state/user-path)
+            _ (utils/mlog "header render inner? " inner? " logged-in? " logged-in?)]
+        (html
+          (if inner?
+            (om/build inner-header props)
+            (om/build outer-header app)))))))

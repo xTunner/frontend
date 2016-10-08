@@ -131,8 +131,7 @@
 ;; Sometimes the backend returns a map of feature_flags,
 ;; and sometimes it returns :oss directly on the project.
 (defn oss? [project]
-  (or (:project/oss? project)
-      (:oss project)
+  (or (:oss project)
       (get-in project [:feature_flags :oss])))
 
 (defn osx? [project]
@@ -195,6 +194,5 @@
   (not (osx? project)))
 
 (defn parallelism [project]
-  (or (:project/parallelism project)
-      (:parallel project)
+  (or (:parallel project)
       1))

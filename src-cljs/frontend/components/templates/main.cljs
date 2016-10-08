@@ -1,5 +1,6 @@
 (ns frontend.components.templates.main
   (:require [frontend.components.aside :as aside]
+            [frontend.components.footer :as footer]
             [frontend.components.header :as header]
             [frontend.config :as config]
             [frontend.state :as state]
@@ -7,50 +8,35 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn- default-show-aside-menu? [nav-point]
-  (not (#{:build
-          :add-projects
-          :build-insights
-          :project-insights
-          :team
-          :account} nav-point)))
-
 (defn template
   "The template for building a page in the app.
 
-  app              - The entire app state.
-  main-content     - A component which forms the main content of the page, which
-                     is everything below the header.
-  crumbs           - Breadcrumbs to display in the header. Defaults to
-                     (get-in app state/crumbs-path), but this is deprecated.
-  header-actions   - A component which will be placed on the right in the
-                     header. This is used for page-wide actions.
-  show-aside-menu? - If true, show the aside menu. Defaults to a decision based
-                     on the :navigation-point of app, but this is deprecated."
-  [{:keys [app main-content crumbs header-actions show-aside-menu?]
-    :or {show-aside-menu? ::not-specified}}
-   owner]
+  app            - The entire app state.
+  main-content   - A component which forms the main content of the page, which
+                   is everything below the header.
+  header-actions - A component which will be placed on the right in the header.
+                   This is used for page-wide actions."
+  [{:keys [app main-content header-actions]} owner]
   (reify
     om/IRender
     (render [_]
       (html
-       (let [show-aside-menu? (if (= ::not-specified show-aside-menu?)
-                                (default-show-aside-menu? (:navigation-point app))
-                                show-aside-menu?)
-             outer? (contains? #{:landing :error} (:navigation-point app))
+       (let [inner? (get-in app state/inner?-path)
              logged-in? (get-in app state/user-path)
+             show-footer? (not= :signup (:navigation-point app))
              ;; simple optimzation for real-time updates when the build is running
              app-without-container-data (dissoc-in app state/container-data-path)]
          [:main.app-main
           (om/build header/header {:app app-without-container-data
-                                   :crumbs (or crumbs (get-in app state/crumbs-path))
                                    :actions header-actions})
 
           [:div.app-dominant
-           (when (and (not outer?) logged-in?)
-             (om/build aside/aside {:app (dissoc app-without-container-data :current-build-data)
-                                    :show-aside-menu? show-aside-menu?}))
+           (when (and inner? logged-in?)
+             (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
 
 
            [:div.main-body
-            main-content]]])))))
+            main-content
+            (when (and (not inner?) show-footer? (config/footer-enabled?))
+              [:footer.main-foot
+               (footer/footer)])]]])))))

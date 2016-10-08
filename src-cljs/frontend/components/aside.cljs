@@ -568,8 +568,7 @@
               [:i.material-icons "power_settings_new"]
               [:div.nav-label "Logout"]])])))))
 
-
-(defn aside [{:keys [app show-aside-menu?]} owner]
+(defn aside [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
@@ -577,6 +576,7 @@
       (let [user (get-in app state/user-path)
             identities (:identities user)
             avatar-url (gh-utils/make-avatar-url user)
+            show-aside-menu? (get-in app [:navigation-data :show-aside-menu?] true)
             license (get-in app state/license-path)]
         (html
          [:aside.app-aside {:class (cond-> []

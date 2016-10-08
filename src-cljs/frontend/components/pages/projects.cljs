@@ -1,7 +1,6 @@
 (ns frontend.components.pages.projects
-  (:require [frontend.analytics :as analytics]
-            [frontend.async :refer [navigate!]]
-            [frontend.components.app.legacy :as legacy]
+  (:require [frontend.api :as api]
+            [frontend.state :as state]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
@@ -10,50 +9,48 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.project :as project-model]
+            [frontend.async :refer [navigate!]]
+            [frontend.utils :as utils :include-macros true]
             [frontend.routes :as routes]
-            [frontend.state :as state]
-            [frontend.utils :refer [set-page-title!]]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
-            [om.next :as om-next :refer-macros [defui]])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn- table [projects plan]
-  (build-legacy table/table
-                {:rows projects
-                 :key-fn :project/vcs-url
-                 :columns [{:header "Project"
-                            :cell-fn :project/name}
+  (om/build table/table
+            {:rows projects
+             :key-fn :vcs_url
+             :columns [{:header "Project"
+                        :cell-fn #(vcs-url/repo-name (:vcs_url %))}
 
-                           {:header "Parallelism"
-                            :type #{:right :shrink}
-                            :cell-fn #(html
-                                       (let [parallelism (project-model/parallelism %)
-                                             buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
-                                             vcs-url (:project/vcs-url %)]
-                                         [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
-                                                                                      :org (vcs-url/org-name vcs-url)
-                                                                                      :repo (vcs-url/repo-name vcs-url)
-                                                                                      :_fragment "parallel-builds"})}
-                                          parallelism "x"
-                                          (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
+                       {:header "Parallelism"
+                        :type #{:right :shrink}
+                        :cell-fn #(html
+                                    (let [parallelism (project-model/parallelism %)
+                                          buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
+                                          vcs-url (:vcs_url %)]
+                                      [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
+                                                                                   :org (vcs-url/org-name vcs-url)
+                                                                                   :repo (vcs-url/repo-name vcs-url)
+                                                                                   :_fragment "parallel-builds"})}
+                                       parallelism "x"
+                                       (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
 
-                           {:header "Team"
-                            :type #{:right :shrink}
-                            :cell-fn #(count (:project/followers %))}
+                       {:header "Team"
+                        :type #{:right :shrink}
+                        :cell-fn #(count (:followers %))}
 
-                           {:header "Settings"
-                            :type #{:right :shrink}
-                            :cell-fn
-                            #(html
-                              (let [vcs-url (:project/vcs-url %)]
-                                [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                                                             :org (vcs-url/org-name vcs-url)
-                                                                             :repo (vcs-url/repo-name vcs-url)})}
-                                 [:i.material-icons "settings"]]))}]}))
+                       {:header "Settings"
+                        :type #{:right :shrink}
+                        :cell-fn
+                        #(html
+                          (let [vcs-url (:vcs_url %)]
+                            [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                                         :org (vcs-url/org-name vcs-url)
+                                                                         :repo (vcs-url/repo-name vcs-url)})}
+                             [:i.material-icons "settings"]]))}]}))
 
 (defn- no-org-selected [available-orgs bitbucket-enabled?]
   (component
@@ -62,8 +59,8 @@
                                        (element :avatars
                                          (html
                                           [:div
-                                           (for [{:keys [organization/avatar-url]} orgs]
-                                             [:img {:src (gh-utils/make-avatar-url {:avatar_url avatar-url} :size 60)}])]))
+                                           (for [org orgs]
+                                             [:img {:src (gh-utils/make-avatar-url org :size 60)}])]))
                                        (html [:i.material-icons "group"]))
                                :heading (html
                                          [:span
@@ -74,115 +71,93 @@
                                             (when bitbucket-enabled? "or Bitbucket ")
                                             "organization (or username) to view your projects.")}))))
 
-(defui ^:once AddProjectButton
-  Object
-  (render [this]
-    (let [{:keys [empty-state?]} (om-next/props this)]
+(defn- add-project-button [{:keys [empty-state?]} owner]
+  (reify
+    om/IRender
+    (render [_]
       (button/link
-       {:href (routes/v1-add-projects)
-        :kind :primary
-        :on-click #(analytics/track! this {:event-type :add-project-clicked
-                                           :properties {:is-empty-state empty-state?}})}
-       "Add Project"))))
+        {:href (routes/v1-add-projects)
+         :kind :primary
+         :on-click #((om/get-shared owner :track-event)
+                     {:event-type :add-project-clicked
+                      :properties {:is-empty-state empty-state?}})}
+        "Add Project"))))
 
-(def add-project-button (om-next/factory AddProjectButton))
+(defn- no-projects-available [{:keys [org]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (empty-state/empty-state {:icon (html [:i.material-icons "book"])
+                                :heading (html
+                                           [:span
+                                            (empty-state/important (:name org))
+                                            " has no projects building on CircleCI"])
+                                :subheading "Let's fix that by adding a new project."
+                                :action (om/build add-project-button {:empty-state? true})}))))
 
-(defn- no-projects-available [org-name]
-  (empty-state/empty-state {:icon (html [:i.material-icons "book"])
-                            :heading (html
-                                      [:span
-                                       (empty-state/important org-name)
-                                       " has no projects building on CircleCI"])
-                            :subheading "Let's fix that by adding a new project."
-                            :action (add-project-button {:empty-state? true})}))
+(defn- organization-ident
+  "Builds an Om Next-like ident for an organization."
+  [org]
+  ;; Om Next will not support composite keys like this. We'll need to make a
+  ;; simple unique id available on the frontend for Om Next.
+  [:organization/by-vcs-type-and-name
+   [(:vcs_type org) (:login org)]])
 
+(defn- main-content [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [user (:current-user app)
+            selected-org-ident (get-in app state/current-org-ident)
+            selected-org (when selected-org-ident (get-in app selected-org-ident))
+            available-orgs (:organizations user)]
+        (html
+         [:div {:data-component `page}
+          [:.sidebar
+           (card/basic
+            (if available-orgs
+              (om/build org-picker/picker
+                        {:orgs available-orgs
+                         :selected-org (first (filter #(= selected-org-ident (state/org-ident (:vcs_type %) (:login %))) available-orgs))
+                         :on-org-click (fn [{:keys [login vcs_type] :as org}]
+                                         (navigate! owner (routes/v1-organization-projects-path {:org login
+                                                                                                 :vcs_type vcs_type}))
+                                         ((om/get-shared owner :track-event) {:event-type :org-clicked
+                                                                              :properties {:view :projects
+                                                                                           :login login
+                                                                                           :vcs_type vcs_type}}))})
+              (html [:div.loading-spinner common/spinner])))]
+          [:.main
+           ;; TODO: Pulling these out of the ident is a bit of a hack. Instead,
+           ;; we should pull them out of the selected-org itself. We can do that
+           ;; once the selected-org and the orgs in org list are backed by the
+           ;; same normalized data.
+           ;;
+           ;; Once they are, we'll have a value for selected-org here, but it
+           ;; will only have the keys the org list uses (which includes the
+           ;; vcs-type and the name). The list of projects will still be missing
+           ;; until it's loaded by an additional API call.
+           (if-let [[vcs-type name] (state/org-ident->vcs-type-and-org selected-org-ident)]
+             (card/titled {:title (html
+                                    [:span
+                                     name
+                                     (case vcs-type
+                                       "github" [:i.octicon.octicon-mark-github]
+                                       "bitbucket" [:i.fa.fa-bitbucket]
+                                       nil)])}
+                          (if-let [projects (:projects selected-org)]
+                            (if-let [projects-with-followers
+                                     (seq (filter #(< 0 (count (:followers %))) projects))]
+                              (table projects-with-followers (:plan selected-org))
+                              (om/build no-projects-available {:org selected-org}))
+                            (html [:div.loading-spinner common/spinner])))
+             (no-org-selected available-orgs (vcs/bitbucket-enabled? user)))]])))))
 
-(defui ^:once OrgProjects
-  static om-next/Ident
-  (ident [this {:keys [organization/vcs-type organization/name]}]
-    [:organization/by-vcs-type-and-name {:organization/vcs-type vcs-type :organization/name name}])
-  static om-next/IQuery
-  (query [this]
-    '[:organization/vcs-type
-      :organization/name
-      {:organization/projects [:project/vcs-url
-                               :project/name
-                               :project/parallelism
-                               :project/oss?
-                               {:project/followers []}]}
-      ;; This is a punt for now. We need all the plan details that
-      ;; project-model/buildable-parallelism needs. For now, fetch the entire
-      ;; thing.
-      {:organization/plan [*]}])
-  Object
-  (render [this]
-    (let [{:keys [organization/vcs-type organization/name organization/projects organization/plan]} (om-next/props this)
-          vcs-icon (case vcs-type
-                     "github" [:i.octicon.octicon-mark-github]
-                     "bitbucket" [:i.fa.fa-bitbucket]
-                     nil)]
-      (card/titled {:title (html [:span name vcs-icon])}
-                   (if projects
-                     (if-let [projects-with-followers
-                              (seq (filter #(seq (:project/followers %)) projects))]
-                       (table projects-with-followers plan)
-                       (no-projects-available name))
-                     (html [:div.loading-spinner common/spinner]))))))
-
-(def org-projects (om-next/factory OrgProjects))
-
-(defui ^:once Page
-  static om-next/IQuery
-  (query [this]
-    ;; NB: Every Page *must* query for {:legacy/state [*]}, to make it available
-    ;; to frontend.components.app/Wrapper. This is necessary until the compassus
-    ;; root query can be customized. See
-    ;; https://github.com/compassus/compassus/issues/3
-    ['{:legacy/state [*]}
-     {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
-                         :user/login
-                         :user/bitbucket-authorized?]}
-     {:app/route-data [{:route-data/organization (into (om-next/get-query OrgProjects)
-                                                       [:organization/name])}]}])
-  analytics/Properties
-  (properties [this]
-    (let [props (om-next/props this)]
-      {:user (get-in props [:app/current-user :user/login])
-       :view :projects
-       :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
-  Object
-  (componentDidMount [this]
-    (set-page-title! "Projects"))
-  (render [this]
-    (component
-      (build-legacy
-       main-template/template
-       {:app (:legacy/state (om-next/props this))
-        :crumbs [{:type :projects}]
-        :header-actions (add-project-button {:empty-state? false})
-        :show-aside-menu? false
-        :main-content
-        (element :main-content
-          (let [current-user (:app/current-user (om-next/props this))
-                orgs (get-in (om-next/props this) [:app/current-user :user/organizations])
-                selected-org (get-in (om-next/props this) [:app/route-data :route-data/organization])]
-            (html
-             [:div
-              [:.sidebar
-               (card/basic
-                (if orgs
-                  (org-picker/picker
-                   {:orgs orgs
-                    :selected-org (first (filter #(= (select-keys selected-org [:organization/vcs-type :organization/name])
-                                                     (select-keys % [:organization/vcs-type :organization/name]))
-                                                 orgs))
-                    :on-org-click (fn [{:keys [organization/vcs-type organization/name]}]
-                                    (analytics/track! this {:event-type :org-clicked
-                                                            :properties {:login name
-                                                                         :vcs_type vcs-type}})
-                                    (navigate! this (routes/v1-organization-projects-path {:org name :vcs_type vcs-type})))})
-                  (html [:div.loading-spinner common/spinner])))]
-              [:.main
-               (if selected-org
-                 (org-projects selected-org)
-                 (no-org-selected orgs (vcs/bitbucket-enabled? current-user)))]])))}))))
+(defn page [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (om/build main-template/template
+                {:app app
+                 :main-content (om/build main-content app)
+                 :header-actions (om/build add-project-button {:empty-state? false})}))))
