@@ -266,6 +266,13 @@
                        :uuid uuid
                        :on-success on-success}))
 
+(defn get-project-provisioning-profiles [project-name vcs-type api-ch]
+  (ajax/ajax :get
+             (gstring/format "%s/%s/code-signing/osx-profiles" (path/base-project-url-path vcs-type) project-name)
+             :get-provisioning-profiles
+             api-ch
+             :context {:project-name project-name}))
+
 (defn set-project-provisioning-profiles [project-name vcs-type file-content file-name description api-ch uuid on-success]
   (ajax/ajax :post
              (gstring/format "%s/%s/code-signing/osx-profiles" (path/base-project-url-path vcs-type) project-name)
@@ -289,14 +296,13 @@
                        :uuid uuid
                        :on-success on-success}))
 
-(defn delete-project-provisioning-profile [project-name vcs-type id api-ch on-success uuid]
+(defn delete-project-provisioning-profile [project-name vcs-type profile-uuid api-ch on-success button-uuid]
   (ajax/ajax :delete
-             (gstring/format "%s/%s/code-signing/osx-profiles/%s" (path/base-project-url-path vcs-type) project-name id)
+             (gstring/format "%s/%s/code-signing/osx-profiles/%s" (path/base-project-url-path vcs-type) project-name profile-uuid)
              :delete-provisioning-profile
              api-ch
              :context {:project-name project-name
-                       :id id
-                       :uuid uuid
+                       :uuid button-uuid
                        :on-success on-success}))
 
 (defn get-enterprise-site-status [api-ch]
