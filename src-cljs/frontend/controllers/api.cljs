@@ -1042,6 +1042,43 @@
   (put! (:errors comms) [:api-error args])
   (forms/release-button! (:uuid context) status))
 
+(defmethod api-event [:set-provisioning-profiles :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (-> state
+        (assoc-in state/error-message-path nil)
+        (state/add-flash-notification "Your provisioning profile has been successfully added."))))
+
+(defmethod post-api-event! [:set-provisioning-profiles :success]
+  [target message status {:keys [context]} previous-state current-state comms]
+  (api/get-project-code-signing-keys (:project-name context) (:vcs-type context) (:api comms))
+  ((:on-success context))
+  (forms/release-button! (:uuid context) status))
+
+(defmethod post-api-event! [:set-provisioning-profiles :failed]
+  [target message status {:keys [context] :as args} previous-state current-state comms]
+  (put! (:errors comms) [:api-error args])
+  (forms/release-button! (:uuid context) status))
+
+(defmethod api-event [:delete-provisioning-profile :success]
+  [target message status {:keys [context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (-> state
+        (update-in state/project-osx-profiles-path (partial remove #(and (:id %) ; figure out why we get nil id's
+                                                                         (= (:id context) (:id %)))))
+        (state/add-flash-notification "Your provisioning profile has been successfully removed."))))
+
+(defmethod post-api-event! [:delete-provisioning-profile :success]
+  [target message status {:keys [context] :as args} previous-state current-state comms]
+  (forms/release-button! (:uuid context) status))
+
+(defmethod post-api-event! [:delete-provisioning-profile :failed]
+  [target message status {:keys [context] :as args} previous-state current-state comms]
+  (put! (:errors comms) [:api-error args])
+  (forms/release-button! (:uuid context) status))
+
 (defmethod api-event [:org-settings-normalized :success]
   [_ _ _ {:keys [resp]} state]
   (update-in state [:organization/by-vcs-type-and-name [(:vcs_type resp) (:name resp)]] merge resp))

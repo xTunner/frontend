@@ -1506,6 +1506,18 @@
         api-ch (:api comms)]
     (api/delete-project-code-signing-key project-name vcs-type id api-ch on-success uuid)))
 
+(defmethod post-control-event! :upload-provisioning-profile
+  [_ _ {:keys [project-name vcs-type file-content file-name description on-success]} previous-state current-state comms]
+  (let [uuid frontend.async/*uuid*
+        api-ch (:api comms)]
+    (api/set-project-provisioning-profiles project-name vcs-type file-content file-name description api-ch uuid on-success)))
+
+(defmethod post-control-event! :delete-provisioning-profile
+  [_ _ {:keys [project-name vcs-type id on-success]} previous-state current-state comms]
+  (let [uuid frontend.async/*uuid*
+        api-ch (:api comms)]
+    (api/delete-project-provisioning-profile project-name vcs-type id api-ch on-success uuid)))
+
 (defmethod post-control-event! :create-jira-issue
   [_ _ {:keys [project-name vcs-type jira-issue-data on-success]} previous-state current-state comms]
   (let [uuid frontend.async/*uuid*
