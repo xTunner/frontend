@@ -156,10 +156,6 @@
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
             %))
-        (assoc-in state/current-container-path container-id)
-        (#(if action-id
-            (assoc-in % state/current-action-id-path action-id)
-            %))
         state-utils/reset-dismissed-osx-usage-level)))
 
 (defn initialize-pusher-subscriptions
