@@ -7,7 +7,7 @@
   "A standard button.
 
   :on-click  - A function called when the button is clicked.
-  :kind      - The kind of button. One of #{:primary :secondary :danger :flat}.
+  :kind      - The kind of button. One of #{:primary :secondary :danger :flat :icon}.
                (default: :secondary)
   :disabled? - If true, the button is disabled. (default: false)
   :size      - The size of the button. One of #{:full :medium}.
@@ -33,7 +33,7 @@
                    frontend.utils.html/open-ext.
   :href          - The link target.
   :on-click      - A function called when the link is clicked.
-  :kind          - The kind of button. One of #{:primary :secondary :danger :flat}.
+  :kind          - The kind of button. One of #{:primary :secondary :danger :flat :icon}.
                    (default: :secondary)"
   [{:keys [class href on-click kind size data-external]
     :or {kind :secondary size :full}}
@@ -55,7 +55,7 @@
   "A managed button.
 
   :on-click     - A function called when the button is clicked.
-  :kind         - The kind of button. One of #{:primary :secondary :danger :flat}.
+  :kind         - The kind of button. One of #{:primary :secondary :danger :flat :icon}.
                   (default: :secondary)
   :disabled?    - If true, the button is disabled. (default: false)
   :size         - The size of the button. One of #{:full :medium}.
