@@ -93,10 +93,24 @@
 
 (def show-config-path [:current-build-data :config-data :show-config])
 
+(def navigation-data :navigation-data)
+(def navigation-data-path [navigation-data])
+(def inner?-path (conj navigation-data-path :inner?))
+(def navigation-repo-path (conj navigation-data-path :repo))
+(def navigation-org-path (conj navigation-data-path :org))
+(def navigation-subpage-path (conj navigation-data-path :subpage))
+(def navigation-tab-path (conj navigation-data-path :tab))
+(def current-action-id-path (conj navigation-data-path :current-action-id-path))
+
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
 (def current-container-filter-path [:current-build-data :container-data :current-filter])
-(def current-container-path [:current-build-data :container-data :current-container-id])
+(def current-container-path (conj navigation-data-path :container-id))
+(defn current-container-id
+  [target-state & {:keys [allow-nils?]}]
+  (or (get-in target-state current-container-path)
+      (when-not allow-nils?
+        0)))
 (def container-paging-offset-path [:current-build-data :container-data :paging-offset])
 (def build-header-tab-path [:current-build-data :selected-header-tab])
 
@@ -192,15 +206,6 @@
 (def settings-path [:settings])
 
 (def projects-path [:projects])
-
-(def navigation-data :navigation-data)
-(def navigation-data-path [navigation-data])
-(def inner?-path (conj navigation-data-path :inner?))
-(def navigation-repo-path (conj navigation-data-path :repo))
-(def navigation-org-path (conj navigation-data-path :org))
-(def navigation-subpage-path (conj navigation-data-path :subpage))
-(def navigation-tab-path (conj navigation-data-path :tab))
-(def current-action-id-path (conj navigation-data-path :current-action-id-path))
 
 (def instrumentation-path [:instrumentation])
 

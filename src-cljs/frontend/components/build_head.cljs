@@ -703,29 +703,17 @@
                  (when show-all-commits?
                    (om/build-all commit-line bottom-commits))))])])))))
 
-(defn build-sub-head [data owner]
+(defn build-sub-head [{:keys [build-data scopes user container-id current-tab project-data ssh-available?] :as data} owner]
   (reify
     om/IRender
     (render [_]
-      (let [build-data (:build-data data)
-            scopes (:scopes data)
-            user (:user data)
-            logged-in? (not (empty? user))
-            admin? (:admin user)
+      (let [logged-in? (not (empty? user))
             build (:build build-data)
-            current-container-id (:current-container-id data)
-            selected-tab-name (or (:current-tab data)
+            selected-tab-name (or current-tab
                                   (build-util/default-tab build scopes))
-            build-id (build-model/id build)
-            build-num (:build_num build)
-            vcs-url (:vcs_url build)
             usage-queue-data (:usage-queue-data build-data)
-            run-queued? (build-model/in-run-queue? build)
-            usage-queued? (build-model/in-usage-queue? build)
-            project (get-in data [:project-data :project])
+            {:keys [project plan]} project-data
             projects (get-in data state/projects-path)
-            plan (get-in data [:project-data :plan])
-            config-data (:config-data build-data)
             build-params (:build_parameters build)]
         (card/tabbed
          {:tab-row
@@ -756,7 +744,7 @@
                                                 ")"])))})
 
                              (and (has-scope :trigger-builds data)
-                                  (:ssh-available? data)
+                                  ssh-available?
                                   (not (:ssh_disabled build)))
                              (conj {:name :ssh-info :label "Debug via SSH"})
 
@@ -782,7 +770,7 @@
                                                        (:reponame build)
                                                        (:build_num build)
                                                        (name %)
-                                                       current-container-id))})}
+                                                       container-id))})}
          (html
           [:div.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name
@@ -901,35 +889,22 @@
            [:span.summary-label "Estimated: "]
            [:span (formatter past-ms)]])))))
 
-(defn build-head [data owner]
+(defn build-head [{:keys [container-id build-data project-data] :as data} owner]
   (reify
     om/IRender
     (render [_]
-      (let [build-data (:build-data data)
-            build (:build build-data)
-            build-id (build-model/id build)
-            build-num (:build_num build)
-            vcs-url (:vcs_url build)
-            current-container-id (:current-container-id data)
-            usage-queue-data (:usage-queue-data build-data)
-            run-queued? (build-model/in-run-queue? build)
-            usage-queued? (build-model/in-usage-queue? build)
-            project (get-in data [:project-data :project])
-            plan (get-in data [:project-data :plan])
-            user (:user data)
-            logged-in? (not (empty? user))
-            config-data (:config-data build-data)
-            build-info {:build-id (build-model/id build)
-                        :vcs-url (:vcs_url build)
-                        :build-num (:build_num build)}]
+      (let [{:keys [stop_time start_time parallel usage_queued_at
+                    pull_requests status canceler
+                    all_commit_details all_commit_details_truncated] :as build} (:build build-data)
+            {:keys [project plan]} project-data]
         (html
           [:div
            [:div.summary-header
             [:div.summary-items
              [:div.summary-item
               (builds-table/build-status-badge build)]
-             (if-not (:stop_time build)
-               (when (:start_time build)
+             (if-not stop_time
+               (when start_time
                  (build-running-status build))
                (build-finished-status build))]
             [:div.summary-items
@@ -939,12 +914,12 @@
              (when (project-model/parallel-available? project)
                [:div.summary-item
                 [:span.summary-label "Parallelism: "]
-                [:a.parallelism-link-head {:title (str "This build used " (:parallel build) " containers. Click here to change parallelism for future builds.")
+                [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
                                            :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
                                                                                            :properties {:repo (project-model/repo-name project)
                                                                                                         :org (project-model/org-name project)}})
                                            :href (build-model/path-for-parallelism build)}
-                 (let [parallelism (str (:parallel build) "x")]
+                 (let [parallelism (str parallel "x")]
                    (if (enterprise?)
                      parallelism
                      (str parallelism
@@ -955,7 +930,7 @@
                                     0))
                                (plan-model/max-parallelism plan))
                           "x")))]])]
-            (when (:usage_queued_at build)
+            (when usage_queued_at
               [:div.summary-items
                [:div.summary-item
                 [:span.summary-label "Queued: "]
@@ -967,18 +942,18 @@
               [:span (trigger-html build)]]
 
              (when (build-model/has-pull-requests? build)
-               (pull-requests {:urls (map :url (:pull_requests build))} owner))]]
+               (pull-requests {:urls (map :url pull_requests)} owner))]]
 
-           (when-let  [canceler  (and  (=  (:status build) "canceled")
-                                       (:canceler build))]
+           (when-let  [canceler  (and  (=  status "canceled")
+                                       canceler)]
              [:div.summary-header
               [:div.summary-items
                [:div.summary-item
                 (build-canceler canceler)]]])
            [:div.card
             [:div.small-emphasis
-             (let [n (-> build :all_commit_details count)]
-               (if (:all_commit_details_truncated build)
+             (let [n (count all_commit_details)]
+               (if all_commit_details_truncated
                  (gstring/format "Last %d Commits" n)
                  (gstring/format "Commits (%d)" n)))]
             (om/build build-commits build-data)]

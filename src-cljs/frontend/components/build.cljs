@@ -218,7 +218,7 @@
     (:status override-status)
     real-status))
 
-(defn container-pill [{:keys [container status current-container-id scopes current-tab build build-running? build-finished?]} owner]
+(defn container-pill [{:keys [container status selected-container-id scopes current-tab build build-finished?]} owner]
   (reify
     om/IDisplayName
     (display-name [_] "Container Pill v2")
@@ -252,7 +252,7 @@
                                        container-id)
            :on-click #(raise! owner [:container-selected {:container-id container-id}])
            :class (concat (container-model/status->classes status)
-                          (when (= container-id current-container-id) ["active"]))}
+                          (when (= container-id selected-container-id) ["active"]))}
           [:span.upper-pill-section
            [:span.container-index (str (:index container))]
            [:span.status-icon
@@ -304,19 +304,14 @@
     (when index-into-containers
       (* paging-width (js/Math.floor (/ index-into-containers paging-width))))))
 
-(defn container-pills [data owner]
+(defn container-pills [{:keys [scopes container-data build-running? current-tab container-id build] :as data} owner]
   (reify
     om/IDisplayName
     (display-name [_]
       "Container Pills")
     om/IRender
     (render [_]
-      (let [container-data (:container-data data)
-            scopes (:scopes data)
-            build-running? (:build-running? data)
-            current-tab (:current-tab data)
-            build (:build data)
-            {:keys [containers current-container-id current-filter paging-offset]} container-data
+      (let [{:keys [containers current-filter paging-offset]} container-data
             categorized-containers (group-by #(container-model/status % build-running?) containers)
 
             filtered-containers (condp some [current-filter]
@@ -325,7 +320,7 @@
 
             paging-offset (or paging-offset
                               ;; A nil paging-offset means "display whatever page the selected container is on".
-                              (paging-offset-to-display-container current-container-id filtered-containers)
+                              (paging-offset-to-display-container container-id filtered-containers)
                               ;; If the selected container isn't in filtered-containers, show the first page.
                               0)
 
@@ -355,7 +350,7 @@
                                :build build
                                :build-running? build-running?
                                :build-finished? (build-model/finished? build)
-                               :current-container-id current-container-id
+                               :selected-container-id container-id
                                :current-tab current-tab
                                :scopes scopes
                                :status (container-model/status container build-running?)}
@@ -416,15 +411,12 @@
            :className class-name}
       components)))
 
-(defn selected-container-index [data]
-  (get-in data [:current-build-data :container-data :current-container-id]))
-
 (defn- maybe-scroll-to-action! [app owner]
   (when-let [action-id (om/get-state owner :action-id-to-scroll-to)]
     (when-let [action-node (dom/getElement (str "action-" action-id))]
       (utils/scroll-to-build-action! action-node)
       (raise! owner [:action-log-output-toggled
-                     {:index (get-in app state/current-container-path)
+                     {:index (state/current-container-id app)
                       :step action-id
                       :value true}])
       (om/set-state! owner :action-id-to-scroll-to nil))))
@@ -443,19 +435,19 @@
     (did-mount [_]
       (maybe-scroll-to-action! app owner))
     om/IWillReceiveProps
-    (will-receive-props [this next-props]
-      (let [prev-props (om/get-props owner)]
-        (let [old-ix (selected-container-index prev-props)
-              new-ix (selected-container-index next-props)]
-          (om/set-state! owner
-                         :action-transition-direction
-                         (if (> old-ix new-ix)
-                           "steps-ltr"
-                           "steps-rtl")))
-        (let [prev-action-id (get-in (:app prev-props) state/current-action-id-path)
-              next-action-id (get-in (:app next-props) state/current-action-id-path)]
-          (when (not= prev-action-id next-action-id)
-            (om/set-state! owner :action-id-to-scroll-to next-action-id)))))
+    (will-receive-props [this {next-app :app}]
+      (let [{prev-app :app} (om/get-props owner)
+            old-ix (state/current-container-id prev-app)
+            new-ix (state/current-container-id next-app)
+            prev-action-id (get-in prev-app state/current-action-id-path)
+            next-action-id (get-in next-app state/current-action-id-path)]
+        (om/set-state! owner
+                       :action-transition-direction
+                       (if (> old-ix new-ix)
+                         "steps-ltr"
+                         "steps-rtl"))
+        (when (not= prev-action-id next-action-id)
+          (om/set-state! owner :action-id-to-scroll-to next-action-id))))
     om/IDidUpdate
     (did-update [_ _ _]
       (maybe-scroll-to-action! app owner))
@@ -477,7 +469,7 @@
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :current-tab (get-in app state/navigation-tab-path)
-                                              :current-container-id (get-in app state/current-container-path)
+                                              :container-id (state/current-container-id app)
                                               :project-data project-data
                                               :user user
                                               :projects (get-in app state/projects-path)
@@ -492,6 +484,7 @@
                                  :invite-data invite-data})
 
               (om/build container-pills {:container-data container-data
+                                         :container-id (state/current-container-id app)
                                          :current-tab (get-in app state/navigation-tab-path)
                                          :scopes (get-in app state/project-scopes-path)
                                          :build-running? (build-model/running? build)
@@ -503,5 +496,6 @@
                                  :leave true
                                  :class "build-steps-animator"}
                                 (om/build build-steps/container-build-steps
-                                           container-data
-                                           {:key :current-container-id}))]])])))))
+                                          (assoc container-data
+                                            :selected-container-id (state/current-container-id app))
+                                          {:key :selected-container-id}))]])])))))

@@ -276,34 +276,34 @@
 
 (defmethod post-control-event! :container-selected
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state comms]
-  (when-let [parent (goog.dom/getElement "container_parent")]
-    (let [container (goog.dom/getElement (str "container_" container-id))
-          body (.-body js/document)
-          current-scroll-top (.-scrollTop parent)
-          body-scroll-top (.-scrollTop body)
-          current-scroll-left (.-scrollLeft parent)
-          new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
-      (let [scroller (or (.-scroll_handler parent)
-                         (set! (.-scroll_handler parent)
-                               ;; Store this on the parent so that we
-                               ;; don't handle parent scroll while the
-                               ;; animation is playing
-                               (goog.fx.dom.Scroll. parent
-                                                    #js [0 0]
-                                                    #js [0 0]
-                                                    (if animate? 250 0))))
-            onEnd (.-onEnd scroller)]
-        (set! (.-startPoint scroller) #js [current-scroll-left 0])
-        (set! (.-endPoint scroller) #js [new-scroll-left 0])
-        ;; Browser find can scroll an absolutely positioned container into view,
-        ;; causing the parent to scroll. But then we set it to relative and there
-        ;; is no longer any overflow, so we need to scroll app-main instead.
-        (set! (.-onEnd scroller) #(do (.call onEnd scroller)
-                                      (set! (.-scrollTop body)
-                                            (+ body-scroll-top current-scroll-top))))
-        (.play scroller))))
-  (let [previous-container-id (get-in previous-state state/current-container-path)]
+  (let [previous-container-id (state/current-container-id previous-state)]
     (when (not= previous-container-id container-id)
+      (when-let [parent (goog.dom/getElement "container_parent")]
+        (let [container (goog.dom/getElement (str "container_" container-id))
+              body (.-body js/document)
+              current-scroll-top (.-scrollTop parent)
+              body-scroll-top (.-scrollTop body)
+              current-scroll-left (.-scrollLeft parent)
+              new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
+          (let [scroller (or (.-scroll_handler parent)
+                             (set! (.-scroll_handler parent)
+                                   ;; Store this on the parent so that we
+                                   ;; don't handle parent scroll while the
+                                   ;; animation is playing
+                                   (goog.fx.dom.Scroll. parent
+                                                        #js [0 0]
+                                                        #js [0 0]
+                                                        (if animate? 250 0))))
+                onEnd (.-onEnd scroller)]
+            (set! (.-startPoint scroller) #js [current-scroll-left 0])
+            (set! (.-endPoint scroller) #js [new-scroll-left 0])
+            ;; Browser find can scroll an absolutely positioned container into view,
+            ;; causing the parent to scroll. But then we set it to relative and there
+            ;; is no longer any overflow, so we need to scroll app-main instead.
+            (set! (.-onEnd scroller) #(do (.call onEnd scroller)
+                                          (set! (.-scrollTop body)
+                                                (+ body-scroll-top current-scroll-top))))
+            (.play scroller))))
       (let [container (get-in current-state (state/container-path container-id))
             last-action (-> container :actions last)
             vcs-url (:vcs_url (get-in current-state state/build-path))]
@@ -324,14 +324,16 @@
 
 (defmethod control-event :container-filter-changed
   [target message {:keys [new-filter containers]} state]
-  (-> state
-      (assoc-in state/current-container-filter-path new-filter)
-      ;; A nil paging-offset means "display whatever page the selected container is on".
-      (assoc-in state/container-paging-offset-path nil)))
+  (if (= new-filter (get-in state state/current-container-filter-path))
+    state
+    (-> state
+        (assoc-in state/current-container-filter-path new-filter)
+        ;; A nil paging-offset means "display whatever page the selected container is on".
+        (assoc-in state/container-paging-offset-path nil))))
 
 (defmethod post-control-event! :container-filter-changed
   [target message {:keys [new-filter containers]} previous-state current-state comms]
-  (let [selected-container-id (get-in current-state state/current-container-path)
+  (let [selected-container-id (state/current-container-id current-state)
         selected-container-in-containers? (some #(= selected-container-id (:index %)) containers)
         controls-ch (:controls comms)]
     (if-not (and selected-container-in-containers?
@@ -350,7 +352,7 @@
   [target message {:keys [index step] :as args} previous-state current-state comms]
   (let [action (get-in current-state (state/action-path index step))
         build (get-in current-state state/build-path)]
-    (when (and (action-model/visible? action (get-in current-state state/current-container-path))
+    (when (and (action-model/visible? action (state/current-container-id current-state))
                (not (:output action)))
       (api/get-action-output {:vcs-url (:vcs_url build)
                               :build-num (:build_num build)
@@ -598,7 +600,7 @@
 (defmethod post-control-event! :container-parent-scroll
   [target message _ previous-state current-state comms]
   (let [controls-ch (:controls comms)
-        current-container-id (get-in current-state state/current-container-path 0)
+        current-container-id (state/current-container-id current-state)
         parent (goog.dom/getElement "container_parent")
         parent-scroll-left (.-scrollLeft parent)
         current-container (goog.dom/getElement (str "container_" current-container-id))

@@ -26,8 +26,7 @@
                                                        :show-usage-queue false}
                                     :artifact-data {:artifacts nil
                                                     :show-artifacts false}
-                                    :container-data {:current-container-id 0
-                                                     :current-filter :all
+                                    :container-data {:current-filter :all
                                                      :paging-offset 0
                                                      :containers nil}}))
 
