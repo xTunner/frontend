@@ -421,6 +421,12 @@
                       :value true}])
       (om/set-state! owner :action-id-to-scroll-to nil))))
 
+(defn path-comp
+  "Helper fn to get [build-num container-id action-id] from target-state"
+  [target-state]
+  (let [{:keys [build-num container-id action-id]} (get-in target-state state/navigation-data-path)]
+    [build-num container-id action-id]))
+
 (defn build [{:keys [app ssh-available?]} owner]
   (reify
     om/IInitState
@@ -438,16 +444,15 @@
     (will-receive-props [this {next-app :app}]
       (let [{prev-app :app} (om/get-props owner)
             old-ix (state/current-container-id prev-app)
-            new-ix (state/current-container-id next-app)
-            prev-action-id (get-in prev-app state/current-action-id-path)
-            next-action-id (get-in next-app state/current-action-id-path)]
+            new-ix (state/current-container-id next-app)]
         (om/set-state! owner
                        :action-transition-direction
                        (if (> old-ix new-ix)
                          "steps-ltr"
                          "steps-rtl"))
-        (when (not= prev-action-id next-action-id)
-          (om/set-state! owner :action-id-to-scroll-to next-action-id))))
+        (when-not (= (path-comp prev-app)
+                     (path-comp next-app))
+          (om/set-state! owner :action-id-to-scroll-to (get-in next-app state/current-action-id-path)))))
     om/IDidUpdate
     (did-update [_ _ _]
       (maybe-scroll-to-action! app owner))
