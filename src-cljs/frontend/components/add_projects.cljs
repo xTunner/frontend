@@ -119,7 +119,7 @@
                   [:div.building "Starting first build..."])
                 (managed-button
                  [:button {:on-click #(do
-                                        (raise! owner [:followed-repo (assoc @repo
+                                        (raise! owner [:followed-repo (assoc repo
                                                                              :login login
                                                                              :type type)])
                                         (when (not building-on-circle?)
@@ -134,7 +134,7 @@
                [:li.repo-unfollow
                 title-el
                 (managed-button
-                 [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
+                 [:button {:on-click #(raise! owner [:unfollowed-repo (assoc repo
                                                                              :login login
                                                                              :type type)])
                            :data-spinner true}
@@ -343,7 +343,7 @@
            (when (:fork repo)
              [:span.forked (str " (" (vcs-url/org-name (:vcs_url repo)) ")")])]
           (managed-button
-           [:button {:on-click #(raise! owner [:unfollowed-repo (assoc @repo
+           [:button {:on-click #(raise! owner [:unfollowed-repo (assoc repo
                                                                   :login login
                                                                   :type type)])
                      :data-spinner true}
