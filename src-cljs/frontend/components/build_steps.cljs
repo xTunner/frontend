@@ -46,7 +46,7 @@
                      "resize"
                      #(raise! owner
                             ;; This is pretty hacky, it would be nice if we had a better way to do this
-                            [:container-selected {:container-id (get-in @(om/get-shared owner [:_app-state-do-not-use]) state/current-container-path)
+                            [:container-selected {:container-id (state/current-container-id @(om/get-shared owner [:_app-state-do-not-use]))
                                                   :animate? false}]))
                    goog.events/unlistenByKey)))
 
@@ -99,14 +99,14 @@
                "Download the first 4MB as a file."
                "Download the full output as a file.")])])))))
 
-(defn action [action owner {:keys [current-container-id uses-parallelism?] :as opts}]
+(defn action [action owner {:keys [container-id uses-parallelism?] :as opts}]
   (reify
     om/IRender
     (render [_]
       ;; TODO: the action should not be deciding if it is visible, the parent component
       ;; should decide which actions are visible and pass that information in.
       ;; See discussion here - https://github.com/circleci/frontend-private/pull/1269/files
-      (let [visible? (action-model/visible? action current-container-id)
+      (let [visible? (action-model/visible? action container-id)
             step-id (str "action-" (:step action))
             header-classes  (concat [(:status action)]
                                     (when visible?
@@ -185,9 +185,9 @@
         (html
          [:div.container-view {:id (str "container_" (:index container))}
           (om/build-all action actions {:key :step
-                                        :opts (merge opts {:current-container-id container-id})})])))))
+                                        :opts (merge opts {:container-id container-id})})])))))
 
-(defn container-build-steps [{:keys [containers current-container-id]} owner]
+(defn container-build-steps [{:keys [containers selected-container-id]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -217,8 +217,8 @@
                              (check-autoscroll owner (aget e "deltaY"))
                              (let [body (.-body js/document)]
                                (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY")))))
-                 :class (str "selected_" current-container-id)}
+                 :class (str "selected_" selected-container-id)}
            (om/build container-view
-                     {:container (containers current-container-id)
+                     {:container (containers selected-container-id)
                       :non-parallel-actions non-parallel-actions}
                      {:opts {:uses-parallelism? (< 1 (count containers))}})])))))

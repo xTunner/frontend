@@ -24,19 +24,17 @@
   "Returns all of the channels that a user should not be unsubscribed from."
   [state]
   (let [user (get-in state state/user-path)
-        build (get-in state state/build-path)
-        container-index (or (get-in state state/current-container-path) 0)]
+        build (get-in state state/build-path)]
     (cond-> #{}
       user (conj (pusher/user-channel user))
-      build (into (pusher/build-channels build container-index)))))
+      build (into (pusher/build-channels build (state/current-container-id state))))))
 
 (defn ignore-build-channel?
   "Returns true if we should ignore pusher updates for the given channel-name. This will be
   true if the channel is stale or if the build hasn't finished loading."
   [state channel-name]
   (if-let [build (get-in state state/build-path)]
-    (let [container-index (get-in state state/current-container-path)]
-      (not-any? #{channel-name} (pusher/build-channels build container-index)))
+    (not-any? #{channel-name} (pusher/build-channels build (state/current-container-id state)))
     true))
 
 (defn usage-queue-build-index-from-channel-name [state channel-name]

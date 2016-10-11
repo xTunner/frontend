@@ -127,9 +127,7 @@
   (set-page-title! "Build State"))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id]
-                                 :as args
-                                 :or {container-id 0}}
+  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args}
    state]
   (mlog "navigated-to :build with args " args)
   (if (and (= :build (state/current-view state))
@@ -155,10 +153,6 @@
         state-utils/reset-current-build
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
-            %))
-        (assoc-in state/current-container-path container-id)
-        (#(if action-id
-            (assoc-in % state/current-action-id-path action-id)
             %))
         state-utils/reset-dismissed-osx-usage-level)))
 
