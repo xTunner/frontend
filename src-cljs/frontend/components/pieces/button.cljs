@@ -157,7 +157,21 @@
         (button {:kind :flat
                  :size :medium
                  :on-click #(js/alert "Clicked!")}
-                "Flat Medium")]]]))
+                "Flat Medium")]]
+
+      ;; Icon buttons
+      [:div.icon {:style {:margin-right "2em"}}
+       [:div {:style {:margin-bottom "1em"}
+              :title "Icon"}
+        (button {:kind :icon
+                 :on-click #(js/alert "Clicked!")}
+                [:i.octicon.octicon-repo-forked])]
+       [:div {:style {:margin-bottom "1em"}
+              :title "Icon Disabled"}
+        (button {:disabled? true
+                 :kind :icon
+                 :on-click #(js/alert "Clicked!")}
+                [:i.octicon.octicon-repo-forked])]]]))
 
   (defcard link-buttons
     "These are our link buttons, when you need to style a link as a button.
