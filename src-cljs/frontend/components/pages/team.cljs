@@ -1,8 +1,10 @@
 (ns frontend.components.pages.team
-  (:require [frontend.api :as api]
+  (:require [clojure.set :as set]
+            [frontend.api :as api]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.form :as form]
@@ -10,14 +12,33 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
-            [frontend.components.pieces.button :as button]
-            [frontend.utils :as utils :include-macros true :refer [valid-email?]]
+            [frontend.utils :as utils :refer [valid-email?] :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.legacy :refer [build-next]]
             [frontend.utils.vcs :as vcs-utils]
             [goog.string :as gstr]
             [inflections.core :as inflections]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
+
+;; This is only the keys that we're interested in in this namespace. We'd give
+;; this a broader scope if we could, but that's the trouble with legacy keys:
+;; they vary from context to context. These are known to be correct here.
+(def ^:private legacy-org-keys->modern-org-keys
+  {:login :organization/name
+   :vcs_type :organization/vcs-type
+   :avatar_url :organization/avatar-url})
+
+(defn- legacy-org->modern-org
+  "Converts an org with legacy keys to the modern equivalent, suitable for
+  our Om Next components."
+  [org]
+  (set/rename-keys org legacy-org-keys->modern-org-keys))
+
+(defn- modern-org->legacy-org
+  "Inverse of legacy-org->modern-org."
+  [org]
+  (set/rename-keys org (set/map-invert legacy-org-keys->modern-org-keys)))
 
 (defn- add-follow-counts [users projects]
   (for [user users
@@ -260,17 +281,19 @@
           [:div {:data-component `page}
            [:.sidebar
             (card/basic
-              (if available-orgs
-                (om/build org-picker/picker
-                          {:orgs available-orgs
-                           :selected-org (first (filter #(= selected-org-ident (organization-ident %)) available-orgs))
-                           :on-org-click (fn [{:keys [login vcs_type] :as org}]
-                                           (om/set-state! owner :selected-org-ident (organization-ident org))
-                                           ((om/get-shared owner :track-event) {:event-type :org-clicked
-                                                                                :properties {:view :team
-                                                                                             :login login
-                                                                                             :vcs_type vcs_type}}))})
-                (html [:div.loading-spinner common/spinner])))]
+             (if available-orgs
+               (build-next
+                org-picker/picker
+                {:orgs (map legacy-org->modern-org available-orgs)
+                 :selected-org (legacy-org->modern-org selected-org)
+                 :on-org-click (fn [modern-org]
+                                 (let [{:keys [login vcs_type] :as org} (modern-org->legacy-org modern-org)]
+                                   (om/set-state! owner :selected-org-ident (organization-ident org))
+                                   ((om/get-shared owner :track-event) {:event-type :org-clicked
+                                                                        :properties {:view :team
+                                                                                     :login login
+                                                                                     :vcs_type vcs_type}})))})
+               (html [:div.loading-spinner common/spinner])))]
            [:.main
             (if-let [[_ [vcs-type name]] selected-org-ident]
               (card/titled

@@ -48,7 +48,7 @@
   (-> user :github_oauth_scopes empty? not))
 
 (defn bitbucket-authorized? [user]
-  (-> user :bitbucket_authorized boolean))
+  (-> user (some-fn :user/bitbucket-authorized? :bitbucket_authorized) boolean))
 
 
 (defn deauthorize-github [user]

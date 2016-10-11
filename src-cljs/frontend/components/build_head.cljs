@@ -84,9 +84,9 @@
             build-id (build-model/id build)]
         (raise! owner [:usage-queue-why-showed
                        {:build-id build-id
-                        :username (:username @build)
-                        :reponame (:reponame @build)
-                        :build_num (:build_num @build)}])))
+                        :username (:username build)
+                        :reponame (:reponame build)
+                        :build_num (:build_num build)}])))
 
     om/IRender
     (render [_]
