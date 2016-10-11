@@ -35,6 +35,7 @@
                  ;; 1.0.0 alphas. We need 1.0 for React 0.14, which in turn is
                  ;; required for devcards.
                  [org.omcljs/om "1.0.0-alpha45"]
+                 [compassus "0.2.1"]
 
                  [hiccups "0.3.0"]
                  [sablono "0.7.2"]
