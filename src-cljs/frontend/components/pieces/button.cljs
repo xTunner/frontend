@@ -94,6 +94,7 @@
     (html
      [:div {:style {:display "flex"}}
 
+      ;; Primary buttons
       [:div.primary {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (button {:kind :primary
@@ -110,6 +111,7 @@
                  :on-click #(js/alert "Clicked!")}
                 "Primary Medium")]]
 
+      ;; Secondary buttons
       [:div.secondary {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (button {:on-click #(js/alert "Clicked!")}
@@ -123,6 +125,7 @@
                  :on-click #(js/alert "Clicked!")}
                 "Secondary Medium")]]
 
+      ;; Danger buttons
       [:div.danger {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (button {:kind :danger
@@ -138,6 +141,8 @@
                  :size :medium
                  :on-click #(js/alert "Clicked!")}
                 "Danger Medium")]]
+
+      ;; Flat buttons
       [:div.flat {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (button {:kind :flat
@@ -174,7 +179,7 @@
     (html
      [:div {:style {:display "flex"}}
 
-      ;; Primary buttons
+      ;; Primary link buttons
       [:div {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (link {:kind :primary
@@ -186,7 +191,7 @@
               :size :medium}
              "Medium Primary Link")]]
 
-      ;; Secondary buttons
+      ;; Secondary link buttons
       [:div {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (link {:href "#"}
@@ -196,7 +201,7 @@
               :size :medium}
              "Medium Secondary Link")]]
 
-      ;; Danger buttons
+      ;; Danger link buttons
       [:div {:style {:margin-right "2em"}}
        [:div {:style {:margin-bottom "1em"}}
         (link {:kind :danger
