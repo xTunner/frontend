@@ -96,19 +96,21 @@
         }
       }
     }
-
-    &.icon {
-      width: 30px;
-      height: 30px;
-
-      i {
-        margin-left: 0;
-      }
-    }
   }
 
   .ui("button", {
     .button-styles();
+  });
+
+  .ui("icon", {
+    .button-styles();
+
+    width: 30px;
+    height: 30px;
+
+    i {
+      margin-left: 0;
+    }
   });
 
   .ui("managed-button", {
