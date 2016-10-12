@@ -32,8 +32,10 @@ a.exception {
 }
 
 .app-main {
-  height: 100%;
-  width: 100%;
+  .flex(1 1 auto);
+  // See note in resources/assets/css/inner/inner.less about `height: 0;` on
+  // `.below-top`. This is the same, but for the `.main's` width.
+  width: 0;
 }
 
 .main-head {

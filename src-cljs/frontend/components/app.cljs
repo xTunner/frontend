@@ -163,10 +163,8 @@
 
             [:.below-top
              (when (and (not outer?) logged-in?)
-               [:.left-nav
-                (build-legacy aside/aside-nav (dissoc app-without-container-data :current-build-data))])
+               (build-legacy aside/aside-nav (dissoc app-without-container-data :current-build-data)))
 
-             [:.main
-              (factory props)]]]))))))
+             (factory props)]]))))))
 
 (def wrapper (om-next/factory Wrapper))
