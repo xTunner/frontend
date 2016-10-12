@@ -104,6 +104,15 @@
 
 
 (dc/do
+  (defn button-display [columns]
+    (html
+     [:div {:style {:display "flex"}}
+      (for [column columns]
+        [:div.primary {:style {:margin-right "2em"}}
+         (for [button column]
+           [:div {:style {:margin-bottom "1em"}}
+            button])])]))
+
   (defcard buttons
     "A **button** represents an action a user can take. A button's label should
     be an action—that is, an imperative verb. Clicking the button initiates that
@@ -130,73 +139,55 @@
     use in table rows, card headers, and anywhere vertical space is at a
     premium."
 
-    (html
-     [:div {:style {:display "flex"}}
-
-      ;; Primary buttons
-      [:div.primary {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:kind :primary
-                 :on-click #(js/alert "Clicked!")}
-                "Primary")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:disabled? true
-                 :kind :primary
-                 :on-click #(js/alert "Clicked!")}
-                "Primary Disabled")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:kind :primary
-                 :size :medium
-                 :on-click #(js/alert "Clicked!")}
-                "Primary Medium")]]
+    (button-display
+     [;; Primary buttons
+      [(button {:kind :primary
+                :on-click #(js/alert "Clicked!")}
+               "Primary")
+       (button {:disabled? true
+                :kind :primary
+                :on-click #(js/alert "Clicked!")}
+               "Primary Disabled")
+       (button {:kind :primary
+                :size :medium
+                :on-click #(js/alert "Clicked!")}
+               "Primary Medium")]
 
       ;; Secondary buttons
-      [:div.secondary {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:on-click #(js/alert "Clicked!")}
-                "Secondary")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:disabled? true
-                 :on-click #(js/alert "Clicked!")}
-                "Secondary Disabled")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:size :medium
-                 :on-click #(js/alert "Clicked!")}
-                "Secondary Medium")]]
+      [(button {:on-click #(js/alert "Clicked!")}
+               "Secondary")
+       (button {:disabled? true
+                :on-click #(js/alert "Clicked!")}
+               "Secondary Disabled")
+       (button {:size :medium
+                :on-click #(js/alert "Clicked!")}
+               "Secondary Medium")]
 
       ;; Danger buttons
-      [:div.danger {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:kind :danger
-                 :on-click #(js/alert "Clicked!")}
-                "Danger")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:disabled? true
-                 :kind :danger
-                 :on-click #(js/alert "Clicked!")}
-                "Danger Disabled")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:kind :danger
-                 :size :medium
-                 :on-click #(js/alert "Clicked!")}
-                "Danger Medium")]]
+      [(button {:kind :danger
+                :on-click #(js/alert "Clicked!")}
+               "Danger")
+       (button {:disabled? true
+                :kind :danger
+                :on-click #(js/alert "Clicked!")}
+               "Danger Disabled")
+       (button {:kind :danger
+                :size :medium
+                :on-click #(js/alert "Clicked!")}
+               "Danger Medium")]
 
       ;; Flat buttons
-      [:div.flat {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:kind :flat
-                 :on-click #(js/alert "Clicked!")}
-                "Flat")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:disabled? true
-                 :kind :flat
-                 :on-click #(js/alert "Clicked!")}
-                "Flat Disabled")]
-       [:div {:style {:margin-bottom "1em"}}
-        (button {:kind :flat
-                 :size :medium
-                 :on-click #(js/alert "Clicked!")}
-                "Flat Medium")]]]))
+      [(button {:kind :flat
+                :on-click #(js/alert "Clicked!")}
+               "Flat")
+       (button {:disabled? true
+                :kind :flat
+                :on-click #(js/alert "Clicked!")}
+               "Flat Disabled")
+       (button {:kind :flat
+                :size :medium
+                :on-click #(js/alert "Clicked!")}
+               "Flat Medium")]]))
 
   (defcard icon-buttons
     "When horizontal space is at a premium, use an **icon button**. These square
@@ -207,18 +198,14 @@
     Icon buttons are only styled as secondary buttons, and should only be used
     where a secondary button would be appropriate."
 
-    (html
-     [:div {:style {:display "flex"}}
-      [:div.icon {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (icon {:label "Icon"
-               :on-click #(js/alert "Clicked!")}
-              [:i.octicon.octicon-repo-forked])]
-       [:div {:style {:margin-bottom "1em"}}
-        (icon {:label "Icon Disabled"
-               :disabled? true
-               :on-click #(js/alert "Clicked!")}
-              [:i.octicon.octicon-repo-forked])]]]))
+    (button-display
+     [[(icon {:label "Icon"
+              :on-click #(js/alert "Clicked!")}
+             [:i.octicon.octicon-repo-forked])]
+      [(icon {:label "Icon Disabled"
+              :disabled? true
+              :on-click #(js/alert "Clicked!")}
+             [:i.octicon.octicon-repo-forked])]]))
 
   (defcard link-buttons
     "A **link-button** looks like a button, but is actually a link.
@@ -235,51 +222,37 @@
     appropriate label for a link-button; neither would \"View Build #5\".
     Instead, \"Build #5\" should be a normal link."
 
-    (html
-     [:div {:style {:display "flex"}}
-
-      ;; Primary link buttons
-      [:div {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:kind :primary
-               :href "#"}
-              "Primary Link")]
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:kind :primary
-               :href "#"
-               :size :medium}
-              "Medium Primary Link")]]
+    (button-display
+     [;; Primary link buttons
+      [(link {:kind :primary
+              :href "#"}
+             "Primary Link")
+       (link {:kind :primary
+              :href "#"
+              :size :medium}
+             "Medium Primary Link")]
 
       ;; Secondary link buttons
-      [:div {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:href "#"}
-              "Secondary Link")]
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:href "#"
-               :size :medium}
-              "Medium Secondary Link")]]
+      [(link {:href "#"}
+             "Secondary Link")
+       (link {:href "#"
+              :size :medium}
+             "Medium Secondary Link")]
 
       ;; Danger link buttons
-      [:div {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:kind :danger
-               :href "#"}
-              "Danger Link")]
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:kind :danger
-               :href "#"
-               :size :medium}
-              "Medium Danger Link")]]
+      [(link {:kind :danger
+              :href "#"}
+             "Danger Link")
+       (link {:kind :danger
+              :href "#"
+              :size :medium}
+             "Medium Danger Link")]
 
       ;; Flat buttons
-      [:div {:style {:margin-right "2em"}}
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:kind :flat
-               :href "#"}
-              "Flat Link")]
-       [:div {:style {:margin-bottom "1em"}}
-        (link {:kind :flat
-               :href "#"
-               :size :medium}
-              "Medium Flat Link")]]])))
+      [(link {:kind :flat
+              :href "#"}
+             "Flat Link")
+       (link {:kind :flat
+              :href "#"
+              :size :medium}
+             "Medium Flat Link")]])))
