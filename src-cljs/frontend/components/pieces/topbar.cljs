@@ -46,8 +46,8 @@
              [:ul.nav-items.nav-items-left.collapsing-nav
               [:li
                 [:a.has-icon {:href "/build-insights"
-                              :aria-label "Status"}
-                  [:i.material-icons.status.operational "grain"] "Status"]] ;; blur_on leak_add network_check
+                              :aria-label "System Status"}
+                  [:i.material-icons.status.operational "grain"] "System Status"]] ;; blur_on leak_add network_check
               [:li.dropdown
                [:button.dropdown-toggle
                 {:data-toggle "dropdown"
