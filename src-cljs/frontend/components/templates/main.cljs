@@ -12,8 +12,7 @@
           :add-projects
           :build-insights
           :project-insights
-          :team
-          :account} nav-point)))
+          :team} nav-point)))
 
 (defn template
   "The template for building a page in the app.
