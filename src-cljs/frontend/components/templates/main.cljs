@@ -41,7 +41,8 @@
              logged-in? (get-in app state/user-path)
              ;; simple optimzation for real-time updates when the build is running
              app-without-container-data (dissoc-in app state/container-data-path)]
-         [:main.app-main
+         ;; Outer gets just a plain div here.
+         [(if outer? :div :main.app-main)
           (om/build header/header {:app app-without-container-data
                                    :crumbs (or crumbs (get-in app state/crumbs-path))
                                    :actions header-actions})
