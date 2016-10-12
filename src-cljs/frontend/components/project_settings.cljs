@@ -515,9 +515,9 @@
                                                                                                     :on-success close-fn}])}
                                                                         "Add Variable")]
                                        :close-fn close-fn})))
-              (when-let [env-vars-entries (->> project-data
-                                               :envvars
-                                               (sort-by key))]
+              (when-let [env-vars-entries (->> (:envvars project-data)
+                                               (sort-by key)
+                                               seq)]
                 (om/build table/table
                           {:rows env-vars-entries
                            :key-fn key
