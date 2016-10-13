@@ -1959,24 +1959,25 @@
                                          "Upload")]
         :close-fn close-fn}))))
 
-(defn code-signing [{:keys [project-data error-message]} owner]
+
+
+(defn code-signing-keys [{:keys [project-data error-message]} owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:show-p12-modal? false
-       :show-profiles-modal? false})
+      {:show-modal? false})
     om/IRenderState
-    (render-state [_ {:keys [show-p12-modal? show-profiles-modal?]}]
+    (render-state [_ {:keys [show-modal?]}]
       (let [{:keys [project osx-keys osx-profiles]} project-data
             project-name (vcs-url/project-name (:vcs_url project))
             vcs-type (project-model/vcs-type project)]
         (html
-         [:section.code-signing-page {:data-component `code-signing}
+         [:section.code-signing-page {:data-component `code-signing-keys}
           [:article
            [:div.header
             [:div.title "Apple Code Signing Keys"]
             (button/button
-             {:on-click #(om/set-state! owner :show-p12-modal? true)
+             {:on-click #(om/set-state! owner :show-modal? true)
               :kind :primary}
              "Upload Key")]
            [:hr.divider]
@@ -1984,45 +1985,69 @@
                         begins, and will be available to sign iOS and OS X apps. For more information about code-signing
                         on CircleCI see our "
             [:a
-             {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
+             {:href "https://circleci.com/docs/ios-code-signing/"}
              "code-signing documentation."]]
            (if-not (empty? osx-keys)
              (om/build p12-key-table {:rows (->> osx-keys
                                                  (map (partial merge {:project-name project-name
                                                                       :vcs-type vcs-type})))})
              (om/build no-keys-empty-state {:project-name project-name
-                                            :add-key #(om/set-state! owner :show-p12-modal? true)}))
-           (when show-p12-modal?
-             (om/build p12-upload-modal {:close-fn #(om/set-state! owner :show-p12-modal? false)
+                                            :add-key #(om/set-state! owner :show-modal? true)}))
+           (when show-modal?
+             (om/build p12-upload-modal {:close-fn #(om/set-state! owner :show-modal? false)
                                          :error-message error-message
                                          :project-name project-name
-                                         :vcs-type vcs-type}))]
+                                         :vcs-type vcs-type}))]])))))
+
+(defn code-signing-profiles [{:keys [project-data error-message]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (let [{:keys [project osx-keys osx-profiles]} project-data
+            project-name (vcs-url/project-name (:vcs_url project))
+            vcs-type (project-model/vcs-type project)]
+        (html
+         [:section.code-signing-page {:data-component `code-signing-profiles}
           [:article
            [:div.header
             [:div.title "Provisioning Profiles"]
             (button/button
-              {:on-click #(om/set-state! owner :show-profiles-modal? true)
+              {:on-click #(om/set-state! owner :show-modal? true)
                :kind :primary}
               "Upload Profile")]
            [:hr.divider]
-           [:div.info "The following code-signing identities will be added to the system keychain when your build
-                      begins, and will be available to sign iOS and OS X apps. For more information about code-signing
-                      on CircleCI see our "
+           [:div.info "The following provisioning profiles will be copied to the system location when your build
+                      starts. This is to enable Xcode to sign your application. A provisioning profile should not
+                      usually be required for running tests, but will be required for ad-hoc, Tesflight, and
+                      App Store builds. See our "
             [:a
-             {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
-             "code-signing documentation."]]
+             {:href "https://circleci.com/docs/ios-code-signing/"}
+             "code-signing documentation"]
+            " for more details."]
            (if-not (empty? osx-profiles)
              (om/build provisioning-profiles-table {:rows (->> osx-profiles
                                                               (map (partial merge {:project-name project-name
                                                                                    :vcs-type vcs-type})))})
              (om/build no-profiles-empty-state {:project-name project-name
-                                                :add-profile #(om/set-state! owner :show-profiles-modal? true)}))
-           (when show-profiles-modal?
+                                                :add-profile #(om/set-state! owner :show-modal? true)}))
+           (when show-modal?
              (om/build provisioning-profile-upload-modal
-                       {:close-fn #(om/set-state! owner :show-profiles-modal? false)
+                       {:close-fn #(om/set-state! owner :show-modal? false)
                         :error-message error-message
                         :project-name project-name
                         :vcs-type vcs-type}))]])))))
+
+(defn code-signing [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         (om/build code-signing-keys data)
+         (om/build code-signing-profiles data)]))))
 
 (defn project-settings [data owner]
   (reify
