@@ -3,7 +3,8 @@
             [goog.events]))
 
 (defn notifiable-browser? [] (exists? (.-Notification js/window)))
-(defn notifications-permission [] (.-permission js/Notification))
+(defn notifications-permission [] (when (notifiable-browser?)
+                                    (.-permission js/Notification)))
 (defn notifications-granted?  [] (= (notifications-permission) "granted"))
 
 (defn request-permission
