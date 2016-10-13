@@ -48,7 +48,7 @@ experimental:
               source ~/.bashrc
               set -exu
               set -o pipefail
-              lein cljsbuild once test production |& tee cljsbuild.log
+              lein cljsbuild once whitespace test production |& tee cljsbuild.log
               ! grep WARNING < cljsbuild.log | grep -v "WARNING: Use of undeclared Var \(cljs-time\.format/constructor\|frontend\..\+/x.\+\)"
               lein run -m frontend.tasks.http/precompile-assets
 
