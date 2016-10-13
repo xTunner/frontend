@@ -1516,7 +1516,6 @@
   [_ _ {:keys [project-name vcs-type uuid on-success]} previous-state current-state comms]
   (let [button-uuid frontend.async/*uuid*
         api-ch (:api comms)]
-    (js/console.log (prn-str on-success))
     (api/delete-project-provisioning-profile project-name vcs-type uuid api-ch on-success button-uuid)))
 
 (defmethod post-control-event! :create-jira-issue

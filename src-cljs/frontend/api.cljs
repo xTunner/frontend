@@ -302,6 +302,7 @@
              :delete-provisioning-profile
              api-ch
              :context {:project-name project-name
+                       :vcs-type vcs-type
                        :uuid button-uuid
                        :on-success on-success}))
 

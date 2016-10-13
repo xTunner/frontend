@@ -1077,6 +1077,7 @@
 
 (defmethod post-api-event! [:delete-provisioning-profile :success]
   [target message status {:keys [context] :as args} previous-state current-state comms]
+  (api/get-project-provisioning-profiles (:project-name context) (:vcs-type context) (:api comms))
   (forms/release-button! (:uuid context) status))
 
 (defmethod post-api-event! [:delete-provisioning-profile :failed]

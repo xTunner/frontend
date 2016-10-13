@@ -1810,7 +1810,7 @@
                                                            [:delete-p12
                                                             (select-keys key [:project-name :vcs-type :id])])}))}]}))))
 
-(defn provisioning-profile-table [{:keys [rows]} owner]
+(defn provisioning-profiles-table [{:keys [rows]} owner]
   (reify
     om/IRender
     (render [_]
@@ -2012,7 +2012,7 @@
              {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
              "code-signing documentation."]]
            (if-not (empty? osx-profiles)
-             (om/build provisioning-profile-table {:rows (->> osx-profiles
+             (om/build provisioning-profiles-table {:rows (->> osx-profiles
                                                               (map (partial merge {:project-name project-name
                                                                                    :vcs-type vcs-type})))})
              (om/build no-profiles-empty-state {:project-name project-name
