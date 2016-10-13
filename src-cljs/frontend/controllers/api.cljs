@@ -1042,6 +1042,12 @@
   (put! (:errors comms) [:api-error args])
   (forms/release-button! (:uuid context) status))
 
+(defmethod api-event [:get-provisioning-profiles :success]
+  [target message status {:keys [resp context]} state]
+  (if-not (= (:project-name context) (:project-settings-project-name state))
+    state
+    (assoc-in state state/project-osx-profiles-path (:data resp))))
+
 (defmethod api-event [:set-provisioning-profiles :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (:project-settings-project-name state))
@@ -1052,7 +1058,7 @@
 
 (defmethod post-api-event! [:set-provisioning-profiles :success]
   [target message status {:keys [context]} previous-state current-state comms]
-  (api/get-project-code-signing-keys (:project-name context) (:vcs-type context) (:api comms))
+  (api/get-project-provisioning-profiles (:project-name context) (:vcs-type context) (:api comms))
   ((:on-success context))
   (forms/release-button! (:uuid context) status))
 
@@ -1066,8 +1072,7 @@
   (if-not (= (:project-name context) (:project-settings-project-name state))
     state
     (-> state
-        (update-in state/project-osx-profiles-path (partial remove #(and (:id %) ; figure out why we get nil id's
-                                                                         (= (:id context) (:id %)))))
+        (assoc-in state/error-message-path nil)
         (state/add-flash-notification "Your provisioning profile has been successfully removed."))))
 
 (defmethod post-api-event! [:delete-provisioning-profile :success]

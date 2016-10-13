@@ -1513,10 +1513,11 @@
     (api/set-project-provisioning-profiles project-name vcs-type file-content file-name description api-ch uuid on-success)))
 
 (defmethod post-control-event! :delete-provisioning-profile
-  [_ _ {:keys [project-name vcs-type id on-success]} previous-state current-state comms]
-  (let [uuid frontend.async/*uuid*
+  [_ _ {:keys [project-name vcs-type uuid on-success]} previous-state current-state comms]
+  (let [button-uuid frontend.async/*uuid*
         api-ch (:api comms)]
-    (api/delete-project-provisioning-profile project-name vcs-type id api-ch on-success uuid)))
+    (js/console.log (prn-str on-success))
+    (api/delete-project-provisioning-profile project-name vcs-type uuid api-ch on-success button-uuid)))
 
 (defmethod post-control-event! :create-jira-issue
   [_ _ {:keys [project-name vcs-type jira-issue-data on-success]} previous-state current-state comms]
