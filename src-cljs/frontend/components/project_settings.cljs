@@ -1783,15 +1783,15 @@
     (render [_]
       (om/build table/table
                 {:rows rows
-                 :key-fn :id
+                 :key-fn :uuid
                  :columns [{:header "Description"
                             :cell-fn :description}
                            {:header "Filename"
                             :type :shrink
                             :cell-fn :filename}
-                           {:header "ID"
+                           {:header "UUID"
                             :type :shrink
-                            :cell-fn :id}
+                            :cell-fn :uuid}
                            {:header "Uploaded"
                             :type :shrink
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
@@ -1841,7 +1841,7 @@
                                                   :remove-fn
                                                   #(raise! owner
                                                            [:delete-provisioning-profile
-                                                            (select-keys profile [:project-name :vcs-type :id])])}))}]}))))
+                                                            (select-keys profile [:project-name :vcs-type :uuid])])}))}]}))))
 
 (defn no-keys-empty-state [{:keys [project-name add-key]} owner]
   (reify
