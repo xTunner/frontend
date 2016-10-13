@@ -35,6 +35,7 @@
   > .below-top {
     .flexy;
     .flex(1 1 auto);
+
     // This looks weird, but it keeps the .below-top from taking up any more
     // than the remaining vertical space. Without this, .below-top will compute
     // its intrinsic height. Depending on its contents, this can be bigger than
@@ -43,21 +44,10 @@
     // flex-grow will then allow it to grow to the size its parent allots, but
     // it will have no reason to grow any *bigger* than that. Then, any
     // descendents which would have liked to render something bigger will be
-    // forced intoto this height (which is what we want).
+    // forced into this height (which is what we want).
     //
     // http://stackoverflow.com/questions/7813783/firefox-and-flexbox-when-using-white-space-nowrap-on-child-element-the-flexib#9737602
     height: 0;
-
-    > .left-nav {
-      .flex(0 0 auto);
-    }
-
-    > .main {
-      .flex(1 1 auto);
-      // See note above about `height: 0;`. This is the same, but for the
-      // .main's width.
-      width: 0;
-    }
   }
 
   span.strikeout {

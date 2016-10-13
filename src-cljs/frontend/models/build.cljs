@@ -129,6 +129,7 @@
   (case (:dont_build build)
     "ci-skip"            "skipped"
     "branch-blacklisted" "skipped"
+    "branch-not-whitelisted" "skipped"
     "org-not-paid"       "not paid"
     "user-not-paid"      "not paid"
     "not run"))

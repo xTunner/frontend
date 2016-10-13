@@ -58,7 +58,25 @@
      :headers headers
      :body body}))
 
-(defn wrap-handler [handler options]
+;; When developing a new page, the URL may not be recognized by the backend yet.
+;; That makes it impossible to develop against production. When that happens,
+;; add the URL (path) to this set (eg, "/projects"). The proxy will fetch
+;; /dashboard from the backend instead, which will load the frontend app.
+;; Meanwhile, the browser will see your new URL, so the frontend will dispatch
+;; on that.
+;;
+;; This is for development only. Do not commit code with values in this set.
+;; Instead, add the route to the backend. (And while you're there, add it to the
+;; nginx config if necessary.)
+(def new-urls #{})
+
+(defn with-new-url-mapping [handler]
+  (fn [req]
+    (handler (cond-> req
+               (contains? new-urls (:uri req))
+               (assoc :uri "/dashboard")))))
+
+(defn with-proxy [handler options]
   (fn [req]
     (or (when (and (contains? #{:get :head} (:request-method req))
                    (nil? (:body req)))
@@ -66,23 +84,13 @@
           (let [local-response (handler req)]
             (when (not= 404 (:status local-response))
               local-response)))
-        (letfn [(do-proxy-request [req channel]
-                  (request (proxy-request req options)
-                           (fn [response]
-                             (let [rewrite (if (:error response) rewrite-error rewrite-success)]
-                               (if (and (#{404 301} (:status response))
-                                        (not= "/dashboard" (:uri req)))
+        (with-channel req channel
+          (request (proxy-request req options)
+                   (fn [response]
+                     (let [rewrite (if (:error response) rewrite-error rewrite-success)]
+                       (send! channel (rewrite response)))))))))
 
-                                 ;; If the backend returns a 404, try returning /dashboard instead,
-                                 ;; which is known to render the app page. This makes it easier to
-                                 ;; add new URLs in development, because we add see the new page on
-                                 ;; prod.circlehost without deploying the new route to the
-                                 ;; production backend. Just remember to deploy that route when
-                                 ;; shipping the feature, or the page will be unavailable in the
-                                 ;; production app.
-                                 (do-proxy-request (assoc req :uri "/dashboard") channel)
-
-                                 ;; Otherwise, proxy as normal.
-                                 (send! channel (rewrite response)))))))]
-          (with-channel req channel
-            (do-proxy-request req channel))))))
+(defn wrap-handler [handler options]
+  (-> handler
+      (with-proxy options)
+      with-new-url-mapping))
