@@ -1554,7 +1554,7 @@
              :value (or base-url "")
              :auto-complete "off"
              :on-change #(utils/edit-input owner (input-path :base-url) %)}]
-           [:label {:placeholder "JIRA base URL"}]
+           [:label {:placeholder "JIRA base hostname"}]
 
            [:div.buttons
             (button/managed-button
