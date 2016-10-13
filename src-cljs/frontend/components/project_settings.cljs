@@ -1945,20 +1945,18 @@
                                                    :on-change (fn [{:keys [file-name file-content]}]
                                                                 (om/update-state! owner #(merge % {:file-name file-name
                                                                                                    :file-content file-content})))}))])
-        :actions [(forms/managed-button
-                   [:input.upload-profile-button
-                    {:data-failed-text "Failed" ,
-                     :data-success-text "Uploaded" ,
-                     :data-loading-text "Uploading..." ,
-                     :value "Upload" ,
-                     :type "submit"
-                     :disabled (not (and file-content description))
-                     :on-click #(raise! owner [:upload-provisioning-profile {:project-name project-name
-                                                                             :vcs-type vcs-type
-                                                                             :description description
-                                                                             :file-content (base64/encodeString file-content)
-                                                                             :file-name file-name
-                                                                             :on-success close-fn}])}])]
+        :actions [(button/managed-button {:failed-text "Failed"
+                                          :success-text "Uploaded"
+                                          :loading-text "Uploading..."
+                                          :disabled? (not (and file-content description))
+                                          :kind :primary
+                                          :on-click #(raise! owner [:upload-provisioning-profile {:project-name project-name
+                                                                                                  :vcs-type vcs-type
+                                                                                                  :description description
+                                                                                                  :file-content (base64/encodeString file-content)
+                                                                                                  :file-name file-name
+                                                                                                  :on-success close-fn}])}
+                                         "Upload")]
         :close-fn close-fn}))))
 
 (defn code-signing [{:keys [project-data error-message]} owner]
