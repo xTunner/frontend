@@ -106,10 +106,13 @@
     project-name
     service-name))
 
-(defn build-retry [vcs-type org-name repo-name build-num]
+(defn build-retry [vcs-type org-name repo-name build-num ssh?]
   (gstring/format
-   "%s/%s/%s/%s/retry"
-   (base-project-url-path vcs-type) org-name repo-name build-num))
+   "%s/%s/%s/%s/%s"
+   (base-project-url-path vcs-type) org-name repo-name build-num
+   (if ssh?
+     "ssh"
+     "retry")))
 
 (defn build-cancel [vcs-type org-name repo-name build-num]
   (gstring/format
