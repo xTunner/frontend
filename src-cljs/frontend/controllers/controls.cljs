@@ -564,7 +564,7 @@
                   :unfollow-project api-path/project-unfollow))
 
 (defmethod post-control-event! :stopped-building-project
-  [target message {:keys [vcs-url project-id]} previous-state current-state comms]
+  [target message {:keys [vcs-url project-id] :as args} previous-state current-state comms]
   (let [api-ch (:api comms)
         login (get-in current-state state/user-login-path)
         vcs-type (vcs-url/vcs-type vcs-url)
@@ -575,7 +575,7 @@
                  (api-path/project-enable vcs-type project)
                  :stop-building-project
                  api-ch
-                 :context {:project-id project-id})
+                 :context (select-keys args [:project-id :on-success]))
     :events {:success #(analytics/track {:event-type :project-builds-stopped
                                          :current-state current-state
                                          :properties {:org org-name

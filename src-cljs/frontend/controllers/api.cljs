@@ -738,8 +738,9 @@
   (update-in state state/projects-path (fn [projects] (remove #(= (:project-id context) (project-model/id %)) projects))))
 
 (defmethod post-api-event! [:stop-building-project :success]
-  [target message status args previous-state current-state comms]
-  (put! (:nav comms) [:navigate! {:path (routes/v1-dashboard)}]))
+  [target message status {{:keys [on-success]} :context} previous-state current-state comms]
+  (put! (:nav comms) [:navigate! {:path (routes/v1-dashboard)}])
+  (on-success))
 
 (defn org-selectable?
   [state org-name vcs-type]
