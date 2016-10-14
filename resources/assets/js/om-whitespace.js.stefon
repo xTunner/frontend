@@ -4,6 +4,6 @@
 
   "common.js.stefon"
 
-  "../../public/cljs/whitespace/frontend.js"
+  "../../public/cljs/whitespace/frontend-whitespace.js"
   "setup-frontend.coffee"
 ]
