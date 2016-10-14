@@ -484,7 +484,7 @@
 
 
 (defn retry-build
-  [api-ch vcs-url build-num no-cache? ssh?]
+  [api-ch vcs-url build-num & {:keys [no-cache? ssh?]}]
   (let [vcs-type (vcs-url/vcs-type vcs-url)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)
@@ -497,11 +497,11 @@
 
 (defmethod post-control-event! :retry-build-clicked
   [target message {:keys [build-num vcs-url no-cache?] :as args} previous-state current-state comms]
-  (retry-build (:api comms) vcs-url build-num no-cache? false))
+  (retry-build (:api comms) vcs-url build-num :no-cache? no-cache?))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message {:keys [build-num vcs-url] :as args} previous-state current-state comms]
-  (retry-build (:api comms) vcs-url build-num false true))
+  (retry-build (:api comms) vcs-url build-num :ssh? true))
 
 (defmethod post-control-event! :merge-pull-request-clicked
   [target message {:keys [vcs-url number sha] :as args} previous-state current-state comms]
