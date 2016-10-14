@@ -738,8 +738,9 @@
   (update-in state state/projects-path (fn [projects] (remove #(= (:project-id context) (project-model/id %)) projects))))
 
 (defmethod post-api-event! [:stop-building-project :success]
-  [target message status args previous-state current-state comms]
-  (put! (:nav comms) [:navigate! {:path (routes/v1-dashboard)}]))
+  [target message status {{:keys [on-success]} :context} previous-state current-state comms]
+  (put! (:nav comms) [:navigate! {:path (routes/v1-dashboard)}])
+  (on-success))
 
 (defn org-selectable?
   [state org-name vcs-type]
@@ -828,11 +829,25 @@
     (put! nav-ch [:navigate! {:path build-url}])))
 
 
-(defmethod post-api-event! [:retry-build :success]
-  [target message status args previous-state current-state comms]
-  (let [nav-ch (:nav comms)
-        build-url (-> args :resp :build_url (goog.Uri.) (.getPath) (subs 1))]
+(defn retry-build
+  [nav-ch current-state status {:keys [resp context] :as args}]
+  (let [build-url (-> resp :build_url (goog.Uri.) (.getPath) (subs 1))
+        {:keys [button-uuid]} context]
+    (release-button! button-uuid status)
     (put! nav-ch [:navigate! {:path build-url}])))
+
+(defmethod post-api-event! [:retry-build :success]
+  [target message status {:keys [resp context] :as args} previous-state current-state comms]
+  (retry-build (:nav comms) current-state :success args)
+  (analytics/track {:event-type :build-triggered
+                    :current-state current-state
+                    :build resp
+                    :properties {:no-cache? (:no-cache? context)
+                                 :ssh? (:ssh? context)}}))
+
+(defmethod post-api-event! [:retry-build :failed]
+  [target message status args previous-state current-state comms]
+  (retry-build (:nav comms) current-state :failed args))
 
 
 (defmethod post-api-event! [:save-dependencies-commands :success]

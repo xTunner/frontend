@@ -106,10 +106,13 @@
              :data-success-text "Started..."
              :type "submit"}])])))))
 
-(defn follow-sidebar [project owner]
+(defn follow-sidebar [{:keys [username reponame] :as project} owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [project-id (project-model/id project)
             vcs-url (:vcs_url project)
             controls-ch (om/get-shared owner [:comms :controls])]
@@ -124,19 +127,35 @@
                "You can stop these any time from your "
                [:a {:href "/account"} "account settings"]
                "."]
+              (when show-modal?
+                (let [close-fn #(om/set-state! owner :show-modal? false)]
+                  (modal/modal-dialog
+                   {:title (gstring/format "Stop building %s/%s on CircleCI?" username reponame)
+                    :body (html
+                           [:div
+                            [:p
+                             (gstring/format
+                              "When you stop building %s on CircleCI, we will stop all builds and unfollow all teammates who are currently following the project."
+                              reponame)]])
+                    :actions [(button/button {:on-click close-fn} "Cancel")
+                              (button/managed-button
+                               {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                                     :project-id project-id
+                                                                                     :on-success close-fn}])
+                                :kind :danger
+                                :loading-text "Stopping Builds..."
+                                :success-text "Builds Stopped"}
+                               "Stop Building")]
+                    :close-fn close-fn})))
               (button/managed-button
                {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
                 :loading-text "Unfollowing..."
                 :kind :primary}
                "Unfollow")
-               " "
-               (button/managed-button
-                {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
-                                                                      :project-id project-id}])
-                 :kind :danger
-                 :loading-text "Stopping Builds..."
-                 :success-text "Builds Stopped"}
-                "Stop Building"))
+              " "
+              (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                              :kind :danger}
+                             "Stop Building"))
              (list
               [:h2 "You're not following this repo"]
               [:p

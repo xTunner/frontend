@@ -483,24 +483,25 @@
     (print "No matching url could be found from current window.location.pathname")))
 
 
-(defmethod post-control-event! :retry-build-clicked
-  [target message {:keys [build-num build-id vcs-url no-cache?] :as args} previous-state current-state comms]
-  (let [api-ch (:api comms)
-        uuid frontend.async/*uuid*
-        vcs-type (vcs-url/vcs-type vcs-url)
+(defn retry-build
+  [api-ch vcs-url build-num & {:keys [no-cache? ssh?]}]
+  (let [vcs-type (vcs-url/vcs-type vcs-url)
         org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)]
-    (go
-      (let [api-result (<! (ajax/managed-ajax :post (api-path/build-retry vcs-type org-name repo-name build-num)
-                                              :params (when no-cache? {:no-cache true})))]
-        (put! api-ch [:retry-build (:status api-result) api-result])
-        (release-button! uuid (:status api-result))
-        (when (= :success (:status api-result))
-          (analytics/track {:event-type :build-triggered
-                            :current-state current-state
-                            :build (:resp api-result)
-                            :properties {:no-cache? no-cache?}}))))))
+        repo-name (vcs-url/repo-name vcs-url)
+        target-url (api-path/build-retry vcs-type org-name repo-name build-num ssh?)]
+    (ajax/ajax :post target-url :retry-build api-ch
+               :params (when no-cache? {:no-cache true})
+               :context {:no-cache? no-cache?
+                         :ssh? ssh?
+                         :button-uuid frontend.async/*uuid*})))
 
+(defmethod post-control-event! :retry-build-clicked
+  [target message {:keys [build-num vcs-url no-cache?] :as args} previous-state current-state comms]
+  (retry-build (:api comms) vcs-url build-num :no-cache? no-cache?))
+
+(defmethod post-control-event! :ssh-build-clicked
+  [target message {:keys [build-num vcs-url] :as args} previous-state current-state comms]
+  (retry-build (:api comms) vcs-url build-num :ssh? true))
 
 (defmethod post-control-event! :merge-pull-request-clicked
   [target message {:keys [vcs-url number sha] :as args} previous-state current-state comms]
@@ -520,22 +521,6 @@
           (analytics/track {:event-type :merge-pr-failed
                             :current-state current-state}))))))
 
-(defmethod post-control-event! :ssh-build-clicked
-  [target message {:keys [build-num build-id vcs-url] :as args} previous-state current-state comms]
-  (let [api-ch (:api comms)
-        org-name (vcs-url/org-name vcs-url)
-        repo-name (vcs-url/repo-name vcs-url)
-        vcs-type (vcs-url/vcs-type vcs-url)
-        uuid frontend.async/*uuid*]
-    (go
-     (let [api-result (<! (ajax/managed-ajax :post (gstring/format "/api/v1.1/project/%s/%s/%s/%s/ssh" vcs-type org-name repo-name build-num)))]
-       (put! api-ch [:retry-build (:status api-result) api-result])
-       (release-button! uuid (:status api-result))
-       (when (= :success (:status api-result))
-         (analytics/track {:event-type :build-triggered
-                           :current-state current-state
-                           :build (:resp api-result)
-                           :properties {:ssh? true}}))))))
 
 (defmethod post-control-event! :ssh-current-build-clicked
   [target message {:keys [build-num vcs-url]} previous-state current-state comms]
@@ -579,7 +564,7 @@
                   :unfollow-project api-path/project-unfollow))
 
 (defmethod post-control-event! :stopped-building-project
-  [target message {:keys [vcs-url project-id]} previous-state current-state comms]
+  [target message {:keys [vcs-url project-id] :as args} previous-state current-state comms]
   (let [api-ch (:api comms)
         login (get-in current-state state/user-login-path)
         vcs-type (vcs-url/vcs-type vcs-url)
@@ -590,7 +575,7 @@
                  (api-path/project-enable vcs-type project)
                  :stop-building-project
                  api-ch
-                 :context {:project-id project-id})
+                 :context (select-keys args [:project-id :on-success]))
     :events {:success #(analytics/track {:event-type :project-builds-stopped
                                          :current-state current-state
                                          :properties {:org org-name
