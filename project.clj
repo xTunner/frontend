@@ -74,7 +74,7 @@
              "-server"
              "-XX:+UseConcMarkSweepGC"
              "-Xss1m"
-             "-Xmx1024m"
+             "-Xmx2048m"
              "-XX:+CMSClassUnloadingEnabled"
              "-Djava.library.path=target/native/macosx/x86_64:target/native/linux/x86_64:target/native/linux/x86"
              "-Djna.library.path=target/native/macosx/x86_64:target/native/linux/x86_64:target/native/linux/x86"
