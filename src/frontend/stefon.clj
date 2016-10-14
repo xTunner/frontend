@@ -16,6 +16,7 @@
 (def precompiles
   (concat ["js/om-dev.js.stefon"
            "js/om-production.js.stefon"
+           "js/om-whitespace.js.stefon"
            "css/app.css"
            "img/logo.png"
            "img/status-logos/success.svg"
