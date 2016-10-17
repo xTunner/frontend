@@ -45,21 +45,19 @@
 (defn link
   "A link styled as a button.
 
-  :class         - Additional CSS classes to be applied to the button.
   :data-external - For links that shouldn't render in place. To be used with
                    frontend.utils.html/open-ext.
   :href          - The link target.
   :on-click      - A function called when the link is clicked.
   :kind          - The kind of button. One of #{:primary :secondary :danger :flat}.
                    (default: :secondary)"
-  [{:keys [class href on-click kind size data-external]
+  [{:keys [href on-click kind size data-external]
     :or {kind :secondary size :full}}
    content]
   (component
     (html
      [:a.exception
-      {:class (remove nil? [class
-                            (name kind)
+      {:class (remove nil? [(name kind)
                             (case size
                               :full nil
                               :medium "medium")])
