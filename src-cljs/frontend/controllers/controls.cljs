@@ -578,11 +578,11 @@
                  (api-path/project-enable vcs-type project)
                  :stop-building-project
                  api-ch
-                 :context (select-keys args [:project-id :on-success]))
-    :events {:success #(analytics/track {:event-type :project-builds-stopped
-                                         :current-state current-state
-                                         :properties {:org org-name
-                                                      :repo repo-name}})}))
+                 :context (select-keys args [:project-id :on-success])
+                 :events {:success #(analytics/track {:event-type :project-builds-stopped
+                                                      :current-state current-state
+                                                      :properties {:org org-name
+                                                                   :repo repo-name}})})))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll
