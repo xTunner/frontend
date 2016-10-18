@@ -832,7 +832,7 @@
   (let [{:keys [reponame ref-name]} context]
     (state/add-flash-notification
      state
-     (gstring/format "We are rebuilding %s %s now." reponame ref-name))))
+     (gstring/format "Rebuilding %s %s..." reponame ref-name))))
 
 (defmethod post-api-event! [:retry-build :success]
   [target message status {:keys [resp context] :as args} previous-state current-state comms]
