@@ -373,7 +373,6 @@
                                                                        :junit-ab-test (feature/ab-test-treatment :junit-ab-test)}})]  
     (case (feature/ab-test-treatment :junit-ab-test)
       :junit-button (button/link (open-ext {:href junit-link
-                                            :class "junit-link"
                                             :kind :primary
                                             :on-click track-junit})
                                  "Set Up Test Summary")
