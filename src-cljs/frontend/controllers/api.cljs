@@ -829,10 +829,10 @@
 
 (defmethod api-event [:retry-build :success]
   [target message status {:keys [resp context]} state]
-  (let [{:keys [reponame ref-name]} context]
+  (let [{:keys [reponame]} context]
     (state/add-flash-notification
      state
-     (gstring/format "Rebuilding %s %s..." reponame ref-name))))
+     (gstring/format "Rebuilding %s..." reponame))))
 
 (defmethod post-api-event! [:retry-build :success]
   [target message status {:keys [resp context] :as args} previous-state current-state comms]
