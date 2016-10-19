@@ -197,15 +197,6 @@
                             (supplement-tracking-properties {:properties properties
                                                              :current-state current-state}))))
 
-(s/defmethod track :build-triggered [event-data :- BuildEvent]
-  (let [{:keys [build properties current-state]} event-data
-        props (merge {:project (vcs-url/project-name (:vcs_url build))
-                      :build-num (:build_num build)
-                      :retry? true}
-                     properties)]
-    (segment/track-event :build-triggered (supplement-tracking-properties {:properties props
-                                                                           :current-state current-state}))))
-
 (s/defmethod track :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
         props (merge (build-properties build current-state) properties)]

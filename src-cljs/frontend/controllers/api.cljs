@@ -840,12 +840,7 @@
   (let [build-url (-> resp :build_url (goog.Uri.) (.getPath) (subs 1))
         {:keys [button-uuid no-cache? ssh?]} context]
     (release-button! button-uuid status)
-    (put! (:nav comms) [:navigate! {:path build-url}])
-    (analytics/track {:event-type :build-triggered
-                      :current-state current-state
-                      :build resp
-                      :properties {:no-cache? no-cache?
-                                   :ssh? ssh?}})))
+    (put! (:nav comms) [:navigate! {:path build-url}])))
 
 (defmethod post-api-event! [:retry-build :failed]
   [target message status {:keys [context]} previous-state current-state comms]
