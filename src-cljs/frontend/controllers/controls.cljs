@@ -499,7 +499,7 @@
 
 (defmethod post-control-event! :retry-build-clicked
   [target message args previous-state current-state comms]
-  (retry-build (:api comms) (select-keys args [:vcs-url :build-num :reponame :ref-name :no-cache])))
+  (retry-build (:api comms) (select-keys args [:vcs-url :build-num :reponame :ref-name :no-cache?])))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message args previous-state current-state comms]
