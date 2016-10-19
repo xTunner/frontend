@@ -484,7 +484,7 @@
 
 
 (defn retry-build
-  [api-ch vcs-url build-num & {:keys [no-cache? ssh?]}]
+  [api-ch {:keys [vcs-url build-num reponame ref-name no-cache? ssh?]}]
   (let [vcs-type (vcs-url/vcs-type vcs-url)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)
@@ -493,15 +493,18 @@
                :params (when no-cache? {:no-cache true})
                :context {:no-cache? no-cache?
                          :ssh? ssh?
+                         :reponame reponame
+                         :ref-name ref-name
                          :button-uuid frontend.async/*uuid*})))
 
 (defmethod post-control-event! :retry-build-clicked
-  [target message {:keys [build-num vcs-url no-cache?] :as args} previous-state current-state comms]
-  (retry-build (:api comms) vcs-url build-num :no-cache? no-cache?))
+  [target message args previous-state current-state comms]
+  (retry-build (:api comms) (select-keys args [:vcs-url :build-num :reponame :ref-name :no-cache?])))
 
 (defmethod post-control-event! :ssh-build-clicked
-  [target message {:keys [build-num vcs-url] :as args} previous-state current-state comms]
-  (retry-build (:api comms) vcs-url build-num :ssh? true))
+  [target message args previous-state current-state comms]
+  (retry-build (:api comms) (assoc (select-keys args [:vcs-url :build-num :reponame :ref-name])
+                              :ssh? true)))
 
 (defmethod post-control-event! :merge-pull-request-clicked
   [target message {:keys [vcs-url number sha] :as args} previous-state current-state comms]
@@ -575,11 +578,11 @@
                  (api-path/project-enable vcs-type project)
                  :stop-building-project
                  api-ch
-                 :context (select-keys args [:project-id :on-success]))
-    :events {:success #(analytics/track {:event-type :project-builds-stopped
-                                         :current-state current-state
-                                         :properties {:org org-name
-                                                      :repo repo-name}})}))
+                 :context (select-keys args [:project-id :on-success])
+                 :events {:success #(analytics/track {:event-type :project-builds-stopped
+                                                      :current-state current-state
+                                                      :properties {:org org-name
+                                                                   :repo repo-name}})})))
 
 ;; XXX: clean this up
 (defmethod post-control-event! :container-parent-scroll

@@ -12,7 +12,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
+            [om.dom :as dom :include-macros true]
+            [frontend.utils.github :as gh-utils])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn dashboard-icon [name]
@@ -166,19 +167,22 @@
                  (om/build common/updating-duration {:start (:start_time build)
                                                      :stop (:stop_time build)})]))]
       [:div.metadata-row.pull-revision
-        (when-let [urls (seq (map :url (:pull_requests build)))]
-          [:div.metadata-item.pull-requests {:title "Pull Requests"}
-           [:i.octicon.octicon-git-pull-request]
-           (interpose
-            ", "
-            (for [url urls]
-              [:a {:href url
-                   :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
-                                                                   :properties {:repo (:reponame build)
-                                                                                :org (:username build)}})}
-               "#"
-               (let [[_ number] (re-find #"/(\d+)$" url)]
-                 (or number "?"))]))])
+       (when-let [urls (seq (map :url (:pull_requests build)))]
+         [:div.metadata-item.pull-requests {:title "Pull Requests"}
+          [:i.octicon.octicon-git-pull-request]
+          (interpose
+           ", "
+           (for [url urls]
+             ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+             ;; When that happens, this code blows up the page. To work around that,
+             ;; we just skip the PR if its URL is nil.
+             (when url
+               [:a {:href url
+                    :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
+                                                                    :properties {:repo (:reponame build)
+                                                                                 :org (:username build)}})}
+                "#"
+                (gh-utils/pull-request-number url)])))])
 
         [:div.metadata-item.revision
          [:i.octicon.octicon-git-commit]

@@ -373,7 +373,6 @@
                                                                        :junit-ab-test (feature/ab-test-treatment :junit-ab-test)}})]  
     (case (feature/ab-test-treatment :junit-ab-test)
       :junit-button (button/link (open-ext {:href junit-link
-                                            :class "junit-link"
                                             :kind :primary
                                             :on-click track-junit})
                                  "Set Up Test Summary")
@@ -821,10 +820,14 @@
     (interpose
      ", "
      (for [url urls]
-       [:a {:href url
-            :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
-        "#"
-        (gh-utils/pull-request-number url)]))]])
+       ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+       ;; When that happens, this code blows up the page. To work around that,
+       ;; we just skip the PR if its URL is nil.
+       (when url
+         [:a {:href url
+              :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
+          "#"
+          (gh-utils/pull-request-number url)])))]])
 
 (defn queued-time [build]
   (if (< 0 (build-model/run-queued-time build))

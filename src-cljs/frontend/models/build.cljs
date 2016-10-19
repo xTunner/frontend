@@ -294,7 +294,9 @@
 (defn build-args [build]
   {:build-id  (id build)
    :vcs-url   (vcs-url build)
-   :build-num (num build)})
+   :build-num (num build)
+   :ref-name (vcs-ref-name build)
+   :reponame (:reponame build)})
 
 (defn merge-args [build]
   (let [pull-request-number (last (pull-request-numbers build))]
