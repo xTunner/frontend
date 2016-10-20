@@ -801,8 +801,8 @@
              nil)]))))))
 
 (defn build-canceler [{:keys [type name handle]}]
-  [:span.summary-label
-   (list "Canceled by: "
+  [:span
+   (list
          [:a {:href (case type
                       "github" (str (github-endpoint) "/" handle)
                       "bitbucket" (bb-utils/user-profile-url handle)
