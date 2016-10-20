@@ -81,6 +81,7 @@
       (button/link
        {:href (routes/v1-add-projects)
         :kind :primary
+        :size :medium
         :on-click #(analytics/track! this {:event-type :add-project-clicked
                                            :properties {:is-empty-state empty-state?}})}
        "Add Project"))))

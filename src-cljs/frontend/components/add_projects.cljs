@@ -76,7 +76,8 @@
     om/IRender
     (render [_]
       (button/button {:on-click #(raise! owner [:refreshed-user-orgs {}])
-                      :kind :primary}
+                      :kind :primary
+                      :size :medium}
                      "Reload Organizations"))))
 
 (defn- repo-title [repo link?]
