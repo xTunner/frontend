@@ -53,7 +53,7 @@
                 {:data-toggle "dropdown"
                  :aria-haspopup "true"
                  :aria-expanded "false"}
-                "What's New " [:i.material-icons "keyboard_arrow_down"]]
+                [:i.material-icons "add"] "What's New"]
                [:ul.dropdown-menu.pull-right.animated.slideInDown
                 (when-not (config/enterprise?)
                   [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
@@ -63,7 +63,7 @@
                 {:data-toggle "dropdown"
                  :aria-haspopup "true"
                  :aria-expanded "false"}
-                "Get Help " [:i.material-icons "keyboard_arrow_down"]]
+                [:i.material-icons "add"] "Get Help"]
                [:ul.dropdown-menu.pull-right.animated.slideInDown
                 [:li
                  [:a (html/open-ext {:href "https://circleci.com/docs/"})
@@ -81,8 +81,7 @@
                 {:data-toggle "dropdown"
                  :aria-haspopup "true"
                  :aria-expanded "false"}
-                [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
-                [:i.material-icons "keyboard_arrow_down"]]
+                [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]]
                [:ul.dropdown-menu.pull-right.animated.slideInDown
                 [:li [:a {:href "/logout/"} "Logout"]]
                 [:li [:a {:href "/account"} "User Settings"]]
