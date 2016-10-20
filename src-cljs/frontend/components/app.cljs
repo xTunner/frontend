@@ -162,9 +162,6 @@
                                   (flash/flash-notification {:react-key number} message))})]]
 
             [:.below-top
-             (when (and (not outer?) logged-in?)
-               (build-legacy aside/aside-nav (dissoc app-without-container-data :current-build-data)))
-
              (factory props)]]))))))
 
 (def wrapper (om-next/factory Wrapper))
