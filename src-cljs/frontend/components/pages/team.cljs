@@ -269,16 +269,17 @@
             api-chan (om/get-shared owner [:comms :api])]
         (when (not= (:selected-org-ident (om/get-render-state owner))
                     selected-org-ident)
-          (api/get-org-members name vcs-type api-chan)
           (api/get-org-settings-normalized name vcs-type api-chan))))
 
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident show-invite-modal?]}]
-      (let [user (:current-user app)
-            selected-org (when selected-org-ident (get-in app selected-org-ident))
-            available-orgs (filter :org (:organizations user))]
-        (html
-          [:div {:data-component `page}
+      (component
+       (let [user (:current-user app)
+             selected-org (when selected-org-ident (get-in app selected-org-ident))
+             available-orgs (filter :org (:organizations user))
+             api-chan (om/get-shared owner [:comms :api])]
+         (html
+          [:div
            [:.sidebar
             (card/basic
              (if available-orgs
@@ -295,6 +296,9 @@
                                                                                      :vcs_type vcs_type}})))})
                (html [:div.loading-spinner common/spinner])))]
            [:.main
+            (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
+                                              :close-fn #(om/set-state! owner :show-invite-modal? false)
+                                              :show-modal? show-invite-modal?})
             (if-let [[_ [vcs-type name]] selected-org-ident]
               (card/titled
                {:title (html
@@ -303,23 +307,29 @@
                            "github" [:i.octicon.octicon-mark-github]
                            "bitbucket" [:i.fa.fa-bitbucket]
                            nil)])
-                :action [:div
-                         (button/button
-                          {:kind :primary
-                           :size :medium
-                           :on-click #(do
-                                        (om/set-state! owner :show-invite-modal? true)
-                                        ((om/get-shared owner :track-event)
-                                         {:event-type :invite-teammates-clicked
-                                          :properties {:view :team}}))}
-                          "Invite Teammates")
-                         (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
-                                                           :close-fn #(om/set-state! owner :show-invite-modal? false)
-                                                           :show-modal? show-invite-modal?})]}
+                :action (element :action
+                                 (html
+                                  [:div
+                                   [:span
+                                    (button/button
+                                     {:kind :secondary
+                                      :size :medium
+                                      :on-click #(api/get-org-settings-normalized name vcs-type api-chan {:refresh true})}
+                                     "Refresh List")]
+                                   [:span
+                                    (button/button
+                                     {:kind :primary
+                                      :size :medium
+                                      :on-click #(do
+                                                   (om/set-state! owner :show-invite-modal? true)
+                                                   ((om/get-shared owner :track-event)
+                                                    {:event-type :invite-teammates-clicked
+                                                     :properties {:view :team}}))}
+                                     "Invite Teammates")]]))}
                (if (:users selected-org)
                  (table (select-keys selected-org [:users :projects]))
                  (html [:div.loading-spinner common/spinner])))
-              (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]])))))
+              (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]]))))))
 
 (defn page [app owner]
   (reify

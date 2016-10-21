@@ -1,5 +1,5 @@
 .ns("frontend.components.pages.team", {
-  .ui("page", {
+  .ui("main-content", {
     .flexy();
     margin-top: 15px;
 
@@ -11,6 +11,16 @@
     > .main {
       flex-grow: 1;
     }
+
+    .el("action", {
+      > span {
+        margin-right: 10px;
+
+        &:last-child {
+          margin-right: 0px;
+        }
+      }
+    });
   });
 
   .ui("no-org-selected", {}, {
