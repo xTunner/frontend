@@ -59,25 +59,13 @@
        " if you're interested in the cause or if the problem persists."])))
 
 (defn report-error [{:keys [build show-premium-content?]} owner]
-  (let [build-id (build-model/id build)
-        build-url (:build_url build)
-        fail-reason (:fail_reason build)]
-    (when (and (:failed build)
-               (not show-premium-content?)
-               (not (config/enterprise?)))
-      [:div.alert.alert-danger.iconified
-       [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
-       (if (:infrastructure_fail build)
-         (infrastructure-fail-message owner fail-reason)
-         [:div.alert-wrap
-          "If you continue to get stuck, we suggest checking out our "
-          [:a (open-ext {:href "https://circleci.com/docs/troubleshooting/"})
-           "docs"]
-          " and/or our "
-          [:a {:href "https://discuss.circleci.com/"}
-           "community site"]
-          "."
-          [:span " Upgrading to a paid plan unlocks access to CircleCI engineering support, faster builds, and advanced features. Thanks!"]])])))
+  (when (and (:failed build)
+             (:infrastructure_fail build)
+             (not show-premium-content?)
+             (not (config/enterprise?)))
+    [:div.alert.alert-danger.iconified
+     [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
+     (infrastructure-fail-message owner (:fail_reason build))]))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
