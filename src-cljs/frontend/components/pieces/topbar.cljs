@@ -83,10 +83,10 @@
                  :aria-expanded "false"}
                 [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]]
                [:ul.dropdown-menu.pull-right.animated.slideInDown
-                [:li [:a {:href "/logout/"} "Logout"]]
                 [:li [:a {:href "/account"} "User Settings"]]
                 (when (:admin user)
-                  [:li [:a {:href "/admin"} "Admin"]])]]]
+                  [:li [:a {:href "/admin"} "Admin"]])
+                [:li [:a {:href "/logout/"} "Logout"]]]]]
 
              [:ul.nav-items.nav-items-left.hidden-md-up
               [:li
