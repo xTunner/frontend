@@ -801,8 +801,8 @@
              nil)]))))))
 
 (defn build-canceler [{:keys [type name handle]}]
-  [:span.summary-label
-   (list "Canceled by: "
+  [:span
+   (list
          [:a {:href (case type
                       "github" (str (github-endpoint) "/" handle)
                       "bitbucket" (bb-utils/user-profile-url handle)
@@ -944,15 +944,16 @@
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]]
 
+             (when-let  [canceler  (and  (=  status "canceled")
+                                         canceler)]
+
+               [:div.summary-item
+                [:span.summary-label "Canceled by: "]
+                [:span (build-canceler canceler)]])
+
              (when (build-model/has-pull-requests? build)
                (pull-requests {:urls (map :url pull_requests)} owner))]]
 
-           (when-let  [canceler  (and  (=  status "canceled")
-                                       canceler)]
-             [:div.summary-header
-              [:div.summary-items
-               [:div.summary-item
-                (build-canceler canceler)]]])
            [:div.card
             [:div.small-emphasis
              (let [n (count all_commit_details)]
