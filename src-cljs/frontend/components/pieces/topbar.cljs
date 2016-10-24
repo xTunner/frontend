@@ -74,7 +74,13 @@
                 [:li
                  ;; FIXME: NEED TO ADD THIS AGAIN IN THE DEFN
                  [:a.support-info
-                  "Support"]]]]
+                  "Support"]]
+                [:li
+                 [:a (html/open-ext {:href "/"})
+                  "Suggest a feature"]]
+                [:li
+                 [:a (html/open-ext {:href "/"})
+                  "Report an issue"]]]]
 
               [:li.dropdown.user-menu
                [:button.dropdown-toggle
