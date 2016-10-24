@@ -80,28 +80,6 @@
                                                            :event :shibbity-ibbity-ima-fake-event
                                                            :current-state current-state})))))
 
-(deftest track-build-triggered-works
-  (let [event-type :build-triggered]
-    (testing "track :build-triggered adds the correct properties"
-      (let [build-num 4
-            project-name "org/repo"
-            vcs-url (str "https://github.com/" project-name)
-            build {:vcs_url vcs-url
-                   :build_num build-num}
-            calls (stub-segment-track-event #(analytics/track {:event-type event-type
-                                                               :build build
-                                                               :current-state current-state}))]
-        (is (= 1 (count calls)))
-        (is (= event-type (-> calls first :args first)))
-        (is (submap? (merge data
-                            {:project project-name
-                             :build-num build-num
-                             :retry? true}) (-> calls first :args second))))
-
-      (testing "track :build-triggered requires a build"
-        (test-utils/fails-schema-validation #(analytics/track {:event-type event-type
-                                                               :current-state current-state}))))))
-
 (deftest track-view-build-works
   (let [event-type :view-build
         build-num 4
@@ -237,5 +215,4 @@
                                (is (submap? properties (-> calls first :args second)))))]
       (ensure-overwrite click-event)
       (ensure-overwrite :external-click :event click-event)
-      (ensure-overwrite :build-triggered :build {})
       (ensure-overwrite :view-build :build {}))))
