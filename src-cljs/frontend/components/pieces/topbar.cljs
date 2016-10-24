@@ -66,14 +66,18 @@
                 [:i.material-icons "add"] "Get Help"]
                [:ul.dropdown-menu.pull-right.animated.slideInDown
                 [:li
+                 ;; FIXME: NEED TO ADD QUICK START PAGE
+                 [:a {:href "/quick-start"}
+                  "Quick Start"]]
+                [:li
                  [:a (html/open-ext {:href "https://circleci.com/docs/"})
                   "Docs"]]
                 [:li
                  [:a (html/open-ext {:href "https://discuss.circleci.com/"})
                   "Discuss"]]
                 [:li
-                 ;; FIXME: NEED TO ADD THIS AGAIN IN THE DEFN
-                 [:a.support-info
+                 ;; FIXME: NEED TO ADD LINK TO SUPPORT
+                 [:a.support-info {:href "/suport"}
                   "Support"]]
                 [:li
                  [:a (html/open-ext {:href "/"})
