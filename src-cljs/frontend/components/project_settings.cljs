@@ -123,8 +123,9 @@
              (list
               [:h2 "You're following " (vcs-url/project-name vcs-url)]
               [:p
-               "We'll keep an eye on this and update you with personalized build emails. "
-               "You can stop these any time from your "
+               "We'll keep an eye on this and update you with personalized build emails and notifications."
+               [:br]
+               "You can update your notifications from your "
                [:a {:href "/account"} "account settings"]
                "."]
               (when show-modal?
@@ -147,19 +148,23 @@
                                 :success-text "Builds Stopped"}
                                "Stop Building")]
                     :close-fn close-fn})))
+
               (button/managed-button
                {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
                 :loading-text "Unfollowing..."
                 :kind :primary}
-               "Unfollow")
-              " "
-              (button/button {:on-click #(om/set-state! owner :show-modal? true)
-                              :kind :danger}
-                             "Stop Building"))
+               "Unfollow Project")
+
+              [:div
+               [:h2 "You're building " (vcs-url/project-name vcs-url)]
+
+               (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                               :kind :danger}
+                              "Stop Building")])
              (list
               [:h2 "You're not following this repo"]
               [:p
-               "We can't update you with personalized build emails unless you follow this project. "
+               "We can't update you with personalized build emails and notifications unless you follow this project. "
                "Projects are only tested if they have a follower."]
               (button/managed-button
                {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url
