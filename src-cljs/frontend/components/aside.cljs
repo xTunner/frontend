@@ -396,7 +396,7 @@
                      :on-change #(raise! owner [:sort-branches-toggled
                                                 (utils/parse-uri-bool (.. % -target -value))])
                      :value (pr-str sort-branches-by-recency?)}
-            [:option {:value "false"} "By Repo"]
+            [:option {:value "false"} "By Project"]
             [:option {:value "true"} "Recent"]]
 
            [:div.toggle-all-branches
