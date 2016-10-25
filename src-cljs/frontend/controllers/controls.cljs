@@ -190,7 +190,7 @@
   (let [element-state (fn [state]
                         (if (get-in state state/sort-branches-by-recency-path)
                           "Recent"
-                          "By Repo"))]
+                          "By Project"))]
    (analytics/track {:event-type :sort-branches-toggled
                      :current-state current-state
                      :properties {:current-state (element-state current-state)
