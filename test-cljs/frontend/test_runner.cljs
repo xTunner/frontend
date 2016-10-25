@@ -26,6 +26,7 @@
             [frontend.test-routes]
             [frontend.utils-test]
             [frontend.utils.test-build]
+            [frontend.utils.test-function-query]
             [frontend.utils.test-seq]))
 
 (aset js/window "renderContext" "{}")
@@ -55,4 +56,5 @@
            'frontend.test-routes
            'frontend.utils-test
            'frontend.utils.test-build
+           'frontend.utils.test-function-query
            'frontend.utils.test-seq)
