@@ -91,7 +91,7 @@
         (recur)))))
 
 (defn toggle-project
-  "Toggle follow and unfollow project repos."
+  "Toggle follow and unfollow projects."
   [current-state comms vcs-url context control-event follow-path]
   (let [api-ch (:api comms)
         login (get-in current-state state/user-login-path)

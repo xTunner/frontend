@@ -428,9 +428,9 @@
                 {:value email}
                 email])]]
            [:div.section
-            [:h3 "Repo notification emails"]
+            [:h3 "Project notification emails"]
             [:div.table-header
-             [:h4 "Repo"]
+             [:h4 "Project"]
              [:h4 "Email preference"]]
             (for [project projects
                   :when (= [(keyword (:vcs_type project)) (keyword (:username project))] selected-org)]

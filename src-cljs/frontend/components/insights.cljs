@@ -434,13 +434,13 @@
                   (gstring/unescapeEntities "&nbsp;"))]
            (cond (nil? (get recent-builds default_branch)) [:div.loading-spinner common/spinner]
                  (not show-insights?) [:div.no-insights
-                                       [:div.message "This release of Insights is only available for repos belonging to paid plans."]
+                                       [:div.message "This release of Insights is only available for projects belonging to paid plans."]
                                        [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))
                                                                                              :vcs_type (:vcs_type project)})
                                                          :on-click #((om/get-shared owner :track-event) {:event-type :build-insights-upsell-click
                                                                                                          :properties  {:repo repo-name
                                                                                                                        :org org-name}})} "Upgrade here"]]
-                (empty? chartable-builds) [:div.no-builds "No tests for this repo"]
+                (empty? chartable-builds) [:div.no-builds "No builds to display for this project"]
                 :else
                 (list
                  [:div.above-info
