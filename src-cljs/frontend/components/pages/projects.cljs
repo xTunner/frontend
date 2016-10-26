@@ -33,31 +33,20 @@
                 {:rows projects
                  :key-fn :project/vcs-url
                  :columns [{:header "Project"
-                            :cell-fn
-                            #(html
-                              (let [vcs-url (:project/vcs-url %)]
-                                [:a
-                                 {:href (routes/v1-project-dashboard-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                                                           :org (vcs-url/org-name vcs-url)
-                                                                           :repo (vcs-url/repo-name vcs-url)})
-                                  :on-click #((om/get-shared owner :track-event) {:event-type :project-clicked
-                                                                                  :properties {:org org-name
-                                                                                               :repo repo-name}})}
-                                 (:project/name %)]))}
+                            :cell-fn :project/name}
 
                            {:header "Parallelism"
                             :type #{:right :shrink}
-                            :cell-fn
-                            #(html
-                              (let [parallelism (project-model/parallelism %)
-                                    buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
-                                    vcs-url (:project/vcs-url %)]
-                                [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
-                                                                             :org (vcs-url/org-name vcs-url)
-                                                                             :repo (vcs-url/repo-name vcs-url)
-                                                                             :_fragment "parallel-builds"})}
-                                 parallelism "x"
-                                 (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
+                            :cell-fn #(html
+                                       (let [parallelism (project-model/parallelism %)
+                                             buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
+                                             vcs-url (:project/vcs-url %)]
+                                         [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
+                                                                                      :org (vcs-url/org-name vcs-url)
+                                                                                      :repo (vcs-url/repo-name vcs-url)
+                                                                                      :_fragment "parallel-builds"})}
+                                          parallelism "x"
+                                          (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
 
                            {:header "Team"
                             :type #{:right :shrink}
