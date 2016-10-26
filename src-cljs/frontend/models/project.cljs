@@ -1,11 +1,12 @@
 (ns frontend.models.project
-  (:require [clojure.string :refer [lower-case split join]]
-            [frontend.utils :as utils :include-macros true]
-            [goog.string :as gstring]
-            [frontend.models.plan :as plan-model]
+  (:require [clojure.string :refer [join lower-case split]]
             [frontend.config :as config]
+            [frontend.models.plan :as plan-model]
+            [frontend.utils :as utils :include-macros true]
+            [frontend.utils.function-query :as fq :include-macros true]
             [frontend.utils.vcs :as vcs]
-            [frontend.utils.vcs-url :as vcs-url]))
+            [frontend.utils.vcs-url :as vcs-url]
+            [goog.string :as gstring]))
 
 (defn project-name [project]
   (let [username (:username project)
@@ -130,7 +131,9 @@
 
 ;; Sometimes the backend returns a map of feature_flags,
 ;; and sometimes it returns :oss directly on the project.
-(defn oss? [project]
+(defn oss?
+  {::fq/queries {:project [:project/oss?]}}
+  [project]
   (or (:project/oss? project)
       (:oss project)
       (get-in project [:feature_flags :oss])))
@@ -138,11 +141,19 @@
 (defn osx? [project]
   (get-in project [:feature_flags :osx]))
 
-(defn usable-containers [plan project]
+(defn usable-containers
+  {::fq/queries {:project (fq/get oss? :project)}}
+  [plan project]
   (+ (plan-model/linux-containers plan)
      (if (oss? project) plan-model/oss-containers 0)))
 
-(defn buildable-parallelism [plan project]
+(defn buildable-parallelism
+  ;; This '[*] is a punt for now. We need all the plan details that
+  ;; plan-model/max-parallelism and usable-containers need. For now, fetch the
+  ;; entire thing.
+  {::fq/queries {:plan '[*]
+                 :project (fq/get usable-containers :project)}}
+  [plan project]
   (min (plan-model/max-parallelism plan)
        (usable-containers plan project)))
 
@@ -194,7 +205,9 @@
   [project]
   (not (osx? project)))
 
-(defn parallelism [project]
+(defn parallelism
+  {::fq/queries {:project [:project/parallelism]}}
+  [project]
   (or (:project/parallelism project)
       (:parallel project)
       1))
