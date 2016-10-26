@@ -13,6 +13,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer [set-page-title!]]
+            [frontend.utils.function-query :as fq :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs :as vcs]
@@ -21,7 +22,13 @@
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn- table [projects plan]
+(defn- table
+  {::fq/queries {:projects (fq/merge [:project/vcs-url
+                                      :project/name]
+                                     (fq/get project-model/parallelism :project)
+                                     (fq/get project-model/buildable-parallelism :project))
+                 :plan (fq/get project-model/buildable-parallelism :plan)}}
+  [projects plan]
   (build-legacy table/table
                 {:rows projects
                  :key-fn :project/vcs-url
@@ -104,17 +111,11 @@
     [:organization/by-vcs-type-and-name {:organization/vcs-type vcs-type :organization/name name}])
   static om-next/IQuery
   (query [this]
-    '[:organization/vcs-type
-      :organization/name
-      {:organization/projects [:project/vcs-url
-                               :project/name
-                               :project/parallelism
-                               :project/oss?
-                               {:project/followers []}]}
-      ;; This is a punt for now. We need all the plan details that
-      ;; project-model/buildable-parallelism needs. For now, fetch the entire
-      ;; thing.
-      {:organization/plan [*]}])
+    [:organization/vcs-type
+     :organization/name
+     {:organization/projects (fq/merge [{:project/followers []}]
+                                       (fq/get table :projects))}
+     {:organization/plan (fq/get table :plan)}])
   Object
   (render [this]
     (let [{:keys [organization/vcs-type organization/name organization/projects organization/plan]} (om-next/props this)
