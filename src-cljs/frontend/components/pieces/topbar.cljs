@@ -53,7 +53,7 @@
                 {:data-toggle "dropdown"
                  :aria-haspopup "true"
                  :aria-expanded "false"}
-                [:i.material-icons "add"] "What's New"]
+                 "What's New" [:i.material-icons "keyboard_arrow_down"]]
                [:ul.dropdown-menu.pull-right.animated.slideInDown
                 (when-not (config/enterprise?)
                   [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
@@ -63,7 +63,7 @@
                 {:data-toggle "dropdown"
                  :aria-haspopup "true"
                  :aria-expanded "false"}
-                [:i.material-icons "add"] "Get Help"]
+                "Get Help" [:i.material-icons "keyboard_arrow_down"] ]
                [:ul.dropdown-menu.pull-right.animated.slideInDown
                 [:li
                  ;; FIXME: NEED TO ADD QUICK START PAGE
