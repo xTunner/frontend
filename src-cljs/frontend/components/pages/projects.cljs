@@ -188,4 +188,4 @@
               [:.main
                (if selected-org
                  (org-projects selected-org)
-                 (no-org-selected orgs (user/bitbucket-authorized? current-user)))]])))}))))
+                 (no-org-selected orgs (:user/bitbucket-authorized? current-user)))]])))}))))
