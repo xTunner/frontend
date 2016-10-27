@@ -10,6 +10,7 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.project :as project-model]
+            [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer [set-page-title!]]
@@ -187,4 +188,4 @@
               [:.main
                (if selected-org
                  (org-projects selected-org)
-                 (no-org-selected orgs (vcs/bitbucket-enabled? current-user)))]])))}))))
+                 (no-org-selected orgs (user/bitbucket-authorized? current-user)))]])))}))))

@@ -66,7 +66,7 @@
    [:ul
     [:li
      "Get started by selecting your GitHub "
-     (when (vcs-utils/bitbucket-enabled? user)
+     (when (user-model/bitbucket-authorized? user)
        "or Bitbucket ")
      "username or organization."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
