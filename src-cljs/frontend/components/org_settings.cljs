@@ -154,9 +154,9 @@
                       [:i.material-icons "settings"]]]]
                   (om/build followers-container (:followers project))]])])]
           [:div.row-fluid
-           [:h1 "Untested repos"]
+           [:h1 "Untested projects"]
            (if-not (seq unfollowed-projects)
-             [:h3 "No untested repos found."]
+             [:h3 "No untested projects found."]
 
              [:div.span8
               (for [project unfollowed-projects
@@ -562,7 +562,7 @@
                    ;; TODO: Only show for trial-plans?
                    [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                    " ago. Pay now to enable builds of private repositories."])))]]]]])))))
+                    " ago. Pay now to enable builds of private projects."])))]]]]])))))
 
 (defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
   (reify
@@ -700,7 +700,7 @@
           [:fieldset
            [:legend "Extra organizations"]
            [:p
-            "Your plan covers all repositories (including forks) in the "
+            "Your plan covers all projects (including forked repos) in the "
             [:strong org-name]
             " organization by default."]
            [:p "You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]

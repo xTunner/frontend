@@ -106,93 +106,90 @@
              :data-success-text "Started..."
              :type "submit"}])])))))
 
-(defn follow-sidebar [{:keys [username reponame] :as project} owner]
+(defn overview [project-data owner]
   (reify
     om/IInitState
     (init-state [_]
       {:show-modal? false})
+
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
-      (let [project-id (project-model/id project)
+      (let [project (:project project-data)
+            username (:username project)
+            reponame (:reponame project)
             vcs-url (:vcs_url project)
-            controls-ch (om/get-shared owner [:comms :controls])]
+            project-id (project-model/id project)]
         (html
-         [:article
-          [:div
-           (if (:followed project)
-             (list
-              [:h2 "You're following " (vcs-url/project-name vcs-url)]
-              [:p
-               "We'll keep an eye on this and update you with personalized build emails and notifications."
-               [:br]
-               "You can update your notifications from your "
-               [:a {:href "/account"} "account settings"]
-               "."]
-              (when show-modal?
-                (let [close-fn #(om/set-state! owner :show-modal? false)]
-                  (modal/modal-dialog
-                   {:title (gstring/format "Stop building %s/%s on CircleCI?" username reponame)
-                    :body (html
-                           [:div
-                            [:p
-                             (gstring/format
-                              "When you stop building %s on CircleCI, we will stop all builds and unfollow all teammates who are currently following the project."
-                              reponame)]])
-                    :actions [(button/button {:on-click close-fn} "Cancel")
-                              (button/managed-button
-                               {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
-                                                                                     :project-id project-id
-                                                                                     :on-success close-fn}])
-                                :kind :danger
-                                :loading-text "Stopping Builds..."
-                                :success-text "Builds Stopped"}
-                               "Stop Building")]
-                    :close-fn close-fn})))
+          (card/collection
+            (concat
+              [(card/titled
+                 {:title (str "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url])))}
+                 (html
+                   [:div
+                    [:b "Option 1"]
+                    [:p "Do nothing! CircleCI infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
+                    [:b "Option 2"]
+                    [:p
+                     "Override inferred settings and add new test commands "
+                     [:a {:href "#setup"} "through the web UI"]
+                     ". This works great for prototyping changes."]
+                    [:b "Option 3"]
+                    [:p
+                     "Override all settings via a "
+                     [:a (open-ext {:href "https://circleci.com/docs/configuration/"}) "circle.yml file"]
+                     " in your repo. Very powerful."]]))]
+              (if (:followed project)
+                [(card/titled
+                   {:title (str "You're following " (vcs-url/project-name vcs-url))}
+                   (html
+                     [:div
+                      [:p
+                       "We'll keep an eye on this and update you with personalized build emails and notifications."
+                       [:br]
+                       "You can update your notifications from your "
+                       [:a {:href "/account"} "account settings"]
+                       "."]
+                      (when show-modal?
+                        (let [close-fn #(om/set-state! owner :show-modal? false)]
+                          (modal/modal-dialog
+                            {:title (gstring/format "Stop building %s/%s on CircleCI?" username reponame)
+                             :body (html
+                                     [:div
+                                      [:p
+                                       (gstring/format
+                                         "When you stop building %s on CircleCI, we will stop all builds and unfollow all teammates who are currently following the project."
+                                         reponame)]])
+                             :actions [(button/button {:on-click close-fn} "Cancel")
+                                       (button/managed-button
+                                         {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                                               :project-id project-id
+                                                                                               :on-success close-fn}])
+                                          :kind :danger
+                                          :loading-text "Stopping Builds..."
+                                          :success-text "Builds Stopped"}
+                                         "Stop Building")]
+                             :close-fn close-fn})))
 
-              (button/managed-button
-               {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
-                :loading-text "Unfollowing..."
-                :kind :primary}
-               "Unfollow Project")
+                      (button/managed-button
+                        {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
+                         :loading-text "Unfollowing..."
+                         :kind :primary}
+                        "Unfollow Project")]))
 
-              [:div
-               [:h2 "You're building " (vcs-url/project-name vcs-url)]
-
-               (button/button {:on-click #(om/set-state! owner :show-modal? true)
-                               :kind :danger}
-                              "Stop Building")])
-             (list
-              [:h2 "You're not following this repo"]
-              [:p
-               "We can't update you with personalized build emails and notifications unless you follow this project. "
-               "Projects are only tested if they have a follower."]
-              (button/managed-button
-               {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url
-                                                             :project-id project-id}])
-                :loading-text "Following..."}
-               "Follow")))]])))))
-
-(defn overview [project-data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       [:section.overview
-        [:article
-         [:h2 "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
-         [:h4 "Option 1"]
-         [:p "Do nothing! CircleCI infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
-         [:h4 "Option 2"]
-         [:p
-          "Override inferred settings and add new test commands "
-          [:a {:href "#setup"} "through the web UI"]
-          ". This works great for prototyping changes."]
-         [:h4 "Option 3"]
-         [:p
-          "Override all settings via a "
-          [:a (open-ext {:href "https://circleci.com/docs/configuration/"}) "circle.yml file"]
-          " in your repo. Very powerful."]]
-        (om/build follow-sidebar (:project project-data))]))))
+                 (card/titled {:title (str "You're building " (vcs-url/project-name vcs-url))}
+                              (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                              :kind :danger}
+                                             "Stop Building"))]
+                [(card/titled
+                   {:title "You're not following this project"}
+                   (html
+                     [:div
+                      [:p "We can't update you with personalized build emails and notifications unless you follow this project. "
+                       "Projects are only tested if they have a follower."]
+                      (button/managed-button
+                        {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                         :loading-text "Following..."}
+                        "Follow")]))]))))))))
 
 (defn build-environment [project-data owner]
   (reify
@@ -506,7 +503,7 @@
             (html
              [:div
               [:p
-               "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
+               "Add environment variables to the build. You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
                "The values can be any bash expression and can reference other variables, such as setting "
                [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
 
@@ -1279,7 +1276,7 @@
                 [:p "A deploy key is a repo-specific SSH key. " vcs-name " has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
                 [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a (open-ext {:href "https://circleci.com/docs/adding-read-write-deployment-key/"}) "read-write deployment key"]"."]
                 [:h4 "What is a user key?"]
-                [:p "A user key is a user-specific SSH key. " vcs-name " has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
+                [:p "A user key is a user-specific SSH key. " vcs-name " has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to projects."]
                 [:h4 "How are these keys used?"]
                 [:p "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with your version control provider. Therefore, it gets used for:"]
                 [:ul
@@ -1298,7 +1295,7 @@
                  [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
                  ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."
                  (when (= "bitbucket" (:vcs-type project))
-                   "The same technique can be applied for Bitbucket projects.")]]])]]])))))
+                   "The same technique can be applied for Bitbucket repositories.")]]])]]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
@@ -1636,9 +1633,9 @@
         (utils/popover "#app-root-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Application Root"
-                        :content (hiccup->html-str [:p "The directory in your repo to package up into an application revision. "
-                                                    "This is relative to your repo's root, " [:code "/"] " means the repo's root "
-                                                    "directory, " [:code "/app"] " means the app directory in your repo's root "
+                        :content (hiccup->html-str [:p "The directory in your project to package up into an application revision. "
+                                                    "This is relative to your project's root, " [:code "/"] " means the projects's root "
+                                                    "directory, " [:code "/app"] " means the app directory in your project's root "
                                                     "directory."])})
         (utils/popover "#bucket-popover-hack"
                        {:html true :delay 0 :animation false

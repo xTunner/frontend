@@ -35,7 +35,7 @@
                     (empty? projects))
                [:div
                 [:h2 "You don't have any projects in CircleCI!"]
-                [:p "Why don't you add a repository or two on the "
+                [:p "Why don't you add a project or two on the "
                  [:a {:href (routes/v1-add-projects)} "Manage Projects page"] "?"]]
 
                :else
