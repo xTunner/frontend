@@ -181,7 +181,7 @@
                                               :kind :danger}
                                              "Stop Building"))]
                 [(card/titled
-                   {:title "You're not following this repo"}
+                   {:title "You're not following this project"}
                    (html
                      [:div
                       [:p "We can't update you with personalized build emails and notifications unless you follow this project. "
@@ -503,7 +503,7 @@
             (html
              [:div
               [:p
-               "Add environment variables to the project build.  You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
+               "Add environment variables to the build. You can add sensitive data (e.g. API keys) here, rather than placing them in the repository. "
                "The values can be any bash expression and can reference other variables, such as setting "
                [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
 
@@ -1276,7 +1276,7 @@
                 [:p "A deploy key is a repo-specific SSH key. " vcs-name " has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
                 [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a (open-ext {:href "https://circleci.com/docs/adding-read-write-deployment-key/"}) "read-write deployment key"]"."]
                 [:h4 "What is a user key?"]
-                [:p "A user key is a user-specific SSH key. " vcs-name " has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to repositories."]
+                [:p "A user key is a user-specific SSH key. " vcs-name " has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to projects."]
                 [:h4 "How are these keys used?"]
                 [:p "When we build your project, we install the private key into the .ssh directory, and configure ssh to use it when communicating with your version control provider. Therefore, it gets used for:"]
                 [:ul
@@ -1295,7 +1295,7 @@
                  [:a {:href "https://help.github.com/articles/managing-deploy-keys#machine-users"} "machine user"]
                  ". Give this user exactly the permissions your build requires, and then associate its user key with your project on CircleCI."
                  (when (= "bitbucket" (:vcs-type project))
-                   "The same technique can be applied for Bitbucket projects.")]]])]]])))))
+                   "The same technique can be applied for Bitbucket repositories.")]]])]]])))))
 
 (defn scope-popover-html []
   ;; nb that this is a bad idea in general, but should be ok for rarely used popovers
@@ -1633,9 +1633,9 @@
         (utils/popover "#app-root-popover-hack"
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Application Root"
-                        :content (hiccup->html-str [:p "The directory in your repo to package up into an application revision. "
-                                                    "This is relative to your repo's root, " [:code "/"] " means the repo's root "
-                                                    "directory, " [:code "/app"] " means the app directory in your repo's root "
+                        :content (hiccup->html-str [:p "The directory in your project to package up into an application revision. "
+                                                    "This is relative to your project's root, " [:code "/"] " means the projects's root "
+                                                    "directory, " [:code "/app"] " means the app directory in your project's root "
                                                     "directory."])})
         (utils/popover "#bucket-popover-hack"
                        {:html true :delay 0 :animation false

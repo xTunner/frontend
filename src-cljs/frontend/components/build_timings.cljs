@@ -276,7 +276,7 @@
       (let [{{plan-org-name :name
               plan-vcs-type :vcs_type} :org} plan]
         (html
-         [:span.message "This release of Build Timing is only available for repos belonging to paid plans. Please "
+         [:span.message "This release of Build Timing is only available for projects belonging to paid plans. Please "
           [:a.upgrade-link
            {:href (routes/v1-org-settings-path {:org plan-org-name
                                                 :vcs_type plan-vcs-type})

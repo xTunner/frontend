@@ -153,7 +153,7 @@
     (html
      [:div.repo-filter
       [:input.unobtrusive-search
-       {:placeholder "Filter repos..."
+       {:placeholder "Filter projects..."
         :type "search"
         :value repo-filter-string
         :on-change #(utils/edit-input owner [:settings :add-projects :repo-filter-string] %)}]
@@ -316,9 +316,9 @@
                                         :settings settings}))]])))])))))
 
 (defn inaccessible-follows
-  "Any repo we follow where the org isn't in our set of orgs is either: an org
-  we have been removed from, or an org that turned on 3rd party app restrictions
-  and didn't enable CircleCI"
+  "Any repo (project) we follow where the org isn't in our set of orgs is either:
+  an org we have been removed from, or an org that turned on 3rd party app
+  restrictions and didn't enable CircleCI"
   [user-data followed]
   (let [org-set (->> user-data
                      :organizations
@@ -378,7 +378,7 @@
     [:div.inaccessible-notice.card
      [:h2 "Warning: Access Problems"]
      [:p.missing-org-info
-      "You are following repositories owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
+      "You are following projects owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
       [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
        "GitHub's application permissions"]
       "."]
@@ -507,7 +507,7 @@
          [:span.big-number "2"]
          [:div.instruction
           [:p "Choose a repo to add to CircleCI. We'll start a new build for you each time someone pushes a new commit."]
-          [:p "You can also follow a repo that's already been added to CircleCI. You'll see your followed projects in "
+          [:p "You can also follow a project that's already been added to CircleCI. You'll see your followed projects in "
            [:a {:href (routes/v1-dashboard-path {})} "Builds"]
            " and "
            [:a {:href (routes/v1-insights)} "Insights"]
