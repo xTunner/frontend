@@ -10,6 +10,7 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.project :as project-model]
+            [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer [set-page-title!]]
@@ -28,25 +29,38 @@
                                      (fq/get project-model/parallelism :project)
                                      (fq/get project-model/buildable-parallelism :project))
                  :plan (fq/get project-model/buildable-parallelism :plan)}}
-  [projects plan]
+  [c projects plan]
   (build-legacy table/table
                 {:rows projects
                  :key-fn :project/vcs-url
                  :columns [{:header "Project"
-                            :cell-fn :project/name}
+                            :cell-fn
+                            (fn [project]
+                              (html
+                               (let [vcs-url (:project/vcs-url project)]
+                                 [:a
+                                  {:href (routes/v1-project-dashboard-path {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                                            :org (vcs-url/org-name vcs-url)
+                                                                            :repo (vcs-url/repo-name vcs-url)})
+                                   :on-click #(analytics/track! c {:event-type :project-clicked
+                                                                   :properties {:vcs-type (vcs-url/vcs-type vcs-url)
+                                                                                :org (vcs-url/org-name vcs-url)
+                                                                                :repo (vcs-url/repo-name vcs-url)}})}
+                                  (:project/name project)])))}
 
                            {:header "Parallelism"
                             :type #{:right :shrink}
-                            :cell-fn #(html
-                                       (let [parallelism (project-model/parallelism %)
-                                             buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
-                                             vcs-url (:project/vcs-url %)]
-                                         [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
-                                                                                      :org (vcs-url/org-name vcs-url)
-                                                                                      :repo (vcs-url/repo-name vcs-url)
-                                                                                      :_fragment "parallel-builds"})}
-                                          parallelism "x"
-                                          (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
+                            :cell-fn
+                            #(html
+                              (let [parallelism (project-model/parallelism %)
+                                    buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
+                                    vcs-url (:project/vcs-url %)]
+                                [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
+                                                                             :org (vcs-url/org-name vcs-url)
+                                                                             :repo (vcs-url/repo-name vcs-url)
+                                                                             :_fragment "parallel-builds"})}
+                                 parallelism "x"
+                                 (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
 
                            {:header "Team"
                             :type #{:right :shrink}
@@ -127,7 +141,7 @@
                    (if projects
                      (if-let [projects-with-followers
                               (seq (filter #(seq (:project/followers %)) projects))]
-                       (table projects-with-followers plan)
+                       (table this projects-with-followers plan)
                        (no-projects-available name))
                      (html [:div.loading-spinner common/spinner]))))))
 
@@ -187,4 +201,4 @@
               [:.main
                (if selected-org
                  (org-projects selected-org)
-                 (no-org-selected orgs (vcs/bitbucket-enabled? current-user)))]])))}))))
+                 (no-org-selected orgs (:user/bitbucket-authorized? current-user)))]])))}))))

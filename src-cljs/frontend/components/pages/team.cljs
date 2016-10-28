@@ -12,6 +12,7 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
+            [frontend.models.user :as user]
             [frontend.utils :as utils :refer [valid-email?] :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-next]]
@@ -329,7 +330,7 @@
                (if (:users selected-org)
                  (table (select-keys selected-org [:users :projects]))
                  (html [:div.loading-spinner common/spinner])))
-              (no-org-selected available-orgs (vcs-utils/bitbucket-enabled? user)))]]))))))
+              (no-org-selected available-orgs (user/bitbucket-authorized? user)))]]))))))
 
 (defn page [app owner]
   (reify
