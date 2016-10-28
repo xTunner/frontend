@@ -4,10 +4,6 @@
 
 (def bitbucket-possible? (complement config/enterprise?))
 
-(defn bitbucket-enabled? [user]
-  (and (bitbucket-possible?)
-       (user/bitbucket-authorized? user)))
-
 (def short-to-long-vcs
   {"gh" "github"
    "bb" "bitbucket"
