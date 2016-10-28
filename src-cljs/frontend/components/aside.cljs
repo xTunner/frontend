@@ -472,7 +472,8 @@
              [:a.aside-item.logo {:title "Dashboard"
                                   :data-placement "right"
                                   :data-trigger "hover"
-                                  :href (routes/v1-dashboard-path {})}
+                                  :href (routes/v1-dashboard-path {})
+                                  :on-click #((om/get-shared owner :track-event) {:event-type :logo-clicked})}
               [:div.logomark
                (common/ico :logo)]])
 

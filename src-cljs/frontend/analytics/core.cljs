@@ -62,6 +62,7 @@
     :invite-teammates-select-none-clicked
     :jira-modal-impression
     :login-clicked
+    :logo-clicked
     :merge-pr-clicked
     :merge-pr-failed
     :merge-pr-impression
