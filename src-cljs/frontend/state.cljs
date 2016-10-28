@@ -30,7 +30,6 @@
    :builds-per-page 30
    :current-user nil
    :crumbs nil
-   :current-repos []
    :render-context nil
    :projects nil
    :recent-builds nil
