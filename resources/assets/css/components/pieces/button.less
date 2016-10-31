@@ -1,6 +1,14 @@
 .ns("frontend.components.pieces.button", {
   .button-styles() {
+    // NB: inline-flex must come before -webkit-inline-box so that the prefixed
+    // version wins in Safari. Safari will accept both, but inline-flex is
+    // broken (as of 9.0.1).
+    //
+    // -ms-inline-flexbox is given first so that the non-prefixed version will
+    // take over in IE/Edge, in the normal fashion for vendor-prefixed CSS.
+    display: -ms-inline-flexbox;
     display: inline-flex;
+    display: -webkit-inline-box;
     .align-items(center);
     .justify-content(center);
 
