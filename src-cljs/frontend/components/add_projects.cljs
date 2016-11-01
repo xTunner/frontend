@@ -8,6 +8,7 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -169,7 +170,7 @@
 
 (defn empty-repo-list [loading-repos? repo-filter-string selected-org-login]
   (if loading-repos?
-    [:div.loading-spinner common/spinner]
+    (spinner)
     [:div.add-repos
      (if repo-filter-string
        (str "No matching repos for organization " selected-org-login)
@@ -445,8 +446,7 @@
                             :selected-org (legacy-org->modern-org selected-org)
                             :on-org-click #(raise! owner [:selected-add-projects-org (modern-org->legacy-org %)])})
                           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
-                            [:div.orgs-loading
-                             [:div.loading-spinner common/spinner]])])]
+                            [:div.orgs-loading (spinner)])])]
         (if bitbucket-possible?
           (let [tabs [{:name "github"
                        :icon (html [:i.octicon.octicon-mark-github])

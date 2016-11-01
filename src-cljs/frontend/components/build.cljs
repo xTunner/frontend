@@ -15,6 +15,7 @@
             [frontend.components.forms :as forms]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
@@ -455,9 +456,9 @@
         (html
          [:div.build-info-v2
           (if-not build
-           [:div
+           [:div.empty-placeholder
              (om/build common/flashes (get-in app state/error-message-path))
-             [:div.loading-spinner-big common/spinner]]
+             (spinner)]
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)

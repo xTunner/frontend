@@ -165,8 +165,7 @@
    :slim-arrow-right {:paths [:slim_arrow_right]}
    :infinity {:paths [:infinity]}
    :github {:paths [:github]}
-   :repo {:paths [:repo]}
-   :spinner {:paths [:turn :circle]}})
+   :repo {:paths [:repo]}})
 
 (defn ico [ico-name]
   (let [template (get ico-templates ico-name)]
@@ -179,9 +178,6 @@
           [:path {:key path
                   :class (name path)
                   :d (get ico-paths path)}]))]])))
-
-(def spinner
-  (ico :spinner))
 
 ;; TODO: why do we have ico and icon?
 (def icon-shapes

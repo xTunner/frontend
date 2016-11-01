@@ -1,5 +1,6 @@
 (ns frontend.components.insights.project
   (:require [frontend.components.common :as common]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.insights :as insights]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -184,7 +185,7 @@
         [:h2 "Build Status"]]
        [:div.card-body
         (if (nil? chartable-builds)
-          [:div.loading-spinner common/spinner]
+          (spinner)
           (om/build build-status-bar-chart {:plot-info build-time-bar-chart-plot-info
                                             :builds (reverse bar-chart-builds)}))]]
       [:div.card
@@ -193,7 +194,7 @@
        [:div.card-body
         {:class (when (empty? timing-data)
                   "no-chart")}
-        (cond (nil? timing-data) [:div.loading-spinner common/spinner]
+        (cond (nil? timing-data) (spinner)
               (empty? timing-data) [:div.no-builds.no-insights "No builds in the last 90 days."]
               :else
               (om/build build-time-line-chart timing-data))]]])))

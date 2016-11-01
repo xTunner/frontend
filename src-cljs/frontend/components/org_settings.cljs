@@ -6,6 +6,7 @@
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
@@ -534,7 +535,7 @@
                       enterprise-text
                       "Update plan"))))
                (if-not checkout-loaded?
-                 [:div.loading-spinner common/spinner [:span "Loading Stripe checkout"]]
+                 (spinner)
                  (button/managed-button
                   {:success-text "Paid!"
                    :loading-text "Paying..."
@@ -632,7 +633,7 @@
           (if-not plan
             (cond ;; TODO: fix; add plan
               (nil? plan)
-                [:div.loading-spinner common/spinner]
+                (spinner)
               (not (seq plan))
                 [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
               :else
@@ -840,7 +841,7 @@
         (let [card (get-in app state/stripe-card-path)]
           (if-not (and card checkout-loaded?)
             [:div.row-fluid [:legend.span8 "Card on file"]
-             [:div.row-fluid [:div.offset1.span6 [:div.loading-spinner common/spinner]]]]
+             [:div.row-fluid [:div.offset1.span6 (spinner)]]]
             [:div
               [:div.row-fluid [:legend.span8 "Card on file"]]
               [:div.row-fluid.space-below
@@ -927,7 +928,7 @@
           (if-not plan-data
             [:div.invoice-data.row-fluid
              [:legend.span8 "Invoice data"]
-             [:div.row-fluid [:div.span8 [:div.loading-spinner common/spinner]]]]
+             [:div.row-fluid [:div.span8 (spinner)]]]
             [:div.invoice-data.row-fluid
              [:fieldset
               [:legend.span8 "Invoice data"]
@@ -1005,7 +1006,7 @@
             [:div.row-fluid
              [:div.span8
                [:legend "Invoices"]
-              [:div.loading-spinner common/spinner]]]
+              (spinner)]]
             [:div.row-fluid
              [:div.span8
               [:legend "Invoices"]
@@ -1330,7 +1331,7 @@
             plan (get-in app state/org-plan-path)]
         (html [:div.org-page
                (if-not (:loaded org-data)
-                 [:div.loading-spinner common/spinner]
+                 (spinner)
                  [:div
                   (when (pm/suspended? plan)
                     (om/build project-common/suspended-notice {:plan plan :vcs_type vcs_type}))

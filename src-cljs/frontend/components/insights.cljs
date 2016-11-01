@@ -4,6 +4,7 @@
             [frontend.async :refer [raise!]]
             [frontend.routes :as routes]
             [frontend.components.common :as common]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.forms :refer [managed-button]]
             [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
@@ -432,7 +433,7 @@
            [:h4 (if show-insights?
                   (str "Branch: " branch)
                   (gstring/unescapeEntities "&nbsp;"))]
-           (cond (nil? (get recent-builds default_branch)) [:div.loading-spinner common/spinner]
+           (cond (nil? (get recent-builds default_branch)) (spinner)
                  (not show-insights?) [:div.no-insights
                                        [:div.message "This release of Insights is only available for projects belonging to paid plans."]
                                        [:a.upgrade-link {:href (routes/v1-org-settings-path {:org (vcs-url/org-name (:vcs_url project))
@@ -561,7 +562,7 @@
       (cond
         ;; Still loading projects
         (nil? projects)
-        [:div.loading-spinner-big common/spinner]
+        [:div.empty-placeholder (spinner)]
 
         ;; User has no projects
         (empty? projects)

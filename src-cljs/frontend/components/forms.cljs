@@ -1,5 +1,5 @@
 (ns frontend.components.forms
-  (:require [frontend.components.common :as common]
+  (:require [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.utils :as utils :include-macros true]
             [frontend.disposable :as disposable :refer [dispose]]
             [om.core :as om :include-macros true])
@@ -79,7 +79,7 @@
                                  attrs)
                           (get data-field (:value attrs)))
             new-body (if (:data-spinner attrs)
-                       (if (= :loading status) common/spinner body)
+                       (if (= :loading status) (spinner) body)
                        (if (= :idle status) body new-value))
             new-attrs (-> attrs
                           ;; Don't unset 'disabled' if it's already set but not loading.

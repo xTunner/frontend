@@ -2,7 +2,6 @@
   (:require [clojure.set :as set]
             [frontend.api :as api]
             [frontend.async :refer [raise!]]
-            [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
@@ -11,6 +10,7 @@
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.templates.main :as main-template]
             [frontend.models.user :as user]
             [frontend.utils :as utils :refer [valid-email?] :include-macros true]
@@ -179,7 +179,7 @@
                                            (html
                                             [:div
                                              (if-not (contains? selected-org :vcs-users)
-                                               [:div.loading-spinner common/spinner]
+                                               [:div.empty-placeholder (spinner)]
                                                (list
                                                 [:.header
                                                  "These are the people who are not using CircleCI yet. "
@@ -295,7 +295,7 @@
                                                                         :properties {:view :team
                                                                                      :login login
                                                                                      :vcs_type vcs_type}})))})
-               (html [:div.loading-spinner common/spinner])))]
+               (spinner)))]
            [:.main
             (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
                                               :close-fn #(om/set-state! owner :show-invite-modal? false)
@@ -307,8 +307,7 @@
                       "bitbucket" [[:i.fa.fa-bitbucket] "Bitbucket"]
                       nil)]
                 (card/titled
-                  {:title (html
-                            [:div name vcs-icon])
+                  {:title (html [:div name vcs-icon])
                    :action (element :action
                                     (html
                                       [:div
@@ -330,7 +329,7 @@
                                           "Invite Teammates")]]))}
                   (if (:users selected-org)
                     (table (select-keys selected-org [:users :projects]))
-                    (html [:div.loading-spinner common/spinner]))))
+                    (spinner))))
               (no-org-selected available-orgs (user/bitbucket-authorized? user)))]]))))))
 
 (defn page [app owner]

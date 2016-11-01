@@ -3,6 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
@@ -28,7 +29,7 @@
             builds-per-page (:builds-per-page data)]
         (html
          (cond (nil? builds)
-               [:div.loading-spinner-big common/spinner]
+               [:div.empty-placeholder (spinner)]
 
                (and (empty? builds)
                     projects
