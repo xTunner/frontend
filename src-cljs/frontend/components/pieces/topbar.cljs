@@ -21,10 +21,10 @@
           [:div
            [:div.navs-container
             [:a.logomark.hidden-sm-down {:href "/dashboard"
-                          :aria-label "Dashboard"}
+                                         :aria-label "Dashboard"}
              (common/ico :logo)]
             [:a.logomark-narrow.hidden-md-up {:href "/dashboard"
-                          :aria-label "Dashboard"}
+                                              :aria-label "Dashboard"}
              [:img {:src (utils/cdn-path "/img/inner/icons/Logo-Wordmark.svg")}]]
             [:ul.nav-items.collapsing-nav
               [:li
@@ -43,73 +43,73 @@
                 [:a.has-icon {:href "/team"
                               :aria-label "Teams"}
                   [:i.material-icons "group"] "Teams"]]]
-             [:ul.nav-items.nav-items-left.collapsing-nav
-              [:li
-                [:a.has-icon {:href "/build-insights"
-                              :aria-label "System Status"}
-                  [:i.material-icons.status.operational "grain"] "System Status"]] ;; blur_on leak_add network_check
-              [:li.dropdown
-               [:button.dropdown-toggle
-                {:data-toggle "dropdown"
-                 :aria-haspopup "true"
-                 :aria-expanded "false"}
-                 "What's New" [:i.material-icons "keyboard_arrow_down"]]
-               [:ul.dropdown-menu.pull-right.animated.slideInDown
-                (when-not (config/enterprise?)
-                  [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
-                  [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
-              [:li.dropdown
-               [:button.dropdown-toggle
-                {:data-toggle "dropdown"
-                 :aria-haspopup "true"
-                 :aria-expanded "false"}
-                "Get Help" [:i.material-icons "keyboard_arrow_down"] ]
-               [:ul.dropdown-menu.pull-right.animated.slideInDown
-                [:li
+            [:ul.nav-items.nav-items-left.collapsing-nav
+             [:li
+               [:a.has-icon {:href "/build-insights"
+                             :aria-label "System Status"}
+                 [:i.material-icons.status.operational "grain"] "System Status"]] ;; blur_on leak_add network_check
+             [:li.dropdown
+              [:button.dropdown-toggle
+               {:data-toggle "dropdown"
+                :aria-haspopup "true"
+                :aria-expanded "false"}
+               "What's New" [:i.material-icons "keyboard_arrow_down"]]
+              [:ul.dropdown-menu.pull-right.animated.slideInDown
+               (when-not (config/enterprise?)
+                 [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
+               [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
+             [:li.dropdown
+              [:button.dropdown-toggle
+               {:data-toggle "dropdown"
+                :aria-haspopup "true"
+                :aria-expanded "false"}
+               "Get Help" [:i.material-icons "keyboard_arrow_down"]]
+              [:ul.dropdown-menu.pull-right.animated.slideInDown
+               [:li
                  ;; FIXME: NEED TO ADD QUICK START PAGE
-                 [:a {:href "/quick-start"}
-                  "Quick Start"]]
-                [:li
-                 [:a (html/open-ext {:href "https://circleci.com/docs/"})
-                  "Docs"]]
-                [:li
-                 [:a (html/open-ext {:href "https://discuss.circleci.com/"})
-                  "Discuss"]]
-                [:li
+                [:a {:href "/quick-start"}
+                 "Quick Start"]]
+               [:li
+                [:a (html/open-ext {:href "https://circleci.com/docs/"})
+                 "Docs"]]
+               [:li
+                [:a (html/open-ext {:href "https://discuss.circleci.com/"})
+                 "Discuss"]]
+               [:li
                  ;; FIXME: NEED TO ADD LINK TO SUPPORT
-                 [:a.support-info {:href "/suport"}
-                  "Support"]]
-                [:li
-                 [:a (html/open-ext {:href "/"})
-                  "Suggest a feature"]]
-                [:li
-                 [:a (html/open-ext {:href "/"})
-                  "Report an issue"]]]]
+                [:a.support-info {:href "/suport"}
+                 "Support"]]
+               [:li
+                [:a (html/open-ext {:href "/"})
+                 "Suggest a feature"]]
+               [:li
+                [:a (html/open-ext {:href "/"})
+                 "Report an issue"]]]]
 
-              [:li.dropdown.user-menu
-               [:button.dropdown-toggle
-                {:data-toggle "dropdown"
-                 :aria-haspopup "true"
-                 :aria-expanded "false"}
-                [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]]
-               [:ul.dropdown-menu.pull-right.animated.slideInDown
-                [:li [:a {:href "/account"} "User Settings"]]
-                (when (:admin user)
-                  [:li [:a {:href "/admin"} "Admin"]])
-                [:li [:a {:href "/logout/"} "Logout"]]]]]
+             [:li.dropdown.user-menu
+              [:button.dropdown-toggle
+               {:data-toggle "dropdown"
+                :aria-haspopup "true"
+                :aria-expanded "false"}
+               [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]]
+              [:ul.dropdown-menu.pull-right.animated.slideInDown
+               [:li [:a {:href "/account"} "User Settings"]]
+               (when (:admin user)
+                 [:li [:a {:href "/admin"} "Admin"]])
+               [:li [:a {:href "/logout/"} "Logout"]]]]]
 
-             [:ul.nav-items.nav-items-left.hidden-md-up
-              [:li
-                [:a.has-icon {:href "/build-insights"
-                              :aria-label "Status"}
-                  [:i.material-icons.status.operational "grain"]]]] ;; blur_on leak_add network_check
-             [:button.navbar-toggler.hidden-md-up {:type "button"
-                                                           :data-toggle "collapse"
-                                                           :data-target "collapsing-nav"
-                                                           :aria-controls "collapsing-nav"
-                                                           :aria-expanded "false"
-                                                           :aria-label "Toggle navigation"}
-                [:i.material-icons "menu"]]]])))))
+            [:ul.nav-items.nav-items-left.hidden-md-up
+             [:li
+               [:a.has-icon {:href "/build-insights"
+                             :aria-label "Status"}
+                 [:i.material-icons.status.operational "grain"]]]] ;; blur_on leak_add network_check
+            [:button.navbar-toggler.hidden-md-up {:type "button"
+                                                          :data-toggle "collapse"
+                                                          :data-target "collapsing-nav"
+                                                          :aria-controls "collapsing-nav"
+                                                          :aria-expanded "false"
+                                                          :aria-label "Toggle navigation"}
+               [:i.material-icons "menu"]]]])))))
 
 (dc/do
   (defcard topbar
