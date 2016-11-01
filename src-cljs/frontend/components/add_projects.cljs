@@ -124,7 +124,9 @@
                                                                              :login login
                                                                              :type type)])
                                         (when (not building-on-circle?)
-                                          (om/set-state! owner :building? true)))
+                                          (om/set-state! owner :building? true)
+                                          ((om/get-shared owner :track-event)
+                                            {:event-type :build-project-clicked})))
                            :title (if building-on-circle?
                                     "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
                                     "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project.")
