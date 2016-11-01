@@ -301,35 +301,36 @@
                                               :close-fn #(om/set-state! owner :show-invite-modal? false)
                                               :show-modal? show-invite-modal?})
             (if-let [[_ [vcs-type name]] selected-org-ident]
-              (card/titled
-               {:title (html
-                        [:div name
-                         (case vcs-type
-                           "github" [:i.octicon.octicon-mark-github]
-                           "bitbucket" [:i.fa.fa-bitbucket]
-                           nil)])
-                :action (element :action
-                                 (html
-                                  [:div
-                                   [:span
-                                    (button/button
-                                     {:kind :secondary
-                                      :size :medium
-                                      :on-click #(api/get-org-settings-normalized name vcs-type api-chan {:refresh true})}
-                                     "Refresh List")]
-                                   [:span
-                                    (button/button
-                                     {:kind :primary
-                                      :size :medium
-                                      :on-click #(do
-                                                   (om/set-state! owner :show-invite-modal? true)
-                                                   ((om/get-shared owner :track-event)
-                                                    {:event-type :invite-teammates-clicked
-                                                     :properties {:view :team}}))}
-                                     "Invite Teammates")]]))}
-               (if (:users selected-org)
-                 (table (select-keys selected-org [:users :projects]))
-                 (html [:div.loading-spinner common/spinner])))
+              (let [[vcs-icon vcs-label]
+                    (case vcs-type
+                      "github" [[:i.octicon.octicon-mark-github] "GitHub"]
+                      "bitbucket" [[:i.fa.fa-bitbucket] "Bitbucket"]
+                      nil)]
+                (card/titled
+                  {:title (html
+                            [:div name vcs-icon])
+                   :action (element :action
+                                    (html
+                                      [:div
+                                       [:span
+                                        (button/button
+                                          {:kind :secondary
+                                           :size :medium
+                                           :on-click #(api/get-org-settings-normalized name vcs-type api-chan {:refresh true})}
+                                          (str "Resync with " vcs-label))]
+                                       [:span
+                                        (button/button
+                                          {:kind :primary
+                                           :size :medium
+                                           :on-click #(do
+                                                       (om/set-state! owner :show-invite-modal? true)
+                                                       ((om/get-shared owner :track-event)
+                                                         {:event-type :invite-teammates-clicked
+                                                          :properties {:view :team}}))}
+                                          "Invite Teammates")]]))}
+                  (if (:users selected-org)
+                    (table (select-keys selected-org [:users :projects]))
+                    (html [:div.loading-spinner common/spinner]))))
               (no-org-selected available-orgs (user/bitbucket-authorized? user)))]]))))))
 
 (defn page [app owner]
