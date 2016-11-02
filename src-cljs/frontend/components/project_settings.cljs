@@ -14,6 +14,7 @@
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -351,7 +352,7 @@
 (defn parallelism-picker [project-data owner]
   [:div.parallelism-picker
    (if-not (:plan project-data)
-     [:div.loading-spinner common/spinner]
+     (spinner)
      (let [plan (:plan project-data)
            project (:project project-data)
            project-id (project-model/id project)
@@ -408,7 +409,7 @@
            [:article
             [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
             (if-not (:plan project-data)
-              [:div.loading-spinner common/spinner]
+              (spinner)
               (list (parallelism-picker project-data owner)
                     (project-common/mini-parallelism-faq project-data)))]])))))
 
@@ -1208,7 +1209,7 @@
            [:h2 "Checkout keys for " project-name]
            [:div.checkout-page-inner
             (if (nil? checkout-keys)
-              [:div.loading-spinner common/spinner]
+              (spinner)
 
               [:div
                (if-not (seq checkout-keys)
@@ -1935,7 +1936,7 @@
             error-message (get-in data state/error-message-path)]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
-           [:div.loading-spinner-big common/spinner]
+           [:div.empty-placeholder (spinner)]
            [:div#project-settings
             ; Temporarly disable top level error messsage for the set of subpages while we
             ; transition them. Each subpage will eventually handle their own error messages.

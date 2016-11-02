@@ -2,12 +2,12 @@
   (:require [frontend.analytics :as analytics]
             [frontend.async :refer [navigate!]]
             [frontend.components.app.legacy :as legacy]
-            [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.templates.main :as main-template]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
@@ -143,7 +143,7 @@
                               (seq (filter #(seq (:project/followers %)) projects))]
                        (table this projects-with-followers plan)
                        (no-projects-available name))
-                     (html [:div.loading-spinner common/spinner]))))))
+                     (spinner))))))
 
 (def org-projects (om-next/factory OrgProjects))
 
@@ -197,7 +197,7 @@
                                                             :properties {:login name
                                                                          :vcs_type vcs-type}})
                                     (navigate! this (routes/v1-organization-projects-path {:org name :vcs_type vcs-type})))})
-                  (html [:div.loading-spinner common/spinner])))]
+                  (spinner)))]
               [:.main
                (if selected-org
                  (org-projects selected-org)

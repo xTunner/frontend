@@ -93,7 +93,7 @@ a.exception {
      .smart_label(13em, 3px);
    }
 
-  .loading-spinner-big {
+  .empty-placeholder {
     @reserved-height: (@tile * 2);
 
     .flexy(center, center);
@@ -128,24 +128,6 @@ input:not(.dumb) {
 
 textarea:not(.dumb) {
   .smart_label(13em, 3px);
-}
-
-.loading-spinner,
-.loading-spinner-big {
-  svg {
-    display: inherit;
-    width: 1em;
-    height: 1em;
-    [fill] {
-      fill: @grayLighter;
-    }
-  }
-  &:not(span) {
-    svg {
-      width: @spinnerSize;
-      height: @spinnerSize;
-    }
-  }
 }
 
 button [spinner], button [data-spinner]{

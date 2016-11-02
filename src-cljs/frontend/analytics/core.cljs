@@ -39,6 +39,7 @@
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
     :build-link-clicked
+    :build-project-clicked
     :rebuild-clicked
     :build-status-clicked
     :build-timing-upsell-clicked

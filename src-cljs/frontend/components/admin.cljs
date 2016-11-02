@@ -9,12 +9,11 @@
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
-            [frontend.components.shared :as shared]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.stefon :as stefon]
             [frontend.utils :as utils :include-macros true]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
@@ -32,7 +31,7 @@
           " / "
           [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-build-state-clicked])} "Refresh"]
           (if-not build-state
-            [:div.loading-spinner common/spinner]
+            (spinner)
             [:code (om/build ankha/inspector build-state)])])))))
 
 (defn switch [app owner]
@@ -97,7 +96,7 @@
           " / "
           [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
          (if-not builders
-           [:div.loading-spinner common/spinner]
+           (spinner)
            (if-not (seq builders)
              "No available masters."
              (om/build table/table
@@ -133,7 +132,7 @@
           " / "
           [:a {:on-click #(raise! owner [:refresh-admin-build-list {:tab tab}])} "Refresh"]
           (if (nil? (:builds data))
-            [:div.loading-spinner common/spinner])]
+            (spinner))]
          (om/build builds-table/builds-table data
                    {:opts {:show-actions? true
                            :show-parallelism? true
@@ -155,7 +154,7 @@
            [:h1 "Fleet State"]
            [:div
             (if-not summary-counts
-              [:div.loading-spinner common/spinner]
+              (spinner)
               (let [container-totals (->> fleet-state
                                           (map #(select-keys % [:free :busy :total]))
                                           (apply merge-with +))
@@ -199,7 +198,7 @@
          [:h1 "License Info"]
          (let [license (get-in app state/license-path)]
            (if-not license
-             [:div.loading-spinner common/spinner]
+             (spinner)
              (list
               [:p "License Type: " [:b (:type license)]]
               [:p "License Status: Term (" [:b (:expiry_status license)] "), Seats ("
@@ -332,8 +331,7 @@
                                             (assoc item :value false)])}
                  {:class "active"})
                "false"]]
-             (when (:updating item)
-               [:div.loading-spinner common/spinner])]))))
+             (when (:updating item) (spinner))]))))
 
 (defn get-input-box-type [display-type]
   (case display-type
@@ -364,7 +362,7 @@
                           :kind :primary}
                          (if-not (:updating item)
                            "Save"
-                           common/spinner))])))))
+                           (spinner)))])))))
 
 (defn number-setting-entry [item owner]
   (setting-entry item owner js/Number))

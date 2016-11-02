@@ -6,6 +6,7 @@
             [frontend.models.container :as container-model]
             [frontend.models.build :as build-model]
             [frontend.components.common :as common]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.state :as state]
             [frontend.disposable :as disposable :refer [dispose]]
             [frontend.utils :as utils :include-macros true]
@@ -154,7 +155,7 @@
                 [:div.detail {:class header-classes}
                  (if (and (:has_output action)
                           (nil? (:output action)))
-                   [:div.loading-spinner common/spinner]
+                   (spinner)
 
                    [:div.action-log-messages
                     (common/messages (:messages action))

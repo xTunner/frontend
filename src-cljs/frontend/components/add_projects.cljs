@@ -8,6 +8,7 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -124,7 +125,9 @@
                                                                              :login login
                                                                              :type type)])
                                         (when (not building-on-circle?)
-                                          (om/set-state! owner :building? true)))
+                                          (om/set-state! owner :building? true)
+                                          ((om/get-shared owner :track-event)
+                                            {:event-type :build-project-clicked})))
                            :title (if building-on-circle?
                                     "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
                                     "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project.")
@@ -167,7 +170,7 @@
 
 (defn empty-repo-list [loading-repos? repo-filter-string selected-org-login]
   (if loading-repos?
-    [:div.loading-spinner common/spinner]
+    (spinner)
     [:div.add-repos
      (if repo-filter-string
        (str "No matching repos for organization " selected-org-login)
@@ -443,8 +446,7 @@
                             :selected-org (legacy-org->modern-org selected-org)
                             :on-org-click #(raise! owner [:selected-add-projects-org (modern-org->legacy-org %)])})
                           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
-                            [:div.orgs-loading
-                             [:div.loading-spinner common/spinner]])])]
+                            [:div.orgs-loading (spinner)])])]
         (if bitbucket-possible?
           (let [tabs [{:name "github"
                        :icon (html [:i.octicon.octicon-mark-github])

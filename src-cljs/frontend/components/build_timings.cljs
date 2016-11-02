@@ -1,5 +1,6 @@
 (ns frontend.components.build-timings
   (:require [frontend.components.common :as common]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.datetime :as datetime]
             [frontend.disposable :as disposable]
             [frontend.models.build :as build]
@@ -261,8 +262,7 @@
     (render-state [_ _]
       (html
        [:div
-        (when-not build
-          [:div.loading-spinner common/spinner])
+        (when-not build (spinner))
         [:svg {:ref "build-timings-svg"}]]))))
 
 (defn upsell-message [plan owner]

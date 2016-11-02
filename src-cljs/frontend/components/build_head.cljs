@@ -9,6 +9,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.tabs :as tabs]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
@@ -96,7 +97,7 @@
             plan (:plan data)]
         (html
          (if-not builds
-           [:div.loading-spinner common/spinner]
+           (spinner)
            [:div.build-queue.active
             [:div.queue-message
              (when (and (:queued_at build) (not usage-queued?))
@@ -358,7 +359,7 @@
                               (->> artifacts
                                    (group-by :node_index)
                                    (sort-by first))))
-              [:div.loading-spinner common/spinner]))])))))
+              (spinner)))])))))
 
 (defn tests-ad [owner language build-succeeded?]
   (let [junit-link (case language
@@ -523,7 +524,7 @@
         (html
          [:div.test-results
           (if-not tests
-            [:div.loading-spinner common/spinner]
+            (spinner)
             (list
              (when (> (count exceptions) 0)
                [:div.alert.iconified {:class "alert-danger"}
