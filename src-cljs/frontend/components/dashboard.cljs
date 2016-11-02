@@ -41,7 +41,7 @@
 
                :else
                [:div.dashboard
-                (when (and plan (project-common/show-trial-notice? project plan) (not (get-in data state/dismissed-trial-update-banner) ))
+                (when (and plan (project-common/show-trial-notice? project plan) (not (get-in data state/dismissed-trial-update-banner)))
                   [:div.container-fluid
                    [:div.row
                     [:div.col-xs-12
@@ -62,12 +62,12 @@
                   {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))
                    ;; no newer builds if you're on the first page
                    :class (when (zero? page) "disabled")}
-                  [:i.fa.fa-long-arrow-left]
-                  [:span " Newer builds"]]
+                  [:i.fa.fa-long-arrow-left.newer]
+                  [:span "Newer builds"]]
                  [:a
                   {:href (routes/v1-dashboard-path (assoc nav-data :page (inc page)))
                    ;; no older builds if you have less builds on the page than an
                    ;; API call returns
                    :class (when (> builds-per-page (count builds)) "disabled")}
-                  [:span "Older builds "]
-                  [:i.fa.fa-long-arrow-right]]]]))))))
+                  [:span "Older builds"]
+                  [:i.fa.fa-long-arrow-right.older]]]]))))))
