@@ -252,17 +252,19 @@
 (defn containers [build]
   (let [steps (-> build fill-steps :steps)
         parallel (:parallel build)
-        actions (reduce (fn [groups step]
-                          (map (fn [group action]
-                                 (conj group action))
-                               groups (if (> parallel (count (:actions step)))
-                                        (apply concat (repeat parallel (:actions step)))
-                                        (:actions step))))
-                        (repeat (or parallel 1) [])
-                        steps)]
-    (map (fn [i actions] {:actions actions
-                          :index i})
-         (range) actions)))
+        actions (reduce (fn [groups {:keys [actions]}]
+                          (map-indexed (fn [i group]
+                                         (conj group (or (first (filter #(= i (:index %)) actions))
+                                                         (first (filter #(= false (:parallel %)) actions))
+                                                         {:index i
+                                                          :step (-> actions first :step)
+                                                          :status "running"
+                                                          :filler-action true})))
+                                       groups))
+                        (repeat (or parallel 1) []) steps)]
+    (map-indexed (fn [i actions] {:actions actions
+                                  :index i})
+                 actions)))
 
 (defn fill-containers
   "Actions can arrive out of order, but we need to maintain the indices in the
