@@ -44,47 +44,53 @@
                               :aria-label "Teams"}
                   [:i.material-icons "group"] "Teams"]]]
             [:ul.nav-items.nav-items-left.collapsing-nav
-             ; [:li
-             ;   [:a.has-icon {:href "/build-insights"
-             ;                 :aria-label "System Status"}
-             ;     [:i.material-icons.status.operational "grain"] "System Status"]] ;; blur_on leak_add network_check
              [:li.dropdown
               [:button.dropdown-toggle
                {:data-toggle "dropdown"
                 :aria-haspopup "true"
                 :aria-expanded "false"}
-               "What's New" [:i.material-icons "keyboard_arrow_down"]]
+               "Updates" [:i.material-icons "keyboard_arrow_down"]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                (when-not (config/enterprise?)
-                 [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"]])
-               [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"]]]]
+                 [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"
+                       [:span.description "The latest CircleCI product updates."]]])
+               [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"
+                     [:span.description "Important announcements from CircleCI about upcoming features and updates."]]]]]
              [:li.dropdown
               [:button.dropdown-toggle
                {:data-toggle "dropdown"
                 :aria-haspopup "true"
                 :aria-expanded "false"}
-               "Get Help" [:i.material-icons "keyboard_arrow_down"]]
+               "Support" [:i.material-icons "keyboard_arrow_down"]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                [:li
-                 ;; FIXME: NEED TO ADD QUICK START PAGE
-                [:a {:href "/quick-start"}
-                 "Quick Start"]]
-               [:li
                 [:a (html/open-ext {:href "https://circleci.com/docs/"})
-                 "Docs"]]
+                 "Docs"
+                 [:span.description "Read about building, testing, and deploying your software on CircleCI."]]]
                [:li
                 [:a (html/open-ext {:href "https://discuss.circleci.com/"})
-                 "Discuss"]]
+                 "Discuss"
+                 [:span.description "Get help and meet developers talking about testing, continuous integration, and continuous delivery."]]]
                [:li
-                 ;; FIXME: NEED TO ADD LINK TO SUPPORT
-                [:a.support-info {:href "/suport"}
-                 "Support"]]
+                 ;; FIXME: NEED TO ADD LINK TO ELEV.IO SUPPORT WIDGET
+                [:a.support-info {:href "/support"}
+                 "Support"
+                 [:span.description "Send us a message. We are here to help!"]]]
                [:li
-                [:a (html/open-ext {:href "/"})
+                [:a (html/open-ext {:href "https://discuss.circleci.com/c/feature-request"})
                  "Suggest a feature"]]
                [:li
-                [:a (html/open-ext {:href "/"})
-                 "Report an issue"]]]]
+                [:a (html/open-ext {:href "https://discuss.circleci.com/c/bug-reports"})
+                 "Report an issue"]]
+               [:li
+                   ;; FIXME: NEED TO ADD QUICK START PAGE
+                  [:a {:href "/quick-start"}
+                   "Quick Start"]]
+               [:li
+                 [:a.has-icon {:href "/build-insights"
+                               :aria-label "System Status"}
+                  "System Status" [:i.material-icons.status.operational "grain"]]]]] ;; blur_on leak_add network_check
+
 
              [:li.dropdown.user-menu
               [:button.dropdown-toggle
