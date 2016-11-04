@@ -1,5 +1,6 @@
 (ns frontend.analytics.core
-  (:require [frontend.analytics.segment :as segment]
+  (:require [frontend.analytics.ab :as ab]
+            [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
