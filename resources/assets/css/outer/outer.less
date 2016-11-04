@@ -27,6 +27,8 @@
     padding: 16px 22px;
     width: @btn-cta-width;
 
+    color: white;
+
     font-size: @fontSizeLarge;
     line-height: 1.3333333;
     letter-spacing: 0.5px;
@@ -38,6 +40,14 @@
     // .btn-ctas already have a :focus style, so we can drop the outline.
     &:focus {
       outline: none;
+    }
+    > svg.logo {
+        position: relative;
+        top: 4px;
+        width: 18px;
+        height: 20px;
+        fill: #ffffff;
+        margin-right: 12px;
     }
   }
 
