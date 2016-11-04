@@ -727,7 +727,7 @@
                                                                             :vcs-type org-vcs_type
                                                                             :selected-piggieback-orgs selected-piggieback-orgs}])
                    :kind :primary}
-                  "Pay for organizations")]]]])]])))))
+                  "Save")]]]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
   ;; split user-orgs from orgs and grab the first (and only) user-org
