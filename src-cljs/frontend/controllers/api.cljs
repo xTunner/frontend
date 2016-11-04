@@ -1043,8 +1043,14 @@
   (forms/release-button! (:uuid context) status))
 
 (defmethod api-event [:org-settings-normalized :success]
-  [target message status {:keys [resp]} state]
+  [_ _ _ {:keys [resp]} state]
   (update-in state [:organization/by-vcs-type-and-name [(:vcs_type resp) (:name resp)]] merge resp))
+
+(defmethod api-event [:org-settings-normalized :failed]
+  [_ _ _ {:keys [_ context]} state]
+  (-> state
+    (update-in [:organization/by-vcs-type-and-name [(:vcs_type context) (:org_name context)]] assoc :users (:users context))
+    (state/add-flash-notification "An error has occurred. Please try again in a few moments.")))
 
 (defmethod api-event [:org-plan-normalized :success]
   [target message status {:keys [resp]} state]

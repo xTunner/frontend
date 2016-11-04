@@ -185,13 +185,14 @@
 (defn get-org-settings-normalized
   "Issues an API call for the org's settings. The settings will be stored in a
   normalized table at the root of the app state."
-  ([org-name vcs-type api-ch] (get-org-settings-normalized org-name vcs-type api-ch nil))
-  ([org-name vcs-type api-ch params]
+  ([org-name vcs-type api-ch] (get-org-settings-normalized org-name vcs-type api-ch nil []))
+  ([org-name vcs-type api-ch params initial-users]
    (ajax/ajax :get
               (gstring/format "/api/v1.1/organization/%s/%s/settings" vcs-type org-name)
               :org-settings-normalized
               api-ch
-              :params params)))
+              :params params
+              :context {:org_name org-name :vcs_type vcs-type :users initial-users})))
 
 (defn get-build-tests [build api-ch]
   (let [vcs-type (:vcs_type build)

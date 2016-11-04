@@ -1237,6 +1237,15 @@
    (:api comms)
    :params {:organization_prefs (assoc-in {} org prefs)}))
 
+(defmethod control-event :org-settings-normalized
+  [target message {:keys [org-name vcs-type]} state]
+  (update-in state [:organization/by-vcs-type-and-name [vcs-type org-name]] dissoc :users))
+
+(defmethod post-control-event! :org-settings-normalized
+  [target message {:keys [org-name vcs-type]} previous-state current-state comms]
+  (let [previous-users (:users (get-in previous-state [:organization/by-vcs-type-and-name [vcs-type org-name]]))]
+    (api/get-org-settings-normalized org-name vcs-type (:api comms) {:refresh true} previous-users)))
+
 (defmethod post-control-event! :heroku-key-add-attempted
   [target message args previous-state current-state comms]
   (let [uuid frontend.async/*uuid*
