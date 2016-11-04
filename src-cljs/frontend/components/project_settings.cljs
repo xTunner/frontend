@@ -441,9 +441,7 @@
                                           :project
                                           project-model/id)}])
      :kind :primary}
-    (case cache-type
-      "build" "Clear Dependencies"
-      "source" "Clear Sources")))
+    "Clear"))
 
 (defn clear-caches
   [project-data owner]
