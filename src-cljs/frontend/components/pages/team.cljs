@@ -300,14 +300,14 @@
             (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
                                               :close-fn #(om/set-state! owner :show-invite-modal? false)
                                               :show-modal? show-invite-modal?})
-            (if-let [[_ [vcs-type name]] selected-org-ident]
+            (if-let [[_ [vcs-type org-name]] selected-org-ident]
               (let [[vcs-icon vcs-label]
                     (case vcs-type
                       "github" [[:i.octicon.octicon-mark-github] "GitHub"]
                       "bitbucket" [[:i.fa.fa-bitbucket] "Bitbucket"]
                       nil)]
                 (card/titled
-                  {:title (html [:div name vcs-icon])
+                  {:title (html [:div org-name vcs-icon])
                    :action (element :action
                                     (html
                                       [:div
@@ -315,7 +315,7 @@
                                         (button/button
                                           {:kind :secondary
                                            :size :medium
-                                           :on-click #(api/get-org-settings-normalized name vcs-type api-chan {:refresh true})}
+                                           :on-click #(raise! owner [:org-settings-normalized {:org-name org-name :vcs-type vcs-type}])}
                                           (str "Resync with " vcs-label))]
                                        [:span
                                         (button/button
