@@ -85,11 +85,11 @@
                [:li
                    ;; FIXME: NEED TO ADD QUICK START PAGE
                   [:a {:href "/quick-start"}
-                   "Quick Start"]]
+                   "Quick start"]]
                [:li
                  [:a.has-icon {:href "/build-insights"
                                :aria-label "System Status"}
-                  "System Status" [:i.material-icons.status.operational "grain"]]]]] ;; blur_on leak_add network_check
+                  "System status" [:i.material-icons.status.operational "grain"]]]]] ;; blur_on leak_add network_check
 
 
              [:li.dropdown.user-menu
@@ -99,7 +99,7 @@
                 :aria-expanded "false"}
                [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
-               [:li [:a {:href "/account"} "User Settings"]]
+               [:li [:a {:href "/account"} "User settings"]]
                (when (:admin user)
                  [:li [:a {:href "/admin"} "Admin"]])
                [:li [:a {:href "/logout/"} "Logout"]]]]]
