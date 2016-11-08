@@ -80,6 +80,6 @@
                         :loading-text "Creating..."
                         :success-text "Created"
                         :failed-text "Failed"}
-                       "Create JIRA issue")]
+                       "Create JIRA Issue")]
            :close-fn close-fn})))))
 

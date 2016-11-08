@@ -743,7 +743,7 @@
                :success-text "Saved"
                :on-click #(raise! owner [:saved-test-commands {:project-id project-id}])
                :kind :primary}
-              "Save commands")
+              "Save Commands")
              [:div.try-out-build
               (om/build branch-picker
                         project-data
@@ -1257,7 +1257,7 @@
                                                                     :key-type "deploy-key"}])
                      :loading-text "Saving..."
                      :success-text "Saved"}
-                    "Add deploy key")]])
+                    "Add Deploy Key")]])
                (when-not (some #{"github-user-key" "bitbucket-user-key"} (map :type checkout-keys))
                  (om/build add-user-key-section data))
                (when-let [bb-user-key (first (filter (fn [key] (and
@@ -1442,7 +1442,7 @@
                  :on-click #(raise! owner [:set-heroku-deploy-user {:project-id project-id
                                                                     :login login}])
                  :kind :primary}
-                (str "Set user to " (:login user))))]]
+                (str "Set User to " (:login user))))]]
            [:div.heroku-step
             [:h4
              "Step 3: Add deployment settings to your "
@@ -1584,7 +1584,7 @@
                :type "submit"
                :primary? true
                :on-click #(raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:jira]]}])}
-              "Save JIRA settings")
+              "Save JIRA Settings")
             (when (or username password base-url)
               (button/managed-button
                 {:failed-text "Failed"
@@ -1594,7 +1594,7 @@
                  :on-click #(do
                               (raise! owner [:edited-input {:path (input-path) :value nil}])
                               (raise! owner [:saved-project-settings {:project-id project-id}]))}
-                "Clear JIRA settings"))]]])))))
+                "Clear JIRA Settings"))]]])))))
 
 (defn integrations [project-data owner]
   (reify

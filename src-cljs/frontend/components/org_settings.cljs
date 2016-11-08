@@ -533,7 +533,7 @@
                      :kind :primary}
                     (if (config/enterprise?)
                       enterprise-text
-                      "Update plan"))))
+                      "Update Plan"))))
                (if-not checkout-loaded?
                  (spinner)
                  (button/managed-button
@@ -805,7 +805,7 @@
                                      {:from-org {:org-name org-name
                                                  :vcs-type vcs_type}
                                       :to-org selected-transfer-org}])}
-                "Transfer plan")]]]])]]]))))
+                "Transfer Plan")]]]])]]]))))
 
 (defn organizations [app owner]
   (om/component
@@ -872,7 +872,7 @@
                      :loading-text "Updating"
                      :on-click #(raise! owner [:update-card-clicked])
                      :kind :primary}
-                    "Change credit card")]]]]]]))))))
+                    "Change Credit Card")]]]]]]))))))
 
 ;; Render a friendly human-readable version of a Stripe discount coupon.
 ;; Stripe has a convention for this that does not seem to be documented, so we
@@ -969,7 +969,7 @@
                    :loading-text "Saving invoice data..."
                    :on-click #(raise! owner [:save-invoice-data-clicked])
                    :kind :primary}
-                  "Save invoice data")]]]]]))))))
+                  "Save Invoice Data")]]]]]))))))
 
 (defn- invoice-total
   [invoice]

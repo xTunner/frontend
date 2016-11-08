@@ -102,7 +102,7 @@
               :failed-text "Failed to save key"
               :success-text "Saved"
               :on-click submit-form!}
-             "Save Heroku key")]]])))))
+             "Save Heroku Key")]]])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -133,7 +133,7 @@
               :failed-text "Failed to add token"
               :success-text "Created"
               :on-click #(create-token! new-user-token)}
-             "Create new token")]
+             "Create New Token")]
 
           [:div.api-item
            (when (seq tokens)
