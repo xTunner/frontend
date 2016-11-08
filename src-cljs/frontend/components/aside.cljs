@@ -565,10 +565,10 @@
            (when-not (ld/feature-on? "top-bar-ui-v-1")
             [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
-                                           :title "Logout"
+                                           :title "Log Out"
                                            :href "/logout"}
               [:i.material-icons "power_settings_new"]
-              [:div.nav-label "Logout"]])])))))
+              [:div.nav-label "Log Out"]])])))))
 
 
 (defn aside [{:keys [app show-aside-menu?]} owner]
