@@ -197,7 +197,7 @@
     (case (:type item)
 
       :heading
-      [:.aside-item.aside-heading {:key (hash item)}
+      [:header.aside-item.aside-heading {:key (hash item)}
        (:title item)]
 
       :subpage
@@ -362,8 +362,7 @@
             items (org-settings-nav-items plan org-data)]
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
-          [:header
-           [:h4 "Organization Settings"]
+          [:header.aside-item.aside-heading "Organization Settings"
            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
             (common/ico :fail-light)]]
           [:div.aside-user-options
