@@ -100,6 +100,7 @@
              {:loading-text "Saving..."
               :failed-text "Failed to save key"
               :success-text "Saved"
+              :kind :primary
               :on-click submit-form!}
              "Save Heroku Key")]]])))))
 

@@ -506,7 +506,7 @@
       position: relative;
     }
     .help-block {
-      color: @grayLight;
+      color: @gray;
     }
   }
 
@@ -523,7 +523,7 @@
     .add-key {
       border-radius: 1em;
       .outlineFlat();
-      margin: 0 1em 1em 0;
+      margin: 2em 1em;
       padding: 1em;
     }
   }
@@ -581,7 +581,13 @@
 
   // Heroku Page
   .heroku-api {
-    width: 40%;
+    article {
+      .heroku-step form {
+        @media (min-width: @screen-sm-max) {
+          max-width: 320px;
+        }
+      }
+    }
   }
 
   .heroku-step {
@@ -606,6 +612,7 @@
 
   .jira-settings-inner {
     margin-top: 2em;
+
     form {
       margin-top: 2em;
       max-width: 340px;
@@ -805,8 +812,15 @@ input.radio[type="checkbox"] {
         padding-right: 0;
       }
     }
+
     ul {
+      margin-bottom: 1em;
       padding-left: 0;
+
+      li {
+        margin-left: 1em;
+        list-style: disc;
+      }
     }
   }
 }
