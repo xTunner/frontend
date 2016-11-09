@@ -550,7 +550,8 @@
                                                  :linux {:template (:id pm/default-template-properties)}
                                                  :price new-total
                                                  :description (str "$" new-total "/month, includes "
-                                                                   (pluralize selected-containers "container"))}]))}
+                                                                   (pluralize selected-containers "container"))}]))
+                    :kind :primary}
                    "Pay Now")))
 
               (when-not (config/enterprise?)
