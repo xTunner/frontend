@@ -75,7 +75,6 @@
         (html
          [:div#settings-heroku.settings
           [:div.heroku-item
-           [:legend "Heroku API key"]
            [:p
             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
             " to set up deployment with Heroku."
