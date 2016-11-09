@@ -545,7 +545,11 @@
   }
 
   .status-page {
-    width: 45%;
+    article {
+      .status-page-inner {
+        max-width: 320px;
+      }
+    }
   }
 
   .circle-api-page-inner, .status-page-inner {
@@ -615,8 +619,17 @@
 
     form {
       margin-top: 2em;
-      max-width: 340px;
       .flexy(column);
+
+      @media (min-width: @screen-sm-max) {
+        max-width: 320px;
+      }
+    }
+
+    .buttons {
+      button:last-of-type {
+        margin-left: 10px;
+      }
     }
   }
 
@@ -625,13 +638,16 @@
     margin-top: 2em;
     form {
       margin-top: 2em;
-      max-width: 340px;
+
       .flexy(column);
 
       .buttons {
         .flexy();
         -webkit-flex-wrap: nowrap;
                 flex-wrap: nowrap;
+      }
+      @media (min-width: @screen-sm-max) {
+        max-width: 320px;
       }
     }
     input[type=submit] {
