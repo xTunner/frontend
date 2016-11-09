@@ -88,7 +88,7 @@
                    "Quick start"]]
                [:li
                  [:a.has-icon {:href "/build-insights"
-                               :aria-label "System Status"}
+                               :aria-label "System status"}
                   "System status" [:i.material-icons.status.operational "grain"]]]]] ;; blur_on leak_add network_check
 
 
@@ -102,7 +102,7 @@
                [:li [:a {:href "/account"} "User settings"]]
                (when (:admin user)
                  [:li [:a {:href "/admin"} "Admin"]])
-               [:li [:a {:href "/logout/"} "Logout"]]]]]
+               [:li [:a {:href "/logout/"} "Log out"]]]]]
 
             [:ul.nav-items.nav-items-left.hidden-md-up
              [:li
