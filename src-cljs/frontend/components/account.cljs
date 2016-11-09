@@ -37,7 +37,7 @@
                                    (get-in app state/user-organizations-path))]
         (html
          [:div#settings-plans
-          [:legend "Org Settings"]
+          [:legend "Org Plan Settings"]
           [:div.plans-item
            [:h3 "Set up a plan for one of your Organizations:"]
            [:p "You can set up plans for any organization that you admin."]
@@ -74,6 +74,7 @@
             project-page? (:project-page? opts)]
         (html
          [:div#settings-heroku.settings
+          [:legend "Heroku Settings"]
           [:div.heroku-item
            [:p
             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
@@ -242,6 +243,7 @@
     (render [_]
       (html
        [:div
+        [:legend "Beta Program"]
         (card/titled {:title "Beta Program"}
                      (html
                       [:div
