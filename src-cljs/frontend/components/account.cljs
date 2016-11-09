@@ -135,30 +135,30 @@
               :on-click #(create-token! new-user-token)}
              "Create New Token")]
 
-          [:div.api-item
-           (when (seq tokens)
-             (om/build table/table
-                       {:rows tokens
-                        :key-fn :token
-                        :columns [{:header "Label"
-                                   :cell-fn :label}
+           [:div.api-item
+            (when (seq tokens)
+              (om/build table/table
+                        {:rows tokens
+                         :key-fn :token
+                         :columns [{:header "Label"
+                                    :cell-fn :label}
 
-                                  {:header "Token"
-                                   :type :shrink
-                                   :cell-fn :token}
+                                   {:header "Token"
+                                    :type :shrink
+                                    :cell-fn :token}
 
-                                  {:header "Created"
-                                   :type :shrink
-                                   :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
+                                   {:header "Created"
+                                    :type :shrink
+                                    :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
 
-                                  {:header "Remove"
-                                   :type #{:shrink :right}
-                                   :cell-fn
-                                   (fn [token]
-                                     (table/action-button
-                                      "Remove"
-                                      (icon/delete)
-                                      #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
+                                   {:header "Remove"
+                                    :type #{:shrink :right}
+                                    :cell-fn
+                                    (fn [token]
+                                      (table/action-button
+                                       "Remove"
+                                       (icon/delete)
+                                       #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
 
 
 (def available-betas
@@ -248,7 +248,7 @@
                        [:p "Thanks for being part of the beta program.
                             We'll let you know when we release updates
                             so you'll be the first to see new
-                            features!" ]
+                            features!"]
                        [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
                        (button/button
                         {:on-click #(do
