@@ -27,8 +27,11 @@
   ;; action events should be in the format <item>-<action in the past tense>
   ;;    examples: project-followed or banner-dismissed
   #{:account-settings-clicked
+    :account-settings-icon-clicked
     :add-more-containers-clicked
     :add-project-clicked
+    :add-project-icon-clicked
+    :admin-icon-clicked
     :authorize-vcs-clicked
     :beta-accept-terms-clicked
     :beta-join-clicked
@@ -44,18 +47,22 @@
     :build-status-clicked
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
+    :builds-icon-clicked
     :cancel-build-clicked
     :cancel-plan-clicked
     :change-image-clicked
+    :changelog-icon-clicked
     :container-filter-changed
     :container-selected
     :create-jira-issue-clicked
     :create-jira-issue-success
     :create-jira-issue-failed
     :dismiss-trial-offer-banner-clicked
+    :docs-icon-clicked
     :expand-repo-toggled
     :follow-project-clicked
     :insights-bar-clicked
+    :insights-icon-clicked
     :invite-teammates-clicked
     :invite-teammates-dismissed
     :invite-teammates-impression
@@ -64,6 +71,7 @@
     :jira-modal-impression
     :login-clicked
     :logo-clicked
+    :logout-icon-clicked
     :merge-pr-clicked
     :merge-pr-failed
     :merge-pr-impression
@@ -75,6 +83,7 @@
     :pr-link-clicked
     :parallelism-clicked
     :project-branch-changed
+    :projects-icon-clicked
     :project-clicked
     :project-enabled
     :project-followed
@@ -87,6 +96,8 @@
     :signup-impression
     :sort-branches-toggled
     :start-trial-clicked
+    :support-icon-clicked
+    :team-icon-clicked
     :teammates-invited
     :trial-offer-banner-impression
     :update-parallelism-clicked

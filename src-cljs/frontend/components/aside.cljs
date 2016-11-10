@@ -456,6 +456,11 @@
         (om/build branch-activity-list app {:opts {:identities (:identities opts)
                                                    :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
 
+(defn- aside-nav-clicked
+  [owner event-name]
+  ((om/get-shared owner :track-event) {:event-type event-name
+                                       :properties {:component "left-nav"}}))
+
 (defn aside-nav [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
@@ -474,21 +479,23 @@
                                   :data-placement "right"
                                   :data-trigger "hover"
                                   :href (routes/v1-dashboard-path {})
-                                  :on-click #((om/get-shared owner :track-event) {:event-type :logo-clicked})}
+                                  :on-click #(aside-nav-clicked owner :logo-clicked)}
               [:div.logomark
                (common/ico :logo)]])
 
            [:a.aside-item {:data-placement "right"
                            :data-trigger "hover"
                            :title "Builds"
-                           :href (routes/v1-dashboard-path {})}
+                           :href (routes/v1-dashboard-path {})
+                           :on-click #(aside-nav-clicked owner :builds-icon-clicked)}
             [:i.material-icons "storage"]
             [:div.nav-label "Builds"]]
 
            [:a.aside-item {:data-placement "right"
                             :data-trigger "hover"
                             :title "Insights"
-                            :href "/build-insights"}
+                            :href "/build-insights"
+                            :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
              [:i.material-icons "assessment"]
              [:div.nav-label "Insights"]]
 
@@ -496,21 +503,24 @@
              [:a.aside-item {:title "Projects"
                              :data-placement "right"
                              :data-trigger "hover"
-                             :href "/projects"}
+                             :href "/projects"
+                             :on-click #(aside-nav-clicked owner :projects-icon-clicked)}
               [:i.material-icons "book"]
               [:div.nav-label "Projects"]]
 
              [:a.aside-item {:href "/add-projects",
                              :data-placement "right"
                              :data-trigger "hover"
-                             :title "Add Projects"}
+                             :title "Add Projects"
+                             :on-click #(aside-nav-clicked owner :add-project-icon-clicked)}
               [:i.material-icons "library_add"]
               [:div.nav-label "Add Projects"]])
 
            [:a.aside-item {:href "/team",
                            :data-placement "right"
                            :data-trigger "hover"
-                           :title "Team"}
+                           :title "Team"
+                           :on-click #(aside-nav-clicked owner :team-icon-clicked)}
             [:i.material-icons "group"]
             [:div.nav-label "Team"]]
 
@@ -518,7 +528,8 @@
              [:a.aside-item {:data-placement "right"
                              :data-trigger "hover"
                              :title "Account Settings"
-                             :href "/account"}
+                             :href "/account"
+                             :on-click #(aside-nav-clicked owner :account-settings-icon-clicked)}
               [:i.material-icons "settings"]
               [:div.nav-label "Account Settings"]])
 
@@ -529,7 +540,8 @@
                                        :data-placement "right"
                                        :data-trigger "hover"
                                        :target "_blank"
-                                       :href "https://circleci.com/docs/"})
+                                       :href "https://circleci.com/docs/"
+                                       :on-click #(aside-nav-clicked owner :docs-icon-clicked)})
               [:i.material-icons "description"]
               [:div.nav-label "Docs"]])
 
@@ -538,7 +550,8 @@
                                    {:title "Support"
                                     :data-placement "right"
                                     :data-trigger "hover"
-                                    :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"})
+                                    :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"
+                                    :on-click #(aside-nav-clicked owner :support-icon-clicked)})
               [:i.material-icons "chat"]
               [:div.nav-label "Support"]])
 
@@ -548,7 +561,8 @@
                                          :data-trigger "hover"
                                          :title "Changelog"
                                          :target "_blank"
-                                         :href "/changelog"})
+                                         :href "/changelog"
+                                         :on-click #(aside-nav-clicked owner :changelog-icon-clicked)})
                 [:i.material-icons "receipt"]
                 [:div.nav-label "Changelog"]]))
 
@@ -558,7 +572,8 @@
              [:a.aside-item {:data-placement "right"
                              :data-trigger "hover"
                              :title "Admin"
-                             :href "/admin"}
+                             :href "/admin"
+                             :on-click #(aside-nav-clicked owner :admin-icon-clicked)}
                 [:i.material-icons "build"]
                 [:div.nav-label "Admin"]])
 
@@ -566,7 +581,8 @@
             [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
                                            :title "Logout"
-                                           :href "/logout"}
+                                           :href "/logout"
+                                           :on-click #(aside-nav-clicked owner :logout-icon-clicked)}
               [:i.material-icons "power_settings_new"]
               [:div.nav-label "Logout"]])])))))
 
