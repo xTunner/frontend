@@ -1,5 +1,6 @@
 (ns frontend.analytics.core
-  (:require [frontend.analytics.segment :as segment]
+  (:require [frontend.analytics.ab :as ab]
+            [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
@@ -144,7 +145,7 @@
 (def BuildEvent
   (analytics-event-schema {:build {s/Keyword s/Any}}))
 
-(defn- add-properties-to-track-from-state [current-state]
+(defn- properties-to-track-from-state [current-state]
   "Get a map of the mutable properties we want to track out of the
   state. Also add a timestamp."
   {:user (get-in current-state state/user-login-path)
@@ -156,9 +157,9 @@
 (defn- supplement-tracking-properties [{:keys [properties current-state]}]
   "Fill in any unsuppplied property values with those supplied
   in the current app state."
-  (-> current-state
-      (add-properties-to-track-from-state)
-      (merge properties)))
+  (merge (properties-to-track-from-state current-state)
+         {:ab-test-treatments (ab/ab-test-treatments)}
+         properties))
 
 (defn- current-subpage
   "Get the subpage for a pageview. If there is a subpage as well as a tab, the subpage

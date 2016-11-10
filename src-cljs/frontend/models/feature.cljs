@@ -66,7 +66,9 @@
 
 (def ab-test-treatments
   {:junit-ab-test {true :junit-button
-                   false :junit-banner}})
+                   false :junit-banner}
+   :signup-cta-on-404 {true :signup-cta-on-404
+                       false :no-signup-cta-on-404}})
 
 (defn ab-test-treatment [feature]
   (get-in ab-test-treatments [feature (-> feature enabled? boolean)]))
