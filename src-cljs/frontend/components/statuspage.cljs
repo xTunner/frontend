@@ -20,7 +20,10 @@
 ;; There are 2 methods to set sample statuses when testing the statuspage.io
 ;; widget.
 ;; - The most simple is to (def page test-page) and log in to
-;;   statuspage.io and change the "CircleCI Test" page status as required.
+;;   statuspage.io, modify `managed-ajax` call in `update-statuspage-state` function to
+;;   add `:Authorization` into the request headers. For example:
+;;   `(ajax/managed-ajax :get page-url :headers {:Authorization "OAuth someApiKey"})`
+;;   And change the "CircleCI Test" page status as required.
 ;; -  The second method is to load one of the sample JSON files listed below
 ;;   and (def sample-status) to the loaded document. When loading, the JSON
 ;;   keys should be converted to Cloure keywords, using something like this:
@@ -86,11 +89,13 @@
              :as summary-response} (:summary (om/get-state owner :statuspage))
             updated-incident (first (sort-by :updated_at datetime/iso-comparator incidents))
             desc (get-in summary-response [:status :description])
-            components-affected (filter (comp not (partial = "operational") :status)
-                                        (:components summary-response))
-            dismissed-update (get-in app state/statuspage-dismissed-update-path)
-            dismissed? #(= updated_at dismissed-update)
-            class (if (dismissed?)
+            components-affected (->> summary-response
+                                     :components
+                                     (filter (comp not (partial = "operational") :status))
+                                     (map :name))
+            status {:description desc :components (set components-affected)}
+            dismissed-status (get-in app state/statuspage-dismissed-update-path)
+            class (if (= status dismissed-status)
                     "none"
                     (severity-class summary-response))]
         (html [:div#statuspage-bar {:class class}
@@ -101,9 +106,9 @@
                   {:on-click #(elevio/show-status!)})
                 (when (seq components-affected)
                   [:h4 (str desc " - components affected: "
-                            (clojure.string/join ", " (map (comp str :name) components-affected)))])
+                            (clojure.string/join ", " components-affected))])
                 (when updated-incident
                   (incident-markup updated-incident))]
                [:a.dismiss-banner {:on-click #(raise! owner [:dismiss-statuspage
-                                                             {:last-update updated_at}])}
+                                                             {:status status}])}
                 (common/ico :fail-light)]])))))
