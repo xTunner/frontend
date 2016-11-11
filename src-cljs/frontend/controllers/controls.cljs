@@ -1512,8 +1512,8 @@
   (assoc-in state state/insights-filter-path new-filter))
 
 (defmethod control-event :dismiss-statuspage
-  [_ _ {:keys [last-update]} state]
-  (assoc-in state state/statuspage-dismissed-update-path last-update))
+  [_ _ {:keys [status]} state]
+  (assoc-in state state/statuspage-dismissed-update-path status))
 
 (defmethod post-control-event! :upload-p12
   [_ _ {:keys [project-name vcs-type file-content file-name password description on-success]} previous-state current-state comms]
