@@ -7,14 +7,17 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn- crumb-node [{:keys [active name path]}]
+(defn- crumb-node [{:keys [active name path track-event-type owner]}]
   (component
     (html
      (if active
        [:li.active
         [:a {:disabled true :title name} name " "]]
        [:li
-        [:a {:href path :title name} name " "]]))))
+        [:a {:href path 
+             :title name
+             :on-click #((om/get-shared owner :track-event) {:event-type track-event-type})} 
+            name " "]]))))
 
 (defmulti crumb
   (fn [{:keys [type]}] type))
@@ -24,15 +27,19 @@
   (crumb-node attrs))
 
 (defmethod crumb :dashboard
-  [attrs]
+  [{:keys [owner]}]
   (crumb-node {:name "Builds"
-               :path (routes/v1-dashboard-path {})}))
+               :path (routes/v1-dashboard-path {})
+               :owner owner
+               :track-event-type :breadcrumb-dashboard-clicked}))
 
 (defmethod crumb :project
-  [{:keys [vcs_type username project active]}]
+  [{:keys [vcs_type username project active owner]}]
   (crumb-node {:name project
                :path (routes/v1-dashboard-path {:vcs_type vcs_type :org username :repo project})
-               :active active}))
+               :active active
+               :owner owner
+               :track-event-type :breadcrumb-project-clicked}))
 
 (defmethod crumb :project-settings
   [{:keys [vcs_type username project active]}]
@@ -41,7 +48,7 @@
                :active active}))
 
 (defmethod crumb :project-branch
-  [{:keys [vcs_type username project branch active tag]}]
+  [{:keys [vcs_type username project branch active tag owner]}]
   (crumb-node {:name (cond
                        tag (utils/trim-middle (utils/display-tag tag) 45)
                        branch (utils/trim-middle (utils/display-branch branch) 45)
@@ -51,17 +58,23 @@
                                                   :org username
                                                   :repo project
                                                   :branch branch}))
+               :owner owner
+               :track-event-type :breadcrumb-project-branch-clicked
                :active active}))
 
 (defmethod crumb :build
   [{:keys [vcs_type username project build-num active]}]
   (crumb-node {:name (str "build " build-num)
+               :owner owner
+               :track-event-type :breadcrumb-build-clicked
                :path (routes/v1-build-path vcs_type username project build-num)
                :active active}))
 
 (defmethod crumb :org
-  [{:keys [vcs_type username active]}]
+  [{:keys [vcs_type username active owner]}]
   (crumb-node {:name username
+               :owner owner
+               :track-event-type :breadcrumb-org-clicked
                :path (routes/v1-dashboard-path {:vcs_type vcs_type
                                                 :org username})
                :active active}))
@@ -104,7 +117,6 @@
                :path (routes/v1-insights)
                :active false}))
 
-
 (defn header
   "The page header.
 
@@ -120,7 +132,7 @@
       (component
         (html
          [:div
-          [:ol.breadcrumbs (map crumb crumbs)]
+          [:ol.breadcrumbs (map (comp crumb #(assoc % :owner owner)) crumbs)]
           [:.actions actions]])))))
 
 (dc/do
