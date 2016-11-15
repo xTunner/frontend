@@ -801,14 +801,14 @@
              ;; avoid errors if a nonexistent tab is typed in the URL
              nil)]))))))
 
-(defn build-canceler [{:keys [type name handle]}]
+(defn build-canceler [{:keys [type name login]}]
   [:span
    (list
          [:a {:href (case type
-                      "github" (str (github-endpoint) "/" handle)
-                      "bitbucket" (bb-utils/user-profile-url handle)
+                      "github" (str (github-endpoint) "/" login)
+                      "bitbucket" (bb-utils/user-profile-url login)
                       nil)}
-          (if (not-empty name) name handle)])])
+          (if (not-empty name) name login)])])
 
 (defn pull-requests [{:keys [urls]} owner]
   ;; It's possible for a build to be part of multiple PRs, but it's rare

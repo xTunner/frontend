@@ -35,9 +35,9 @@
   (= (name branch-name) (:default_branch project)))
 
 (defn- personal-branch-helper [project identities branch pushers]
-  (let [{:keys [handle]} (get identities (-> project :vcs_type keyword))]
+  (let [{:keys [login]} (get identities (-> project :vcs_type keyword))]
     (or (default-branch? branch project)
-        (some #{handle} pushers))))
+        (some #{login} pushers))))
 
 (defn personal-branch? [identities branch]
   (personal-branch-helper (:project branch) identities (:identifier branch) (:pusher_logins branch)))
