@@ -8,6 +8,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]
+            [frontend.utils.html :refer [open-ext]]
             [frontend.timer :as timer]
             [frontend.elevio :as elevio]
             [goog.dom]
@@ -260,9 +261,10 @@
     om/IRender
     (render [_]
       (html
-        [:a.btn.btn-cta {:href "/signup"
+       [:a.btn.btn-cta (open-ext
+                        {:href "/signup"
                          :role "button"
-                         :on-mouse-up #((om/get-shared owner :track-event) {:event-type :signup-clicked})}
+                         :on-mouse-up #((om/get-shared owner :track-event) {:event-type :signup-clicked})})
          inline-circle-logo
          (str (sign-up-text))]))))
 
