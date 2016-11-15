@@ -109,9 +109,11 @@
             login (get-in settings [:add-projects :selected-org :login])
             type (get-in settings [:add-projects :selected-org :type])
             repo-id (repo-model/id repo)
+            repo-url (vcs-url/project-path (:vcs_url repo))
             tooltip-id (str "view-project-tooltip-" (string/replace repo-id #"[^\w]" ""))
             settings (:settings data)
             building-on-circle? (repo-model/building-on-circle? repo)
+            repo-name (vcs-url/repo-name (:vcs_url repo))
             title-el (repo-title repo building-on-circle?)]
         (html
          (cond (repo-model/can-follow? repo)
@@ -127,7 +129,10 @@
                                         (when (not building-on-circle?)
                                           (om/set-state! owner :building? true)
                                           ((om/get-shared owner :track-event)
-                                            {:event-type :build-project-clicked})))
+                                            {:event-type :build-project-clicked
+                                             :properties {:project-vcs-url repo-url
+                                                          :repo repo-name
+                                                          :org login}})))
                            :title (if building-on-circle?
                                     "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
                                     "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project.")
