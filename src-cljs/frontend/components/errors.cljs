@@ -7,6 +7,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils :refer [auth-url]]
+            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -91,7 +92,7 @@
                (if (not logged-in?)
                  (if (config/enterprise?)
                    [:span " or " logging-in]
-                   [:span ", " logging-in ", or " [:a {:href "/signup"} "signing up"]])
+                   [:span ", " logging-in ", or " [:a (open-ext {:href "/signup"}) "signing up"]])
                  [:span " or checking out our " [:a {:href "http://blog.circleci.com/"} "blog"]]))]
             :else "Something completely unexpected happened")]]]))))
 
