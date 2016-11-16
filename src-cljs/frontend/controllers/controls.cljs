@@ -277,6 +277,8 @@
 (defmethod post-control-event! :container-selected
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state comms]
   (let [previous-container-id (state/current-container-id previous-state)]
+    ; this function also gets called when the window is resized, the when check is to prevent the component
+    ; from updating in such case.
     (when (not= previous-container-id container-id)
       (when-let [parent (goog.dom/getElement "container_parent")]
         (let [container (goog.dom/getElement (str "container_" container-id))
@@ -312,11 +314,7 @@
                                :project-name (vcs-url/project-name vcs-url)
                                :old-container-id previous-container-id
                                :new-container-id container-id}
-                              (:api comms)))
-      (analytics/track {:event-type :container-selected
-                        :current-state current-state
-                        :properties {:old-container-id previous-container-id
-                                     :new-container-id container-id}}))))
+                              (:api comms))))))
 
 (defmethod control-event :container-paging-offset-changed
   [target message {:keys [paging-offset]} state]

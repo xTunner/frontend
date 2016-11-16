@@ -53,7 +53,7 @@
     :cancel-plan-clicked
     :change-image-clicked
     :changelog-icon-clicked
-    :container-filter-changed
+    :container-filter-clicked
     :container-selected
     :create-jira-issue-clicked
     :create-jira-issue-success
