@@ -124,7 +124,7 @@
             (when selected?
               (-> vcs-user
                   (assoc :email (:entered-email component-user))
-                  (select-keys [:provider_id :login :email :name])))))
+                  (select-keys [:external_id :login :email :name])))))
         vcs-users))
 
 (defn- invite-button-text [number-of-invites]
