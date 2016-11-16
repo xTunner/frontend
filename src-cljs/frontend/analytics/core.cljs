@@ -1,5 +1,6 @@
 (ns frontend.analytics.core
-  (:require [frontend.analytics.segment :as segment]
+  (:require [frontend.analytics.ab :as ab]
+            [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
@@ -27,8 +28,11 @@
   ;; action events should be in the format <item>-<action in the past tense>
   ;;    examples: project-followed or banner-dismissed
   #{:account-settings-clicked
+    :account-settings-icon-clicked
     :add-more-containers-clicked
     :add-project-clicked
+    :add-project-icon-clicked
+    :admin-icon-clicked
     :authorize-vcs-clicked
     :beta-accept-terms-clicked
     :beta-join-clicked
@@ -44,18 +48,22 @@
     :build-status-clicked
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
+    :builds-icon-clicked
     :cancel-build-clicked
     :cancel-plan-clicked
     :change-image-clicked
+    :changelog-icon-clicked
     :container-filter-changed
     :container-selected
     :create-jira-issue-clicked
     :create-jira-issue-success
     :create-jira-issue-failed
     :dismiss-trial-offer-banner-clicked
+    :docs-icon-clicked
     :expand-repo-toggled
     :follow-project-clicked
     :insights-bar-clicked
+    :insights-icon-clicked
     :invite-teammates-clicked
     :invite-teammates-dismissed
     :invite-teammates-impression
@@ -64,6 +72,7 @@
     :jira-modal-impression
     :login-clicked
     :logo-clicked
+    :logout-icon-clicked
     :merge-pr-clicked
     :merge-pr-failed
     :merge-pr-impression
@@ -75,6 +84,7 @@
     :pr-link-clicked
     :parallelism-clicked
     :project-branch-changed
+    :projects-icon-clicked
     :project-clicked
     :project-enabled
     :project-followed
@@ -87,6 +97,8 @@
     :signup-impression
     :sort-branches-toggled
     :start-trial-clicked
+    :support-icon-clicked
+    :team-icon-clicked
     :teammates-invited
     :trial-offer-banner-impression
     :update-parallelism-clicked
@@ -133,7 +145,7 @@
 (def BuildEvent
   (analytics-event-schema {:build {s/Keyword s/Any}}))
 
-(defn- add-properties-to-track-from-state [current-state]
+(defn- properties-to-track-from-state [current-state]
   "Get a map of the mutable properties we want to track out of the
   state. Also add a timestamp."
   {:user (get-in current-state state/user-login-path)
@@ -145,9 +157,9 @@
 (defn- supplement-tracking-properties [{:keys [properties current-state]}]
   "Fill in any unsuppplied property values with those supplied
   in the current app state."
-  (-> current-state
-      (add-properties-to-track-from-state)
-      (merge properties)))
+  (merge (properties-to-track-from-state current-state)
+         {:ab-test-treatments (ab/ab-test-treatments)}
+         properties))
 
 (defn- current-subpage
   "Get the subpage for a pageview. If there is a subpage as well as a tab, the subpage

@@ -8,6 +8,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]
+            [frontend.utils.html :refer [open-ext]]
             [frontend.timer :as timer]
             [frontend.elevio :as elevio]
             [goog.dom]
@@ -242,6 +243,16 @@
     "Get Started"
     "Sign Up Free"))
 
+(def inline-circle-logo
+  [:svg.logo {:viewBox "0 0 16 16"
+              :xmlns "http://www.w3.org/2000/svg"
+              :fill-rule "evenodd"
+              :clip-rule "evenodd"
+              :stroke-linejoin "round"
+              :stroke-miterlimit "1.414"}
+   [:path {:fill-rule "nonzero"
+           :d "M6.096 8c0-1.056.856-1.904 1.904-1.904S9.904 6.952 9.904 8 9.048 9.904 8 9.904 6.096 9.048 6.096 8zM8 0C4.264 0 1.136 2.56.248 6.016c-.008.024-.008.048-.008.08 0 .208.168.384.384.384h3.224c.152 0 .288-.088.344-.224.664-1.44 2.12-2.448 3.808-2.448 2.312 0 4.192 1.88 4.192 4.192 0 2.312-1.88 4.192-4.192 4.192-1.688 0-3.144-1-3.808-2.448-.064-.128-.192-.224-.344-.224H.624c-.208 0-.384.168-.384.384 0 .024.008.048.008.08C1.128 13.44 4.264 16 8 16c4.416 0 8-3.584 8-8s-3.584-8-8-8z"}]])
+
 (defn sign-up-cta [{:keys [source]} owner]
   (reify
     om/IDidMount
@@ -250,9 +261,11 @@
     om/IRender
     (render [_]
       (html
-        [:a.btn.btn-cta {:href "/signup"
+       [:a.btn.btn-cta (open-ext
+                        {:href "/signup"
                          :role "button"
-                         :on-mouse-up #((om/get-shared owner :track-event) {:event-type :signup-clicked})}
+                         :on-mouse-up #((om/get-shared owner :track-event) {:event-type :signup-clicked})})
+         inline-circle-logo
          (str (sign-up-text))]))))
 
 (defn feature-icon [name]
