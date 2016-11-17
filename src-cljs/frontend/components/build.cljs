@@ -1,18 +1,15 @@
 (ns frontend.components.build
-  (:require [clojure.string :as string]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
-            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.build-head :as build-head]
             [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
-            [frontend.components.forms :as forms]
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
             [frontend.components.pieces.spinner :refer [spinner]]
@@ -29,7 +26,7 @@
             [goog.string :as gstring]
             [goog.dom :as dom]
             [om.core :as om :include-macros true])
-    (:require-macros [frontend.utils :refer [html defrender]]))
+  (:require-macros [frontend.utils :refer [html defrender]]))
 
 (defn infrastructure-fail-message [owner fail-reason]
   (if (enterprise?)
@@ -239,7 +236,14 @@
                                        reponame build_num
                                        (or current-tab (build-utils/default-tab build scopes))
                                        container-id)
-           :on-click #(raise! owner [:container-selected {:container-id container-id}])
+           :on-click #(do
+                       (raise! owner [:container-selected {:container-id container-id}])
+                       ; tracking is added here because `:container-selected` action is used
+                       ; in various purposes including resize.
+                       (when (not= container-id selected-container-id)
+                         ((om/get-shared owner :track-event) {:event-type :container-selected
+                                                              :properties {:old-container-id selected-container-id
+                                                                           :new-container-id container-id}})))
            :class (concat (container-model/status->classes status)
                           (when (= container-id selected-container-id) ["active"]))}
           [:span.upper-pill-section
@@ -275,7 +279,9 @@
                    :name "container-filter"
                    :checked (= current-filter filter)
                    :disabled (zero? cnt)
-                   :on-change #(raise! owner [:container-filter-changed {:new-filter filter :containers containers}])}]
+                   :on-change #(raise! owner [:container-filter-changed {:new-filter filter :containers containers}])
+                   :on-click #((om/get-shared owner :track-event) {:event-type :container-filter-clicked
+                                                                   :properties {:old-filter current-filter :new-filter filter}})}]
           [:label {:for id}
            (gstring/format "%s (%s)" label cnt)]))]])))
 
@@ -319,6 +325,7 @@
             project (get-in data [:project-data :project])
             {{plan-org-name :name, plan-vcs-type :vcs_type} :org, :as plan} (get-in data [:project-data :plan])
             show-upsell? (project-model/show-upsell? project plan)
+            add-button-text (if show-upsell? "Add Containers +" "+")
             div (html
                  [:div.container-list {:class (when (and (> previous-container-count 0)
                                                          (> subsequent-container-count 0))
@@ -348,7 +355,7 @@
 
                     (pos? subsequent-container-count)
                     [:a.container-selector.page-container-pills
-                     {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (+ paging-offset paging-width )}])}
+                     {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (+ paging-offset paging-width)}])}
                      [:div.pill-details ;; just for flexbox container
                       [:div "Next " subsequent-container-count]
                       [:div container-count " total"]]
@@ -361,10 +368,10 @@
                                                           :vcs_type plan-vcs-type
                                                           :_fragment "linux-pricing"})
                       :title "Adjust containers"
-                      :class (when show-upsell? "upsell")}
-                     (if show-upsell?
-                       [:span "Add Containers +"]
-                       [:span "+"])])])]
+                      :class (when show-upsell? "upsell")
+                      :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                      :properties {:is-upsell-text show-upsell? :button-text add-button-text}})}
+                     [:span add-button-text]])])]
         (html
          [:div.container-pills-container
           (when (and (project-model/parallel-available? project)

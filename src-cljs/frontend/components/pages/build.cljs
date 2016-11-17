@@ -69,23 +69,6 @@
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
 
-(defn- merge-actions [{:keys [build]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :merge-pr-impression}))
-    om/IRender
-    (render [_]
-      (html
-       [:div.merge-container
-        [:button {:on-click #(do ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked})
-                                 (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
-                  :data-toggle "tooltip"
-                  :data-placement "bottom"
-                  :title (str "Merge PR #" (last (build-model/pull-request-numbers build)))}
-         [:i.octicon.octicon-git-merge.merge-icon]
-         "Merge PR"]]))))
-
 (defn- header-actions
   [data owner]
   (reify
@@ -121,10 +104,6 @@
                 "cancel build"]))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
-           (when (and (feature/enabled? :merge-pull-request)
-                      can-write-settings?
-                      (build-model/can-merge-at-least-one-pr? build))
-             (om/build merge-actions {:build build}))
            (when can-write-settings?
              (if (feature/enabled? :jira-integration)
                (list

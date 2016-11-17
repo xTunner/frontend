@@ -175,13 +175,7 @@
     :name "Projects Page"
     :description "The Projects Page helps give a quick overview of
     which projects you have building on CircleCI.  Access it by
-    clicking on the \"Projects\" item in the left navigation bar."}
-
-   {:id "merge-pull-request"
-    :name "Merge Pull Request"
-    :description "Now you can merge pull requests directly from a
-    green build on CircleCI.  To use, look for the \"Merge PR\" button
-    on a build page whose branch has a PR open." } ])
+    clicking on the \"Projects\" item in the left navigation bar."}])
 
 (defn beta-programs [app owner]
   (reify

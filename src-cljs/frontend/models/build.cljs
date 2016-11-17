@@ -188,11 +188,6 @@
                                last
                                :head_sha)))
 
-(defn can-merge-at-least-one-pr? [build]
-  (and (= "success" (:outcome build))
-       (has-pull-requests? build)
-       (is-latest-head-commit? build)))
-
 (defn pull-request-numbers [build]
   (map (fn [pr]
          (-> pr
@@ -299,9 +294,3 @@
    :build-num (num build)
    :ref-name (vcs-ref-name build)
    :reponame (:reponame build)})
-
-(defn merge-args [build]
-  (let [pull-request-number (last (pull-request-numbers build))]
-    {:vcs-url (vcs-url build)
-     :number pull-request-number
-     :sha (:vcs_revision build)}))

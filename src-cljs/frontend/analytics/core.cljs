@@ -53,7 +53,7 @@
     :cancel-plan-clicked
     :change-image-clicked
     :changelog-icon-clicked
-    :container-filter-changed
+    :container-filter-clicked
     :container-selected
     :create-jira-issue-clicked
     :create-jira-issue-success
@@ -73,10 +73,6 @@
     :login-clicked
     :logo-clicked
     :logout-icon-clicked
-    :merge-pr-clicked
-    :merge-pr-failed
-    :merge-pr-impression
-    :merge-pr-success
     :new-plan-clicked
     :no-plan-banner-impression
     :org-clicked
