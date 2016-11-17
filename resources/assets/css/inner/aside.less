@@ -441,6 +441,11 @@
     transition-duration: 0;
   }
 
+  &.current {
+    background-color: @grayDark;
+    color: @white;
+  }
+
   &.aside-heading {
       align-items: flex-start;
       background: @white;
@@ -468,7 +473,6 @@
   &.logo {
     .justify-content(center);
 
-    background: @grayDark;
     min-height: @tile;
 
     &:hover, &:focus {
