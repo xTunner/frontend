@@ -504,25 +504,6 @@
   (retry-build (:api comms) (assoc (select-keys args [:vcs-url :build-num :reponame :ref-name])
                               :ssh? true)))
 
-(defmethod post-control-event! :merge-pull-request-clicked
-  [target message {:keys [vcs-url number sha] :as args} previous-state current-state comms]
-  (let [api-ch (:api comms)
-        uuid frontend.async/*uuid*
-        vcs-type (vcs-url/vcs-type vcs-url)
-        owner (vcs-url/org-name vcs-url)
-        repo (vcs-url/repo-name vcs-url)]
-    (go
-      (let [api-result (<! (ajax/managed-ajax :put (api-path/merge-pull-request vcs-type owner repo number)
-                                              :params {:sha sha}))]
-        (put! api-ch [:merge-pull-request (:status api-result) api-result])
-        (release-button! uuid (:status api-result))
-        (if (= :success (:status api-result))
-          (analytics/track {:event-type :merge-pr-success
-                            :current-state current-state})
-          (analytics/track {:event-type :merge-pr-failed
-                            :current-state current-state}))))))
-
-
 (defmethod post-control-event! :ssh-current-build-clicked
   [target message {:keys [build-num vcs-url]} previous-state current-state comms]
   (let [api-ch (:api comms)

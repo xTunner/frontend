@@ -73,10 +73,6 @@
     :login-clicked
     :logo-clicked
     :logout-icon-clicked
-    :merge-pr-clicked
-    :merge-pr-failed
-    :merge-pr-impression
-    :merge-pr-success
     :new-plan-clicked
     :no-plan-banner-impression
     :org-clicked
