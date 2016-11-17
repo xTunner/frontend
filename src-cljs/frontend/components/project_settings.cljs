@@ -1942,7 +1942,7 @@
     (render [_]
       (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
-            subpage (:project-settings-subpage data)
+            subpage (-> data :navigation-data :subpage)
             error-message (get-in data state/error-message-path)]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
@@ -1953,7 +1953,7 @@
             (when-not (contains? #{:code-signing} subpage)
               (om/build common/flashes error-message))
             [:div#subpage
-             (condp = subpage
+             (case subpage
                :build-environment (om/build build-environment project-data)
                :parallel-builds (om/build parallel-builds data)
                :env-vars (om/build env-vars project-data)
