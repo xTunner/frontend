@@ -41,18 +41,24 @@
                              {:text  "Rebuild"
                               :title "Retry the same tests"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
+                                           ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
+                                                                                :properties {:component "build-page-header"}})
                                            (update-status! "Rebuilding..."))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
                               :title "Retry without cache"
                               :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
+                                           ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
+                                                                                :properties {:component "build-page-header-no-cache"}})
                                            (update-status! "Rebuilding..."))}
 
                              :with_ssh
                              {:text  "Rebuild with SSH"
                               :title "Retry with SSH in VM",
                               :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
+                                           ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
+                                                                                :properties {:component "build-page-header-with-ssh"}})
                                            (update-status! "Rebuilding..."))}}
             text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]

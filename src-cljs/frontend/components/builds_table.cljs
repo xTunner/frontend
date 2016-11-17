@@ -92,7 +92,8 @@
            :icon-name "Rebuild"
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
-                        ((om/get-shared owner :track-event) {:event-type :rebuild-clicked}))})
+                        ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
+                                                             :properties {:component "build-row"}}))})
 
         :else nil)]
 
