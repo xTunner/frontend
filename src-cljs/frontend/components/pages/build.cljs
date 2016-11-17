@@ -17,8 +17,9 @@
 
 (defn- ssh-available?
   "Show the SSH button unless it's disabled"
-  [project]
-  (not (project-model/feature-enabled? project :disable-ssh)))
+  [project build]
+  (not (or (project-model/feature-enabled? project :disable-ssh)
+           (:ssh_disabled build))))
 
 (defn- rebuild-actions [{:keys [build project]} owner]
   (reify
@@ -65,7 +66,7 @@
            [:ul.dropdown-menu.pull-right
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            (when (ssh-available? project)
+            (when (ssh-available? project build)
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
 
@@ -135,5 +136,6 @@
                 {:app app
                  :main-content (om/build build-com/build
                                          {:app app
-                                          :ssh-available? (ssh-available? (get-in app (get-in app state/project-path)))})
+                                          :ssh-available? (ssh-available? (get-in app (get-in app state/project-path))
+                                                                          (get-in app (get-in app state/build-path)))})
                  :header-actions (om/build header-actions app)}))))
