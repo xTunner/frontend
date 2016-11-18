@@ -40,25 +40,19 @@
             actions         {:rebuild
                              {:text  "Rebuild"
                               :title "Retry the same tests"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
-                                           ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
-                                                                                :properties {:component "build-page-header"}})
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false :component "rebuild-dropdown"})])
                                            (update-status! "Rebuilding..."))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
                               :title "Retry without cache"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
-                                           ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
-                                                                                :properties {:component "build-page-header-no-cache"}})
+                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true :component "rebuild-dropdown"})])
                                            (update-status! "Rebuilding..."))}
 
                              :with_ssh
                              {:text  "Rebuild with SSH"
                               :title "Retry with SSH in VM",
-                              :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
-                                           ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
-                                                                                :properties {:component "build-page-header-with-ssh"}})
+                              :action #(do (rebuild! [:ssh-build-clicked (merge rebuild-args {:component "rebuild-dropdown"})])
                                            (update-status! "Rebuilding..."))}}
             text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]

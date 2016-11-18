@@ -93,10 +93,11 @@
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
-                                                             :properties {:component "build-row"}}))})
-
+                                                             :properties {:component "build-table"
+                                                                          :ssh false
+                                                                          :no-cache true}}))})
         :else nil)]
-
+     
      [:div.build-info
       [:div.build-info-header
        [:div.contextual-identifier
