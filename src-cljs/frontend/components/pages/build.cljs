@@ -28,7 +28,9 @@
 
     om/IWillUpdate
     (will-update [_ {:keys [build]} _]
-      (when (build-model/running? build)
+      (when (and (not= (om/get-state owner [:rebuild-status])
+                       "Rebuild")
+                 (build-model/running? build))
         (om/set-state! owner [:rebuild-status] "Rebuild")))
 
     om/IRenderState

@@ -4,6 +4,19 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [defrender html]]))
 
+(defn *tab-row
+  [selected-tab-name on-tab-click {:keys [name icon label]}]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:li (if (= selected-tab-name name)
+               {:class "active"}
+               {:on-click #(on-tab-click name)})
+         (when icon
+             [:span.tab-icon icon])
+         [:span.tab-label label]]))))
+
 (defn tab-row
   "A row of tabs, suitable for the top of a card.
 
@@ -25,13 +38,9 @@
     (render [_]
       (html
        [:ul {:data-component `tab-row}
-        (for [{:keys [name icon label]} tabs]
-          [:li (if (= selected-tab-name name)
-                 {:class "active"}
-                 {:on-click #(on-tab-click name)})
-           (when icon
-             [:span.tab-icon icon])
-           [:span.tab-label label]])]))))
+        (om/build-all (partial *tab-row selected-tab-name on-tab-click)
+                      tabs
+                      {:key :name})]))))
 
 (dc/do
   (defcard-om tab-row
