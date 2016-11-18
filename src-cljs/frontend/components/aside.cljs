@@ -461,7 +461,7 @@
   ((om/get-shared owner :track-event) {:event-type event-name
                                        :properties {:component "left-nav"}}))
 
-(defn aside-nav [app owner]
+(defn aside-nav [{:keys [user current-route]} owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IDidMount
@@ -469,9 +469,7 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [user (get-in app state/user-path)
-            avatar-url (gh-utils/make-avatar-url user)]
-
+      (let [avatar-url (gh-utils/make-avatar-url user)]
         (html
           [:nav.aside-left-nav
            (when (not (ld/feature-on? "top-bar-ui-v-1"))
@@ -483,7 +481,8 @@
               [:div.logomark
                (common/ico :logo)]])
 
-           [:a.aside-item {:data-placement "right"
+           [:a.aside-item {:class (when (= :dashboard current-route) "current")
+                           :data-placement "right"
                            :data-trigger "hover"
                            :title "Builds"
                            :href (routes/v1-dashboard-path {})
@@ -491,16 +490,18 @@
             [:i.material-icons "storage"]
             [:div.nav-label "Builds"]]
 
-           [:a.aside-item {:data-placement "right"
-                            :data-trigger "hover"
-                            :title "Insights"
-                            :href "/build-insights"
-                            :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
+           [:a.aside-item {:class (when (= :build-insights current-route) "current")
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "Insights"
+                           :href "/build-insights"
+                           :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
              [:i.material-icons "assessment"]
              [:div.nav-label "Insights"]]
 
            (if (feature/enabled? :projects-page)
-             [:a.aside-item {:title "Projects"
+             [:a.aside-item {:class (when (= :route/projects current-route) "current")
+                             :title "Projects"
                              :data-placement "right"
                              :data-trigger "hover"
                              :href "/projects"
@@ -508,7 +509,8 @@
               [:i.material-icons "book"]
               [:div.nav-label "Projects"]]
 
-             [:a.aside-item {:href "/add-projects",
+             [:a.aside-item {:class (when (= :add-projects current-route) "current")
+                             :href "/add-projects",
                              :data-placement "right"
                              :data-trigger "hover"
                              :title "Add Projects"
@@ -516,7 +518,8 @@
               [:i.material-icons "library_add"]
               [:div.nav-label "Add Projects"]])
 
-           [:a.aside-item {:href "/team",
+           [:a.aside-item {:class (when (= :team current-route) "current")
+                           :href "/team",
                            :data-placement "right"
                            :data-trigger "hover"
                            :title "Team"
@@ -525,7 +528,8 @@
             [:div.nav-label "Team"]]
 
            (when-not (ld/feature-on? "top-bar-ui-v-1")
-             [:a.aside-item {:data-placement "right"
+             [:a.aside-item {:class (when (= :account current-route) "current")
+                             :data-placement "right"
                              :data-trigger "hover"
                              :title "Account Settings"
                              :href "/account"
@@ -569,7 +573,8 @@
            [:hr]
 
            (when (:admin user)
-             [:a.aside-item {:data-placement "right"
+             [:a.aside-item {:class (when (= :admin-settings current-route) "current")
+                             :data-placement "right"
                              :data-trigger "hover"
                              :title "Admin"
                              :href "/admin"

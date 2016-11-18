@@ -104,20 +104,18 @@
 (defui ^:once Wrapper
   Object
   (render [this]
-    (let [{:keys [factory props]} (om-next/props this)
+    (let [{:keys [factory props owner]} (om-next/props this)
           app (:legacy/state props)]
       (if (app-blocked? app)
         (blocked-page app)
-        (let [logged-in? (get-in app state/user-path)
+        (let [user (get-in app state/user-path)
               admin? (if (config/enterprise?)
                        (get-in app [:current-user :dev-admin])
                        (get-in app [:current-user :admin]))
               show-inspector? (get-in app state/show-inspector-path)
               ;; :landing is still used by Enterprise. It and :error are
               ;; still "outer" pages.
-              outer? (contains? #{:landing :error} (:navigation-point app))
-              ;; simple optimzation for real-time updates when the build is running
-              app-without-container-data (dissoc-in app state/container-data-path)]
+              outer? (contains? #{:landing :error} (:navigation-point app))]
           (html
            [:div {:class (if outer? "outer" "inner")
                   ;; Disable natural form submission. This keeps us from having to
@@ -154,7 +152,7 @@
             [:.top
              [:.bar
               (when (ld/feature-on? "top-bar-ui-v-1")
-                (build-legacy topbar/topbar {:user (get-in app state/user-path)}))]
+                (build-legacy topbar/topbar {:user user}))]
              [:.flash-presenter
               (flash/presenter {:display-timeout 2000
                                 :notification
@@ -162,6 +160,12 @@
                                   (flash/flash-notification {:react-key number} message))})]]
 
             [:.below-top
+             (when (and (not outer?) user)
+               (let [compassus-route (compassus/current-route owner)
+                     current-route (if (= :route/legacy-page compassus-route)
+                                     (:navigation-point app)
+                                     compassus-route)]))
+
              (factory props)]]))))))
 
 (def wrapper (om-next/factory Wrapper))
