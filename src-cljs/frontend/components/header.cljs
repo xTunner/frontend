@@ -263,24 +263,6 @@
           [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-usage-banner {:current-usage (plan/current-months-osx-usage-% plan)}])}
            [:i.material-icons "clear"]]])))))
 
-(defn osx-command-change-banner [_ owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:div.alert.alert-warning {:data-component `osx-command-change-banner}
-         [:div.usage-message
-          [:div.icon (om/build svg/svg {:src (common/icon-path "Info-Warning")})]
-          [:div.text
-           [:span "We are changing the default iOS build command from xctool to xcodebuild. "]
-           [:span "Please see "]
-           [:a.plan-link
-            {:href "https://discuss.circleci.com/t/xcodebuild-becomes-default-ios-build-command/3266"}
-            "this Discuss post"]
-           [:span " for more details."]]]
-         [:a.dismiss {:on-click #(raise! owner [:dismiss-osx-command-change-banner])}
-          [:i.material-icons "clear"]]]))))
-
 (defn trial-offer-banner [app owner]
   (let [event-data {:plan-type :paid
                     :template :t3
@@ -321,8 +303,6 @@
           (when (and (= :build (:navigation-point app))
                      (project-model/feature-enabled? project :osx))
             (list
-             (when-not (get-in app state/dismissed-osx-command-change-banner-path)
-               (om/build osx-command-change-banner {}))
              (when (and (plan/osx? plan)
                         (plan/over-usage-threshold? plan plan/first-warning-threshold)
                         (plan/over-dismissed-level? plan (get-in app state/dismissed-osx-usage-level)))
