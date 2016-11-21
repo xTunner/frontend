@@ -19,8 +19,7 @@
             [:li
              [:a {:href path
                   :title name
-                  :on-click #((js/console.log "--------- owner:" owner)
-                              (om/get-shared owner :track-event) {:event-type track-event-type})} 
+                  :on-click #((om/get-shared owner :track-event) {:event-type track-event-type})}
                  name " "]]))))))
 
 (defmulti crumb
@@ -54,14 +53,14 @@
   (om/build crumb-node {:name (cond
                                 tag (utils/trim-middle (utils/display-tag tag) 45)
                                 branch (utils/trim-middle (utils/display-branch branch) 45)
-                                :else "...")}
+                                :else "...")
                        :path (when branch
                                (routes/v1-dashboard-path {:vcs_type vcs_type
                                                           :org username
                                                           :repo project
                                                           :branch branch}))
                        :track-event-type :breadcrumb-project-branch-clicked
-                       :active active))
+                       :active active}))
 
 (defmethod crumb :build
   [{:keys [vcs_type username project build-num active]}]
