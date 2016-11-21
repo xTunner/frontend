@@ -689,7 +689,7 @@
                                       :commit_url (build-model/commit-url build)
                                       :commit (:vcs_revision build)})
                (list
-                 (om/build-all commit-line top-commits)
+                 (om/build-all commit-line top-commits {:key :commit})
                  (when (< initial-build-commits-count (count commits))
                    (list
                      [:hr]
@@ -701,7 +701,7 @@
                         "Less"
                         "More")]))
                  (when show-all-commits?
-                   (om/build-all commit-line bottom-commits))))])])))))
+                   (om/build-all commit-line bottom-commits {:key :commit}))))])])))))
 
 (defn build-sub-head [{:keys [build-data scopes user container-id current-tab project-data ssh-available?] :as data} owner]
   (reify
@@ -735,13 +735,13 @@
                              (has-scope :read-settings data)
                              (conj {:name :usage-queue
                                     :label (html
-                                            (list
+                                            [:span
                                              "Queue"
                                              (when (:usage_queued_at build)
                                                [:span " ("
                                                 (om/build common/updating-duration {:start (:usage_queued_at build)
                                                                                     :stop (or (:start_time build) (:stop_time build))})
-                                                ")"])))})
+                                                ")"])])})
 
                              (and (has-scope :trigger-builds data)
                                   ssh-available?
@@ -945,9 +945,8 @@
               [:span.summary-label "Triggered by: "]
               [:span (trigger-html build)]]
 
-             (when-let  [canceler  (and  (=  status "canceled")
-                                         canceler)]
-
+             (when-let [canceler (and (= status "canceled")
+                                      canceler)]
                [:div.summary-item
                 [:span.summary-label "Canceled by: "]
                 [:span (build-canceler canceler)]])
