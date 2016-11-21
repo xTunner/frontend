@@ -55,7 +55,7 @@
                          {:actions [{:index 0 :step 2} {:index 1 :step 2}]}]}]
       
       (is (= [{:index 0 :actions [{:index 0 :step 0} {:index 0 :step 1} {:index 0 :step 2}]}
-              {:index 1 :actions [{:index 1 :step 0} {:index 1 :step 1 :status "running" :filler-action true} {:index 1 :step 2}]}]
+              {:index 1 :actions [{:index 1 :step 0} (build-model/filtered-action 1 1) {:index 1 :step 2}]}]
              (build-model/containers build)))))
 
   (testing "should replicate not parallel steps"
@@ -73,6 +73,6 @@
                  :steps [{:actions [{:index 0 :step 0} {:index 1 :step 0}]}
                          {:actions [{:index 0 :step 2} {:index 1 :step 2}]}]}]
       
-      (is (= [{:index 0 :actions [{:index 0 :step 0} {:index 0 :step 1 :status "running" :filler-action true} {:index 0 :step 2}]}
-              {:index 1 :actions [{:index 1 :step 0} {:index 1 :step 1 :status "running" :filler-action true} {:index 1 :step 2}]}]
+      (is (= [{:index 0 :actions [{:index 0 :step 0} (build-model/filtered-action 0 1) {:index 0 :step 2}]}
+              {:index 1 :actions [{:index 1 :step 0} (build-model/filtered-action 1 1) {:index 1 :step 2}]}]
              (build-model/containers build))))))
