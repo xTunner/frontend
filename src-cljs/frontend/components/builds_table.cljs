@@ -93,7 +93,7 @@
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
-                                                             :properties {:component "build-table"
+                                                             :properties {:component "build-row"
                                                                           :ssh false
                                                                           :no-cache true}}))})
         :else nil)]
