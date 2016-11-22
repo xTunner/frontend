@@ -19,7 +19,8 @@
             [:li
              [:a {:href path
                   :title name
-                  :on-click #((om/get-shared owner :track-event) {:event-type track-event-type})}
+                  :on-click (when track-event-type
+                              #((om/get-shared owner :track-event) {:event-type track-event-type}))}
                  name " "]]))))))
 
 (defmulti crumb
@@ -122,7 +123,7 @@
   :actions - (optional) A component (or collection of components) which will be
              placed on the right of the header. This is where page-wide actions are
              placed."
-  [{:keys [crumbs actions]}]
+  [{:keys [crumbs actions]} owner]
   (reify
     om/IDisplayName (display-name [_] "User Header")
     om/IRender
