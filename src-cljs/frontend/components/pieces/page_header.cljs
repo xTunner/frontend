@@ -7,103 +7,114 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn- crumb-node [{:keys [active name path]}]
-  (component
-    (html
-     (if active
-       [:li.active
-        [:a {:disabled true :title name} name " "]]
-       [:li
-        [:a {:href path :title name} name " "]]))))
+(defn crumb-node [{:keys [active name path track-event-type]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (component      
+        (html 
+          (if active
+            [:li.active
+             [:a {:disabled true :title name} name " "]]
+            [:li
+             [:a {:href path
+                  :title name
+                  :on-click (when track-event-type
+                              #((om/get-shared owner :track-event) {:event-type track-event-type}))}
+                 name " "]]))))))
 
 (defmulti crumb
   (fn [{:keys [type]}] type))
 
 (defmethod crumb :default
   [attrs]
-  (crumb-node attrs))
+  (om/build crumb-node attrs))
 
 (defmethod crumb :dashboard
-  [attrs]
-  (crumb-node {:name "Builds"
-               :path (routes/v1-dashboard-path {})}))
+  [{:keys [owner]}]
+  (om/build crumb-node {:name "Builds"
+                        :path (routes/v1-dashboard-path {})
+                        :track-event-type :breadcrumb-dashboard-clicked}))
 
 (defmethod crumb :project
-  [{:keys [vcs_type username project active]}]
-  (crumb-node {:name project
-               :path (routes/v1-dashboard-path {:vcs_type vcs_type :org username :repo project})
-               :active active}))
+  [{:keys [vcs_type username project active owner]}]
+  (om/build crumb-node {:name project
+                        :path (routes/v1-dashboard-path {:vcs_type vcs_type :org username :repo project})
+                        :active active
+                        :track-event-type :breadcrumb-project-clicked}))
 
 (defmethod crumb :project-settings
   [{:keys [vcs_type username project active]}]
-  (crumb-node {:name "project settings"
-               :path (routes/v1-project-settings-path {:vcs_type vcs_type :org username :repo project})
-               :active active}))
+  (om/build crumb-node {:name "project settings"
+                        :path (routes/v1-project-settings-path {:vcs_type vcs_type :org username :repo project})
+                        :active active}))
 
 (defmethod crumb :project-branch
-  [{:keys [vcs_type username project branch active tag]}]
-  (crumb-node {:name (cond
-                       tag (utils/trim-middle (utils/display-tag tag) 45)
-                       branch (utils/trim-middle (utils/display-branch branch) 45)
-                       :else "...")
-               :path (when branch
-                       (routes/v1-dashboard-path {:vcs_type vcs_type
-                                                  :org username
-                                                  :repo project
-                                                  :branch branch}))
-               :active active}))
+  [{:keys [vcs_type username project branch active tag owner]}]
+  (om/build crumb-node {:name (cond
+                                tag (utils/trim-middle (utils/display-tag tag) 45)
+                                branch (utils/trim-middle (utils/display-branch branch) 45)
+                                :else "...")
+                       :path (when branch
+                               (routes/v1-dashboard-path {:vcs_type vcs_type
+                                                          :org username
+                                                          :repo project
+                                                          :branch branch}))
+                       :track-event-type :breadcrumb-branch-clicked
+                       :active active}))
 
 (defmethod crumb :build
   [{:keys [vcs_type username project build-num active]}]
-  (crumb-node {:name (str "build " build-num)
-               :path (routes/v1-build-path vcs_type username project build-num)
-               :active active}))
+  (om/build crumb-node {:name (str "build " build-num)
+                        :track-event-type :breadcrumb-build-clicked
+                        :path (routes/v1-build-path vcs_type username project build-num)
+                        :active active}))
 
 (defmethod crumb :org
-  [{:keys [vcs_type username active]}]
-  (crumb-node {:name username
-               :path (routes/v1-dashboard-path {:vcs_type vcs_type
-                                                :org username})
-               :active active}))
+  [{:keys [vcs_type username active owner]}]
+  (om/build crumb-node {:name username
+                        :track-event-type :breadcrumb-org-clicked
+                        :path (routes/v1-dashboard-path {:vcs_type vcs_type
+                                                         :org username})
+                        :active active}))
 
 (defmethod crumb :org-settings
   [{:keys [vcs_type username active]}]
-  (crumb-node {:name "organization settings"
-               :path (routes/v1-org-settings-path {:org username
-                                                   :vcs_type vcs_type})
-               :active active}))
+  (om/build crumb-node {:name "organization settings"
+                        :path (routes/v1-org-settings-path {:org username
+                                                            :vcs_type vcs_type})
+                        :active active}))
 
 (defmethod crumb :add-projects
   [attrs]
-  (crumb-node {:name "Add Projects"
-               :path (routes/v1-add-projects)}))
+  (om/build crumb-node {:name "Add Projects"
+                        :path (routes/v1-add-projects)}))
 
 (defmethod crumb :projects
   [attrs]
-  (crumb-node {:name "Projects"
-               :path (routes/v1-projects)}))
+  (om/build crumb-node {:name "Projects"
+                        :path (routes/v1-projects)}))
 
 (defmethod crumb :team
   [attrs]
-  (crumb-node {:name "Team"
-               :path (routes/v1-team)}))
+  (om/build crumb-node {:name "Team"
+                        :path (routes/v1-team)}))
 
 (defmethod crumb :account
   [attrs]
-  (crumb-node {:name "Account"
-               :path (routes/v1-account)}))
+  (om/build crumb-node {:name "Account"
+                        :path (routes/v1-account)}))
 
 (defmethod crumb :settings-base
   [attrs]
-  (crumb-node {:name "Settings"
-               :active false}))
+  (om/build crumb-node {:name "Settings"
+                        :active false}))
 
 (defmethod crumb :build-insights
   [attrs]
-  (crumb-node {:name "Insights"
-               :path (routes/v1-insights)
-               :active false}))
-
+  (om/build crumb-node {:name "Insights"
+                        :path (routes/v1-insights)
+                        :active false}))
 
 (defn header
   "The page header.
