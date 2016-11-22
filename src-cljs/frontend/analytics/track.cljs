@@ -37,7 +37,7 @@
                                                     :previous-plan previous-plan
                                                     :is-upgrade upgrade?}}))
 
-(defn post-rebuild-clicked
+(defn rebuild-clicked
   "Handles post-control event for rebuilds triggered with and without SSH
   Use with any post-control events called to initiate a rebuild, such as:
   rebuild-clicked, ssh-build-clicked, and retry-build-clicked"

@@ -203,7 +203,7 @@
                [:button.ssh_build
                 {:data-loading-text "Starting SSH build..."
                  :title "Retry with SSH in VM"
-                 :on-click #(raise! owner [:ssh-build-clicked (merge build-info {:component "ssh-buttons"})])}
+                 :on-click #(raise! owner [:ssh-build-clicked (merge build-info {:component "ssh-button"})])}
                 "Retry this build with SSH enabled"]))])))))
 
 (defn ssh-ad
