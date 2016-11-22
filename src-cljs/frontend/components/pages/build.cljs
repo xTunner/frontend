@@ -39,13 +39,13 @@
             actions         {:rebuild
                              {:text  "Rebuild"
                               :title "Retry the same tests"
-                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:is-no-cache false})])
+                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
                                            (update-status! "Rebuilding..."))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
                               :title "Retry without cache"
-                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:is-no-cache true})])
+                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
                                            (update-status! "Rebuilding..."))}
 
                              :with_ssh

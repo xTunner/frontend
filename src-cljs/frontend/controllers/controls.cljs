@@ -497,7 +497,7 @@
 
 (defmethod post-control-event! :retry-build-clicked
   [target message args previous-state current-state comms]
-  (retry-build (:api comms) (select-keys args [:vcs-url :build-num :reponame :ref-name :is-no-cache]))
+  (retry-build (:api comms) (select-keys args [:vcs-url :build-num :reponame :ref-name :no-cache?]))
   (let [vcs-url (:vcs-url args)]
     (analytics-track/rebuild-clicked current-state
                                      (vcs-url/vcs-type vcs-url)
@@ -505,7 +505,7 @@
                                      (vcs-url/repo-name vcs-url)
                                      (:component args)
                                      false
-                                     (:is-no-cache args))))
+                                     (:no-cache? args))))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message args previous-state current-state comms]

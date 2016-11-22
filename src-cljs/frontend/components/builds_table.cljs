@@ -56,7 +56,7 @@
 
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
-        build-args (merge (build-model/build-args build) {:component "build-row" :is-no-cache false})
+        build-args (merge (build-model/build-args build) {:component "build-row" :no-cache? false})
         status-words (build-model/status-words build)
         should-show-cancel? (and (project-model/can-trigger-builds? project)
                                  (build-model/can-cancel? build))
