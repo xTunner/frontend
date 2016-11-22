@@ -9,6 +9,7 @@
             [frontend.components.inputs :as inputs]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.form :as form]
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.icon :as icon]
@@ -1843,36 +1844,6 @@
                                                            [:delete-provisioning-profile
                                                             (select-keys profile [:project-name :vcs-type :uuid])])}))}]}))))
 
-(defn no-keys-empty-state [{:keys [project-name add-key]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:div {:data-component `no-keys-empty-state}
-         [:i.octicon.octicon-key]
-         [:div.info
-          [:span.highlight project-name]
-          [:span " has no "]
-          [:span.highlight "Apple Code Signing Identities"]
-          [:span "  yet"]]
-         (button/button {:on-click add-key :kind :primary} "Upload Key")
-         [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
-
-(defn no-profiles-empty-state [{:keys [project-name add-profile]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:div {:data-component `no-profiles-empty-state}
-         [:i.octicon.octicon-key]
-         [:div.info
-          [:span.highlight project-name]
-          [:span " has no "]
-          [:span.highlight "provisioning profiles"]
-          [:span "  yet"]]
-         (button/button {:on-click add-profile :kind :primary} "Upload Profile")
-         [:div.sub-info "Apple Code Signing requires a valid provisioning profile (mobileprovision)"]]))))
-
 (defn p12-upload-modal [{:keys [close-fn error-message project-name vcs-type]} owner]
   (reify
     om/IInitState
@@ -1991,8 +1962,12 @@
              (om/build p12-key-table {:rows (->> osx-keys
                                                  (map (partial merge {:project-name project-name
                                                                       :vcs-type vcs-type})))})
-             (om/build no-keys-empty-state {:project-name project-name
-                                            :add-key #(om/set-state! owner :show-modal? true)}))
+             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+                                       :heading (str project-name " has no code signing identities yet")
+                                       :subheading "Apple Code Signing requires a valid Code Signing Identity (p12) file."
+                                       :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                                               :kind :primary}
+                                                              "Upload Key")}))
            (when show-modal?
              (om/build p12-upload-modal {:close-fn #(om/set-state! owner :show-modal? false)
                                          :error-message error-message
@@ -2031,8 +2006,12 @@
              (om/build provisioning-profiles-table {:rows (->> osx-profiles
                                                               (map (partial merge {:project-name project-name
                                                                                    :vcs-type vcs-type})))})
-             (om/build no-profiles-empty-state {:project-name project-name
-                                                :add-profile #(om/set-state! owner :show-modal? true)}))
+             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+                                       :heading (str project-name " has no provisioning profiles yet")
+                                       :subheading "Apple Code Signing requires a valid provisioning profile (mobileprovision)."
+                                       :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                                               :kind :primary}
+                                                              "Upload Profile")}))
            (when show-modal?
              (om/build provisioning-profile-upload-modal
                        {:close-fn #(om/set-state! owner :show-modal? false)
