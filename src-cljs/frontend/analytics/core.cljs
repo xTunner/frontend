@@ -40,7 +40,7 @@
     :breadcrumb-build-clicked
     :breadcrumb-dashboard-clicked
     :breadcrumb-org-clicked
-    :breadcrumb-project-branch-clicked
+    :breadcrumb-branch-clicked
     :breadcrumb-project-clicked
     :revision-link-clicked
     :branch-clicked

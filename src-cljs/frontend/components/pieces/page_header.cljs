@@ -60,7 +60,7 @@
                                                           :org username
                                                           :repo project
                                                           :branch branch}))
-                       :track-event-type :breadcrumb-project-branch-clicked
+                       :track-event-type :breadcrumb-branch-clicked
                        :active active}))
 
 (defmethod crumb :build
