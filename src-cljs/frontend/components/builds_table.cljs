@@ -56,7 +56,6 @@
 
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
-        rebuild! #(raise! owner %)
         build-args (merge (build-model/build-args build) {:component "build-row" :is-no-cache false})
         status-words (build-model/status-words build)
         should-show-cancel? (and (project-model/can-trigger-builds? project)
@@ -82,7 +81,7 @@
            :loading-text "Cancelling..."
            :icon-name "Status-Canceled"
            :on-click #(do
-                        (rebuild! [:cancel-build-clicked build-args])
+                        (raise! owner [:cancel-build-clicked build-args])
                         ((om/get-shared owner :track-event) {:event-type :cancel-build-clicked}))})
 
         should-show-rebuild?
@@ -90,7 +89,7 @@
           {:text "rebuild"
            :loading-text "Rebuilding..."
            :icon-name "Rebuild"
-           :on-click #(rebuild! [:retry-build-clicked build-args])})
+           :on-click #(raise! owner [:retry-build-clicked build-args])})
         :else nil)]
      
      [:div.build-info

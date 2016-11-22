@@ -36,23 +36,22 @@
     (render-state [_ {:keys [rebuild-status]}]
       (let [rebuild-args (merge (build-model/build-args build) {:component "rebuild-dropdown"})
             update-status!  #(om/set-state! owner [:rebuild-status] %)
-            rebuild!        #(raise! owner %)
             actions         {:rebuild
                              {:text  "Rebuild"
                               :title "Retry the same tests"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:is-no-cache false})])
+                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:is-no-cache false})])
                                            (update-status! "Rebuilding..."))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
                               :title "Retry without cache"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:is-no-cache true})])
+                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:is-no-cache true})])
                                            (update-status! "Rebuilding..."))}
 
                              :with_ssh
                              {:text  "Rebuild with SSH"
                               :title "Retry with SSH in VM",
-                              :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
+                              :action #(do (raise! owner [:ssh-build-clicked rebuild-args])
                                            (update-status! "Rebuilding..."))}}
             text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
