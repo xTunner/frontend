@@ -158,11 +158,11 @@
 
   (defroute v1-admin "/admin" []
     (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage nil}))
+                                                :subpage :overview}))
   (defroute v1-admin-fleet-state "/admin/fleet-state" [_fragment]
     (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage :fleet-state
-                                            :tab (keyword _fragment)}))
+                                                :subpage :fleet-state
+                                                :tab (keyword _fragment)}))
   (defroute v1-admin-users "/admin/users" []
     (open-to-inner! app nav-ch :admin-settings {:admin true
                                             :subpage :users}))
@@ -185,7 +185,8 @@
     [short-vcs-type org _ maybe-fragment]
     (open-to-inner! app nav-ch :org-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                           :org org
-                                          :subpage (keyword (:_fragment maybe-fragment))}))
+                                          :subpage (keyword (or (:_fragment maybe-fragment)
+                                                                "overview"))}))
 
   (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org params]
     (open-to-inner! app nav-ch :dashboard (merge params
@@ -227,10 +228,11 @@
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
-                                              :project-name (str org "/" repo)
-                                              :subpage (keyword (:_fragment maybe-fragment))
-                                              :org org
-                                              :repo repo}))
+                                                  :project-name (str org "/" repo)
+                                                  :subpage (keyword (or (:_fragment maybe-fragment)
+                                                                        "overview"))
+                                                  :org org
+                                                  :repo repo}))
 
   (defroute v1-add-projects "/add-projects" {:keys [_fragment]}
     (open-to-inner! app nav-ch :add-projects {:tab _fragment}))
