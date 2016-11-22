@@ -37,10 +37,7 @@
                                   "."]]
             (or (= status 404) (= status 401))
             [:div
-             [:h3
-              "You may have been logged out. "
-              [:a {:href "/vcs-authorize/"}
-               [:strong "Click to log in."]]]
+             [:h3 "You may have been logged out. "]
              [:p.error-message
               "Learn more about "
               [:a {:href "/"} "CircleCI"]
@@ -53,8 +50,17 @@
         [:.jumbotron
          common/language-background-jumbotron
          [:.container
-          [:h3 "Start shipping better code, faster."]
-          (om/build common/sign-up-cta {})]]]))))
+          [:p.error-message
+           [:span "Signing up with CircleCI is "]
+           [:strong "free"]
+           [:span ". Next, you'll be taken to GitHub or Bitbucket to authenticate so you can start shipping faster."]]
+          (om/build common/sign-up-cta {})
+          [:div.fine-print
+           [:span "By clicking on \"Authorize GitHub\" or \"Authorize Bitbucket\" you are agreeing to our "]
+           [:a {:href "/terms-of-service/"} "Terms of Service"]
+           [:span " and "]
+           [:a {:href "/privacy/"} "Privacy Policy"]
+           [:span "."]]]]]))))
 
 
 (defn plain-error-page [{:keys [status logged-in?]} owner]
