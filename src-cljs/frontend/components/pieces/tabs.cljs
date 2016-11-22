@@ -26,9 +26,11 @@
       (html
        [:ul {:data-component `tab-row}
         (for [{:keys [name icon label]} tabs]
-          [:li (if (= selected-tab-name name)
-                 {:class "active"}
-                 {:on-click #(on-tab-click name)})
+          [:li (merge
+                 {:key name}
+                 (if (= selected-tab-name name)
+                   {:class "active"}
+                   {:on-click #(on-tab-click name)}))
            (when icon
              [:span.tab-icon icon])
            [:span.tab-label label]])]))))

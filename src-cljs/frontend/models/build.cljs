@@ -224,6 +224,14 @@
       config-errors
       boolean))
 
+(defn filtered-action
+  [index step]
+  {:index index
+   :step step
+   :status "running"
+   :filler-action true
+   :parallel true})
+
 (defn fill-steps
   "Canceled builds can have missing intermediate steps"
   [build]
@@ -238,10 +246,7 @@
         (update-in build [:steps] (fn [steps]
                                     (vec (map (fn [i]
                                                 (or (get step-by-step-index i)
-                                                    {:actions [{:index 0
-                                                                :step i
-                                                                :status "running"
-                                                                :filler-action true}]}))
+                                                    {:actions [(filtered-action 0 i)]}))
                                               (range (inc last-step-index))))))))))
 
 (defn containers [build]
@@ -251,10 +256,7 @@
                           (map-indexed (fn [i group]
                                          (conj group (or (first (filter #(= i (:index %)) actions))
                                                          (first (filter #(= false (:parallel %)) actions))
-                                                         {:index i
-                                                          :step (-> actions first :step)
-                                                          :status "running"
-                                                          :filler-action true})))
+                                                         (filtered-action i (-> actions first :step)))))
                                        groups))
                         (repeat (or parallel 1) []) steps)]
     (map-indexed (fn [i actions] {:actions actions

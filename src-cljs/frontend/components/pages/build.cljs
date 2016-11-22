@@ -27,8 +27,8 @@
     (init-state [_]
       {:rebuild-status "Rebuild"})
 
-    om/IWillUpdate
-    (will-update [_ {:keys [build]} _]
+    om/IWillReceiveProps
+    (will-receive-props [_ {:keys [build]}]
       (when (build-model/running? build)
         (om/set-state! owner [:rebuild-status] "Rebuild")))
 

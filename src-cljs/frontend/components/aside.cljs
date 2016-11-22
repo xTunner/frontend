@@ -12,6 +12,7 @@
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
+            [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -550,14 +551,15 @@
               [:div.nav-label "Docs"]])
 
            (when-not  (ld/feature-on? "top-bar-ui-v-1")
-             [:a.aside-item (merge (common/contact-support-a-info owner)
-                                   {:title "Support"
-                                    :data-placement "right"
-                                    :data-trigger "hover"
-                                    :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"
-                                    :on-click #(aside-nav-clicked owner :support-icon-clicked)})
-              [:i.material-icons "chat"]
-              [:div.nav-label "Support"]])
+             (when-not user/support-eligible?
+               [:a.aside-item (merge (common/contact-support-a-info owner)
+                                     {:title "Support"
+                                      :data-placement "right"
+                                      :data-trigger "hover"
+                                      :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"
+                                      :on-click #(aside-nav-clicked owner :support-icon-clicked)})
+                [:i.material-icons "chat"]
+                [:div.nav-label "Support"]]))
 
            (when-not (ld/feature-on? "top-bar-ui-v-1")
              (when-not (config/enterprise?)
