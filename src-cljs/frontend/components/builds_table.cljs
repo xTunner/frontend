@@ -94,8 +94,8 @@
                         (raise-build-action! :retry-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :rebuild-clicked
                                                              :properties {:component "build-row"
-                                                                          :ssh false
-                                                                          :no-cache true}}))})
+                                                                          :is-ssh false
+                                                                          :is-no-cache true}}))})
         :else nil)]
      
      [:div.build-info
