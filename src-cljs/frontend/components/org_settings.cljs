@@ -334,13 +334,14 @@
     om/IRender
     (render [_]
       (let [[first-half second-half] (split-at (quot (count items) 2) items)]
-       (html
-         [:fieldset.faq {:data-component `faq}
-          [:legend "FAQs"]
+      (html
+        [:fieldset.faq {:data-component `faq}
+         [:legend "FAQs"]
+         [:div.columns
           [:div.column
-           (om/build-all faq-item first-half)]
-          [:div.column
-           (om/build-all faq-item second-half)]])))))
+          (om/build-all faq-item first-half)]
+         [:div.column
+          (om/build-all faq-item second-half)]]])))))
 
 (defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
   (reify
