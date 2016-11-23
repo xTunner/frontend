@@ -30,10 +30,23 @@
                                  :previous-osx-feature-flag (get-in previous-state (conj state/feature-flags-path osx-flag))
                                  :previous-trusty-beta-feature-flag (get-in previous-state (conj state/feature-flags-path trusty-beta-flag))}}))
 
-(defn track-update-plan-clicked [{:keys [new-plan previous-plan plan-type upgrade? owner]}]
+(defn update-plan-clicked [{:keys [new-plan previous-plan plan-type upgrade? owner]}]
   ((om/get-shared owner :track-event) {:event-type :update-plan-clicked
                                        :properties {:plan-type plan-type
                                                     :new-plan new-plan
                                                     :previous-plan previous-plan
                                                     :is-upgrade upgrade?}}))
 
+(defn rebuild-clicked
+  "Handles click events for rebuilds triggered with and without SSH
+  Use with any post-control events called to initiate a rebuild, such as:
+  rebuild-clicked, ssh-build-clicked, and retry-build-clicked"
+  [args]
+  (analytics/track {:event-type :rebuild-clicked
+                    :current-state (:current-state args)
+                    :properties {:vcs-type (:vcs-type args)
+                                 :org-name (:org-name args)
+                                 :repo-name (:repo-name args)
+                                 :component (:component args)
+                                 :is-ssh-build (:ssh? args)
+                                 :is-build-without-cache (:no-cache? args)}}))

@@ -497,12 +497,28 @@
 
 (defmethod post-control-event! :retry-build-clicked
   [target message args previous-state current-state comms]
-  (retry-build (:api comms) (select-keys args [:vcs-url :build-num :reponame :ref-name :no-cache?])))
+  (retry-build (:api comms) (select-keys args [:vcs-url :build-num :reponame :ref-name :no-cache?]))
+  (let [vcs-url (:vcs-url args)]
+    (analytics-track/rebuild-clicked {:current-state current-state
+                                      :vcs-type (vcs-url/vcs-type vcs-url)
+                                      :org-name (vcs-url/org-name vcs-url)
+                                      :repo-name (vcs-url/repo-name vcs-url)
+                                      :component (:component args)
+                                      :ssh? false
+                                      :no-cache? (:no-cache? args)})))
 
 (defmethod post-control-event! :ssh-build-clicked
   [target message args previous-state current-state comms]
   (retry-build (:api comms) (assoc (select-keys args [:vcs-url :build-num :reponame :ref-name])
-                              :ssh? true)))
+                              :ssh? true))
+  (let [vcs-url (:vcs-url args)]
+    (analytics-track/rebuild-clicked {:current-state current-state
+                                      :vcs-type (vcs-url/vcs-type vcs-url)
+                                      :org-name (vcs-url/org-name vcs-url)
+                                      :repo-name (vcs-url/repo-name vcs-url)
+                                      :component (:component args)
+                                      :ssh? true
+                                      :no-cache? false})))
 
 (defmethod post-control-event! :ssh-current-build-clicked
   [target message {:keys [build-num vcs-url]} previous-state current-state comms]
