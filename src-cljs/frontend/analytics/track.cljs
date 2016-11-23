@@ -38,15 +38,15 @@
                                                     :is-upgrade upgrade?}}))
 
 (defn rebuild-clicked
-  "Handles post-control event for rebuilds triggered with and without SSH
+  "Handles click events for rebuilds triggered with and without SSH
   Use with any post-control events called to initiate a rebuild, such as:
   rebuild-clicked, ssh-build-clicked, and retry-build-clicked"
-  [current-state vcs-type org-name repo-name component ssh? no-cache?]
+  [args]
   (analytics/track {:event-type :rebuild-clicked
-                    :current-state current-state
-                    :properties {:vcs-type vcs-type
-                                 :org-name org-name
-                                 :repo-name repo-name
-                                 :component component
-                                 :is-ssh-build ssh?
-                                 :is-build-without-cache no-cache?}}))
+                    :current-state (:current-state args)
+                    :properties {:vcs-type (:vcs-type args)
+                                 :org-name (:org-name args)
+                                 :repo-name (:repo-name args)
+                                 :component (:component args)
+                                 :is-ssh-build (:ssh? args)
+                                 :is-build-without-cache (:no-cache? args)}}))
