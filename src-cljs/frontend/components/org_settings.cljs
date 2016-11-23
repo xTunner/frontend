@@ -69,34 +69,35 @@
                                   users)]
         (html
          [:div.users
-          [:h1
-           "CircleCI users in the " org-name " organization"]
-          [:div
-           (if-not (seq users)
-             [:h4 "No users found."])
+          [:article
+           [:legend
+            "CircleCI users in the " org-name " organization"]
            [:div
-            (for [user sorted-users
-                  :let [login (:login user)
-                        followed-projects (get projects-by-follower login)]]
-              [:div.well.om-org-user
-               {:class (if (zero? (count followed-projects))
-                         "fail"
-                         "success")}
+            (if-not (seq users)
+              [:h4 "No users found."])
+            [:div
+             (for [user sorted-users
+                   :let [login (:login user)
+                         followed-projects (get projects-by-follower login)]]
+               [:div.well.om-org-user
+                {:class (if (zero? (count followed-projects))
+                          "fail"
+                          "success")}
 
-               [:div.om-org-user-projects-container
-                [:div.om-org-user-projects
-                 [:h3.heading
-                  [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
-                  (if (seq followed-projects)
-                    (str login " is following:")
-                    (str login " is not following any " org-name  " projects"))]
-                 (for [project (sort-by (fn [p] (- (count (:followers p)))) followed-projects)
-                       :let [vcs-url (:vcs_url project)]]
-                   [:div.om-org-user-project
-                    [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
-                                                                  :repo (vcs-url/repo-name vcs-url)
-                                                                  :vcs_type (vcs-url/vcs-type vcs-url)})}
-                     (vcs-url/project-name vcs-url)]])]]])]]])))))
+                [:div.om-org-user-projects-container
+                 [:div.om-org-user-projects
+                  [:h3.heading
+                   [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]
+                   (if (seq followed-projects)
+                     (str login " is following:")
+                     (str login " is not following any " org-name  " projects"))]
+                  (for [project (sort-by (fn [p] (- (count (:followers p)))) followed-projects)
+                        :let [vcs-url (:vcs_url project)]]
+                    [:div.om-org-user-project
+                     [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
+                                                                   :repo (vcs-url/repo-name vcs-url)
+                                                                   :vcs_type (vcs-url/vcs-type vcs-url)})}
+                      (vcs-url/project-name vcs-url)]])]]])]]]])))))
 
 (defn followers-container [followers owner]
   (reify
@@ -128,59 +129,60 @@
         (html
          [:div
           [:div.followed-projects.row-fluid
-           [:h1 "Followed projects"]
-           (if-not (seq followed-projects)
-             [:h3 "No followed projects found."]
+           [:article
+            [:legend "Followed projects"]
+            (if-not (seq followed-projects)
+              [:h3 "No followed projects found."]
 
-             [:div.span8
-              (for [project followed-projects
-                    :let [vcs-url (:vcs_url project)]]
-                [:div.row-fluid
-                 [:div.span12.well
+              [:div.span8
+               (for [project followed-projects
+                     :let [vcs-url (:vcs_url project)]]
+                 [:div.row-fluid
+                  [:div.span12.well
 
-                   [:div.project-header
-                    [:span.project-name
-                     [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
-                                                                   :repo (vcs-url/repo-name vcs-url)
-                                                                   :vcs_type (vcs-url/vcs-type vcs-url)})}
-                      (vcs-url/project-name vcs-url)]
-                     " "]
-                    [:div.github-icon
-                     [:a {:href vcs-url}
-                      [:i.octicon.octicon-mark-github]]]
-                    [:div.settings-icon
-                     [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
-                                                                            :repo (vcs-url/repo-name vcs-url)
-                                                                            :vcs_type (vcs-url/vcs-type vcs-url)})}
-                      [:i.material-icons "settings"]]]]
-                  (om/build followers-container (:followers project))]])])]
-          [:div.row-fluid
-           [:h1 "Untested projects"]
-           (if-not (seq unfollowed-projects)
-             [:h3 "No untested projects found."]
+                    [:div.project-header
+                     [:span.project-name
+                      [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
+                                                                    :repo (vcs-url/repo-name vcs-url)
+                                                                    :vcs_type (vcs-url/vcs-type vcs-url)})}
+                       (vcs-url/project-name vcs-url)]
+                      " "]
+                     [:div.github-icon
+                      [:a {:href vcs-url}
+                       [:i.octicon.octicon-mark-github]]]
+                     [:div.settings-icon
+                      [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
+                                                                             :repo (vcs-url/repo-name vcs-url)
+                                                                             :vcs_type (vcs-url/vcs-type vcs-url)})}
+                       [:i.material-icons "settings"]]]]
+                   (om/build followers-container (:followers project))]])])]
+           [:div.row-fluid
+            [:h1 "Untested projects"]
+            (if-not (seq unfollowed-projects)
+              [:h3 "No untested projects found."]
 
-             [:div.span8
-              (for [project unfollowed-projects
-                    :let [vcs-url (:vcs_url project)]]
-                [:div.row-fluid
-                 [:div.span12.well
+              [:div.span8
+               (for [project unfollowed-projects
+                     :let [vcs-url (:vcs_url project)]]
+                 [:div.row-fluid
+                  [:div.span12.well
 
-                   [:div.project-header
-                    [:span.project-name
-                     [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
-                                                                   :repo (vcs-url/repo-name vcs-url)
-                                                                   :vcs_type (vcs-url/vcs-type vcs-url)})}
-                      (vcs-url/project-name vcs-url)]
-                     " "]
-                    [:div.github-icon
-                     [:a {:href vcs-url}
-                      [:i.octicon.octicon-mark-github]]]
-                    [:div.settings-icon
-                     [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
-                                                                            :repo (vcs-url/repo-name vcs-url)
-                                                                            :vcs_type (vcs-url/vcs-type vcs-url)})}
-                      [:i.material-icons "settings"]]]]
-                  (om/build followers-container (:followers project))]])])]])))))
+                    [:div.project-header
+                     [:span.project-name
+                      [:a {:href (routes/v1-project-dashboard-path {:org (vcs-url/org-name vcs-url)
+                                                                    :repo (vcs-url/repo-name vcs-url)
+                                                                    :vcs_type (vcs-url/vcs-type vcs-url)})}
+                       (vcs-url/project-name vcs-url)]
+                      " "]
+                     [:div.github-icon
+                      [:a {:href vcs-url}
+                       [:i.octicon.octicon-mark-github]]]
+                     [:div.settings-icon
+                      [:a.edit-icon {:href (routes/v1-project-settings-path {:org (vcs-url/org-name vcs-url)
+                                                                             :repo (vcs-url/repo-name vcs-url)
+                                                                             :vcs_type (vcs-url/vcs-type vcs-url)})}
+                       [:i.material-icons "settings"]]]]
+                   (om/build followers-container (:followers project))]])])]]])))))
 
 (defn plans-trial-notification [plan org-name owner]
   [:div.row-fluid
@@ -325,13 +327,13 @@
     om/IRender
     (render [_]
       (let [[first-half second-half] (split-at (quot (count items) 2) items)]
-      (html
-        [:fieldset.faq {:data-component `faq}
-         [:legend "FAQs"]
-         [:div.column
-          (om/build-all faq-item first-half)]
-         [:div.column
-          (om/build-all faq-item second-half)]])))))
+       (html
+         [:fieldset.faq {:data-component `faq}
+          [:legend "FAQs"]
+          [:div.column
+           (om/build-all faq-item first-half)]
+          [:div.column
+           (om/build-all faq-item second-half)]])))))
 
 (defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
   (reify
@@ -482,89 +484,90 @@
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)
             containers-str (pluralize-no-val selected-containers "container")]
-      (html
-        [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
-         [:div.main-content
-          [:div
-           [:legend "Linux Plan - "
-            [:div.container-input
-             [:input.form-control {:style {:margin "4px" :height "calc(2em + 2px)"}
-                                   :type "text" :value selected-containers
-                                   :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                                 :value (int (.. % -target -value)))}]
+       (html
+         [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
+          [:div.main-content
+           [:div
+            [:legend "Linux Plan: "
+             [:div.container-input
+              [:input.form-control {:style {:margin "0 4px" :height "calc(2em + 2px)"}
+                                    :type "text" :value selected-containers
+                                    :on-change #(utils/edit-input owner state/selected-containers-path %
+                                                                  :value (int (.. % -target -value)))}]]
              [:span.new-plan-total (if (config/enterprise?)
                                     containers-str
                                     (str "paid " containers-str
                                          (str (when-not (zero? new-total) (str " for $" new-total "/month")))
-                                         " + 1 free container"))]]]
-           [:form
-            (when-not (config/enterprise?)
-              [:div.container-picker
-               [:h1 "More containers means faster builds and lower queue times."]
-               [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]])
-            [:fieldset
-             (if (and (not piggiebacked?)
-                      (or (config/enterprise?)
-                          (pm/stripe-customer? plan)))
-               (let [enterprise-text "Save changes"]
-                 (if (and (zero? new-total)
-                          (not (config/enterprise?))
-                          (not (zero? (pm/paid-linux-containers plan))))
-                   (button/link
-                    {:href "#cancel"
-                     :disabled? (not button-clickable?)
-                     :kind :danger
-                     :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
-                                                                     :properties {:repo nil}})}
-                    "Cancel Plan")
-                   (button/managed-button
-                    {:success-text "Saved"
-                     :loading-text "Saving..."
-                     :disabled? (not button-clickable?)
-                     :on-click (when button-clickable?
-                                 #(do
-                                   (raise! owner [:update-containers-clicked
-                                                  {:containers selected-paid-containers}])
-                                   (analytics-track/track-update-plan-clicked {:owner owner
-                                                                               :new-plan selected-paid-containers
-                                                                               :previous-plan (pm/paid-linux-containers plan)
-                                                                               :plan-type pm/linux-plan-type
-                                                                               :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
-                     :kind :primary}
-                    (if (config/enterprise?)
-                      enterprise-text
-                      "Update Plan"))))
-               (if-not checkout-loaded?
-                 (spinner)
-                 (button/managed-button
-                  {:success-text "Paid!"
-                   :loading-text "Paying..."
-                   :failed-text "Failed!"
-                   :disabled? (not button-clickable?)
-                   :on-click (when button-clickable?
-                               #(raise! owner [:new-plan-clicked
-                                               {:containers selected-paid-containers
-                                                :linux {:template (:id pm/default-template-properties)}
-                                                :price new-total
-                                                :description (str "$" new-total "/month, includes "
-                                                                  (pluralize selected-containers "container"))}]))
-                   :kind :primary}
-                  "Pay Now")))
+                                         " + 1 free container"))]]
 
+            [:form
              (when-not (config/enterprise?)
+               [:div.container-picker
+                [:h1 "More containers means faster builds and lower queue times."]
+                [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]])
+             [:fieldset
+              (if (and (not piggiebacked?)
+                       (or (config/enterprise?)
+                           (pm/stripe-customer? plan)))
+                (let [enterprise-text "Save changes"]
+                  (if (and (zero? new-total)
+                           (not (config/enterprise?))
+                           (not (zero? (pm/paid-linux-containers plan))))
+                    (button/link
+                     {:href "#cancel"
+                      :disabled? (not button-clickable?)
+                      :kind :danger
+                      :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
+                                                                      :properties {:repo nil}})}
+                     "Cancel Plan")
+                    (button/managed-button
+                     {:success-text "Saved"
+                      :loading-text "Saving..."
+                      :disabled? (not button-clickable?)
+                      :on-click (when button-clickable?
+                                  #(do
+                                    (raise! owner [:update-containers-clicked
+                                                   {:containers selected-paid-containers}])
+                                    (analytics-track/track-update-plan-clicked {:owner owner
+                                                                                :new-plan selected-paid-containers
+                                                                                :previous-plan (pm/paid-linux-containers plan)
+                                                                                :plan-type pm/linux-plan-type
+                                                                                :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                      :kind :primary}
+                     (if (config/enterprise?)
+                       enterprise-text
+                       "Update Plan"))))
+                (if-not checkout-loaded?
+                  (spinner)
+                  (button/managed-button
+                   {:success-text "Paid!"
+                    :loading-text "Paying..."
+                    :failed-text "Failed!"
+                    :disabled? (not button-clickable?)
+                    :on-click (when button-clickable?
+                                #(raise! owner [:new-plan-clicked
+                                                {:containers selected-paid-containers
+                                                 :linux {:template (:id pm/default-template-properties)}
+                                                 :price new-total
+                                                 :description (str "$" new-total "/month, includes "
+                                                                   (pluralize selected-containers "container"))}]))
+                    :kind :primary}
+                   "Pay Now")))
+
+              (when-not (config/enterprise?)
                ;; TODO: Clean up conditional here - super nested and many interactions
-               (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
-                 [:span.help-block
-                  (cond
-                    (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
-                    (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]
-                 (if (pm/in-trial? plan)
-                   [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                    "."]
+                (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                  [:span.help-block
+                   (cond
+                     (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
+                     (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]
+                  (if (pm/in-trial? plan)
+                    [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                     "."]
                    ;; TODO: Only show for trial-plans?
-                   [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
-                    " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                    " ago. Pay now to enable builds of private projects."])))]]]]])))))
+                    [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                     " ago. Pay now to enable builds of private projects."])))]]]]])))))
 
 (defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
   (reify
@@ -634,9 +637,9 @@
           (if-not plan
             (cond ;; TODO: fix; add plan
               (nil? plan)
-                (spinner)
+              (spinner)
               (not (seq plan))
-                [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
+              [:h3 (str "No plan exists for" org-name "yet. Follow a project to trigger plan creation.")]
               :else
                 [:h3 "Something is wrong! Please submit a bug report."])
 
@@ -1008,7 +1011,7 @@
              [:div.span8
                [:legend "Invoices"]
               (spinner)]]
-            [:div.row-fluid
+            [:div.invoice-data.row-fluid
              [:div.span8
               [:legend "Invoices"]
               [:dl.dl-horizontal
@@ -1044,7 +1047,7 @@
                                         :on-click #(raise! owner [:resend-invoice-clicked
                                                                   {:invoice-id (:id invoice)}])
                                         :size :medium
-                                        :kind :primary}
+                                        :kind :secondary}
                                        "Resend"))}]})]]))))))
 
 (defn billing [app owner]
@@ -1073,59 +1076,59 @@
             [:p.value-prop "You will also lose access to engineer support, insights, and more premium features."]]
            [:div.bottom-value
             [:p.value-prop "Your cancelation will be effective immediately"]]
-          [:div.row-fluid
-           [:h1
-            {:data-bind "attr: {alt: cancelFormErrorText}"}
-            "Please tell us why you're canceling. This helps us make CircleCI better!"]
-           [:form
-            (for [reason [{:value "project-ended", :text "Project Ended"},
-                          {:value "slow-performance", :text "Slow Performance"},
-                          {:value "unreliable-performance", :text "Unreliable Performance"},
-                          {:value "too-expensive", :text "Too Expensive"},
-                          {:value "didnt-work", :text "Couldn't Make it Work"},
-                          {:value "missing-feature", :text "Missing Feature"},
-                          {:value "poor-support", :text "Poor Support"},
-                          {:value "other", :text "Other"}]]
-              [:label.cancel-reason
-               [:input
-                {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
-                 :on-change #(utils/toggle-input owner (state/selected-cancel-reason-path (:value reason)) %)
-                 :type "checkbox"}]
-               (:text reason)])
-            [:textarea
-             {:required true
-              :value (get-in app state/cancel-notes-path)
-              :on-change #(utils/edit-input owner state/cancel-notes-path %)}]
-            [:label
-             {:placeholder "Thanks for the feedback!",
-              :alt (if (get app (state/selected-cancel-reason-path "other"))
-                     "Would you mind elaborating more?"
-                     "Have any other thoughts?")}]
-            (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
-                                                    (filter second)
-                                                    keys
-                                                    set)
-                  notes (get-in app state/cancel-notes-path)
-                  errors (cond (empty? reasons) "Please select at least one reason."
-                               (and (contains? reasons "other") (string/blank? notes)) "Please specify above."
-                               :else nil)]
+           [:div.row-fluid
+            [:h1
+             {:data-bind "attr: {alt: cancelFormErrorText}"}
+             "Please tell us why you're canceling. This helps us make CircleCI better!"]
+            [:form
+             (for [reason [{:value "project-ended", :text "Project Ended"},
+                           {:value "slow-performance", :text "Slow Performance"},
+                           {:value "unreliable-performance", :text "Unreliable Performance"},
+                           {:value "too-expensive", :text "Too Expensive"},
+                           {:value "didnt-work", :text "Couldn't Make it Work"},
+                           {:value "missing-feature", :text "Missing Feature"},
+                           {:value "poor-support", :text "Poor Support"},
+                           {:value "other", :text "Other"}]]
+               [:label.cancel-reason
+                [:input
+                 {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
+                  :on-change #(utils/toggle-input owner (state/selected-cancel-reason-path (:value reason)) %)
+                  :type "checkbox"}]
+                (:text reason)])
+             [:textarea
+              {:required true
+               :value (get-in app state/cancel-notes-path)
+               :on-change #(utils/edit-input owner state/cancel-notes-path %)}]
+             [:label
+              {:placeholder "Thanks for the feedback!",
+               :alt (if (get app (state/selected-cancel-reason-path "other"))
+                      "Would you mind elaborating more?"
+                      "Have any other thoughts?")}]
+             (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
+                                (filter second)
+                                keys
+                                                     set)
+                   notes (get-in app state/cancel-notes-path)
+                   errors (cond (empty? reasons) "Please select at least one reason."
+                                (and (contains? reasons "other") (string/blank? notes)) "Please specify above."
+                                :else nil)]
               ;; This is a bit of a hack -- it could be much nicer if managed button exposed more of its interface
               ;; or accepted hooks
-              (if errors
-                (list
-                 (when (om/get-state owner [:show-errors?])
-                   [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
-                 (button/button
-                  {:on-click #(om/set-state! owner [:show-errors?] true)
-                   :kind :danger}
-                  "Cancel Plan"))
-                (button/managed-button
-                 {:kind :danger
-                  :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                  :vcs_type vcs_type
-                                                                  :cancel-reasons reasons
-                                                                  :cancel-notes notes}])}
-                 "Cancel Plan")))]]])))))
+               (if errors
+                 (list
+                  (when (om/get-state owner [:show-errors?])
+                    [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
+                  (button/button
+                   {:on-click #(om/set-state! owner [:show-errors?] true)
+                    :kind :danger}
+                   "Cancel Plan"))
+                 (button/managed-button
+                  {:kind :danger
+                   :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
+                                                                   :vcs_type vcs_type
+                                                                   :cancel-reasons reasons
+                                                                   :cancel-notes notes}])}
+                  "Cancel Plan")))]]])))))
 
 (defn progress-bar [{:keys [max value]} owner]
   (reify
@@ -1222,21 +1225,21 @@
            (when (pm/osx? plan)
              (let [plan-name (some-> plan :osx :template :name)]
                [:div
-               [:p
-                (cond
-                  (pm/osx-trial-active? plan)
-                  (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
+                [:p
+                 (cond
+                   (pm/osx-trial-active? plan)
+                   (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
 
-                  (and (pm/osx-trial-plan? plan)
-                       (not (pm/osx-trial-active? plan)))
-                  [:span "Your free trial of CircleCI for OS X has expired. Please "
-                   [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                            :vcs_type plan-vcs-type
-                                                            :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
+                   (and (pm/osx-trial-plan? plan)
+                        (not (pm/osx-trial-active? plan)))
+                   [:span "Your free trial of CircleCI for OS X has expired. Please "
+                    [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                             :vcs_type plan-vcs-type
+                                                             :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
-                  :else
-                  (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]
-               (om/build osx-usage-table {:plan plan})]))]])))))
+                   :else
+                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]
+                (om/build osx-usage-table {:plan plan})]))]])))))
 
 (defn overview [app owner]
   (om/component
@@ -1305,7 +1308,7 @@
            [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
            (om/build osx-overview {:plan plan})])
         (when (config/enterprise?)
-          (om/build linux-plan {:app app})) ]]))))
+          (om/build linux-plan {:app app}))]]))))
 
 (defn main-component []
   (merge

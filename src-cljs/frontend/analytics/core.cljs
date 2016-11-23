@@ -37,6 +37,11 @@
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
+    :breadcrumb-build-clicked
+    :breadcrumb-dashboard-clicked
+    :breadcrumb-org-clicked
+    :breadcrumb-branch-clicked
+    :breadcrumb-project-clicked
     :revision-link-clicked
     :branch-clicked
     :build-canceled

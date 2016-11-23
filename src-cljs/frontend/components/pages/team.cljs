@@ -93,8 +93,8 @@
 
 ;; functions for invite-teammates-modal component state manipulation
 
-(defn- component-user-ident [{:keys [type handle] :as user} & keys]
-  [:org-members-by-type-and-handle [type handle]])
+(defn- component-user-ident [{:keys [type login] :as user} & keys]
+  [:org-members-by-type-and-login [type login]])
 
 (defn- conj-to-user-ident [user & keys]
   (apply conj (component-user-ident user) keys))
@@ -118,13 +118,13 @@
   (om/get-state owner (component-user-ident vcs-user)))
 
 (defn- invitees [component-state vcs-users]
-  (keep (fn [{:keys [handle] :as vcs-user}]
+  (keep (fn [{:keys [login] :as vcs-user}]
           (let [user-ident (component-user-ident vcs-user)
                 {:keys [selected?] :as component-user} (get-in component-state user-ident)]
             (when selected?
               (-> vcs-user
                   (assoc :email (:entered-email component-user))
-                  (select-keys [:provider_id :handle :email :name])))))
+                  (select-keys [:external_id :login :email :name])))))
         vcs-users))
 
 (defn- invite-button-text [number-of-invites]
@@ -159,7 +159,7 @@
                                  new-vcs-users)))))
 
     om/IRenderState
-    (render-state [_ {:keys [org-members-by-type-and-handle] :as state}]
+    (render-state [_ {:keys [org-members-by-type-and-login] :as state}]
       (component
        (html
         [:div
@@ -169,10 +169,10 @@
                  count-users (count users)
                  count-selected (count (filter (fn [[_ user]]
                                                  (:selected? user))
-                                               org-members-by-type-and-handle))
+                                               org-members-by-type-and-login))
                  count-with-email (count (filter (fn [[_ user]]
                                                    (-> user :entered-email valid-email?))
-                                                 org-members-by-type-and-handle))]
+                                                 org-members-by-type-and-login))]
              (modal/modal-dialog {:title "Invite Teammates"
                                   :body
                                   (element :body
@@ -191,15 +191,15 @@
                                                 [:.members-table
                                                  (om/build table/table
                                                            {:rows users
-                                                            :key-fn :handle
+                                                            :key-fn :login
                                                             :columns [{:header "Username"
-                                                                       :cell-fn (fn [{:keys [handle] :as user}]
+                                                                       :cell-fn (fn [{:keys [login] :as user}]
                                                                                   (element :username
                                                                                            (html
                                                                                             [:div
                                                                                              [:img.invite-gravatar {:src (gh-utils/make-avatar-url user
                                                                                                                                                    :size 50)}]
-                                                                                             (str "  " handle)])))}
+                                                                                             (str "  " login)])))}
                                                                       {:header "Email"
                                                                        :cell-fn (fn [user]
                                                                                   (let [selected? (selected? owner user)

@@ -197,7 +197,7 @@
     (case (:type item)
 
       :heading
-      [:.aside-item.aside-heading {:key (hash item)}
+      [:header.aside-item.aside-heading {:key (hash item)}
        (:title item)]
 
       :subpage
@@ -219,11 +219,11 @@
        ;; Both conditions are needed to handle special cases like non-enterprise stanging
        ;; instances that don't have OS X beta enabled.
        (when (or (not (config/enterprise?)) (contains? feature-flags :osx))
-         {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build})
+         {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build-environment})
        (when (project-model/parallel-available? project)
          {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds})
        {:type :subpage :href "#env-vars" :title "Environment Variables" :subpage :env-vars}
-       {:type :subpage :href "#advanced-settings" :title "Advanced Settings" :subpage :advance}
+       {:type :subpage :href "#advanced-settings" :title "Advanced Settings" :subpage :advanced-settings}
        (when (or (feature/enabled? :project-cache-clear-buttons)
                  (config/enterprise?))
          {:type :subpage :href "#clear-caches" :title "Clear Caches" :subpage :clear-caches})
@@ -252,13 +252,13 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage (:project-settings-subpage app :overview)]
+      (let [subpage (-> app :navigation-data :subpage)]
         (html
-          [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
-           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-            (common/ico :fail-light)]
-           [:div.aside-user-options
-            (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
+         [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
+          [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+           (common/ico :fail-light)]
+          [:div.aside-user-options
+           (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
 (defn org-settings-nav-items [plan {org-name :name
                                     org-vcs-type :vcs_type
@@ -282,7 +282,7 @@
 (defn account-settings-nav-items []
   (remove
     nil?
-    [{:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notifications" :subpage :notifications}
+    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
      (when-not (config/enterprise?)
@@ -294,7 +294,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage (:project-settings-subpage app :overview)]
+      (let [subpage (-> app :navigation-data :subpage)]
         (html
           [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
            [:header
@@ -307,9 +307,9 @@
 (defn admin-settings-nav-items []
   (filter
     identity
-    [{:type :subpage :href "/admin" :title "Overview" :subpage nil}
+    [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
      (when (config/enterprise?)
-       {:type :subpage :href "/admin/management-console" :title "Management Console" :subpage nil})
+       {:type :subpage :href "/admin/management-console" :title "Management Console"})
      {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
      (when (config/enterprise?)
        {:type :subpage :href "/admin/license" :title "License" :subpage :license})
@@ -322,7 +322,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage (:project-settings-subpage app :overview)]
+      (let [subpage (-> app :navigation-data :subpage)]
         (html
           [:div.aside-user {:class (when (= :admin-settings (:navigation-point app)) "open")}
            [:header
@@ -330,6 +330,7 @@
             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
              (common/ico :fail-light)]]
            [:div.aside-user-options
+            (js/console.debug ">>>" (pr-str subpage))
             (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
 (defn redirect-org-settings-subpage
@@ -358,12 +359,11 @@
     (render [_]
       (let [plan (get-in app state/org-plan-path)
             org-data (get-in app state/org-data-path)
-            subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan (:name org-data) (:vcs_type org-data))
+            subpage (redirect-org-settings-subpage (-> app :navigation-data :subpage) plan (:name org-data) (:vcs_type org-data))
             items (org-settings-nav-items plan org-data)]
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
-          [:header
-           [:h4 "Organization Settings"]
+          [:header.aside-item.aside-heading "Organization Settings"
            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
             (common/ico :fail-light)]]
           [:div.aside-user-options

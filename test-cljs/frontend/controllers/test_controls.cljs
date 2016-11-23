@@ -210,11 +210,11 @@
         vcs-type "github"
         invitees [{:handle "me"
                    :email "me@foo.com"
-                   :provider_id 666
+                   :external_id 666
                    :name "Me"}
                   {:handle "you"
                    :email "you@bar.co"
-                   :provider_id 667
+                   :external_id 667
                    :name "You"}]
         control-data {:project-name project-name
                       :org-name "org"
@@ -242,11 +242,11 @@
         vcs-type "bitbucket"
         invitees [{:handle "me"
                    :email "me@foo.com"
-                   :provider_id 666
+                   :external_id 666
                    :name "Me"}
                   {:handle "you"
                    :email "you@bar.co"
-                   :provider_id 667
+                   :external_id 667
                    :name "You"}]
         control-data {:project-name project-name
                       :vcs-type vcs-type

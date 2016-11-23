@@ -851,7 +851,7 @@
   [target message status {:keys [context resp]} previous-state current-state comms]
   (when (and (= (project-model/id (get-in current-state state/project-path))
                 (:project-id context))
-             (= :setup (:project-settings-subpage current-state)))
+             (= :setup (-> current-state :navigation-data :subpage)))
     (let [nav-ch (:nav comms)
           org (vcs-url/org-name (:project-id context))
           repo (vcs-url/repo-name (:project-id context))

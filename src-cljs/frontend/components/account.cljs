@@ -37,7 +37,7 @@
                                    (get-in app state/user-organizations-path))]
         (html
          [:div#settings-plans
-          [:legend "Org Settings"]
+          [:legend "Org Plan Settings"]
           [:div.plans-item
            [:h3 "Set up a plan for one of your Organizations:"]
            [:p "You can set up plans for any organization that you admin."]
@@ -74,8 +74,8 @@
             project-page? (:project-page? opts)]
         (html
          [:div#settings-heroku.settings
+          [:legend "Heroku Settings"]
           [:div.heroku-item
-           [:legend "Heroku API key"]
            [:p
             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
             " to set up deployment with Heroku."
@@ -101,6 +101,7 @@
              {:loading-text "Saving..."
               :failed-text "Failed to save key"
               :success-text "Saved"
+              :kind :primary
               :on-click submit-form!}
              "Save Heroku Key")]]])))))
 
@@ -135,30 +136,30 @@
               :on-click #(create-token! new-user-token)}
              "Create New Token")]
 
-          [:div.api-item
-           (when (seq tokens)
-             (om/build table/table
-                       {:rows tokens
-                        :key-fn :token
-                        :columns [{:header "Label"
-                                   :cell-fn :label}
+           [:div.api-item
+            (when (seq tokens)
+              (om/build table/table
+                        {:rows tokens
+                         :key-fn :token
+                         :columns [{:header "Label"
+                                    :cell-fn :label}
 
-                                  {:header "Token"
-                                   :type :shrink
-                                   :cell-fn :token}
+                                   {:header "Token"
+                                    :type :shrink
+                                    :cell-fn :token}
 
-                                  {:header "Created"
-                                   :type :shrink
-                                   :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
+                                   {:header "Created"
+                                    :type :shrink
+                                    :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
 
-                                  {:header "Remove"
-                                   :type #{:shrink :right}
-                                   :cell-fn
-                                   (fn [token]
-                                     (table/action-button
-                                      "Remove"
-                                      (icon/delete)
-                                      #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
+                                   {:header "Remove"
+                                    :type #{:shrink :right}
+                                    :cell-fn
+                                    (fn [token]
+                                      (table/action-button
+                                       "Remove"
+                                       (icon/delete)
+                                       #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
 
 
 (def available-betas
@@ -219,22 +220,25 @@
   (reify
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
-      (card/titled {:title "Beta Program"}
-                   (html
-                    [:div
-                     (when show-modal?
-                       (om/build beta-terms-modal {:close-fn #(om/set-state! owner :show-modal? false)}))
-                     [:p "We invite you to join Inner Circle, our new
-                          beta program. As a member of CircleCI’s
-                          Inner Circle you get exclusive access to new
-                          features and settings before they are
-                          released publicly!"]
-                     (button/button
-                      {:on-click #(do
-                                    (om/set-state! owner :show-modal? true)
-                                    ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
-                       :kind :primary}
-                      "Join Beta Program")])))))
+      (html
+       [:div
+        [:legend "Beta Program"]
+        (card/basic
+         (html
+          [:div
+           (when show-modal?
+             (om/build beta-terms-modal {:close-fn #(om/set-state! owner :show-modal? false)}))
+           [:p "We invite you to join Inner Circle, our new
+                beta program. As a member of CircleCI’s
+                Inner Circle you get exclusive access to new
+                features and settings before they are
+                released publicly!"]
+           (button/button
+            {:on-click #(do
+                          (om/set-state! owner :show-modal? true)
+                          ((om/get-shared owner :track-event) {:event-type :beta-join-clicked}))
+             :kind :primary}
+            "Join Beta Program")]))]))))
 
 (defn beta-program-member [app owner]
   (reify
@@ -242,20 +246,21 @@
     (render [_]
       (html
        [:div
-        (card/titled {:title "Beta Program"}
-                     (html
-                      [:div
-                       [:p "Thanks for being part of the beta program.
-                            We'll let you know when we release updates
-                            so you'll be the first to see new
-                            features!" ]
-                       [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
-                       (button/button
-                        {:on-click #(do
-                                      (raise! owner [:preferences-updated {state/user-in-beta-key false}])
-                                      ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
-                         :kind :primary}
-                        "Leave Beta Program")]))
+        [:legend "Beta Program"]
+        (card/basic
+         (html
+          [:div
+           [:p "Thanks for being part of the beta program.
+                We'll let you know when we release updates
+                so you'll be the first to see new
+                features!"]
+           [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
+           (button/button
+            {:on-click #(do
+                          (raise! owner [:preferences-updated {state/user-in-beta-key false}])
+                          ((om/get-shared owner :track-event) {:event-type :beta-leave-clicked}))
+             :kind :primary}
+            "Leave Beta Program")]))
         [:hr]
         (om/build beta-programs app)]))))
 

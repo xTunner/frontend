@@ -33,7 +33,6 @@
    :render-context nil
    :projects nil
    :recent-builds nil
-   :project-settings-subpage nil
    :project-settings-project-name nil
    :org-settings {:subpage nil
                   :org-name nil

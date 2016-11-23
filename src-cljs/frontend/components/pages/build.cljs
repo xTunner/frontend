@@ -118,7 +118,7 @@
                                                                    :properties {:project (:vcs_url project)
                                                                                 :user (:login user)}})
                     :title "Project settings"}
-                   [:i.material-icons "settings"]])
+                  [:i.material-icons "settings"]])
                [:div.build-settings
                 [:a.build-action
                  {:href (routes/v1-project-settings-path (:navigation-data data))
