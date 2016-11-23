@@ -296,8 +296,6 @@
       state-utils/clear-page-state
       (assoc state/current-view navigation-point
              state/navigation-data args
-             ;; TODO can we get rid of project-settings-subpage in favor of navigation-data?
-             :project-settings-subpage subpage
              :project-settings-project-name project-name)
       (assoc-in state/crumbs-path [{:type :settings-base}
                                    {:type :org

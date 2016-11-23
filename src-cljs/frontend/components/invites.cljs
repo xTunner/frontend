@@ -27,25 +27,25 @@
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [email handle index]} user]
+      (let [{:keys [email login index]} user]
         (html
          [:li
           [:div.invite-gravatar
            [:img {:src (gh-utils/make-avatar-url user)}]]
           [:div.invite-profile
-           handle
+           login
            [:input {:on-change #(utils/edit-input owner (conj (state/build-invite-member-path index) :email) %)
                     :required true
                     :type "email"
                     :value email
-                    :id (str handle "-email")}]
-           [:label.no-email {:for (str handle "-email") :title "We could not retrieve this teammate's email address because it has been set as private."}
+                    :id (str login "-email")}]
+           [:label.no-email {:for (str login "-email") :title "We could not retrieve this teammate's email address because it has been set as private."}
             [:i.fa.fa-exclamation-circle]
             " Click to add an email address."]]
-          [:label.invite-select {:id (str handle "-label")
-                                 :for (str handle "-checkbox")}
+          [:label.invite-select {:id (str login "-label")
+                                 :for (str login "-checkbox")}
            [:input {:type "checkbox"
-                    :id (str handle "-checkbox")
+                    :id (str login "-checkbox")
                     :checked (boolean (:checked user))
                     :on-change #(utils/toggle-input owner (conj (state/build-invite-member-path index) :checked) %)}]
            [:div.checked \uf046]

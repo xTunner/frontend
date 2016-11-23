@@ -119,11 +119,6 @@
    "%s/%s/%s/%s/cancel"
    (base-project-url-path vcs-type) org-name repo-name build-num))
 
-(defn merge-pull-request [vcs-type owner repo number]
-  (gstring/format
-   "%s/%s/%s/pulls/%s/merge"
-   (base-project-url-path vcs-type) owner repo number))
-
 (defn heroku-deploy-user [vcs-type repo-name]
   (gstring/format
    "%s/%s/heroku-deploy-user"

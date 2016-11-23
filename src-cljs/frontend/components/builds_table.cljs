@@ -7,7 +7,6 @@
             [frontend.components.forms :as forms]
             [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
-            [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
@@ -58,15 +57,11 @@
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         raise-build-action! (fn [event] (raise! owner [event (build-model/build-args build)]))
-        raise-merge-action! (fn [] (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
         status-words (build-model/status-words build)
         should-show-cancel? (and (project-model/can-trigger-builds? project)
                                  (build-model/can-cancel? build))
         should-show-rebuild? (and (project-model/can-trigger-builds? project)
-                                  (#{"timedout" "failed"} (:outcome build)))
-        should-show-merge? (and (feature/enabled? :merge-pull-request)
-                                (project-model/can-write-settings? project)
-                                (build-model/can-merge-at-least-one-pr? build))]
+                                  (#{"timedout" "failed"} (:outcome build)))]
     [:div.build {:class (cond-> [(build-model/status-class build)]
                           (:dont_build build) (conj "dont_build"))}
      [:div.status-area
@@ -98,15 +93,6 @@
            :on-click #(do
                         (raise-build-action! :retry-build-clicked)
                         ((om/get-shared owner :track-event) {:event-type :rebuild-clicked}))})
-
-        should-show-merge?
-        (build-action
-          {:text "merge"
-           :loading-text "Merging..."
-           :icon-class "octicon octicon-git-merge"
-           :on-click #(do
-                        (raise-merge-action!)
-                        ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked}))})
 
         :else nil)]
 

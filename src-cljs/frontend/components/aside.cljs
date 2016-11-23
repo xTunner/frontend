@@ -12,6 +12,7 @@
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
+            [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -196,7 +197,7 @@
     (case (:type item)
 
       :heading
-      [:.aside-item.aside-heading {:key (hash item)}
+      [:header.aside-item.aside-heading {:key (hash item)}
        (:title item)]
 
       :subpage
@@ -218,11 +219,11 @@
        ;; Both conditions are needed to handle special cases like non-enterprise stanging
        ;; instances that don't have OS X beta enabled.
        (when (or (not (config/enterprise?)) (contains? feature-flags :osx))
-         {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build})
+         {:type :subpage :href "#build-environment" :title "Build Environment" :subpage :build-environment})
        (when (project-model/parallel-available? project)
          {:type :subpage :href "#parallel-builds" :title "Adjust Parallelism" :subpage :parallel-builds})
        {:type :subpage :href "#env-vars" :title "Environment Variables" :subpage :env-vars}
-       {:type :subpage :href "#advanced-settings" :title "Advanced Settings" :subpage :advance}
+       {:type :subpage :href "#advanced-settings" :title "Advanced Settings" :subpage :advanced-settings}
        (when (or (feature/enabled? :project-cache-clear-buttons)
                  (config/enterprise?))
          {:type :subpage :href "#clear-caches" :title "Clear Caches" :subpage :clear-caches})
@@ -251,13 +252,13 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage (:project-settings-subpage app :overview)]
+      (let [subpage (-> app :navigation-data :subpage)]
         (html
-          [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
-           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-            (common/ico :fail-light)]
-           [:div.aside-user-options
-            (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
+         [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
+          [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+           (common/ico :fail-light)]
+          [:div.aside-user-options
+           (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
 (defn org-settings-nav-items [plan {org-name :name
                                     org-vcs-type :vcs_type
@@ -281,7 +282,7 @@
 (defn account-settings-nav-items []
   (remove
     nil?
-    [{:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notifications" :subpage :notifications}
+    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
      (when-not (config/enterprise?)
@@ -293,7 +294,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage (:project-settings-subpage app :overview)]
+      (let [subpage (-> app :navigation-data :subpage)]
         (html
           [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
            [:header
@@ -306,9 +307,9 @@
 (defn admin-settings-nav-items []
   (filter
     identity
-    [{:type :subpage :href "/admin" :title "Overview" :subpage nil}
+    [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
      (when (config/enterprise?)
-       {:type :subpage :href "/admin/management-console" :title "Management Console" :subpage nil})
+       {:type :subpage :href "/admin/management-console" :title "Management Console"})
      {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
      (when (config/enterprise?)
        {:type :subpage :href "/admin/license" :title "License" :subpage :license})
@@ -321,7 +322,7 @@
   (reify
     om/IRender
     (render [_]
-      (let [subpage (:project-settings-subpage app :overview)]
+      (let [subpage (-> app :navigation-data :subpage)]
         (html
           [:div.aside-user {:class (when (= :admin-settings (:navigation-point app)) "open")}
            [:header
@@ -329,6 +330,7 @@
             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
              (common/ico :fail-light)]]
            [:div.aside-user-options
+            (js/console.debug ">>>" (pr-str subpage))
             (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
 (defn redirect-org-settings-subpage
@@ -357,12 +359,11 @@
     (render [_]
       (let [plan (get-in app state/org-plan-path)
             org-data (get-in app state/org-data-path)
-            subpage (redirect-org-settings-subpage (:project-settings-subpage app) plan (:name org-data) (:vcs_type org-data))
+            subpage (redirect-org-settings-subpage (-> app :navigation-data :subpage) plan (:name org-data) (:vcs_type org-data))
             items (org-settings-nav-items plan org-data)]
         (html
          [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
-          [:header
-           [:h4 "Organization Settings"]
+          [:header.aside-item.aside-heading "Organization Settings"
            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
             (common/ico :fail-light)]]
           [:div.aside-user-options
@@ -461,7 +462,7 @@
   ((om/get-shared owner :track-event) {:event-type event-name
                                        :properties {:component "left-nav"}}))
 
-(defn aside-nav [app owner]
+(defn aside-nav [{:keys [user current-route]} owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IDidMount
@@ -469,9 +470,7 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [user (get-in app state/user-path)
-            avatar-url (gh-utils/make-avatar-url user)]
-
+      (let [avatar-url (gh-utils/make-avatar-url user)]
         (html
           [:nav.aside-left-nav
            (when (not (ld/feature-on? "top-bar-ui-v-1"))
@@ -483,7 +482,8 @@
               [:div.logomark
                (common/ico :logo)]])
 
-           [:a.aside-item {:data-placement "right"
+           [:a.aside-item {:class (when (= :dashboard current-route) "current")
+                           :data-placement "right"
                            :data-trigger "hover"
                            :title "Builds"
                            :href (routes/v1-dashboard-path {})
@@ -491,16 +491,18 @@
             [:i.material-icons "storage"]
             [:div.nav-label "Builds"]]
 
-           [:a.aside-item {:data-placement "right"
-                            :data-trigger "hover"
-                            :title "Insights"
-                            :href "/build-insights"
-                            :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
+           [:a.aside-item {:class (when (= :build-insights current-route) "current")
+                           :data-placement "right"
+                           :data-trigger "hover"
+                           :title "Insights"
+                           :href "/build-insights"
+                           :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
              [:i.material-icons "assessment"]
              [:div.nav-label "Insights"]]
 
            (if (feature/enabled? :projects-page)
-             [:a.aside-item {:title "Projects"
+             [:a.aside-item {:class (when (= :route/projects current-route) "current")
+                             :title "Projects"
                              :data-placement "right"
                              :data-trigger "hover"
                              :href "/projects"
@@ -508,7 +510,8 @@
               [:i.material-icons "book"]
               [:div.nav-label "Projects"]]
 
-             [:a.aside-item {:href "/add-projects",
+             [:a.aside-item {:class (when (= :add-projects current-route) "current")
+                             :href "/add-projects",
                              :data-placement "right"
                              :data-trigger "hover"
                              :title "Add Projects"
@@ -516,7 +519,8 @@
               [:i.material-icons "library_add"]
               [:div.nav-label "Add Projects"]])
 
-           [:a.aside-item {:href "/team",
+           [:a.aside-item {:class (when (= :team current-route) "current")
+                           :href "/team",
                            :data-placement "right"
                            :data-trigger "hover"
                            :title "Team"
@@ -525,7 +529,8 @@
             [:div.nav-label "Team"]]
 
            (when-not (ld/feature-on? "top-bar-ui-v-1")
-             [:a.aside-item {:data-placement "right"
+             [:a.aside-item {:class (when (= :account current-route) "current")
+                             :data-placement "right"
                              :data-trigger "hover"
                              :title "Account Settings"
                              :href "/account"
@@ -546,14 +551,15 @@
               [:div.nav-label "Docs"]])
 
            (when-not  (ld/feature-on? "top-bar-ui-v-1")
-             [:a.aside-item (merge (common/contact-support-a-info owner)
-                                   {:title "Support"
-                                    :data-placement "right"
-                                    :data-trigger "hover"
-                                    :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"
-                                    :on-click #(aside-nav-clicked owner :support-icon-clicked)})
-              [:i.material-icons "chat"]
-              [:div.nav-label "Support"]])
+             (when-not user/support-eligible?
+               [:a.aside-item (merge (common/contact-support-a-info owner)
+                                     {:title "Support"
+                                      :data-placement "right"
+                                      :data-trigger "hover"
+                                      :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"
+                                      :on-click #(aside-nav-clicked owner :support-icon-clicked)})
+                [:i.material-icons "chat"]
+                [:div.nav-label "Support"]]))
 
            (when-not (ld/feature-on? "top-bar-ui-v-1")
              (when-not (config/enterprise?)
@@ -569,7 +575,8 @@
            [:hr]
 
            (when (:admin user)
-             [:a.aside-item {:data-placement "right"
+             [:a.aside-item {:class (when (= :admin-settings current-route) "current")
+                             :data-placement "right"
                              :data-trigger "hover"
                              :title "Admin"
                              :href "/admin"
@@ -580,11 +587,11 @@
            (when-not (ld/feature-on? "top-bar-ui-v-1")
             [:a.aside-item.push-to-bottom {:data-placement "right"
                                            :data-trigger "hover"
-                                           :title "Logout"
+                                           :title "Log Out"
                                            :href "/logout"
                                            :on-click #(aside-nav-clicked owner :logout-icon-clicked)}
               [:i.material-icons "power_settings_new"]
-              [:div.nav-label "Logout"]])])))))
+              [:div.nav-label "Log Out"]])])))))
 
 
 (defn aside [{:keys [app show-aside-menu?]} owner]

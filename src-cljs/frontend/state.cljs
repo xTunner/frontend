@@ -33,7 +33,6 @@
    :render-context nil
    :projects nil
    :recent-builds nil
-   :project-settings-subpage nil
    :project-settings-project-name nil
    :org-settings {:subpage nil
                   :org-name nil
@@ -213,7 +212,6 @@
 (def show-inspector-path (conj browser-settings-path :show-inspector))
 (def statuspage-dismissed-update-path (conj browser-settings-path :statuspage-dismissed-update))
 (def dismissed-osx-usage-level (conj browser-settings-path :dismissed-osx-usage-level))
-(def dismissed-osx-command-change-banner-path (conj browser-settings-path :dismissed-osx-command-change-banner))
 (def dismissed-trial-offer-banner (conj browser-settings-path :dismissed-trial-offer-banner))
 (def dismissed-trial-update-banner (conj browser-settings-path :dismissed-trial-update-banner))
 

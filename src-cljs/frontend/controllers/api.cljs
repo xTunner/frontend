@@ -851,7 +851,7 @@
   [target message status {:keys [context resp]} previous-state current-state comms]
   (when (and (= (project-model/id (get-in current-state state/project-path))
                 (:project-id context))
-             (= :setup (:project-settings-subpage current-state)))
+             (= :setup (-> current-state :navigation-data :subpage)))
     (let [nav-ch (:nav comms)
           org (vcs-url/org-name (:project-id context))
           repo (vcs-url/repo-name (:project-id context))
@@ -1060,14 +1060,6 @@
 (defmethod api-event [:enterprise-site-status :success]
   [target message status {:keys [resp]} state]
   (assoc-in state [:enterprise :site-status] resp))
-
-(defmethod api-event [:merge-pull-request :success]
-  [target message status {:keys [resp]} state]
-  (state/add-flash-notification state (-> resp :message)))
-
-(defmethod api-event [:merge-pull-request :failed]
-  [target message status {:keys [resp]} state]
-  (state/add-flash-notification state (-> resp :message)))
 
 (defmethod api-event [:get-jira-projects :success]
   [target message status {:keys [resp]} state]

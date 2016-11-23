@@ -17,8 +17,9 @@
 
 (defn- ssh-available?
   "Show the SSH button unless it's disabled"
-  [project]
-  (not (project-model/feature-enabled? project :disable-ssh)))
+  [project build]
+  (not (or (project-model/feature-enabled? project :disable-ssh)
+           (:ssh_disabled build))))
 
 (defn- rebuild-actions [{:keys [build project]} owner]
   (reify
@@ -26,8 +27,8 @@
     (init-state [_]
       {:rebuild-status "Rebuild"})
 
-    om/IWillUpdate
-    (will-update [_ {:keys [build]} _]
+    om/IWillReceiveProps
+    (will-receive-props [_ {:keys [build]}]
       (when (build-model/running? build)
         (om/set-state! owner [:rebuild-status] "Rebuild")))
 
@@ -65,26 +66,9 @@
            [:ul.dropdown-menu.pull-right
             [:li
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            (when (ssh-available? project)
+            (when (ssh-available? project build)
               [:li
                [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
-
-(defn- merge-actions [{:keys [build]} owner]
-  (reify
-    om/IDidMount
-    (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :merge-pr-impression}))
-    om/IRender
-    (render [_]
-      (html
-       [:div.merge-container
-        [:button {:on-click #(do ((om/get-shared owner :track-event) {:event-type :merge-pr-clicked})
-                                 (raise! owner [:merge-pull-request-clicked (build-model/merge-args build)]))
-                  :data-toggle "tooltip"
-                  :data-placement "bottom"
-                  :title (str "Merge PR #" (last (build-model/pull-request-numbers build)))}
-         [:i.octicon.octicon-git-merge.merge-icon]
-         "Merge PR"]]))))
 
 (defn- header-actions
   [data owner]
@@ -127,10 +111,6 @@
                  [:i.material-icons "cancel"]])))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
-           (when (and (feature/enabled? :merge-pull-request)
-                      can-write-settings?
-                      (build-model/can-merge-at-least-one-pr? build))
-             (om/build merge-actions {:build build}))
            (when can-write-settings?
              (if (feature/enabled? :jira-integration)
                (list
@@ -162,5 +142,6 @@
                 {:app app
                  :main-content (om/build build-com/build
                                          {:app app
-                                          :ssh-available? (ssh-available? (get-in app (get-in app state/project-path)))})
+                                          :ssh-available? (ssh-available? (get-in app (get-in app state/project-path))
+                                                                          (get-in app (get-in app state/build-path)))})
                  :header-actions (om/build header-actions app)}))))

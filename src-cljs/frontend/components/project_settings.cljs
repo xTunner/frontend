@@ -121,76 +121,80 @@
             vcs-url (:vcs_url project)
             project-id (project-model/id project)]
         (html
-          (card/collection
-            (concat
-              [(card/titled
-                 {:title (str "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url])))}
-                 (html
-                   [:div
-                    [:b "Option 1"]
-                    [:p "Do nothing! CircleCI infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
-                    [:b "Option 2"]
-                    [:p
-                     "Override inferred settings and add new test commands "
-                     [:a {:href "#setup"} "through the web UI"]
-                     ". This works great for prototyping changes."]
-                    [:b "Option 3"]
-                    [:p
-                     "Override all settings via a "
-                     [:a (open-ext {:href "https://circleci.com/docs/configuration/"}) "circle.yml file"]
-                     " in your repo. Very powerful."]]))]
-              (if (:followed project)
-                [(card/titled
-                   {:title (str "You're following " (vcs-url/project-name vcs-url))}
-                   (html
-                     [:div
-                      [:p
-                       "We'll keep an eye on this and update you with personalized build emails and notifications."
-                       [:br]
-                       "You can update your notifications from your "
-                       [:a {:href "/account"} "account settings"]
-                       "."]
-                      (when show-modal?
-                        (let [close-fn #(om/set-state! owner :show-modal? false)]
-                          (modal/modal-dialog
-                            {:title (gstring/format "Stop building %s/%s on CircleCI?" username reponame)
-                             :body (html
-                                     [:div
-                                      [:p
-                                       (gstring/format
-                                         "When you stop building %s on CircleCI, we will stop all builds and unfollow all teammates who are currently following the project."
-                                         reponame)]])
-                             :actions [(button/button {:on-click close-fn} "Cancel")
-                                       (button/managed-button
-                                         {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
-                                                                                               :project-id project-id
-                                                                                               :on-success close-fn}])
-                                          :kind :danger
-                                          :loading-text "Stopping Builds..."
-                                          :success-text "Builds Stopped"}
-                                         "Stop Building")]
-                             :close-fn close-fn})))
+         [:section
+          [:article
+           [:legend "Project Overview"]
+           (card/collection
+             (concat
+               [(card/titled
+                  {:title (str "How to configure " (vcs-url/project-name (get-in project-data [:project :vcs_url])))}
+                  (html
+                    [:div
+                     [:b "Option 1"]
+                     [:p "Do nothing! CircleCI infers many settings automatically. Works great for Ruby, Python, NodeJS, Java and Clojure. However, if it needs tweaks or doesn't work, see below."]
+                     [:b "Option 2"]
+                     [:p
+                      "Override inferred settings and add new test commands "
+                      [:a {:href "#setup"} "through the web UI"]
+                      ". This works great for prototyping changes."]
+                     [:b "Option 3"]
+                     [:p
+                      "Override all settings via a "
+                      [:a (open-ext {:href "https://circleci.com/docs/configuration/"}) "circle.yml file"]
+                      " in your repo. Very powerful."]]))]
+               (if (:followed project)
+                 [(card/titled
+                    {:title (str "You're following " (vcs-url/project-name vcs-url))}
+                    (html
+                      [:div
+                       [:p
+                        "We'll keep an eye on this and update you with personalized build emails and notifications."
+                        [:br]
+                        "You can update your notifications from your "
+                        [:a {:href "/account"} "account settings"]
+                        "."]
+                       (when show-modal?
+                         (let [close-fn #(om/set-state! owner :show-modal? false)]
+                           (modal/modal-dialog
+                             {:title (gstring/format "Stop building %s/%s on CircleCI?" username reponame)
+                              :body (html
+                                      [:div
+                                       [:p
+                                        (gstring/format
+                                          "When you stop building %s on CircleCI, we will stop all builds and unfollow all teammates who are currently following the project."
+                                          reponame)]])
+                              :actions [(button/button {:on-click close-fn} "Cancel")
+                                        (button/managed-button
+                                          {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                                                :project-id project-id
+                                                                                                :on-success close-fn}])
+                                           :kind :danger
+                                           :loading-text "Stopping Builds..."
+                                           :success-text "Builds Stopped"}
+                                          "Stop Building")]
+                              :close-fn close-fn})))
 
-                      (button/managed-button
-                        {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
-                         :loading-text "Unfollowing..."
-                         :kind :primary}
-                        "Unfollow Project")]))
+                       (button/managed-button
+                         {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])
+                          :loading-text "Unfollowing..."
+                          :kind :primary}
+                         "Unfollow Project")]))
 
-                 (card/titled {:title (str "You're building " (vcs-url/project-name vcs-url))}
-                              (button/button {:on-click #(om/set-state! owner :show-modal? true)
-                                              :kind :danger}
-                                             "Stop Building"))]
-                [(card/titled
-                   {:title "You're not following this project"}
-                   (html
-                     [:div
-                      [:p "We can't update you with personalized build emails and notifications unless you follow this project. "
-                       "Projects are only tested if they have a follower."]
-                      (button/managed-button
-                        {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
-                         :loading-text "Following..."}
-                        "Follow")]))]))))))))
+                  (card/titled {:title (str "You're building " (vcs-url/project-name vcs-url))}
+                               (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                               :kind :danger}
+                                              "Stop Building"))]
+                 [(card/titled
+                    {:title "You're not following this project"}
+                    (html
+                      [:div
+                       [:p "We can't update you with personalized build emails and notifications unless you follow this project. "
+                        "Projects are only tested if they have a follower."]
+                       (button/managed-button
+                         {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                          :loading-text "Following..."}
+                         "Follow")]))])))]])))))
+
 
 (defn build-environment [project-data owner]
   (reify
@@ -230,7 +234,7 @@
         (html
           [:section
            [:article
-            [:h2 "Build Environment"]
+            [:legend "Build Environment"]
             [:ul
              (describe-flag {:flag :osx
                              :title "Build OS X project"
@@ -290,7 +294,8 @@
           plan-vcs-type :vcs_type} :org
          :as plan}
         (:plan project-data)
-        project-id (project-model/id project)]
+        project-id (project-model/id project)
+        add-button-text "Add More"]
     (list
      [:div.parallelism-upgrades
       (if-not (plan-model/in-trial? plan)
@@ -316,8 +321,9 @@
                [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                         :vcs_type plan-vcs-type
                                                         :_fragment "linux-pricing"})
-                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked})}
-                "Add More"]])
+                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                    :properties {:button-text add-button-text}})}
+                add-button-text]])
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
@@ -407,7 +413,7 @@
            (when (plan-model/in-trial? plan)
              (om/build trial-activation-banner data))
            [:article
-            [:h2 (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
+            [:legend (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
             (if-not (:plan project-data)
               (spinner)
               (list (parallelism-picker project-data owner)
@@ -441,9 +447,7 @@
                                           :project
                                           project-model/id)}])
      :kind :primary}
-    (case cache-type
-      "build" "Clear Dependencies"
-      "source" "Clear Sources")))
+    "Clear"))
 
 (defn clear-caches
   [project-data owner]
@@ -452,30 +456,32 @@
     (render [_]
       (html
         [:section
-         [:div.card.detailed
-          [:h4 "Dependency Cache"]
-          [:div.details
-           (when-let [res (-> project-data :build-cache-clear)]
-             (om/build result-box
-                       (assoc res
-                              :result-path
-                              (conj state/project-data-path :build-cache-clear))))
-           [:p "CircleCI saves a copy of your dependencies to prevent downloading them all on each build."]
-           [:p [:b "NOTE: "] "Clearing your dependency cache will cause the next build to completely recreate dependencies. In some cases this can add considerable time to that build.  Also, you may need to ensure that you have no running builds when using this to prevent the old cache from being resaved."]
-           [:hr]
-           (clear-cache-button "build" project-data owner)]]
-         [:div.card.detailed
-          [:h4 "Source Cache"]
-          [:div.details
-           (when-let [res (-> project-data :source-cache-clear)]
-             (om/build result-box
-                       (assoc res
-                              :result-path
-                              (conj state/project-data-path :source-cache-clear))))
-           [:p "CircleCI saves a copy of your source code on our system and pulls only changes since the last build on each branch."]
-           [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build.  Doing this too frequently or when you have a large number of high parallelism builds also carries some risk of becoming rate-limited by GitHub, which will prevent your builds from being able to download source until the rate-limit expires.  Also, you may need to ensure that you have no running builds when using this to prevent the old cache from being resaved."]
-           [:hr]
-           (clear-cache-button "source" project-data owner)]]]))))
+         [:article
+          [:legend "Clear Caches"]
+          [:div.card.detailed
+           [:h4 "Dependency Cache"]
+           [:div.details
+            (when-let [res (-> project-data :build-cache-clear)]
+              (om/build result-box
+                        (assoc res
+                               :result-path
+                               (conj state/project-data-path :build-cache-clear))))
+            [:p "CircleCI saves a copy of your dependencies to prevent downloading them all on each build."]
+            [:p [:b "NOTE: "] "Clearing your dependency cache will cause the next build to completely recreate dependencies. In some cases this can add considerable time to that build.  Also, you may need to ensure that you have no running builds when using this to prevent the old cache from being resaved."]
+            [:hr]
+            (clear-cache-button "build" project-data owner)]]
+          [:div.card.detailed
+           [:h4 "Source Cache"]
+           [:div.details
+            (when-let [res (-> project-data :source-cache-clear)]
+              (om/build result-box
+                        (assoc res
+                               :result-path
+                               (conj state/project-data-path :source-cache-clear))))
+            [:p "CircleCI saves a copy of your source code on our system and pulls only changes since the last build on each branch."]
+            [:p [:b "NOTE: "] "Clearing your source cache will cause the next build to download a fresh copy of your source. In some cases this can add considerable time to that build.  Doing this too frequently or when you have a large number of high parallelism builds also carries some risk of becoming rate-limited by GitHub, which will prevent your builds from being able to download source until the rate-limit expires.  Also, you may need to ensure that you have no running builds when using this to prevent the old cache from being resaved."]
+            [:hr]
+            (clear-cache-button "source" project-data owner)]]]]))))
 
 (defn env-vars [project-data owner]
   (reify
@@ -495,6 +501,7 @@
          ;; settings pages is addressed.
          [:section
           [:article
+           [:legend "Environment Variables"]
            (card/titled
             {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
@@ -599,7 +606,7 @@
         (html
          [:section
           [:article
-           [:h2 "Advanced Settings"]
+           [:legend "Advanced Settings"]
            [:ul
             (describe-flag {:flag :junit
                             :title "JUnit support"
@@ -610,8 +617,8 @@
                                     " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
                                     " to add the necessary formatter gem - see "
                                     [:a (open-ext {:href "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps"})
-                                     "the docs"] " for more information."
-                                    ]})
+                                     "the docs"] " for more information."]})
+
             (describe-flag {:flag :set-github-status
                             :title "GitHub Status updates"
                             :blurb [:p
@@ -621,7 +628,7 @@
             (describe-flag {:flag :oss
                             :title "Free and Open Source"
                             :blurb [:p
-                                   "Organizations have three free containers "
+                                    "Organizations have three free containers "
                                     "reserved for F/OSS projects; enabling this will allow this project's "
                                     "builds to use them and let others see your builds, both through the "
                                     "web UI and the API."]})
@@ -666,7 +673,7 @@
         (html
          [:section.dependencies-page
           [:article
-           [:h2 "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
+           [:legend "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your dependencies commands from your "
             [:a (open-ext {:href "https://circleci.com/docs/configuration/#dependencies"}) "circle.yml"] ". "
@@ -683,7 +690,7 @@
                                              :required true
                                              :value (str (:setup settings))
                                              :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
-              [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]]
+               [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]]
               [:div.form-group
                [:label "Dependency overrides"]
                [:textarea.dumb.form-control {:name "dependencies",
@@ -716,7 +723,7 @@
         (html
          [:section.tests-page
           [:article
-           [:h2 "Set up tests for " (vcs-url/project-name (:vcs_url project))]
+           [:legend "Set up tests for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your test commands from your "
             [:a (open-ext {:href "https://circleci.com/docs/configuration/#dependencies"}) "circle.yml"] ". "
@@ -745,7 +752,7 @@
                :success-text "Saved"
                :on-click #(raise! owner [:saved-test-commands {:project-id project-id}])
                :kind :primary}
-              "Save commands")
+              "Save Commands")
              [:div.try-out-build
               (om/build branch-picker
                         project-data
@@ -813,7 +820,7 @@
    (html
     [:section
      [:article
-      [:h2 "Webhooks"]
+      [:legend "Webhooks"]
       [:div.doc
        [:p
         "CircleCI also supports webhooks, which run at the end of a build. They can be configured in your "
@@ -842,7 +849,7 @@
         (html
          [:section
           [:article
-           [:h2 "Chatroom Integrations"]
+           [:legend "Chatroom Integrations"]
            [:p "If you want to control chat notifications on a per branch basis, "
             [:a (open-ext {:href "https://circleci.com/docs/configuration#per-branch-notifications"}) "see our documentation"] "."]
            [:div.chat-rooms
@@ -961,7 +968,7 @@
      (html
       [:section.status-page
        [:article
-        [:h2 "Status badges for " project-name]
+        [:legend "Status badges for " project-name]
         [:div "Use this tool to easily create embeddable status badges. Perfect for your project's README or wiki!"]
         [:div.status-page-inner
          [:form
@@ -1023,6 +1030,7 @@
         (html
          [:section
           [:article
+           [:legend "SSH Permissions"]
            (card/titled
             {:title (str "SSH keys for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
@@ -1135,7 +1143,7 @@
                  :on-click #(raise! owner [:new-checkout-key-clicked {:project-id project-id
                                                                       :project-name project-name
                                                                       :key-type "github-user-key"}])
-                 :value (str "Create and add " (:login user) " user key" )
+                 :value (str "Create and add " (:login user) " user key")
                  :data-loading-text "Saving..."
                  :data-success-text "Saved"}])])]])))))
 
@@ -1163,7 +1171,7 @@
                :on-click #(raise! owner [:new-checkout-key-clicked {:project-id project-id
                                                                     :project-name project-name
                                                                     :key-type "bitbucket-user-key"}])
-               :value (str "Create " (:login user) " user key" )
+               :value (str "Create " (:login user) " user key")
                :data-loading-text "Creating..."
                :data-success-text "Created"}])]]])))))
 
@@ -1206,7 +1214,7 @@
         (html
          [:section.checkout-page
           [:article
-           [:h2 "Checkout keys for " project-name]
+           [:legend "Checkout keys for " project-name]
            [:div.checkout-page-inner
             (if (nil? checkout-keys)
               (spinner)
@@ -1259,7 +1267,7 @@
                                                                     :key-type "deploy-key"}])
                      :loading-text "Saving..."
                      :success-text "Saved"}
-                    "Add deploy key")]])
+                    "Add Deploy Key")]])
                (when-not (some #{"github-user-key" "bitbucket-user-key"} (map :type checkout-keys))
                  (om/build add-user-key-section data))
                (when-let [bb-user-key (first (filter (fn [key] (and
@@ -1332,6 +1340,7 @@
         (html
          [:section.circle-api-page
           [:article
+           [:legend "API Permissions"]
            (card/titled
             {:title (str "API tokens for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
@@ -1410,7 +1419,7 @@
         (html
          [:section.heroku-api
           [:article
-           [:h2 "Set personal Heroku API key for " (vcs-url/project-name (:vcs_url project))]
+           [:legend "Heroku API key"]
            [:div.heroku-step
             [:h4 "Step 1: Heroku API key"]
             [:div (when (:heroku_api_key user)
@@ -1444,7 +1453,7 @@
                  :on-click #(raise! owner [:set-heroku-deploy-user {:project-id project-id
                                                                     :login login}])
                  :kind :primary}
-                (str "Set user to " (:login user))))]]
+                (str "Set User to " (:login user))))]]
            [:div.heroku-step
             [:h4
              "Step 3: Add deployment settings to your "
@@ -1462,7 +1471,7 @@
    (html
     [:section
      [:article
-      [:h2
+      [:legend
        "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
       [:div.doc
        [:p "CircleCI supports deploying to any server, using custom commands. See "
@@ -1537,7 +1546,7 @@
         (html
          [:section.aws-page
           [:article
-           [:h2 "AWS keys for " (vcs-url/project-name (:vcs_url project))]
+           [:legend "AWS keys for " (vcs-url/project-name (:vcs_url project))]
            (om/build aws-keys-form project-data)]])))))
 
 (defn jira-settings-form [project-data owner]
@@ -1584,19 +1593,20 @@
                :success-text "Saved"
                :loading-text "Saving..."
                :type "submit"
-               :primary? true
+               :kind :primary
                :on-click #(raise! owner [:saved-project-settings {:project-id project-id :merge-paths [[:jira]]}])}
-              "Save JIRA settings")
+              "Save JIRA Settings")
             (when (or username password base-url)
               (button/managed-button
                 {:failed-text "Failed"
                  :success-text "Cleared"
                  :loading-text "Clearing..."
                  :type "submit"
+                 :kind :secondary
                  :on-click #(do
                               (raise! owner [:edited-input {:path (input-path) :value nil}])
                               (raise! owner [:saved-project-settings {:project-id project-id}]))}
-                "Clear JIRA settings"))]]])))))
+                "Clear JIRA Settings"))]]])))))
 
 (defn integrations [project-data owner]
   (reify
@@ -1606,7 +1616,7 @@
         (html
          [:section.integrations
           [:article
-           [:h2 "JIRA integration"]
+           [:legend "JIRA integration"]
            (om/build jira-settings-form project-data)]])))))
 
 (defn aws-codedeploy-app-name [project-data owner]
@@ -1730,7 +1740,7 @@
         (html
          [:section.aws-codedeploy
           [:article
-           [:h2 "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
+           [:legend "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
            [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
             "Check out our " [:a (open-ext {:href "https://circleci.com/docs/continuous-deployment-with-aws-codedeploy/"}) "getting started with CodeDeploy"]
             " guide for detailed information on getting set up."]
@@ -1932,7 +1942,7 @@
     (render [_]
       (let [project-data (get-in data state/project-data-path)
             user (:current-user data)
-            subpage (:project-settings-subpage data)
+            subpage (-> data :navigation-data :subpage)
             error-message (get-in data state/error-message-path)]
         (html
          (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
@@ -1943,7 +1953,7 @@
             (when-not (contains? #{:code-signing} subpage)
               (om/build common/flashes error-message))
             [:div#subpage
-             (condp = subpage
+             (case subpage
                :build-environment (om/build build-environment project-data)
                :parallel-builds (om/build parallel-builds data)
                :env-vars (om/build env-vars project-data)

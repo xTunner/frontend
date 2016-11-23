@@ -277,6 +277,8 @@
 (defmethod post-control-event! :container-selected
   [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state comms]
   (let [previous-container-id (state/current-container-id previous-state)]
+    ; this function also gets called when the window is resized, the when check is to prevent the component
+    ; from updating in such case.
     (when (not= previous-container-id container-id)
       (when-let [parent (goog.dom/getElement "container_parent")]
         (let [container (goog.dom/getElement (str "container_" container-id))
@@ -312,11 +314,7 @@
                                :project-name (vcs-url/project-name vcs-url)
                                :old-container-id previous-container-id
                                :new-container-id container-id}
-                              (:api comms)))
-      (analytics/track {:event-type :container-selected
-                        :current-state current-state
-                        :properties {:old-container-id previous-container-id
-                                     :new-container-id container-id}}))))
+                              (:api comms))))))
 
 (defmethod control-event :container-paging-offset-changed
   [target message {:keys [paging-offset]} state]
@@ -505,25 +503,6 @@
   [target message args previous-state current-state comms]
   (retry-build (:api comms) (assoc (select-keys args [:vcs-url :build-num :reponame :ref-name])
                               :ssh? true)))
-
-(defmethod post-control-event! :merge-pull-request-clicked
-  [target message {:keys [vcs-url number sha] :as args} previous-state current-state comms]
-  (let [api-ch (:api comms)
-        uuid frontend.async/*uuid*
-        vcs-type (vcs-url/vcs-type vcs-url)
-        owner (vcs-url/org-name vcs-url)
-        repo (vcs-url/repo-name vcs-url)]
-    (go
-      (let [api-result (<! (ajax/managed-ajax :put (api-path/merge-pull-request vcs-type owner repo number)
-                                              :params {:sha sha}))]
-        (put! api-ch [:merge-pull-request (:status api-result) api-result])
-        (release-button! uuid (:status api-result))
-        (if (= :success (:status api-result))
-          (analytics/track {:event-type :merge-pr-success
-                            :current-state current-state})
-          (analytics/track {:event-type :merge-pr-failed
-                            :current-state current-state}))))))
-
 
 (defmethod post-control-event! :ssh-current-build-clicked
   [target message {:keys [build-num vcs-url]} previous-state current-state comms]
@@ -1568,10 +1547,6 @@
 
     :else
     current-state))
-
-(defmethod control-event :dismiss-osx-command-change-banner
-  [_ _ _ state]
-  (assoc-in state state/dismissed-osx-command-change-banner-path true))
 
 (defmethod control-event :dismiss-trial-offer-banner
   [_ _ _ state]

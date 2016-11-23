@@ -61,7 +61,7 @@
                                         ;; see frontend.components.app/app*
                                         (.stopPropagation event))
                             :kind :primary}
-                           "Switch user")]]]]]))))
+                           "Switch User")]]]]]))))
 
 (defn current-seat-usage [active-users total-seats]
   [:span
