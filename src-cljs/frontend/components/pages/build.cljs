@@ -90,18 +90,24 @@
             can-write-settings? (project-model/can-write-settings? project)]
         (html
           [:div.build-actions-v2
-           [:div
-            (when show-modal?
-              (om/build jira-modal/jira-modal {:project project
-                                               :jira-data jira-data
-                                               :close-fn #(om/set-state! owner :show-modal? false)}))]
+           (when show-modal?
+             (om/build jira-modal/jira-modal {:project project
+                                              :jira-data jira-data
+                                              :close-fn #(om/set-state! owner :show-modal? false)}))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
-             (forms/managed-button
-               [:a.cancel-build
-                {:data-loading-text "canceling"
-                 :title             "cancel this build"
-                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
-                "cancel build"]))
+             (list
+              (forms/managed-button
+                [:a.cancel-build.hidden-sm-down
+                 {:data-loading-text "canceling"
+                  :title             "cancel this build"
+                  :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
+                 "cancel build"])
+              (forms/managed-button
+                [:a.exception.btn-icon.cancel-build.hidden-md-up
+                 {:data-loading-text "..."
+                  :title             "cancel this build"
+                  :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
+                 [:i.material-icons "cancel"]])))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
            (when can-write-settings?

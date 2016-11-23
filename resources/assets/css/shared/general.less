@@ -46,6 +46,7 @@ a.exception {
 .btn-icon {
   height: 30px;
   width: 30px;
+  min-width: 30px;
   border-radius: 3px;
 
   background-color: @grayLightest;
@@ -267,4 +268,35 @@ button [spinner], button [data-spinner]{
 
 .wrap-words {
   white-space: pre-wrap;
+}
+
+
+@media (max-width: 543px) {
+  .hidden-xs-down {
+    display: none !important;
+  }
+}
+
+@media (min-width: 544px) {
+  .hidden-sm-up {
+    display: none !important;
+  }
+}
+
+@media (max-width: @screen-xs-max) {
+  .hidden-sm-down {
+    display: none !important;
+  }
+}
+
+@media (min-width: @screen-sm-min) {
+  .hidden-md-up {
+    display: none !important;
+  }
+}
+
+@media (max-width: @screen-sm-max) {
+  .hidden-md-down {
+    display: none !important;
+  }
 }
