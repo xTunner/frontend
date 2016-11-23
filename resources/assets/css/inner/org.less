@@ -510,10 +510,20 @@
   });
 
   .ui("faq", {
+    .columns {
+      .flexy();
+      justify-content: space-between;
+    }
+
     .column {
-      float: left;
       width: 50%;
-      padding: 10px;
+
+      &:first-of-type {
+        margin-right: 15px;
+      }
+      &:last-of-type {
+        margin-left: 15px;
+      }
     }
 
     .faq-item {
@@ -522,8 +532,9 @@
 
     .question {
       font-size: @fontSizeLarge;
-      font-weight: 600;
+      font-weight: 500;
       color: @gray;
+      margin-top: 4px;
     }
 
     .answer-line {
