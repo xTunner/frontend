@@ -56,7 +56,7 @@
 
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
-        raise-build-action! (fn [event] (raise! owner [event (build-model/build-args build)]))
+        build-args (merge (build-model/build-args build) {:component "build-row" :no-cache? false})
         status-words (build-model/status-words build)
         should-show-cancel? (and (project-model/can-trigger-builds? project)
                                  (build-model/can-cancel? build))
@@ -71,7 +71,6 @@
                                                            :properties {:status-words status-words}})}
        (build-status-badge build)]
 
-
       ;; Actions should be mutually exclusive. Just in case they
       ;; aren't, use a cond so it doesn't try to render both in the
       ;; same place
@@ -82,7 +81,7 @@
            :loading-text "Cancelling..."
            :icon-name "Status-Canceled"
            :on-click #(do
-                        (raise-build-action! :cancel-build-clicked)
+                        (raise! owner [:cancel-build-clicked build-args])
                         ((om/get-shared owner :track-event) {:event-type :cancel-build-clicked}))})
 
         should-show-rebuild?
@@ -90,12 +89,9 @@
           {:text "rebuild"
            :loading-text "Rebuilding..."
            :icon-name "Rebuild"
-           :on-click #(do
-                        (raise-build-action! :retry-build-clicked)
-                        ((om/get-shared owner :track-event) {:event-type :rebuild-clicked}))})
-
+           :on-click #(raise! owner [:retry-build-clicked build-args])})
         :else nil)]
-
+     
      [:div.build-info
       [:div.build-info-header
        [:div.contextual-identifier
@@ -168,7 +164,7 @@
                                                                     :properties {:repo (:reponame build)
                                                                                  :org (:username build)}})}
                 "#"
-                (gh-utils/pull-request-number url)])))])
+                (gh-utils/pull-request-number url)])))]
 
         [:div.metadata-item.revision
          [:i.octicon.octicon-git-commit]
@@ -178,7 +174,7 @@
                 :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
                                                                 :properties {:repo (:reponame build)
                                                                              :org (:username build)}})}
-            (build-model/github-revision build)])]]]]))
+            (build-model/github-revision build)])])]]]))
 
 (defn builds-table [data owner {:keys [show-actions? show-branch? show-project?]
                                 :or {show-branch? true

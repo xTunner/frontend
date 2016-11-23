@@ -34,25 +34,24 @@
 
     om/IRenderState
     (render-state [_ {:keys [rebuild-status]}]
-      (let [rebuild-args (build-model/build-args build)
+      (let [rebuild-args (merge (build-model/build-args build) {:component "rebuild-dropdown"})
             update-status!  #(om/set-state! owner [:rebuild-status] %)
-            rebuild!        #(raise! owner %)
             actions         {:rebuild
                              {:text  "Rebuild"
                               :title "Retry the same tests"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
+                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:no-cache? false})])
                                            (update-status! "Rebuilding..."))}
 
                              :without_cache
                              {:text  "Rebuild without cache"
                               :title "Retry without cache"
-                              :action #(do (rebuild! [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
+                              :action #(do (raise! owner [:retry-build-clicked (merge rebuild-args {:no-cache? true})])
                                            (update-status! "Rebuilding..."))}
 
                              :with_ssh
                              {:text  "Rebuild with SSH"
                               :title "Retry with SSH in VM",
-                              :action #(do (rebuild! [:ssh-build-clicked rebuild-args])
+                              :action #(do (raise! owner [:ssh-build-clicked rebuild-args])
                                            (update-status! "Rebuilding..."))}}
             text-for    #(-> actions % :text)
             action-for  #(-> actions % :action)]
@@ -91,18 +90,24 @@
             can-write-settings? (project-model/can-write-settings? project)]
         (html
           [:div.build-actions-v2
-           [:div
-            (when show-modal?
-              (om/build jira-modal/jira-modal {:project project
-                                               :jira-data jira-data
-                                               :close-fn #(om/set-state! owner :show-modal? false)}))]
+           (when show-modal?
+             (om/build jira-modal/jira-modal {:project project
+                                              :jira-data jira-data
+                                              :close-fn #(om/set-state! owner :show-modal? false)}))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
-             (forms/managed-button
-               [:a.cancel-build
-                {:data-loading-text "canceling"
-                 :title             "cancel this build"
-                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
-                "cancel build"]))
+             (list
+              (forms/managed-button
+                [:a.cancel-build.hidden-sm-down
+                 {:data-loading-text "canceling"
+                  :title             "cancel this build"
+                  :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
+                 "cancel build"])
+              (forms/managed-button
+                [:a.exception.btn-icon.cancel-build.hidden-md-up
+                 {:data-loading-text "..."
+                  :title             "cancel this build"
+                  :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
+                 [:i.material-icons "cancel"]])))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
            (when can-write-settings?

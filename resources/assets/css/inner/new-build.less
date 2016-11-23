@@ -61,19 +61,18 @@
   font-size: 13px;
   color: @grayDark;
 
-  @media (max-width: @screen-sm-max) {
-    .flexy(stretch, flex-start, column);
-  }
-
   > * {
     margin-left: 1em;
 
-    @media (max-width: @screen-sm-max) {
-      margin-top: 1em;
+    &:first-child {
       margin-left: 0;
+    }
+
+    @media (max-width: 767px) {
+      margin-left: 1em;
 
       &:first-child {
-        margin-top: 0;
+        margin-left: 0;
       }
     }
   }
@@ -91,6 +90,12 @@
   .cancel-build {
     margin-right: 1em;
     cursor: pointer;
+    text-align: center;
+
+    @media (max-width: 767px) {
+      margin-left: 0;
+      margin-right: 0;
+    }
   }
 
   .jira-container:hover {
@@ -443,7 +448,7 @@
   flex-grow: 2;
 }
 
-@media (max-width: @screen-sm-max) {
+@media (max-width: 767px) {
   .summary-header {
     .flexy(stretch, space-around, column);
   }
