@@ -1963,7 +1963,10 @@
                                                  (map (partial merge {:project-name project-name
                                                                       :vcs-type vcs-type})))})
              (empty-state/empty-state {:icon [:i.octicon.octicon-key]
-                                       :heading (str project-name " has no code signing identities yet")
+                                       :heading (html
+                                                  [:span (str project-name " has no ")
+                                                   (empty-state/important "code signing keys")
+                                                   " yet"])
                                        :subheading "Apple Code Signing requires a valid Code Signing Identity (p12) file."
                                        :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                                                :kind :primary}
@@ -1996,7 +1999,7 @@
            [:hr.divider]
            [:div.info "The following provisioning profiles will be copied to the system location when your build
                       starts. This is to enable Xcode to sign your application. A provisioning profile should not
-                      usually be required for running tests, but will be required for ad-hoc, Tesflight, and
+                      usually be required for running tests, but will be required for ad-hoc, TestFlight, and
                       App Store builds. See our "
             [:a
              {:href "https://circleci.com/docs/ios-code-signing/"}
@@ -2007,7 +2010,10 @@
                                                               (map (partial merge {:project-name project-name
                                                                                    :vcs-type vcs-type})))})
              (empty-state/empty-state {:icon [:i.octicon.octicon-key]
-                                       :heading (str project-name " has no provisioning profiles yet")
+                                       :heading (html
+                                                  [:span (str project-name " has no ")
+                                                   (empty-state/important "provisioning profiles")
+                                                   " yet"])
                                        :subheading "Apple Code Signing requires a valid provisioning profile (mobileprovision)."
                                        :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                                                :kind :primary}
