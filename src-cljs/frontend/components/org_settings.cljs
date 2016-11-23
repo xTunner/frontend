@@ -207,29 +207,32 @@
   (let [containers (pm/paid-linux-containers plan)]
     (str
       (when (pos? containers)
-        (str containers " containers"))
+        (str containers " paid Linux containers"))
       (when (and (pos? containers) (pm/osx? plan))
-        " and ")
+        " and the macOS ")
       (when (pm/osx? plan)
-        (-> plan :osx :template :name)))))
+        (-> plan :osx :template :name)) " plan.")))
 
 (defn plans-piggieback-plan-notification [{{parent-name :name
                                             parent-vcs-type :vcs_type} :org
                                            :as plan}
                                           current-org-name]
-  [:div.row-fluid
-   [:div.offset1.span10
-    [:div.alert.alert-success
-     [:p
-      "This organization is covered under " [:em parent-name] "'s plan which has " (piggieback-plan-wording plan)]
-     [:p
-      "If you're an admin in the " parent-name
-      " organization, then you can change plan settings from the "
-      [:a {:href (routes/v1-org-settings-path {:org parent-name
-                                               :vcs_type parent-vcs-type})}
-       parent-name " plan page"] "."]
-     [:p
-      "You can create a separate plan for " [:em current-org-name] " when you're no longer covered by " [:em parent-name] "."]]]])
+
+
+  [:div
+   (card/titled {:title "This organization's plan is covered under another organization's plan"}
+              (html
+                [:div
+                 [:p
+                  "This organization is covered under the " [:strong [:em parent-name]] " organization's plan which has " [:strong (piggieback-plan-wording plan)]]
+                 [:p
+                  "If you're an admin in the " [:strong [:em parent-name]]
+                  " organization, then you can change plan settings from the "
+                  [:strong [:a {:href (routes/v1-org-settings-path {:org parent-name
+                                                           :vcs_type parent-vcs-type})}
+                   parent-name " plan page"]] "."]
+                 [:p.mb-0
+                  "You can create a separate plan for " [:strong [:em current-org-name]] " when you're no longer covered by " [:strong [:em parent-name]] "."]]))])
 
 (defn plural-multiples [num word]
   (if (> num 1)
