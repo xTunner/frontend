@@ -98,6 +98,8 @@
     :signup-impression
     :sort-branches-toggled
     :start-trial-clicked
+    :stop-building-clicked
+    :stop-building-modal-dismissed
     :support-icon-clicked
     :team-icon-clicked
     :teammates-invited
