@@ -154,7 +154,16 @@
                         [:a {:href "/account"} "account settings"]
                         "."]
                        (when show-modal?
-                         (let [close-fn #(om/set-state! owner :show-modal? false)]
+                         (let [close-fn #(om/set-state! owner :show-modal? false)
+                               ;; NB: "component" here is used in the analytics
+                               ;; sense; it's a string describing a UI element,
+                               ;; not a React component.
+                               cancel-fn-for-component
+                               (fn [component-clicked]
+                                 #(do
+                                    (close-fn)
+                                    ((om/get-shared owner :track-event) {:event-type :stop-building-modal-dismissed
+                                                                         :properties {:component-clicked component-clicked}})))]
                            (modal/modal-dialog
                              {:title (gstring/format "Stop building %s/%s on CircleCI?" username reponame)
                               :body (html
@@ -163,16 +172,24 @@
                                         (gstring/format
                                           "When you stop building %s on CircleCI, we will stop all builds and unfollow all teammates who are currently following the project."
                                           reponame)]])
-                              :actions [(button/button {:on-click close-fn} "Cancel")
+                              :actions [(button/button {:on-click (cancel-fn-for-component "cancel-button")} "Cancel")
                                         (button/managed-button
-                                          {:on-click #(raise! owner [:stopped-building-project {:vcs-url vcs-url
-                                                                                                :project-id project-id
-                                                                                                :on-success close-fn}])
+                                          {:on-click #(do
+                                                        (raise! owner [:stopped-building-project {:vcs-url vcs-url
+                                                                                                  :project-id project-id
+                                                                                                  :on-success close-fn}])
+                                                        ((om/get-shared owner :track-event) {:event-type :stop-building-clicked}))
                                            :kind :danger
                                            :loading-text "Stopping Builds..."
                                            :success-text "Builds Stopped"}
                                           "Stop Building")]
-                              :close-fn close-fn})))
+                              ;; The :close-fn is used for the modal X and when
+                              ;; the user clicks outside the modal to dismiss
+                              ;; it (and potentially anywhere else the modal
+                              ;; needs it). Therefore, we can't assign a
+                              ;; meaningful component here. We can at least set it
+                              ;; to nil so we don't lie.
+                              :close-fn (cancel-fn-for-component nil)})))
 
                        (button/managed-button
                          {:on-click #(raise! owner [:unfollowed-project {:vcs-url vcs-url :project-id project-id}])

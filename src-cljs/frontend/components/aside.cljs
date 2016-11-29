@@ -501,7 +501,9 @@
              [:div.nav-label "Insights"]]
 
            (if (feature/enabled? :projects-page)
-             [:a.aside-item {:class (when (= :route/projects current-route) "current")
+             [:a.aside-item {:class (when (or (= :route/projects current-route)
+                                              (= :add-projects current-route))
+                                      "current")
                              :title "Projects"
                              :data-placement "right"
                              :data-trigger "hover"
