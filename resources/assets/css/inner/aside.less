@@ -39,6 +39,15 @@
     &:not(:hover) {
       color: @grayLightest;
     }
+
+    &.aside-item.current {
+      background-color: @grayDark;
+      color: @white;
+
+      i {
+        opacity: 1;
+      }
+    }
   }
 
   .tooltip {
@@ -140,6 +149,8 @@
   .flex(1 0 1px);
 
   font-size: 12px;
+
+  margin-left: 15px;
 
   ul {
     margin: 0;
@@ -302,10 +313,6 @@
   font-family: @monoFontFamily;
 }
 
-.aside-activity.open {
-  margin-left: 15px;
-}
-
 .aside-left-menu {
   background-color: transparent;
 }
@@ -435,11 +442,6 @@
   &.open {
     background: @grayLightest;
     transition-duration: 0;
-  }
-
-  &.current {
-    background-color: @grayDark;
-    color: @white;
   }
 
   &.aside-heading {
