@@ -731,7 +731,6 @@
         org-name (vcs-url/org-name project-id)
         repo-name (vcs-url/repo-name project-id)
         vcs-type (vcs-url/vcs-type project-id)]
-
     (go
       (let [api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org-name repo-name) :params settings))]
         (if (= :success (:status api-result))
@@ -761,11 +760,13 @@
             scope))
 
 (defmethod post-control-event! :saved-project-settings
-  [target message {:keys [project-id merge-paths]} previous-state current-state comms]
+  [target message {:keys [project-id merge-paths on-success]} previous-state current-state comms]
   (let [uuid frontend.async/*uuid*]
     (go
       (let [api-result (<! (save-project-settings project-id merge-paths current-state comms))]
-        (release-button! uuid (:status api-result))))))
+        (release-button! uuid (:status api-result))
+        (when (fn? on-success)
+          (on-success))))))
 
 
 (defmethod control-event :new-codedeploy-app-name-entered

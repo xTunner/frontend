@@ -1,8 +1,10 @@
 (ns frontend.components.jira-modal
-  (:require [frontend.components.pieces.form :as form]
-            [frontend.components.pieces.dropdown :as dropdown]
-            [frontend.components.pieces.modal :as modal]
+  (:require [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.dropdown :as dropdown]
+            [frontend.components.pieces.form :as form]
+            [frontend.components.pieces.modal :as modal]
+            [frontend.components.pieces.spinner :as spinner]
             [frontend.components.forms :as forms]
             [frontend.models.project :as project-model]
             [frontend.state :as state]
@@ -40,33 +42,35 @@
           {:title "Create an issue in JIRA"
            :body
            (html
-             [:div
-              (form/form {}
-                         (dropdown/dropdown {:label "Project name"
-                                             ;; We can't make the first piece of data we
-                                             ;; receive the default choice in the
-                                             ;; dropdown. If the values of the dropdowns
-                                             ;; remain as nil, they haven't been
-                                             ;; interacted with, and so the first item
-                                             ;; from the data we received is the currently
-                                             ;; chosen item.
-                                             :value (or jira-project first-jira-project)
-                                             :options (or (some->> jira-projects
-                                                                   (map #(into [% %] nil)))
-                                                          [["No projects" "No projects"]])
-                                             :on-change #(om/set-state! owner :jira-project %)})
-                         (dropdown/dropdown {:label "Issue type"
-                                             :value (or issue-type first-issue-type)
-                                             :options (or (some->> issue-types
-                                                                   (map #(into [% %] nil)))
-                                                          [["No issue types" "No issue types"]])
-                                             :on-change #(om/set-state! owner :issue-type %)})
-                         (om/build form/text-field {:label "Issue summary"
-                                                    :value summary
-                                                    :on-change #(om/set-state! owner :summary (.. % -target -value))})
-                         (om/build form/text-area {:label "Description"
-                                                   :value description
-                                                   :on-change #(om/set-state! owner :description (.. % -target -value))}))])
+            [:div
+             (if-not (and jira-projects issue-types)
+               (spinner/spinner)
+               (form/form {}
+                          (dropdown/dropdown {:label "Project name"
+                                              ;; We can't make the first piece of data we
+                                              ;; receive the default choice in the
+                                              ;; dropdown. If the values of the dropdowns
+                                              ;; remain as nil, they haven't been
+                                              ;; interacted with, and so the first item
+                                              ;; from the data we received is the currently
+                                              ;; chosen item.
+                                              :value (or jira-project first-jira-project)
+                                              :options (or (some->> jira-projects
+                                                                    (map #(into [% %] nil)))
+                                                           [["No projects" "No projects"]])
+                                              :on-change #(om/set-state! owner :jira-project %)})
+                          (dropdown/dropdown {:label "Issue type"
+                                              :value (or issue-type first-issue-type)
+                                              :options (or (some->> issue-types
+                                                                    (map #(into [% %] nil)))
+                                                           [["No issue types" "No issue types"]])
+                                              :on-change #(om/set-state! owner :issue-type %)})
+                          (om/build form/text-field {:label "Issue summary"
+                                                     :value summary
+                                                     :on-change #(om/set-state! owner :summary (.. % -target -value))})
+                          (om/build form/text-area {:label "Description"
+                                                    :value description
+                                                    :on-change #(om/set-state! owner :description (.. % -target -value))})))])
            :actions [(button/button {:on-click close-fn} "Cancel")
                      (button/managed-button
                        {:on-click #(raise! owner [:create-jira-issue {:project-name project-name
