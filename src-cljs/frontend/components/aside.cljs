@@ -540,8 +540,6 @@
               [:i.material-icons "settings"]
               [:div.nav-label "Account Settings"]])
 
-           [:hr]
-
            (when-not (ld/feature-on? "top-bar-ui-v-1")
              [:a.aside-item (open-ext {:title "Documentation"
                                        :data-placement "right"
@@ -573,8 +571,6 @@
                                          :on-click #(aside-nav-clicked owner :changelog-icon-clicked)})
                 [:i.material-icons "receipt"]
                 [:div.nav-label "Changelog"]]))
-
-           [:hr]
 
            (when (:admin user)
              [:a.aside-item {:class (when (= :admin-settings current-route) "current")
