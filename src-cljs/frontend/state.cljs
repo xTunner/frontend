@@ -135,7 +135,7 @@
 (def page-scopes-path [:page-scopes])
 (def project-osx-keys-path (conj project-data-path :osx-keys))
 
-(def jira-data-path (conj project-data-path :jira))
+(def jira-data-path (conj project-path :jira))
 (def jira-projects-path (conj jira-data-path :projects))
 (def jira-issue-types-path (conj jira-data-path :issue-types))
 

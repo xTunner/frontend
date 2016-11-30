@@ -111,7 +111,7 @@
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
            (when can-write-settings?
-             (if (feature/enabled? :jira-integration)
+             (if (and (feature/enabled? :jira-integration) jira-data)
                (list
                  [:button.btn-icon.jira-container
                    {:on-click #(om/set-state! owner :show-modal? true)
