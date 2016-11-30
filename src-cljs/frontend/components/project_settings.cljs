@@ -9,6 +9,7 @@
             [frontend.components.inputs :as inputs]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.form :as form]
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.icon :as icon]
@@ -1896,22 +1897,40 @@
                       "            key_pattern: appname-1234-{BRANCH}-{SHORT_COMMIT}\n"
                       "        deployment_group: my-deployment-group\n"))]]]]]])))))
 
-(defn modal [{:keys [id title body-component body-params error-message]} owner]
+(defn p12-key-table [{:keys [rows]} owner]
   (reify
     om/IRender
     (render [_]
-      (html
-        [:div.modal.fade {:id id :data-component `modal}
-         [:div.modal-dialog
-          [:div.modal-content
-           [:div.modal-header
-            [:div.modal-title title]
-            [:i.material-icons.modal-close {:data-dismiss "modal"} "clear"]]
-           [:div.modal-body.upload
-            (om/build common/flashes error-message)
-            (om/build body-component body-params)]]]]))))
+      (om/build table/table
+                {:rows rows
+                 :key-fn :uuid
+                 :columns [{:header "Description"
+                            :cell-fn :description}
+                           {:header "Filename"
+                            :type :shrink
+                            :cell-fn :filename}
+                           {:header "UUID"
+                            :type :shrink
+                            :cell-fn :uuid}
+                           {:header "Uploaded"
+                            :type :shrink
+                            :cell-fn (comp datetime/as-time-since :uploaded_at)}
+                           {:header "Remove"
+                            :type #{:shrink :right}
+                            :cell-fn (fn [key]
+                                       (om/build remove-action-button
+                                                 {:confirmation-question
+                                                  (str
+                                                   "Are you sure you want to remove the \""
+                                                   (:description key)
+                                                   "\" Apple Code Signing Key?")
 
-(defn p12-key-table [{:keys [rows]} owner]
+                                                  :remove-fn
+                                                  #(raise! owner
+                                                           [:delete-p12
+                                                            (select-keys key [:project-name :vcs-type :id])])}))}]}))))
+
+(defn provisioning-profiles-table [{:keys [rows]} owner]
   (reify
     om/IRender
     (render [_]
@@ -1931,34 +1950,18 @@
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
                            {:header "Remove"
                             :type #{:shrink :right}
-                            :cell-fn (fn [key]
+                            :cell-fn (fn [profile]
                                        (om/build remove-action-button
                                                  {:confirmation-question
                                                   (str
                                                    "Are you sure you want to remove the \""
-                                                   (:description key)
-                                                   "\" Apple Code Signing Key?")
+                                                   (:description profile)
+                                                   "\" provisioning profile?")
 
                                                   :remove-fn
                                                   #(raise! owner
-                                                           [:delete-p12
-                                                            (select-keys key [:project-name :vcs-type :id])])}))}]}))))
-
-(defn no-keys-empty-state [{:keys [project-name add-key]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-        [:div {:data-component `no-keys-empty-state}
-         [:i.octicon.octicon-key]
-         [:div.info
-          [:span.highlight project-name]
-          [:span " has no "]
-          [:span.highlight "Apple Code Signing Identities"]
-          [:span "  yet"]]
-         (button/button {:on-click add-key :kind :primary} "Upload Key")
-         [:div.sub-info "Apple Code Signing requires a valid Code Signing Identity (p12) file"]]))))
-
+                                                           [:delete-provisioning-profile
+                                                            (select-keys profile [:project-name :vcs-type :uuid])])}))}]}))))
 
 (defn p12-upload-modal [{:keys [close-fn error-message project-name vcs-type]} owner]
   (reify
@@ -2007,18 +2010,59 @@
                                                             :on-success close-fn}])}])]
         :close-fn close-fn}))))
 
-(defn code-signing [{:keys [project-data error-message]} owner]
+(defn provisioning-profile-upload-modal [{:keys [close-fn error-message project-name vcs-type]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:description nil
+       :file-name nil
+       :file-content nil})
+
+    om/IRenderState
+    (render-state [_ {:keys [description file-name file-content]}]
+      (modal/modal-dialog
+       {:title "Upload a New Provisioning Profile"
+        :body
+        (html
+         [:div
+          (om/build common/flashes error-message)
+          (form/form {}
+                     (om/build form/text-field {:label "Description"
+                                                :value description
+                                                :on-change #(om/set-state! owner :description (.. % -target -value))})
+                     (om/build form/file-selector {:label "Provisioning Profile"
+                                                   :file-name file-name
+                                                   :on-change (fn [{:keys [file-name file-content]}]
+                                                                (om/update-state! owner #(merge % {:file-name file-name
+                                                                                                   :file-content file-content})))}))])
+        :actions [(button/managed-button {:failed-text "Failed"
+                                          :success-text "Uploaded"
+                                          :loading-text "Uploading..."
+                                          :disabled? (not (and file-content description))
+                                          :kind :primary
+                                          :on-click #(raise! owner [:upload-provisioning-profile {:project-name project-name
+                                                                                                  :vcs-type vcs-type
+                                                                                                  :description description
+                                                                                                  :file-content (base64/encodeString file-content)
+                                                                                                  :file-name file-name
+                                                                                                  :on-success close-fn}])}
+                                         "Upload")]
+        :close-fn close-fn}))))
+
+
+
+(defn code-signing-keys [{:keys [project-data error-message]} owner]
   (reify
     om/IInitState
     (init-state [_]
       {:show-modal? false})
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
-      (let [{:keys [project osx-keys]} project-data
+      (let [{:keys [project osx-keys osx-profiles]} project-data
             project-name (vcs-url/project-name (:vcs_url project))
             vcs-type (project-model/vcs-type project)]
         (html
-         [:section.code-signing-page {:data-component `code-signing}
+         [:section.code-signing-page {:data-component `code-signing-keys}
           [:article
            [:div.header
             [:div.title "Apple Code Signing Keys"]
@@ -2031,19 +2075,83 @@
                         begins, and will be available to sign iOS and OS X apps. For more information about code-signing
                         on CircleCI see our "
             [:a
-             {:href "https://discuss.circleci.com/t/ios-code-signing/1231"}
+             {:href "https://circleci.com/docs/ios-code-signing/"}
              "code-signing documentation."]]
            (if-not (empty? osx-keys)
              (om/build p12-key-table {:rows (->> osx-keys
                                                  (map (partial merge {:project-name project-name
                                                                       :vcs-type vcs-type})))})
-             (om/build no-keys-empty-state {:project-name project-name
-                                            :add-key #(om/set-state! owner :show-modal? true)}))
+             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+                                       :heading (html
+                                                  [:span (str project-name " has no ")
+                                                   (empty-state/important "code signing keys")
+                                                   " yet"])
+                                       :subheading "Apple Code Signing requires a valid Code Signing Identity (p12) file."
+                                       :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                                               :kind :primary}
+                                                              "Upload Key")}))
            (when show-modal?
              (om/build p12-upload-modal {:close-fn #(om/set-state! owner :show-modal? false)
                                          :error-message error-message
                                          :project-name project-name
                                          :vcs-type vcs-type}))]])))))
+
+(defn code-signing-profiles [{:keys [project-data error-message]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (let [{:keys [project osx-keys osx-profiles]} project-data
+            project-name (vcs-url/project-name (:vcs_url project))
+            vcs-type (project-model/vcs-type project)]
+        (html
+         [:section.code-signing-page {:data-component `code-signing-profiles}
+          [:article
+           [:div.header
+            [:div.title "Provisioning Profiles"]
+            (button/button
+              {:on-click #(om/set-state! owner :show-modal? true)
+               :kind :primary}
+              "Upload Profile")]
+           [:hr.divider]
+           [:div.info "The following provisioning profiles will be copied to the system location when your build
+                      starts. This is to enable Xcode to sign your application. A provisioning profile should not
+                      usually be required for running tests, but will be required for ad-hoc, TestFlight, and
+                      App Store builds. See our "
+            [:a
+             {:href "https://circleci.com/docs/ios-code-signing/"}
+             "code-signing documentation"]
+            " for more details."]
+           (if-not (empty? osx-profiles)
+             (om/build provisioning-profiles-table {:rows (->> osx-profiles
+                                                              (map (partial merge {:project-name project-name
+                                                                                   :vcs-type vcs-type})))})
+             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+                                       :heading (html
+                                                  [:span (str project-name " has no ")
+                                                   (empty-state/important "provisioning profiles")
+                                                   " yet"])
+                                       :subheading "Apple Code Signing requires a valid provisioning profile (mobileprovision)."
+                                       :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                                               :kind :primary}
+                                                              "Upload Profile")}))
+           (when show-modal?
+             (om/build provisioning-profile-upload-modal
+                       {:close-fn #(om/set-state! owner :show-modal? false)
+                        :error-message error-message
+                        :project-name project-name
+                        :vcs-type vcs-type}))]])))))
+
+(defn code-signing [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         (om/build code-signing-keys data)
+         (om/build code-signing-profiles data)]))))
 
 (defn project-settings [data owner]
   (reify
