@@ -1,20 +1,4 @@
 .ns("frontend.components.pages.projects", {
-  .ui("Page", {}, {
-    .el("main-content", {
-      .flexy();
-      margin-top: 15px;
-
-      > .sidebar {
-        width: 285px;
-        margin-right: 15px;
-      }
-
-      > .main {
-        flex-grow: 1;
-      }
-    });
-  });
-
   .ui("no-org-selected", {}, {
     .el("avatars", {
       > img {
@@ -29,6 +13,33 @@
         &:last-child {
           margin-right: 0;
         }
+      }
+    });
+  });
+
+  .ui("OrgProjects", {}, {
+    .el("title", {
+      .flexy(center);
+
+      > .vcs-icon {
+        width: 1em;
+        margin-right: 10px;
+      }
+    });
+  });
+
+  .ui("Page", {}, {
+    .el("main-content", {
+      .flexy();
+      margin-top: 15px;
+
+      > .sidebar {
+        width: 285px;
+        margin-right: 15px;
+      }
+
+      > .main {
+        flex-grow: 1;
       }
     });
   });

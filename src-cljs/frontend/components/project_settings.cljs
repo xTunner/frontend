@@ -58,7 +58,7 @@
        [:span
         (table/action-button
          "Remove"
-         (icon/delete)
+         (icon/cancel-circle)
          #(om/set-state! owner :show-modal? true))
         (when show-modal?
           (let [close-fn #(om/set-state! owner :show-modal? false)]
@@ -1268,7 +1268,7 @@
                                         (fn [key]
                                           (table/action-button
                                            "Remove"
-                                           (icon/delete)
+                                           (icon/cancel-circle)
                                            #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
                                                                                          :project-name project-name
                                                                                          :fingerprint (:fingerprint key)}])))}]})])
