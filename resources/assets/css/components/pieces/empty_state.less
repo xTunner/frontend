@@ -8,25 +8,9 @@
     text-align: center;
 
     > .icon {
-      margin-bottom: 20px;
-
-      font-size: 60px;
-      line-height: 1;
+      margin: 0 auto 20px;
+      width: 60px;
       color: @grayLighter;
-
-      // WARNING: Non-exemplary code. This styles a node which this component
-      // does not render. The icon is often an .octicon or a .material-icons,
-      // but these are styled across the app (and shouldn\'t be). This block
-      // resets their style, so we don\'t have to do it in every place we pass
-      // one in. When they\'re no longer styled app-wide, this block can go
-      // away.
-      // OVERRIDE--ICON-STYLE
-      > .octicon,
-      > .material-icons {
-        font-size: inherit;
-        color: inherit;
-        margin-left: 0;
-      }
     }
 
     > .heading {
@@ -41,6 +25,33 @@
 
     > .action {
       margin-top: 30px;
+    }
+  });
+
+  .ui("avatar-icons", {
+    // Enough space for three avatars, overlapping.
+    width: 200%;
+
+    // Re-center.
+    margin-left: -50%;
+
+    > img {
+      // 50% of 200% = 100% of the avatar width.
+      width: 50%;
+      height: 50%;
+      // -75% of 200% = -150% of the avatar width; this slides each avatar back
+      // across the previous one.
+      margin-right: -75%;
+
+      border-radius: 50%;
+      border: 3px solid @white;
+      background-color: @white;
+
+      &:last-child {
+        // Remove the negative margin from the last one, so the group still
+        // centers correctly.
+        margin-right: 0;
+      }
     }
   });
 });

@@ -2,21 +2,20 @@
   (:require [clojure.set :as set]
             [frontend.api :as api]
             [frontend.async :refer [raise!]]
-            [frontend.components.forms :as forms]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.form :as form]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.org-picker :as org-picker]
-            [frontend.components.pieces.table :as table]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.user :as user]
             [frontend.utils :as utils :refer [valid-email?] :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-next]]
-            [frontend.utils.vcs :as vcs-utils]
             [goog.string :as gstr]
             [inflections.core :as inflections]
             [om.core :as om :include-macros true])
@@ -68,12 +67,10 @@
   (component
     (card/basic
      (empty-state/empty-state {:icon (if-let [orgs (seq (take 3 available-orgs))]
-                                       (element :avatars
-                                         (html
-                                          [:div
-                                           (for [org orgs]
-                                             [:img {:src (gh-utils/make-avatar-url org :size 60)}])]))
-                                       (html [:i.material-icons "group"]))
+                                       (empty-state/avatar-icons
+                                        (for [org orgs]
+                                          (gh-utils/make-avatar-url org :size 60)))
+                                       (icon/team))
                                :heading (html
                                          [:span
                                           "Get started by selecting your "

@@ -83,12 +83,10 @@
   (component
     (card/basic
      (empty-state/empty-state {:icon (if-let [orgs (seq (take 3 available-orgs))]
-                                       (element :avatars
-                                         (html
-                                          [:div
-                                           (for [{:keys [organization/avatar-url]} orgs]
-                                             [:img {:src (gh-utils/make-avatar-url {:avatar_url avatar-url} :size 60)}])]))
-                                       (html [:i.material-icons "group"]))
+                                       (empty-state/avatar-icons
+                                        (for [{:keys [organization/avatar-url]} orgs]
+                                          (gh-utils/make-avatar-url {:avatar_url avatar-url} :size 60)))
+                                       (icon/team))
                                :heading (html
                                          [:span
                                           "Get started by selecting your "
@@ -113,7 +111,7 @@
 (def add-project-button (om-next/factory AddProjectButton))
 
 (defn- no-projects-available [org-name]
-  (empty-state/empty-state {:icon (html [:i.material-icons "book"])
+  (empty-state/empty-state {:icon (icon/project)
                             :heading (html
                                       [:span
                                        (empty-state/important org-name)

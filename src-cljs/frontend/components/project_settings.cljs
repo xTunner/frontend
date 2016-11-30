@@ -2081,7 +2081,7 @@
              (om/build p12-key-table {:rows (->> osx-keys
                                                  (map (partial merge {:project-name project-name
                                                                       :vcs-type vcs-type})))})
-             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+             (empty-state/empty-state {:icon (icon/key)
                                        :heading (html
                                                   [:span (str project-name " has no ")
                                                    (empty-state/important "code signing keys")
@@ -2128,7 +2128,7 @@
              (om/build provisioning-profiles-table {:rows (->> osx-profiles
                                                               (map (partial merge {:project-name project-name
                                                                                    :vcs-type vcs-type})))})
-             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+             (empty-state/empty-state {:icon (icon/key)
                                        :heading (html
                                                   [:span (str project-name " has no ")
                                                    (empty-state/important "provisioning profiles")
