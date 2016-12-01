@@ -164,17 +164,17 @@
                                                                     :properties {:repo (:reponame build)
                                                                                  :org (:username build)}})}
                 "#"
-                (gh-utils/pull-request-number url)])))]
+                (gh-utils/pull-request-number url)])))])
 
-        [:div.metadata-item.revision
-         [:i.octicon.octicon-git-commit]
-         (when (:vcs_revision build)
-           [:a {:title (build-model/github-revision build)
-                :href (build-model/commit-url build)
-                :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
-                                                                :properties {:repo (:reponame build)
-                                                                             :org (:username build)}})}
-            (build-model/github-revision build)])])]]]))
+       (when (:vcs_revision build)
+         [:div.metadata-item.revision
+          [:i.octicon.octicon-git-commit]
+          [:a {:title (build-model/github-revision build)
+               :href (build-model/commit-url build)
+               :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
+                                                               :properties {:repo (:reponame build)
+                                                                            :org (:username build)}})}
+           (build-model/github-revision build)]])]]]))
 
 (defn builds-table [data owner {:keys [show-actions? show-branch? show-project?]
                                 :or {show-branch? true
