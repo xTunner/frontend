@@ -1,5 +1,5 @@
 (ns frontend.components.pieces.org-picker
-  (:require [devcards.core :as dc :refer-macros [defcard-om]]
+  (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.icon :as icon]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
@@ -57,28 +57,22 @@
 (def picker (om-next/factory Picker))
 
 (dc/do
-  (defn picker-parent [{:keys [selected-org] :as data} owner]
-    (om/component
+  (defcard picker
+    (fn [state]
+      (let [{:keys [selected-org]} @state]
         (html
          [:div
-          (om/build picker {:orgs [{:login "pgibbs"
-                                    :org false
-                                    :vcs_type "github"}
-                                   {:login "GibbonsP"
-                                    :org false
-                                    :vcs_type "bitbucket"}
-                                   {:login "Facebook"
-                                    :org true
-                                    :vcs_type "github"}
-                                   {:login "Initech"
-                                    :org true
-                                    :vcs_type "bitbucket"}]
-                            :selected-org selected-org
-                            :on-org-click #(om/update! data :selected-org %)})
+          (picker {:orgs [{:organization/name "pgibbs"
+                           :organization/vcs-type "github"}
+                          {:organization/name "GibbonsP"
+                           :organization/vcs-type "bitbucket"}
+                          {:organization/name "Facebook"
+                           :organization/vcs-type "github"}
+                          {:organization/name "Initech"
+                           :organization/vcs-type "bitbucket"}]
+                   :selected-org selected-org
+                   :on-org-click #(swap! state assoc :selected-org %)})
           "Selected: " (if selected-org
-                         (:login selected-org)
+                         (:organization/name selected-org)
                          "(Nothing)")])))
-
-  (defcard-om picker
-    picker-parent
     {:selected-org nil}))
