@@ -114,6 +114,17 @@
           (common/messages (set (:messages build)))
           [:div.row
            [:div.col-xs-12
+            (when (-> build :outcome keyword (= :no_tests))
+              (let [content
+                    [:span
+                     "It looks like we couldn't infer test settings for your project. Refer to our \""
+                     [:a (open-ext {:href "https://circleci.com/docs/manually"
+                                    :target "_blank"})
+                         "Setting your build up manually"]
+                     "\" document to get started. It should only take a few minutes."]]
+                (common/message {:type :warning
+                                 :content content})))
+
             (when-let [error-div (report-infrastructure-error build owner)]
               error-div)
 
@@ -152,7 +163,7 @@
                 (.getTime (js/Date. end_time))
                 (datetime/server-now))]
       (- end start))
-      0))
+    0))
 
 ;; TODO this seems a little bit slow when calculating durations for really complex builds with
 ;; lots of containers. Is there a good way to avoid recalculating this when selecting container pills? (Perhaps caching the calculated value using IWillUpdate / IShouldUpdate?)

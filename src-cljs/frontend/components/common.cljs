@@ -105,26 +105,32 @@
   {:show-warning-text? true})
 
 (defn message-severity-display-options [message]
-  (get {"error"    ["alert-danger"  "Info-Error"]
-        "warning"  ["alert-warning" "Info-Warning"]
-        "info"     ["alert-info"    "Info-Info"]}
-       (:type message)
+  (get {:error    ["alert-danger"  "Info-Error"]
+        :warning  ["alert-warning" "Info-Warning"]
+        :info     ["alert-info"    "Info-Info"]}
+       (-> message :type keyword)
        ["alert-info" "Info-Info"]))
+
+(defn message [{:keys [type content]}]
+  (let [[alert-class alert-icon] (message-severity-display-options {:type type})]
+    [:div {:class ["alert" alert-class "iconified"]}
+     [:div.alert-icon
+      [:img {:src (icon-path alert-icon)}]]
+     [:div content]]))
 
 (defn messages
   ([msgs]
    (messages msgs {}))
   ([msgs opts]
-   (let [{:keys [show-warning-text?]} (merge messages-default-opts opts)]
+   (let [{:keys [show-warning-text?]} (merge messages-default-opts opts)
+         content (fn [message] 
+                   {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}})] 
      (when (pos? (count msgs))
        [:div.col-xs-12
-        (map (fn [message]
-               (let [[alert-class alert-icon] (message-severity-display-options message)]
-                 [:div.row
-                  [:div {:class ["alert" alert-class "iconified"]}
-                   [:div.alert-icon
-                    [:img {:src (icon-path alert-icon)}]]
-                   [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]]))
+        (map (fn [msg]
+               [:div.row
+                (message {:type (:type msg) 
+                          :content (content msg)})])
              msgs)]))))
 
 ;; TODO: Why do we have ico and icon?
