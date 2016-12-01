@@ -91,30 +91,28 @@
   (defn format-date [date]
     (.toDateString date))
 
-  (defn table-parent [data owner]
-    (om/component
-      (om/build table {:key-fn :name
-                       :rows [{:name "John"
-                               :birthday (js/Date. "1940-10-09")}
-                              {:name "Paul"
-                               :birthday (js/Date. "1942-06-18")}
-                              {:name "George"
-                               :birthday (js/Date. "1943-02-25")}
-                              {:name "Ringo"
-                               :birthday (js/Date. "1940-07-07")}]
-                       :columns [{:header "Name"
-                                  :cell-fn :name}
-                                 {:header "Birthday"
-                                  :cell-fn (comp format-date :birthday)}
-                                 {:header "Settings"
-                                  :type #{:right :shrink}
-                                  :cell-fn #(action-link "Settings" (icon/settings) "#")}
-                                 {:type :shrink
-                                  :cell-fn (fn [beatle]
-                                             (action-button
-                                              "Remove"
-                                              (icon/cancel-circle)
-                                              #(js/alert (str "You may not remove " (:name beatle) " from the band."))))}]})))
-
   (defcard-om table
-    table-parent))
+    (fn [data owner]
+      (om/component
+        (om/build table {:key-fn :name
+                         :rows [{:name "John"
+                                 :birthday (js/Date. "1940-10-09")}
+                                {:name "Paul"
+                                 :birthday (js/Date. "1942-06-18")}
+                                {:name "George"
+                                 :birthday (js/Date. "1943-02-25")}
+                                {:name "Ringo"
+                                 :birthday (js/Date. "1940-07-07")}]
+                         :columns [{:header "Name"
+                                    :cell-fn :name}
+                                   {:header "Birthday"
+                                    :cell-fn (comp format-date :birthday)}
+                                   {:header "Settings"
+                                    :type #{:right :shrink}
+                                    :cell-fn #(action-link "Settings" (icon/settings) "#")}
+                                   {:type :shrink
+                                    :cell-fn (fn [beatle]
+                                               (action-button
+                                                "Remove"
+                                                (icon/cancel-circle)
+                                                #(js/alert (str "You may not remove " (:name beatle) " from the band."))))}]})))))

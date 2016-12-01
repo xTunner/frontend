@@ -26,8 +26,9 @@
 
 
 (dc/do
-  (defn dropdown-parent [{:keys [selected-value] :as data} owner]
-    (om/component
+  (defcard-om dropdown
+    (fn [{:keys [selected-value] :as data} owner]
+      (om/component
         (html
          [:div
           [:div
@@ -41,7 +42,4 @@
            "Selected: " (if selected-value
                           (pr-str selected-value)
                           "(Nothing)")]])))
-
-  (defcard-om dropdown
-    dropdown-parent
     {:selected-value nil}))
