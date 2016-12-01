@@ -387,11 +387,11 @@
                                                :disabled? (= (name plan-id) (pm/osx-plan-id plan))
                                                :on-click-fn #(do
                                                                (raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])
-                                                               (analytics-track/track-update-plan-clicked {:owner owner
-                                                                                                           :new-plan plan-id
-                                                                                                           :previous-plan (pm/osx-plan-id plan)
-                                                                                                           :plan-type pm/osx-plan-type
-                                                                                                           :upgrade? (> (:price plan-data) (pm/osx-cost plan))}))})
+                                                               (analytics-track/update-plan-clicked {:owner owner
+                                                                                                     :new-plan plan-id
+                                                                                                     :previous-plan (pm/osx-plan-id plan)
+                                                                                                     :plan-type pm/osx-plan-type
+                                                                                                     :upgrade? (> (:price plan-data) (pm/osx-cost plan))}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
                                                :on-click-fn #(do
@@ -528,11 +528,11 @@
                                   #(do
                                     (raise! owner [:update-containers-clicked
                                                    {:containers selected-paid-containers}])
-                                    (analytics-track/track-update-plan-clicked {:owner owner
-                                                                                :new-plan selected-paid-containers
-                                                                                :previous-plan (pm/paid-linux-containers plan)
-                                                                                :plan-type pm/linux-plan-type
-                                                                                :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                                    (analytics-track/update-plan-clicked {:owner owner
+                                                                          :new-plan selected-paid-containers
+                                                                          :previous-plan (pm/paid-linux-containers plan)
+                                                                          :plan-type pm/linux-plan-type
+                                                                          :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
                       :kind :primary}
                      (if (config/enterprise?)
                        enterprise-text

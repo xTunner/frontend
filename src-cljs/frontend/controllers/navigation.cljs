@@ -357,7 +357,9 @@
                      :context {:project-name project-name})
 
           (= subpage :code-signing)
-          (api/get-project-code-signing-keys project-name vcs_type api-ch)
+          (do
+            (api/get-project-code-signing-keys project-name vcs_type api-ch)
+            (api/get-project-provisioning-profiles project-name vcs_type api-ch))
 
           :else nil))
 
