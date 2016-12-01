@@ -158,7 +158,7 @@
                                     (fn [token]
                                       (table/action-button
                                        "Remove"
-                                       (icon/delete)
+                                       (icon/cancel-circle)
                                        #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
 
 

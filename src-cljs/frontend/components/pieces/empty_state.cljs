@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.empty-state
   (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.pieces.button :as button])
+            [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.icon :as icon])
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn important
@@ -46,14 +47,37 @@
       (when action
         [:.action action])])))
 
+(defn avatar-icons
+  "Displays up to three avatars, overlapped. Suitable to be used as the :icon of
+  an empty-state.
+
+  avatar-urls - A collection of up to three avatar image URLs."
+  [avatar-urls]
+  {:pre [(>= 3 (count avatar-urls))]}
+  (component
+    (html
+     [:div
+      (for [avatar-url avatar-urls]
+        [:img {:src avatar-url}])])))
+
 (dc/do
   (defcard empty-state
-    (empty-state {:icon (html [:i.material-icons "cake"])
+    (empty-state {:icon (icon/project)
                   :heading (html
                             [:span
-                             "The "
-                             (important "cake")
-                             " is a lie"])
-                  :subheading "Let's add some."
-                  :action (button/button {:kind :primary}
-                                         "Add Cake")})))
+                             (important "bakry")
+                             " has no projects building on CircleCI"])
+                  :subheading "Let's fix that by adding a new project."
+                  :action (button/button {:kind :primary} "Add Project")}))
+
+  (defcard empty-state-with-avatars
+    ;; Images created with `convert -size 1x1 canvas:red gif:- | base64` (then blue and green).
+    (empty-state {:icon (avatar-icons
+                         ["data:image/gif;base64,R0lGODlhAQABAPAAAP8AAAAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                          "data:image/gif;base64,R0lGODlhAQABAPAAAACAAAAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="
+                          "data:image/gif;base64,R0lGODlhAQABAPAAAAAA/wAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw=="])
+                  :heading (html
+                            [:span
+                             "Get started by selecting your "
+                             (important "favorite color")])
+                  :subheading "Select a color to learn more about it."})))

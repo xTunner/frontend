@@ -1,6 +1,6 @@
 (ns frontend.components.pieces.org-picker
   (:require [devcards.core :as dc :refer-macros [defcard-om]]
-            [frontend.async :refer [raise!]]
+            [frontend.components.pieces.icon :as icon]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true]
@@ -32,8 +32,8 @@
                              "/" name)
                   :target "_blank"}
               (case vcs-type
-                "github" [:i.octicon.octicon-mark-github]
-                "bitbucket" [:i.fa.fa-bitbucket])]])])))))
+                "github" (icon/github)
+                "bitbucket" (icon/bitbucket))]])])))))
 
 (def organization (om-next/factory Organization))
 

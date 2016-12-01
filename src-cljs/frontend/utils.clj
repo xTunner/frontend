@@ -235,3 +235,10 @@
        (let [~form temp#]
          ~@body
          (recur ~test)))))
+
+(defmacro ns-docstring
+  "Returns the docstring of the current namespace. Useful for devcards. This has
+  to be a macro, because namespaces aren't reified in the JS runtime; they only
+  exist during compilation."
+  []
+  (-> &env :ns :doc))

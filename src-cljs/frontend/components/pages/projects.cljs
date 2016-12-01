@@ -5,6 +5,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.spinner :refer [spinner]]
@@ -30,62 +31,62 @@
                                      (fq/get project-model/buildable-parallelism :project))
                  :plan (fq/get project-model/buildable-parallelism :plan)}}
   [c projects plan]
-  (build-legacy table/table
-                {:rows projects
-                 :key-fn :project/vcs-url
-                 :columns [{:header "Project"
-                            :cell-fn
-                            (fn [project]
-                              (html
-                               (let [vcs-url (:project/vcs-url project)]
-                                 [:a
-                                  {:href (routes/v1-project-dashboard-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                                                            :org (vcs-url/org-name vcs-url)
-                                                                            :repo (vcs-url/repo-name vcs-url)})
-                                   :on-click #(analytics/track! c {:event-type :project-clicked
-                                                                   :properties {:vcs-type (vcs-url/vcs-type vcs-url)
-                                                                                :org (vcs-url/org-name vcs-url)
-                                                                                :repo (vcs-url/repo-name vcs-url)}})}
-                                  (:project/name project)])))}
+  (component
+    (build-legacy table/table
+                  {:rows projects
+                   :key-fn :project/vcs-url
+                   :columns [{:header "Project"
+                              :cell-fn
+                              (fn [project]
+                                (html
+                                 (let [vcs-url (:project/vcs-url project)]
+                                   [:a
+                                    {:href (routes/v1-project-dashboard-path {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                                              :org (vcs-url/org-name vcs-url)
+                                                                              :repo (vcs-url/repo-name vcs-url)})
+                                     :on-click #(analytics/track! c {:event-type :project-clicked
+                                                                     :properties {:vcs-type (vcs-url/vcs-type vcs-url)
+                                                                                  :org (vcs-url/org-name vcs-url)
+                                                                                  :repo (vcs-url/repo-name vcs-url)}})}
+                                    (:project/name project)])))}
 
-                           {:header "Parallelism"
-                            :type #{:right :shrink}
-                            :cell-fn
-                            #(html
-                              (let [parallelism (project-model/parallelism %)
-                                    buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
-                                    vcs-url (:project/vcs-url %)]
-                                [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
-                                                                             :org (vcs-url/org-name vcs-url)
-                                                                             :repo (vcs-url/repo-name vcs-url)
-                                                                             :_fragment "parallel-builds"})}
-                                 parallelism "x"
-                                 (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
+                             {:header "Parallelism"
+                              :type #{:right :shrink}
+                              :cell-fn
+                              #(html
+                                (let [parallelism (project-model/parallelism %)
+                                      buildable-parallelism (when plan (project-model/buildable-parallelism plan %))
+                                      vcs-url (:project/vcs-url %)]
+                                  [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
+                                                                               :org (vcs-url/org-name vcs-url)
+                                                                               :repo (vcs-url/repo-name vcs-url)
+                                                                               :_fragment "parallel-builds"})}
+                                   parallelism "x"
+                                   (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
 
-                           {:header "Team"
-                            :type #{:right :shrink}
-                            :cell-fn #(count (:project/followers %))}
+                             {:header "Team"
+                              :type #{:right :shrink}
+                              :cell-fn #(count (:project/followers %))}
 
-                           {:header "Settings"
-                            :type #{:right :shrink}
-                            :cell-fn
-                            #(html
-                              (let [vcs-url (:project/vcs-url %)]
-                                [:a {:href (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                                                             :org (vcs-url/org-name vcs-url)
-                                                                             :repo (vcs-url/repo-name vcs-url)})}
-                                 [:i.material-icons "settings"]]))}]}))
+                             {:header "Settings"
+                              :type #{:right :shrink}
+                              :cell-fn
+                              #(table/action-link
+                                "Settings"
+                                (icon/settings)
+                                (let [vcs-url (:project/vcs-url %)]
+                                  (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                                    :org (vcs-url/org-name vcs-url)
+                                                                    :repo (vcs-url/repo-name vcs-url)})))}]})))
 
 (defn- no-org-selected [available-orgs bitbucket-enabled?]
   (component
     (card/basic
      (empty-state/empty-state {:icon (if-let [orgs (seq (take 3 available-orgs))]
-                                       (element :avatars
-                                         (html
-                                          [:div
-                                           (for [{:keys [organization/avatar-url]} orgs]
-                                             [:img {:src (gh-utils/make-avatar-url {:avatar_url avatar-url} :size 60)}])]))
-                                       (html [:i.material-icons "group"]))
+                                       (empty-state/avatar-icons
+                                        (for [{:keys [organization/avatar-url]} orgs]
+                                          (gh-utils/make-avatar-url {:avatar_url avatar-url} :size 60)))
+                                       (icon/team))
                                :heading (html
                                          [:span
                                           "Get started by selecting your "
@@ -110,7 +111,7 @@
 (def add-project-button (om-next/factory AddProjectButton))
 
 (defn- no-projects-available [org-name]
-  (empty-state/empty-state {:icon (html [:i.material-icons "book"])
+  (empty-state/empty-state {:icon (icon/project)
                             :heading (html
                                       [:span
                                        (empty-state/important org-name)
@@ -132,18 +133,23 @@
      {:organization/plan (fq/get table :plan)}])
   Object
   (render [this]
-    (let [{:keys [organization/vcs-type organization/name organization/projects organization/plan]} (om-next/props this)
-          vcs-icon (case vcs-type
-                     "github" [:i.octicon.octicon-mark-github]
-                     "bitbucket" [:i.fa.fa-bitbucket]
-                     nil)]
-      (card/titled {:title (html [:span name vcs-icon])}
-                   (if projects
-                     (if-let [projects-with-followers
-                              (seq (filter #(seq (:project/followers %)) projects))]
-                       (table this projects-with-followers plan)
-                       (no-projects-available name))
-                     (spinner))))))
+    (component
+      (let [{:keys [organization/vcs-type organization/name organization/projects organization/plan]} (om-next/props this)
+            vcs-icon (case vcs-type
+                       "github" (icon/github)
+                       "bitbucket" (icon/bitbucket)
+                       nil)]
+        (card/titled {:title (element :title
+                               (html
+                                [:div
+                                 [:.vcs-icon vcs-icon]
+                                 name]))}
+                     (if projects
+                       (if-let [projects-with-followers
+                                (seq (filter #(seq (:project/followers %)) projects))]
+                         (table this projects-with-followers plan)
+                         (no-projects-available name))
+                       (spinner)))))))
 
 (def org-projects (om-next/factory OrgProjects))
 

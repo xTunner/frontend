@@ -41,6 +41,14 @@
 
           &.right {
             text-align: right;
+
+            // This wrapper lets us right-align block-level content.
+            > .contents {
+              width: -moz-min-content;
+              width: -webkit-min-content;
+              width: min-content;
+              margin-left: auto;
+            }
           }
         }
       }
@@ -62,10 +70,25 @@
     }
   });
 
+  .action-button-styles() {
+    display: block;
+    width: 18px;
+    color: @grayLight;
+  }
+
   .ui("action-button", {
+    .action-button-styles;
     margin: 0;
     padding: 0;
     border: none;
     background: none;
+  });
+
+  .ui("action-link", {
+    // We need to include the element name and .exception in the selector to
+    // get the a.exception rules to work correctly.
+    a&.exception {
+      .action-button-styles;
+    }
   });
 });
