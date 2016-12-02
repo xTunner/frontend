@@ -23,7 +23,7 @@
 
 (defn show-follow-project-button? [app]
   (when-let [project (get-in app state/project-path)]
-    (and (not (:followed project))
+    (and (not (:following project))
          (= (vcs-url/org-name (:vcs_url project))
             (get-in app [:navigation-data :org]))
          (= (vcs-url/repo-name (:vcs_url project))

@@ -1636,3 +1636,22 @@
                                  :component "web-notifications-confirmation-banner"}})
   (let [nav-ch (:nav comms)]
     (put! nav-ch [:navigate! {:path (routes/v1-account-subpage {:subpage "notifications"})}])))
+
+(defmethod post-control-event! :followed-projects
+  [_ _ _ previous-state current-state comms]
+  (let [api-ch (:api comms)
+        selected-vcs-urls (fn [path]
+                            (->> (get-in current-state path)
+                                 (filter :checked)
+                                 (map :vcs_url)))
+        building-vcs-urls (selected-vcs-urls (state/vcs-recent-active-projects-path true :github))
+        not-building-vcs-urls (selected-vcs-urls (state/vcs-recent-active-projects-path false :github))
+        uuid frontend.async/*uuid*]
+    (button-ajax :post
+                 (api/follow-projects (concat building-vcs-urls not-building-vcs-urls) api-ch uuid)
+                 :follow-projects
+                 api-ch)))
+
+(defmethod control-event :deselect-activity-repos
+  [_ _ {:keys [path]} state]
+  (update-in state path (partial mapv #(assoc % :checked false))))

@@ -1,5 +1,6 @@
 (ns frontend.models.test-feature
   (:require [frontend.models.feature :as feature]
+            [bond.james :as bond]
             [cljs.test :refer-macros [is deftest testing]]))
 
 (deftest enabled?-works
@@ -19,3 +20,14 @@
       ;; cookie set to true, query set to false
       (is (not (feature/enabled? :foo)))))
   (feature/disable-in-cookie :foo))
+
+
+(deftest ab-test-treatments-works
+  (bond/with-stub [[feature/enabled? (fn [feature]
+                                       (= :x feature))]]
+
+    (is (= {:x :x-yes :y :y-no}
+           (feature/ab-test-treatments {:x {true :x-yes
+                                            false :x-no}
+                                        :y {true :y-yes
+                                            false :y-no}})))))

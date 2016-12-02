@@ -7,12 +7,21 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn- default-show-aside-menu? [nav-point]
-  (not (#{:build
-          :add-projects
-          :build-insights
-          :project-insights
-          :team} nav-point)))
+(defn- default-show-aside-menu? [app]
+  (let [nav-point (:navigation-point app)
+        projects (get-in app state/projects-path)]
+    (cond
+      (and (= :dashboard (:navigation-point app))
+           (or (nil? projects)
+               (empty? projects)))
+      false
+
+      :else
+      (not (#{:build
+              :add-projects
+              :build-insights
+              :project-insights
+              :team} nav-point)))))
 
 (defn template
   "The template for building a page in the app.
@@ -33,24 +42,24 @@
     om/IRender
     (render [_]
       (html
-       (let [show-aside-menu? (if (= ::not-specified show-aside-menu?)
-                                (default-show-aside-menu? (:navigation-point app))
-                                show-aside-menu?)
-             outer? (contains? #{:landing :error} (:navigation-point app))
-             logged-in? (get-in app state/user-path)
-             ;; simple optimzation for real-time updates when the build is running
-             app-without-container-data (dissoc-in app state/container-data-path)]
-         ;; Outer gets just a plain div here.
-         [(if outer? :div :main.app-main)
-          (om/build header/header {:app app-without-container-data
-                                   :crumbs (or crumbs (get-in app state/crumbs-path))
-                                   :actions header-actions})
+        (let [show-aside-menu? (if (= ::not-specified show-aside-menu?)
+                                 (default-show-aside-menu? app)
+                                 show-aside-menu?)
+              outer? (contains? #{:landing :error} (:navigation-point app))
+              logged-in? (get-in app state/user-path)
+              ;; simple optimzation for real-time updates when the build is running
+              app-without-container-data (dissoc-in app state/container-data-path)]
+          ;; Outer gets just a plain div here.
+          [(if outer? :div :main.app-main)
+           (om/build header/header {:app app-without-container-data
+                                    :crumbs (or crumbs (get-in app state/crumbs-path))
+                                    :actions header-actions})
 
-          [:div.app-dominant
-           (when (and (not outer?) logged-in?)
-             (om/build aside/aside {:app (dissoc app-without-container-data :current-build-data)
-                                    :show-aside-menu? show-aside-menu?}))
+           [:div.app-dominant
+            (when (and (not outer?) logged-in?)
+              (om/build aside/aside {:app (dissoc app-without-container-data :current-build-data)
+                                     :show-aside-menu? show-aside-menu?}))
 
 
-           [:div.main-body
-            main-content]]])))))
+            [:div.main-body
+             main-content]]])))))

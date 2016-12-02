@@ -143,7 +143,7 @@
                       "Override all settings via a "
                       [:a (open-ext {:href "https://circleci.com/docs/configuration/"}) "circle.yml file"]
                       " in your repo. Very powerful."]]))]
-               (if (:followed project)
+               (if (:following project)
                  [(card/titled
                     {:title (str "You're following " (vcs-url/project-name vcs-url))}
                     (html

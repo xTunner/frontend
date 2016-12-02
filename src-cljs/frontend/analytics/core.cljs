@@ -1,10 +1,10 @@
 (ns frontend.analytics.core
-  (:require [frontend.analytics.ab :as ab]
-            [frontend.analytics.segment :as segment]
+  (:require [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
+            [frontend.models.feature :as feature]
             [frontend.utils :refer [merror]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -63,9 +63,11 @@
     :create-jira-issue-clicked
     :create-jira-issue-success
     :create-jira-issue-failed
+    :deselect-all-projects-clicked
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
     :expand-repo-toggled
+    :follow-and-build-projects-clicked
     :follow-project-clicked
     :insights-bar-clicked
     :insights-icon-clicked
@@ -161,7 +163,9 @@
   "Fill in any unsuppplied property values with those supplied
   in the current app state."
   (merge (properties-to-track-from-state current-state)
-         {:ab-test-treatments (ab/ab-test-treatments)}
+         {:ab-test-treatments (-> (get-in current-state state/user-path)
+                                  feature/ab-test-treatment-map
+                                  feature/ab-test-treatments)}
          properties))
 
 (defn- current-subpage
