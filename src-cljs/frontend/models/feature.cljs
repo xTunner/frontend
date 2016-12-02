@@ -68,6 +68,8 @@
   ([]
    {:junit-ab-test {true :junit-button
                     false :junit-banner}
+    :setup-docs-ab-test {true :setup-docs-modal
+                         false :setup-docs-banner}
     :signup-cta-on-404 {true :signup-cta-on-404
                         false :no-signup-cta-on-404}})
   ([user]

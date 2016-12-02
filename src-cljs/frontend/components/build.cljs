@@ -4,6 +4,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.build-head :as build-head]
@@ -115,11 +116,15 @@
           [:div.row
            [:div.col-xs-12
             (when (-> build :outcome keyword (= :no_tests))
-              (let [content
+              (let [track-setup-docs 
+                    #((om/get-shared owner :track-event) {:event-type :setup-docs-clicked
+                                                          :properties {:setup-docs-ab-test (feature/ab-test-treatment :setup-docs-ab-test)}})
+                    content
                     [:span
                      "It looks like we couldn't infer test settings for your project. Refer to our \""
                      [:a (open-ext {:href "https://circleci.com/docs/manually"
-                                    :target "_blank"})
+                                    :target "_blank"
+                                    :on-click track-setup-docs}) 
                          "Setting your build up manually"]
                      "\" document to get started. It should only take a few minutes."]]
                 (common/message {:type :warning
