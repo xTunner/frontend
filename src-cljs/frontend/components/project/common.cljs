@@ -20,7 +20,7 @@
             [om.core :as om :include-macros true]
             [sablono.core :as html :refer-macros [html]]))
 
-(defn show-trial-notice? [project plan]
+(defn show-trial-notice? [project plan dismissed]
   (let [conditions [(not (project-model/oss? project))
                     (plan-model/trial? plan)
                     ;; only bug them if < 20 days left in trial
@@ -34,7 +34,7 @@
                       true)]]
     (utils/mlog (gstring/format "show-trial-notice? has conditions %s days left %d"
                                 conditions (plan-model/days-left-in-trial plan)))
-    (every? identity conditions)))
+    (and plan (every? identity conditions) (not dismissed))))
 
 (defn trial-notice [data owner]
   (reify

@@ -112,7 +112,8 @@
              project-data (:project-data data)
              plan (:plan project-data)
              project (:project project-data)
-             build (:build build-data)]
+             build (:build build-data)
+             browser-settings (:browser-settings data)]
          [:div.notices
           (common/messages (set (:messages build)))
           [:div.row
@@ -122,7 +123,7 @@
                                    :show-premium-content? (project-model/show-premium-content? project plan)}
                                   owner)])
 
-            (when (and plan (project-common/show-trial-notice? project plan))
+            (when (project-common/show-trial-notice? project plan (:dismissed-trial-update-banner browser-settings))
               (om/build project-common/trial-notice project-data))
 
             (when (plan-model/suspended? plan)
@@ -482,7 +483,8 @@
 
               (om/build notices {:build-data (dissoc build-data :container-data)
                                  :project-data project-data
-                                 :invite-data invite-data})
+                                 :invite-data invite-data
+                                 :browser-settings (get-in app state/browser-settings-path)})
 
               (om/build container-pills {:container-data container-data
                                          :container-id (state/current-container-id app)

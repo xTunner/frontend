@@ -41,7 +41,7 @@
 
                :else
                [:div.dashboard
-                (when (and plan (project-common/show-trial-notice? project plan) (not (get-in data state/dismissed-trial-update-banner)))
+                (when (project-common/show-trial-notice? project plan (get-in data state/dismissed-trial-update-banner))
                   [:div.container-fluid
                    [:div.row
                     [:div.col-xs-12
