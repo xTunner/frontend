@@ -81,17 +81,7 @@
                  "Suggest a feature"]]
                [:li
                 [:a (html/open-ext {:href "https://discuss.circleci.com/c/bug-reports"})
-                 "Report an issue"]]
-               [:li
-                   ;; FIXME: NEED TO ADD QUICK START PAGE
-                  [:a {:href "/quick-start"}
-                   "Quick start"]]
-               [:li
-                 [:a.has-icon {:href "/build-insights"
-                               :aria-label "System status"}
-                  "System status" [:i.material-icons.status.operational "grain"]]]]] ;; blur_on leak_add network_check
-
-
+                 "Report an issue"]]]]
              [:li.dropdown.user-menu
               [:button.dropdown-toggle
                {:data-toggle "dropdown"
@@ -103,12 +93,6 @@
                (when (:admin user)
                  [:li [:a {:href "/admin"} "Admin"]])
                [:li [:a {:href "/logout/"} "Log out"]]]]]
-
-            [:ul.nav-items.nav-items-left.hidden-md-up
-             [:li
-               [:a.has-icon {:href "/build-insights"
-                             :aria-label "Status"}
-                 [:i.material-icons.status.operational "grain"]]]] ;; blur_on leak_add network_check
             [:button.navbar-toggler.hidden-md-up {:type "button"
                                                           :data-toggle "collapse"
                                                           :data-target "collapsing-nav"
