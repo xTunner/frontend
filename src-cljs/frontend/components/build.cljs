@@ -116,7 +116,9 @@
           (common/messages (set (:messages build)))
           [:div.row
            [:div.col-xs-12
-            (no-test-intervention/setup-docs-banner owner build)
+            (when (no-test-intervention/show-intervention? build)
+              (no-test-intervention/setup-docs-banner {:owner owner 
+                                                       :build build}))
 
             (when-let [error-div (report-infrastructure-error build owner)]
               error-div)

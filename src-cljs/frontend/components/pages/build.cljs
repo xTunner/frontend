@@ -1,5 +1,6 @@
 (ns frontend.components.pages.build
   (:require [frontend.async :refer [raise!]]
+            [frontend.experiments.no-test-intervention :as no-test-intervention]
             [frontend.components.build :as build-com]
             [frontend.components.build-head :as build-head]
             [frontend.components.forms :as forms]
@@ -74,9 +75,17 @@
   (reify
     om/IInitState
     (init-state [_]
-      :show-modal? false)
+      {:show-jira-modal? false
+       :show-setup-docs-modal? false})
+
+    om/IWillReceiveProps
+    (will-receive-props [_ data]
+      (let [build (get-in data state/build-path)]
+        (when (no-test-intervention/show-intervention? build)
+          (om/set-state! owner :show-setup-docs-modal? true))))
+          
     om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
+    (render-state [_ {:keys [show-jira-modal? show-setup-docs-modal?]}]
       (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
             build (get-in data state/build-path)
             build-id (build-model/id build)
@@ -90,10 +99,12 @@
             can-write-settings? (project-model/can-write-settings? project)]
         (html
           [:div.build-actions-v2
-           (when show-modal?
+           (when show-jira-modal?
              (om/build jira-modal/jira-modal {:project project
                                               :jira-data jira-data
-                                              :close-fn #(om/set-state! owner :show-modal? false)}))
+                                              :close-fn #(om/set-state! owner :show-jira-modal? false)}))
+           (when show-setup-docs-modal?
+             (no-test-intervention/setup-docs-modal owner))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
              (list
               (forms/managed-button
@@ -114,7 +125,7 @@
              (if (and (feature/enabled? :jira-integration) jira-data)
                (list
                  [:button.btn-icon.jira-container
-                   {:on-click #(om/set-state! owner :show-modal? true)
+                   {:on-click #(om/set-state! owner :show-jira-modal? true)
                     :title "Add ticket to JIRA"}
                    [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]]
                  [:a.exception.btn-icon.build-settings-container
