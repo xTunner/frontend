@@ -1,5 +1,6 @@
 (ns frontend.components.build
   (:require [frontend.async :refer [raise!]]
+            [frontend.experiments.no-test-intervention :as no-test-intervention]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -115,20 +116,7 @@
           (common/messages (set (:messages build)))
           [:div.row
            [:div.col-xs-12
-            (when (-> build :outcome keyword (= :no_tests))
-              (let [track-setup-docs 
-                    #((om/get-shared owner :track-event) {:event-type :setup-docs-clicked
-                                                          :properties {:setup-docs-ab-test (feature/ab-test-treatment :setup-docs-ab-test)}})
-                    content
-                    [:span
-                     "It looks like we couldn't infer test settings for your project. Refer to our \""
-                     [:a (open-ext {:href "https://circleci.com/docs/manually"
-                                    :target "_blank"
-                                    :on-click track-setup-docs}) 
-                         "Setting your build up manually"]
-                     "\" document to get started. It should only take a few minutes."]]
-                (common/message {:type :warning
-                                 :content content})))
+            (no-test-intervention/setup-docs-banner owner build)
 
             (when-let [error-div (report-infrastructure-error build owner)]
               error-div)
