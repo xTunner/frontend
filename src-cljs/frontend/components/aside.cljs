@@ -330,7 +330,6 @@
             [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
              (common/ico :fail-light)]]
            [:div.aside-user-options
-            (js/console.debug ">>>" (pr-str subpage))
             (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
 (defn redirect-org-settings-subpage

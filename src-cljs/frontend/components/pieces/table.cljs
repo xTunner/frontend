@@ -1,5 +1,6 @@
 (ns frontend.components.pieces.table
   (:require [devcards.core :as dc :refer-macros [defcard-om]]
+            [frontend.components.pieces.icon :as icon]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
@@ -57,7 +58,8 @@
               (for [[idx {:keys [cell-fn type]}] (map-indexed vector columns)]
                 [:td {:key idx
                       :class (cell-classes type)}
-                 (cell-fn row)])])]])))))
+                 [:.contents
+                  (cell-fn row)]])])]])))))
 
 (defn action-button
   "A button suitable for the action button cell of a table row.
@@ -66,37 +68,51 @@
   icon     - The icon rendered visually as the button.
   on-click - Handler called when the button is clicked."
   [label icon on-click]
-  (html
-   [:button {:data-component `action-button
-             :aria-label label
-             :on-click on-click}
-    icon]))
+  (component
+    (html
+     [:button {:aria-label label
+               :on-click on-click}
+      icon])))
+
+(defn action-link
+  "A link suitable for the action button cell of a table row.
+
+  label - The textual label. Not visible; used as an aria-label.
+  icon  - The icon rendered visually as the button.
+  href  - The href of the link."
+  [label icon href]
+  (component
+    (html
+     [:a.exception {:aria-label label
+                    :href href}
+      icon])))
 
 (dc/do
   (defn format-date [date]
     (.toDateString date))
 
-  (defn table-parent [data owner]
-    (om/component
-      (om/build table {:key-fn :name
-                       :rows [{:name "John"
-                               :birthday (js/Date. "1940-10-09")}
-                              {:name "Paul"
-                               :birthday (js/Date. "1942-06-18")}
-                              {:name "George"
-                               :birthday (js/Date. "1943-02-25")}
-                              {:name "Ringo"
-                               :birthday (js/Date. "1940-07-07")}]
-                       :columns [{:header "Name"
-                                  :cell-fn :name}
-                                 {:header "Birthday"
-                                  :cell-fn (comp format-date :birthday)}
-                                 {:type :shrink
-                                  :cell-fn (fn [beatle]
-                                             (action-button
-                                               "Remove"
-                                               "X"
-                                               #(js/alert (str "You may not remove " (:name beatle) " from the band."))))}]})))
-
   (defcard-om table
-    table-parent))
+    (fn [data owner]
+      (om/component
+        (om/build table {:key-fn :name
+                         :rows [{:name "John"
+                                 :birthday (js/Date. "1940-10-09")}
+                                {:name "Paul"
+                                 :birthday (js/Date. "1942-06-18")}
+                                {:name "George"
+                                 :birthday (js/Date. "1943-02-25")}
+                                {:name "Ringo"
+                                 :birthday (js/Date. "1940-07-07")}]
+                         :columns [{:header "Name"
+                                    :cell-fn :name}
+                                   {:header "Birthday"
+                                    :cell-fn (comp format-date :birthday)}
+                                   {:header "Settings"
+                                    :type #{:right :shrink}
+                                    :cell-fn #(action-link "Settings" (icon/settings) "#")}
+                                   {:type :shrink
+                                    :cell-fn (fn [beatle]
+                                               (action-button
+                                                "Remove"
+                                                (icon/cancel-circle)
+                                                #(js/alert (str "You may not remove " (:name beatle) " from the band."))))}]})))))

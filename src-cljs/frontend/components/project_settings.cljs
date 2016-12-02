@@ -58,7 +58,7 @@
        [:span
         (table/action-button
          "Remove"
-         (icon/delete)
+         (icon/cancel-circle)
          #(om/set-state! owner :show-modal? true))
         (when show-modal?
           (let [close-fn #(om/set-state! owner :show-modal? false)]
@@ -1268,7 +1268,7 @@
                                         (fn [key]
                                           (table/action-button
                                            "Remove"
-                                           (icon/delete)
+                                           (icon/cancel-circle)
                                            #(raise! owner [:delete-checkout-key-clicked {:project-id project-id
                                                                                          :project-name project-name
                                                                                          :fingerprint (:fingerprint key)}])))}]})])
@@ -2081,7 +2081,7 @@
              (om/build p12-key-table {:rows (->> osx-keys
                                                  (map (partial merge {:project-name project-name
                                                                       :vcs-type vcs-type})))})
-             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+             (empty-state/empty-state {:icon (icon/key)
                                        :heading (html
                                                   [:span (str project-name " has no ")
                                                    (empty-state/important "code signing keys")
@@ -2128,7 +2128,7 @@
              (om/build provisioning-profiles-table {:rows (->> osx-profiles
                                                               (map (partial merge {:project-name project-name
                                                                                    :vcs-type vcs-type})))})
-             (empty-state/empty-state {:icon [:i.octicon.octicon-key]
+             (empty-state/empty-state {:icon (icon/key)
                                        :heading (html
                                                   [:span (str project-name " has no ")
                                                    (empty-state/important "provisioning profiles")

@@ -39,17 +39,18 @@
                            :msg "The %s project is covered by %s's trial which expires in 3 days! "
                            :link "Add a plan to keep running builds."
                            :org_name nil}
-               :paid      {:paid {:template {:type "paid"}}  :trial_end nil :org_name "plan-org"}}]
+               :paid      {:paid {:template {:type "paid"}}  :trial_end nil :org_name "plan-org"}}
+        dismissed false]
 
     (testing "1: never show trial notice for paid, regardless of oss status of project"
       (doseq [project (vals projects)]
-        (is (not (project-common/show-trial-notice? project (:paid plans))))))
+        (is (not (project-common/show-trial-notice? project (:paid plans) dismissed )))))
 
     (testing "2: never show trial notice for oss, regardless of plan"
       (doseq [plan (vals plans)]
         (do
-          (is (not (project-common/show-trial-notice? (:user-oss projects) plan)))
-          (is (not (project-common/show-trial-notice? (:org-oss projects) plan))))))
+          (is (not (project-common/show-trial-notice? (:user-oss projects) plan dismissed)))
+          (is (not (project-common/show-trial-notice? (:org-oss projects) plan dismissed))))))
 
     (testing "3: show for private projects on expired, eleven, eight, six and 3 day"
       (doseq [project-key [:org-private :user-private]
@@ -57,7 +58,9 @@
               :let [project (project-key projects)
                     plan (plan-key plans)]]
         (testing (str "with " project-key " and " plan-key)
-          (is (project-common/show-trial-notice? project plan)))))
+          (do
+            (is (project-common/show-trial-notice? project plan dismissed))
+            (is (not (project-common/show-trial-notice? project plan true)))))))
 
     (testing "4: do not show for private projects on long or paid plans"
       (doseq [project-key [:org-private :user-private]
@@ -65,4 +68,4 @@
               :let [project (project-key projects)
                     plan (plan-key plans)]]
         (testing (str "with " project-key " and " plan-key)
-          (is (not (project-common/show-trial-notice? project plan))))))))
+          (is (not (project-common/show-trial-notice? project plan dismissed))))))))
