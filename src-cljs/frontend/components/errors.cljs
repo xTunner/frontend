@@ -40,11 +40,11 @@
              [:h3 "You may have been logged out. "]
              [:p.error-message
               "Learn more about "
-              [:a {:href "/"} "CircleCI"]
+              [:a (open-ext {:href "/"}) "CircleCI"]
               " , "
-              [:a {:href "/mobile/osx/"} "CircleCI for OS X"]
+              [:a (open-ext {:href "/mobile/osx/"}) "CircleCI for OS X"]
               ", or "
-              [:a {:href "/enterprise/"} "CircleCI for Enterprise"]
+              [:a (open-ext {:href "/enterprise/"}) "CircleCI for Enterprise"]
               "."]]
             :else "Something completely unexpected happened")]]
         [:.jumbotron
