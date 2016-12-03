@@ -81,7 +81,7 @@
     om/IWillReceiveProps
     (will-receive-props [_ data]
       (let [build (get-in data state/build-path)]
-        (when (no-test-intervention/show-intervention? build)
+        (when (no-test-intervention/show-setup-docs-modal? build)
           (om/set-state! owner :show-setup-docs-modal? true))))
           
     om/IRenderState

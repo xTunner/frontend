@@ -7,41 +7,49 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defn track-setup-docs-clicked [owner]
+(defn- ab-test-treatment []
+  (feature/ab-test-treatment :setup-docs-ab-test))
+
+(defn- track-setup-docs-clicked [owner]
   ((om/get-shared owner :track-event) 
    {:event-type :setup-docs-clicked
                 :properties {:setup-docs-ab-test 
-                             (feature/ab-test-treatment :setup-docs-ab-test)}}))
+                             (ab-test-treatment)}})) 
 
 (defn show-intervention? [build]
   (-> build :outcome keyword (= :no_tests)))
 
-(defn setup-docs-props [owner]
+(defn show-setup-docs-modal? [build]
+  (and (show-intervention? build)
+       (-> build :build_num (= 1))))
+
+(defn- setup-docs-link-props [owner]
   (open-ext {:href "https://circleci.com/docs/manually"
              :target "_blank"
              :on-click #(track-setup-docs-clicked owner)}))
 
 (defn setup-docs-banner [{:keys [owner build]}]
-  (let [content
-        [:span
-         "It looks like we couldn't infer test settings for your project. Refer to our \""
-         [:a (setup-docs-props owner)
-             "Setting your build up manually"]
-         "\" document to get started. It should only take a few minutes."]]
-    (common/message {:type :warning
-                     :content content})))
+  (when (= (ab-test-treatment) :setup-docs-banner)
+    (let [content
+          [:span
+           "It looks like we couldn't infer test settings for your project. Refer to our \""
+           [:a (setup-docs-link-props owner)
+               "Setting your build up manually"]
+           "\" document to get started. It should only take a few minutes."]]
+      (common/message {:type :warning
+                       :content content}))))
 
 (defn setup-docs-modal [owner]
-  (let [close-fn #(om/set-state! owner :show-setup-docs-modal? false)]
-    (modal/modal-dialog
-      {:title "We couldnt determine the test settings for your project"
-       :body (html
-              [:span 
-               (str "We're sorry about that! Please make sure you have a circle.yml "
-                    "configuration file in place, and check our doc about ")
-               [:a (setup-docs-props owner)
-                   "manual build setup"]
-               "."])
-       :actions [(button/button {:on-click close-fn} "Cancel")
-                 (button/link {:kind :primary} "Read doc")]
-       :close-fn close-fn})))
+  (when (= (ab-test-treatment) :setup-docs-modal)
+    (let [close-fn #(om/set-state! owner :show-setup-docs-modal? false)]
+      (modal/modal-dialog
+        {:title "We couldnt determine the test settings for your project"
+         :body (html
+                [:span 
+                 (str "We're sorry about that! Please make sure you have a circle.yml "
+                      "configuration file in place, and check our doc about ")
+                 [:a (setup-docs-link-props owner)
+                     "manual build setup"]
+                 "."])
+         :actions [(button/button {:kind :primary :on-click close-fn} "Got it")]
+         :close-fn close-fn}))))
