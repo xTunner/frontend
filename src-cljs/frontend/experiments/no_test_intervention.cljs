@@ -11,10 +11,9 @@
   (feature/ab-test-treatment :setup-docs-ab-test))
 
 (defn- track-setup-docs-clicked [owner]
-  ((om/get-shared owner :track-event) 
-   {:event-type :setup-docs-clicked
-                :properties {:setup-docs-ab-test 
-                             (ab-test-treatment)}})) 
+  ((om/get-shared owner :track-event) {:event-type :setup-docs-clicked
+                                       :properties {:setup-docs-ab-test 
+                                                    (ab-test-treatment)}}))
 
 (defn show-intervention? [build]
   (-> build :outcome keyword (= :no_tests)))
