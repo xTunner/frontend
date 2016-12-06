@@ -76,6 +76,7 @@
 
             > i {
               margin-left: 0;
+              margin-right: 6px;
               @media (max-width: @screen-md-min) {
                 display: none!important;
               }
@@ -87,7 +88,7 @@
             display: block;
             padding: 20px;
             font-size: @fontSizeSmall;
-            font-weight: 400;
+            font-weight: 500;
             line-height: 30px;
             color: @white;
             text-decoration: none;
@@ -149,6 +150,10 @@
               &:hover {
                 background-color: @blueDarkest;
                 color: @whiten;
+
+                span.heading {
+                  color: @whiten;
+                }
               }
 
               &.has-icon i {
@@ -171,6 +176,10 @@
                     color: @redDark;
                   }
                 }
+              }
+
+              span.heading {
+                color: @blueDarkest;
               }
 
               span.description {

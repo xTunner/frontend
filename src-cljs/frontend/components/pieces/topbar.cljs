@@ -52,9 +52,9 @@
                "Updates" [:i.material-icons "keyboard_arrow_down"]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                (when-not (config/enterprise?)
-                 [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) "Changelog"
+                 [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"}) [:span.heading "Changelog"]
                        [:span.description "The latest CircleCI product updates."]]])
-               [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) "Announcements"
+               [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"}) [:span.heading "Announcements"]
                      [:span.description "Important announcements from CircleCI about upcoming features and updates."]]]]]
              [:li.dropdown
               [:button.dropdown-toggle
@@ -65,23 +65,23 @@
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                [:li
                 [:a (html/open-ext {:href "https://circleci.com/docs/"})
-                 "Docs"
+                 [:span.heading "Docs"]
                  [:span.description "Read about building, testing, and deploying your software on CircleCI."]]]
                [:li
                 [:a (html/open-ext {:href "https://discuss.circleci.com/"})
-                 "Discuss"
+                 [:span.heading "Discuss"]
                  [:span.description "Get help and meet developers talking about testing, continuous integration, and continuous delivery."]]]
                [:li
                  ;; FIXME: NEED TO ADD LINK TO ELEV.IO SUPPORT WIDGET
                 [:a.support-info {:href "/support"}
-                 "Support"
+                 [:span.heading "Support"]
                  [:span.description "Send us a message. We are here to help!"]]]
                [:li
                 [:a (html/open-ext {:href "https://discuss.circleci.com/c/feature-request"})
-                 "Suggest a feature"]]
+                 [:span.heading "Suggest a feature"]]]
                [:li
                 [:a (html/open-ext {:href "https://discuss.circleci.com/c/bug-reports"})
-                 "Report an issue"]]]]
+                 [:span.heading "Report an issue"]]]]]
              [:li.dropdown.user-menu
               [:button.dropdown-toggle
                {:data-toggle "dropdown"
@@ -89,10 +89,10 @@
                 :aria-expanded "false"}
                [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
-               [:li [:a {:href "/account"} "User settings"]]
+               [:li [:a {:href "/account"} [:span.heading "User settings"]]]
                (when (:admin user)
-                 [:li [:a {:href "/admin"} "Admin"]])
-               [:li [:a {:href "/logout/"} "Log out"]]]]]
+                 [:li [:a {:href "/admin"} [:span.heading "Admin"]]])
+               [:li [:a {:href "/logout/"} [:span.heading "Log out"]]]]]]
             [:button.navbar-toggler.hidden-md-up {:type "button"
                                                           :data-toggle "collapse"
                                                           :data-target "collapsing-nav"
