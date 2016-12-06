@@ -27,7 +27,7 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html defrender]]))
 
-(defn report-error [{:keys [messages failed infrastructure_fail fail_reason]} owner]
+(defn report-infrastructure-error [{:keys [messages failed infrastructure_fail fail_reason]} owner]
   (when (and (empty? messages)
              failed
              infrastructure_fail)
@@ -114,8 +114,7 @@
           (common/messages (set (:messages build)))
           [:div.row
            [:div.col-xs-12
-            (when-let [error-div (report-error build
-                                               owner)]
+            (when-let [error-div (report-infrastructure-error build owner)]
               error-div)
 
             (when (project-common/show-trial-notice? project plan (:dismissed-trial-update-banner browser-settings))
