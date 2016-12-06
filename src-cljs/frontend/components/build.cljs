@@ -13,7 +13,6 @@
             [frontend.components.project.common :as project-common]
             [frontend.components.svg :refer [svg]]
             [frontend.components.pieces.spinner :refer [spinner]]
-            [frontend.config :refer [enterprise?]]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.config :as config]
@@ -28,42 +27,39 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html defrender]]))
 
-(defn infrastructure-fail-message [owner fail-reason]
-  (if (enterprise?)
+(defn report-error [{:keys [messages failed infrastructure_fail fail_reason]} owner]
+  (when (and (empty? messages)
+             failed
+             infrastructure_fail)
     [:div
-     "Looks like you may have encountered a bug in the build infrastructure. "
-     "Your build should have been automatically retried.  If the problem persists, please "
-     (common/contact-us-inner owner)
-     ", so CircleCI can investigate."]
+     [:div.alert.alert-danger.iconified
+      [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
+      (cond
+        (config/enterprise?)
+        [:div
+         "Looks like you may have encountered a bug in the build infrastructure. "
+         "Your build should have been automatically retried.  If the problem persists, please "
+         (common/contact-us-inner owner)
+         ", so CircleCI can investigate."]
 
-    (cond
-      (= fail-reason "exit-code-65-bug")
-      [:div "This build failed as an \"Exit Code 65\" bug. "
-       "You will not be charged for this build and it will be retried up to 3 times."
-       "To follow progress regarding the root cause of this error, please follow "
-       [:a {:href "https://discuss.circleci.com/t/xcode-exit-code-65/4284/9"
-            :target "_blank"}
-        "this Discuss post."]]
+        (= fail_reason "exit-code-65-bug")
+        [:div "This build failed as an \"Exit Code 65\" bug. "
+         "You will not be charged for this build and it will be retried up to 3 times."
+         "To follow progress regarding the root cause of this error, please follow "
+         [:a {:href "https://discuss.circleci.com/t/xcode-exit-code-65/4284/9"
+              :target "_blank"}
+          "this Discuss post."]]
 
-      :else
-      [:div
-       "Looks like we had a bug in our infrastructure, or that of our providers (generally "
-       [:a {:href "https://status.github.com/"} "GitHub"]
-       " or "
-       [:a {:href "http://status.aws.amazon.com/"} "AWS"]
-       ") We should have automatically retried this build. We've been alerted of"
-       " the issue and are almost certainly looking into it, please "
-       (common/contact-us-inner owner)
-       " if you're interested in the cause or if the problem persists."])))
-
-(defn report-error [{:keys [build show-premium-content?]} owner]
-  (when (and (:failed build)
-             (:infrastructure_fail build)
-             (not show-premium-content?)
-             (not (config/enterprise?)))
-    [:div.alert.alert-danger.iconified
-     [:div [:img.alert-icon {:src (common/icon-path "Info-Error")}]]
-     (infrastructure-fail-message owner (:fail_reason build))]))
+        :else
+        [:div
+         "Looks like we had a bug in our infrastructure, or that of our providers (generally "
+         [:a {:href "https://status.github.com/"} "GitHub"]
+         " or "
+         [:a {:href "http://status.aws.amazon.com/"} "AWS"]
+         "). We should have automatically retried this build. We've been alerted of"
+         " the issue and are almost certainly looking into it, please "
+         (common/contact-us-inner owner)
+         " if you're interested in the cause or if the problem persists."])]]))
 
 (defn sticky [{:keys [wrapper-class content-class content]} owner]
   (reify
@@ -118,10 +114,9 @@
           (common/messages (set (:messages build)))
           [:div.row
            [:div.col-xs-12
-            (when (empty? (:messages build))
-              [:div (report-error {:build build
-                                   :show-premium-content? (project-model/show-premium-content? project plan)}
-                                  owner)])
+            (when-let [error-div (report-error build
+                                               owner)]
+              error-div)
 
             (when (project-common/show-trial-notice? project plan (:dismissed-trial-update-banner browser-settings))
               (om/build project-common/trial-notice project-data))
