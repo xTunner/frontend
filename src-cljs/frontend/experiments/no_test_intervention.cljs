@@ -27,12 +27,15 @@
 (defn setup-docs-banner [{:keys [track-fn build]}]
   (when (= :setup-docs-banner (ab-test-treatment))
     (let [content
-          [:span 
-           (str "We couldn't detect the settings for your project! Please make sure "
-                "you have a circle.yml configuration file in place, and check our doc about ")
-           [:a (setup-docs-link-props track-fn)
-               "manual build setup"]
-           "."]]
+          (html
+            [:div
+             [:span 
+              (str "We couldn't detect the settings for your project! Please "
+                   "make sure you have a circle.yml configuration file in "
+                   "place, and check our doc about ")
+              [:a (setup-docs-link-props track-fn)
+                  "manual build setup"]
+              "."]])]
       (common/message {:type :warning
                        :content content}))))
 
@@ -42,8 +45,9 @@
       {:title "We couldnt determine the test settings for your project"
        :body (html
               [:span 
-               (str "We're sorry about that! Please make sure you have a circle.yml "
-                    "configuration file in place, and check our doc about ")
+               (str "We're sorry about that! Please make sure you have a "
+                    "circle.yml configuration file in place, and check our "
+                    "doc about ")
                [:a (setup-docs-link-props track-fn)
                    "manual build setup"]
                "."])

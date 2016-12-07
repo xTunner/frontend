@@ -105,18 +105,20 @@
   {:show-warning-text? true})
 
 (defn message-severity-display-options [message]
-  (get {:error    ["alert-danger"  "Info-Error"]
+  (case (-> message :type keyword)
+        :error    ["alert-danger"  "Info-Error"]
         :warning  ["alert-warning" "Info-Warning"]
-        :info     ["alert-info"    "Info-Info"]}
-       (-> message :type keyword)
-       ["alert-info" "Info-Info"]))
+        :info     ["alert-info"    "Info-Info"]
+        ["alert-info" "Info-Info"]))
 
 (defn message [{:keys [type content]}]
-  (let [[alert-class alert-icon] (message-severity-display-options {:type type})]
-    [:div {:class ["alert" alert-class "iconified"]}
-     [:div.alert-icon
-      [:img {:src (icon-path alert-icon)}]]
-     [:div content]]))
+  (let [[alert-class alert-icon] 
+        (message-severity-display-options {:type type})]
+    (html
+      [:div {:class ["alert" alert-class "iconified"]}
+       [:div.alert-icon
+        [:img {:src (icon-path alert-icon)}]]
+       content])))
 
 (defn messages
   ([msgs]
@@ -124,7 +126,11 @@
   ([msgs opts]
    (let [{:keys [show-warning-text?]} (merge messages-default-opts opts)
          content (fn [message] 
-                   {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}})] 
+                   (html
+                     [:div 
+                      {:dangerouslySetInnerHTML 
+                       #js 
+                       {"__html" (normalize-html (:message message))}}]))]
      (when (pos? (count msgs))
        [:div.col-xs-12
         (map (fn [msg]
