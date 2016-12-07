@@ -1499,8 +1499,11 @@
                                  [:h1 (str "Current Linux plan: Hobbyist (1 container) - $0/month")]
                                  [:p "0 containers are paid. 1 container is free."]
                                  [:p
-                                  [:strong "Add more containers to update your plan below"
-                                   ]
+                                  [:strong
+                                   [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                            :vcs_type (:vcs_type plan-org)
+                                                                            :_fragment "linux-pricing"})}
+                                    "Add more containers to update your plan"]]
                                   " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]]
                                 :else nil))
                         (when (> (pm/trial-containers plan) 0)
@@ -1531,7 +1534,7 @@
                                 [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
                                                                        :vcs_type (:vcs_type plan-org)
                                                                        :_fragment "linux-pricing"})}
-                                "Add more containers"]]
+                                "Add more containers to update your plan"]]
                                 " for more parallelism and shorter queue times."]))])
                         (when (config/enterprise?)
                           (om/build linux-plan {:app app}))]))
