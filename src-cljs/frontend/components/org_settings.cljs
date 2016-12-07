@@ -505,7 +505,7 @@
              (om/build linux-plan-overview app)]
 
             [:div.linux-plan-proto-card {:style {:width "49%"}}
-             [:h1 "More containers = faster builds & lower queue times."]
+             [:h1.text-center "More containers = faster builds & lower queue times."]
              (when-not (config/enterprise?)
                [:div
                 (om/build linux-oss-alert app)])]]
