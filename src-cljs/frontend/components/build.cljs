@@ -117,7 +117,7 @@
           [:div.row
            [:div.col-xs-12
             (when (no-test-intervention/show-intervention? build)
-              (no-test-intervention/setup-docs-banner {:owner owner 
+              (no-test-intervention/setup-docs-banner {:track-fn (om/get-shared owner :track-event)
                                                        :build build}))
 
             (when-let [error-div (report-infrastructure-error build owner)]
