@@ -31,6 +31,9 @@
   (:require-macros [cljs.core.async.macros :as am :refer [go]]
                    [frontend.utils :refer [html]]))
 
+(declare osx-overview)
+(declare linux-plan-overview)
+
 (defn non-admin-plan [{:keys [org-name login vcs_type]} owner]
   (reify
     om/IRender
@@ -453,7 +456,7 @@
           [:div.osx-plans {:data-component `osx-plans-list}
            [:fieldset
             [:legend (str "OS X Plans")]
-            [:p "Your selection below only applies to OS X service and will not affect Linux Containers."]
+            [:p [:em "Your selection below only applies to OS X service and will not affect Linux Containers."]]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
@@ -461,6 +464,13 @@
            [:div.plan-selection
             (om/build-all osx-plan (->> osx-plans
                                         (map #(assoc % :org-name org-name :vcs-type vcs-type))))]])))))
+(defn linux-oss-alert [app owner]
+  (om/component
+    (html
+      [:div.alert.alert-default.mb-0
+       [:div.usage-message
+        [:div.text
+         [:span "We "[:span.heart-emoji "❤"]" OSS. Projects that are public will build with " pm/oss-containers " extra containers - our gift to free and open source software."]]]])))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
   (reify
@@ -484,90 +494,86 @@
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)
             containers-str (pluralize-no-val selected-containers "container")]
-       (html
+        (html
          [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
           [:div.main-content
-           [:div
-            [:legend "Linux Plan: "
-             [:div.container-input
-              [:input.form-control {:style {:margin "0 4px" :height "calc(2em + 2px)"}
-                                    :type "text" :value selected-containers
-                                    :on-change #(utils/edit-input owner state/selected-containers-path %
-                                                                  :value (int (.. % -target -value)))}]]
-             [:span.new-plan-total (if (config/enterprise?)
-                                    containers-str
-                                    (str "paid " containers-str
-                                         (str (when-not (zero? new-total) (str " for $" new-total "/month")))
-                                         " + 1 free container"))]]
+           [:div.linux-plan-proto
+            [:div {:style {:width "49%"}}
+             (om/build linux-plan-overview app)]
 
-            [:form
+            [:div.linux-plan-proto-card {:style {:width "49%"}}
+             [:h1 "More containers = faster builds & lower queue times."]
              (when-not (config/enterprise?)
-               [:div.container-picker
-                [:h1 "More containers means faster builds and lower queue times."]
-                [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]])
-             [:fieldset
-              (if (and (not piggiebacked?)
-                       (or (config/enterprise?)
-                           (pm/stripe-customer? plan)))
-                (let [enterprise-text "Save changes"]
-                  (if (and (zero? new-total)
-                           (not (config/enterprise?))
-                           (not (zero? (pm/paid-linux-containers plan))))
-                    (button/link
-                     {:href "#cancel"
-                      :disabled? (not button-clickable?)
-                      :kind :danger
-                      :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
-                                                                      :properties {:repo nil}})}
-                     "Cancel Plan")
-                    (button/managed-button
-                     {:success-text "Saved"
-                      :loading-text "Saving..."
+               [:div
+                (om/build linux-oss-alert app)])]]
+
+             [:div
+              [:form
+              (when-not (config/enterprise?)
+                [:div.container-picker
+                 (if (pm/linux? plan)
+                   [:legend.update-plan "Update Linux plan"]
+                   [:legend.update-plan "Choose Linux plan"]
+                   )
+                 [:h1.container-input
+                  [:span "Use "]
+                  [:input.form-control
+                   {:type "text" :value selected-containers
+                    :on-change #(utils/edit-input owner state/selected-containers-path %
+                    :value (int (.. % -target -value)))}]
+                  [:span.new-plan-total (if (config/enterprise?)
+                                         containers-str
+                                         (str "paid " containers-str
+                                              (str (when-not (zero? new-total) (str " at $" new-total "/month")))
+                                              " + 1 free container"))]]
+                 [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]])
+              [:fieldset
+               (if (and (not piggiebacked?)
+                        (or (config/enterprise?)
+                            (pm/stripe-customer? plan)))
+                 (let [enterprise-text "Save changes"]
+                   (if (and (zero? new-total)
+                            (not (config/enterprise?))
+                            (not (zero? (pm/paid-linux-containers plan))))
+                     (button/link
+                       {:href "#cancel"
+                        :disabled? (not button-clickable?)
+                        :kind :danger
+                        :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
+                                                                        :properties {:repo nil}})}
+                       "Cancel Plan")))
+                 (if-not checkout-loaded?
+                   (spinner)
+                   (button/managed-button
+                     {:success-text "Paid!"
+                      :loading-text "Paying..."
+                      :failed-text "Failed!"
                       :disabled? (not button-clickable?)
                       :on-click (when button-clickable?
-                                  #(do
-                                    (raise! owner [:update-containers-clicked
-                                                   {:containers selected-paid-containers}])
-                                    (analytics-track/update-plan-clicked {:owner owner
-                                                                          :new-plan selected-paid-containers
-                                                                          :previous-plan (pm/paid-linux-containers plan)
-                                                                          :plan-type pm/linux-plan-type
-                                                                          :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                                  #(raise! owner [:new-plan-clicked
+                                                  {:containers selected-paid-containers
+                                                   :linux {:template (:id pm/default-template-properties)}
+                                                   :price new-total
+                                                   :description (str "$" new-total "/month, includes "
+                                                                     (pluralize selected-containers "container"))}]))
                       :kind :primary}
-                     (if (config/enterprise?)
-                       enterprise-text
-                       "Update Plan"))))
-                (if-not checkout-loaded?
-                  (spinner)
-                  (button/managed-button
-                   {:success-text "Paid!"
-                    :loading-text "Paying..."
-                    :failed-text "Failed!"
-                    :disabled? (not button-clickable?)
-                    :on-click (when button-clickable?
-                                #(raise! owner [:new-plan-clicked
-                                                {:containers selected-paid-containers
-                                                 :linux {:template (:id pm/default-template-properties)}
-                                                 :price new-total
-                                                 :description (str "$" new-total "/month, includes "
-                                                                   (pluralize selected-containers "container"))}]))
-                    :kind :primary}
-                   "Pay Now")))
-
-              (when-not (config/enterprise?)
-               ;; TODO: Clean up conditional here - super nested and many interactions
-                (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
-                  [:span.help-block
-                   (cond
-                     (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
-                     (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]
-                  (if (pm/in-trial? plan)
-                    [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                     "."]
-                   ;; TODO: Only show for trial-plans?
-                    [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
-                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                     " ago. Pay now to enable builds of private projects."])))]]]]])))))
+                     "Pay Now")))
+               (when-not (config/enterprise?)
+                 ;; TODO: Clean up conditional here - super nested and many interactions
+                 ;; FIXME 1833: ON CURRENT PLAN, ADD MESSAGE 'CHANGE CONTAINERS TO UPDATE PLAN'
+                 (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                   [:div
+                    [:p.hint
+                     [:em (cond
+                      (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
+                      (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]]]
+                   (if (pm/in-trial? plan)
+                     [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                      "."]
+                     ;; TODO: Only show for trial-plans?
+                     [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                      " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                      " ago. Pay now to enable builds of private projects."])))]]]]])))))
 
 (defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
   (reify
@@ -1139,6 +1145,117 @@
                    :value value
                    :max max}]))))
 
+
+(defn osx-usage-table-plan [{:keys [plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [org-name (:org_name plan)
+            osx-max-minutes (some-> plan :osx :template :max_minutes)
+            osx-usage (-> plan :usage :os:osx)]
+        (html
+          [:div {:data-component `osx-usage-table}
+           (let [osx-usage (->> osx-usage
+                                ;Remove any entries that do not have keys matching :yyyy_mm_dd.
+                                ;This is to filter out the old style of keys which were :yyyy_mm.
+                                (filterv (comp (partial re-matches #"\d{4}_\d{2}_\d{2}") name key))
+
+                                ;Filter returns a vector of vectors [[key value] [key value]] so we
+                                ;need to put them back into a map with (into {})
+                                (into {})
+
+                                ;Sort by key, which also happends to be billing period start date.
+                                (sort)
+
+                                ;Reverse the order so the dates decend
+                                (reverse)
+
+                                ;All we care about are the last 12 billing periods
+                                (take 12)
+
+                                ;Finally feed in the plan's max minutes
+                                (map (fn [[_ usage-map]]
+                                       {:usage usage-map
+                                        :max osx-max-minutes})))]
+             (if (and (not-empty osx-usage) osx-max-minutes)
+               [:div
+                (let [rows (for [{:keys [usage max]} osx-usage
+                                 :let [{:keys [amount from to]} usage
+                                       amount (.round js/Math (/ amount 1000 60))
+                                       percent (.round js/Math (* 100 (/ amount max)))]]
+                             {:from from
+                              :to to
+                              :max max
+                              :amount amount
+                              :percent percent
+                              :over-usage? (> amount max)})]
+                  (om/build table/table
+                            {:rows rows
+                             :key-fn (comp hash (juxt :from :to))
+                             :columns [{:header "Billing Period"
+                                        :type :shrink
+                                        :cell-fn #(html
+                                                   [:span
+                                                    (datetime/month-name-day-date (:from %))
+                                                    " - "
+                                                    (datetime/month-name-day-date (:to %))])}
+                                       {:header "Usage"
+                                        :cell-fn #(om/build progress-bar {:max (:max %) :value (:amount %)})}
+                                       {:type #{:right :shrink}
+                                        :cell-fn #(html
+                                                   [:span (when (:over-usage? %) {:class "over-usage"})
+                                                    (:percent %) "%"])}
+                                       {:type #{:right :shrink}
+                                        :cell-fn #(html
+                                                   [:span (when (:over-usage? %) {:class "over-usage"})
+                                                    (.toLocaleString (:amount %)) "/" (.toLocaleString (:max %)) " minutes"])}]}))]
+               [:div.explanation
+                [:p "Looks like you haven't run any builds yet."]]))])))))
+
+(defn osx-plan-overview [{:keys [plan]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{{plan-org-name :name
+              plan-vcs-type :vcs_type} :org}
+            plan]
+        (html
+         [:div
+           (when (pm/osx? plan)
+             (let [plan-name (some-> plan :osx :template :name)]
+               [:div.osx-plan-proto
+                [:div {:style {:width "49%"}}
+                 ;FIXME: need to add conditional for you have no plan selected. select plan below.
+                 [:h1
+                  (cond
+                    (pm/osx-trial-active? plan)
+                    (gstring/format "You're currently on the CircleCI macOS trial and have %s left. " (pm/osx-trial-days-left plan))
+
+                    (and (pm/osx-trial-plan? plan)
+                         (not (pm/osx-trial-active? plan)))
+                    [:span "Your free trial of CircleCI for macOS has expired. Please "
+                     [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                              :vcs_type plan-vcs-type
+                                                              :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
+
+                    :else
+                    (gstring/format "Current macOS plan: %s - $%d/month " plan-name(pm/osx-cost plan)))]
+                 [:fieldset
+                  [:p
+                   "You can "
+                   [:strong [:a "change your macOS plan"]]
+                   " below. "
+                   [:em "It will not affect Linux containers."]]
+                  (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
+                    [:p "The macOS trial you've selected has expired, please choose a plan below."])
+                  (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
+                    [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])]
+                 ;; FIXME 1833: ADD LINK TO FAQs
+                 [:p "Questions? "
+                  [:a "Check out the FAQs"]"."]]
+                [:div {:style {:width "49%" :margin-top "1em"}}
+                 (om/build osx-usage-table-plan {:plan plan})]]))])))))
+
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
     om/IRender
@@ -1216,30 +1333,125 @@
             plan]
         (html
          [:div
-          [:h2 "OS X"]
-          [:div
-           [:p "Choose an OS X plan "
-            [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                     :vcs_type plan-vcs-type
-                                                     :_fragment "osx-pricing"})} "here"] "."]
-           (when (pm/osx? plan)
-             (let [plan-name (some-> plan :osx :template :name)]
+          (if (pm/osx? plan)
+            (let [plan-name (some-> plan :osx :template :name)]
+              [:div
                [:div
-                [:p
+                ;FIXME 1833: need to add conditional for you have no plan selected. select plan below.
+                [:h1
                  (cond
                    (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the OS X trial and have %s left. " (pm/osx-trial-days-left plan))
+                   (gstring/format "You're currently on the CircleCI macOS trial and have %s left. " (pm/osx-trial-days-left plan))
 
                    (and (pm/osx-trial-plan? plan)
                         (not (pm/osx-trial-active? plan)))
-                   [:span "Your free trial of CircleCI for OS X has expired. Please "
+                   [:span "Your free trial of CircleCI for macOS has expired. Please "
                     [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                              :vcs_type plan-vcs-type
                                                              :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
                    :else
-                   (gstring/format "Your current OS X plan is %s ($%d/month). " plan-name (pm/osx-cost plan)))]
-                (om/build osx-usage-table {:plan plan})]))]])))))
+                   (gstring/format "Current macOS plan: %s - $%d/month " plan-name(pm/osx-cost plan)))]
+                [:p
+                 (if (pm/osx? plan)
+                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                          :vcs_type plan-vcs-type
+                                                          :_fragment "osx-pricing"})} "Update macOS plan"]]
+                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                            :vcs_type plan-vcs-type
+                                                            :_fragment "osx-pricing"})} "Choose macOS plan"]]
+                   )
+                 "."]
+                [:fieldset
+                 (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
+                   [:p "The macOS trial you've selected has expired, please choose a plan below."])
+                 (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
+                   [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])]]
+               [:div
+                (om/build osx-usage-table-plan {:plan plan})]]))])))))
+
+(defn linux-plan-overview [app owner]
+  (om/component
+   (html
+    (let [org-name (get-in app state/org-name-path)
+          vcs_type (get-in app state/org-vcs_type-path)
+          {plan-org :org :as plan} (get-in app state/org-plan-path)
+          plan-total (pm/stripe-cost plan)
+          linux-container-cost (pm/linux-per-container-cost plan)
+          price (-> plan :paid :template :price)
+          containers (pm/linux-containers plan)
+          piggiebacked? (pm/piggieback? plan org-name vcs_type)]
+      [:div
+       [:div.explanation
+        (when piggiebacked?
+          [:div.alert.alert-warning
+           [:div.usage-message
+            [:div.text
+             [:span "This organization's projects will build under "
+              [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                       :vcs_type (:vcs_type plan-org)})}
+               (:name plan-org) "'s plan."]]]]])
+        (if (config/enterprise?)
+          [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
+          (cond (> containers 1)
+                [:div
+                 [:h1 (str "Current Linux plan: " containers " containers - $" (pm/current-linux-cost plan) "/month.")]
+                 (when (and (not (config/enterprise?))
+                                    (pm/linux? plan))
+                           [:p
+                            (str (pm/paid-linux-containers plan) " containers are paid")
+                            (if piggiebacked? ". "
+                                (list ", at $" (pm/current-linux-cost plan) "/month. "))
+                            (if (pm/grandfathered? plan)
+                              (list "We've changed our pricing model since this plan began, so its current price "
+                                    "is grandfathered in. "
+                                    "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
+                                    "We'll switch it to the new model if you upgrade or downgrade. ")
+                              (list
+                                (when (and (pm/freemium? plan) (> containers 1))
+                                  [:span (str (pm/freemium-containers plan) " container is free.")])
+                                [:br ]
+                               ;; make sure to link to the add-containers page of the plan's org,
+                               ;; in case of piggiebacking.
+                               (when-not piggiebacked?)
+                                [:p
+                                 "You can "
+                                 [:strong [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                         :vcs_type (:vcs_type plan-org)
+                                                                         :_fragment "linux-pricing"})}
+                                 "change your Linux plan"]]
+                                 " below. "
+                                 [:em "It will not affect your macOS plan."]]))
+                            ;; FIXME 1833: ADD LINK TO FAQs
+                            [:p "Questions? "
+                             [:a "Check out the FAQs"]"."]])]
+                (= containers 1)
+                [:div
+                 [:h1 (str "Current Linux plan: Hobbyist (1 container) - $0/month")]
+                 [:p "0 containers are paid. 1 container is free."]
+                 [:p
+                  ;; FIXME 1833: THIS SHOULD ANCHOR TO SECTION BELOW
+                  [:strong
+                   [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                    :vcs_type (:vcs_type plan-org)
+                                                                    :_fragment "linux-pricing"})}
+                            "Add more containers"]]
+                  (str " to gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff. ")]
+                 [:p
+                  "You can choose your Linux plan below. "
+                  [:em "It will not affect your macOS plan."]]
+                 ;; FIXME 1833: ADD LINK TO FAQs
+                 [:p "Questions? "
+                  [:a "Check out the FAQs"]"."]]
+                :else nil))
+        (when (> (pm/trial-containers plan) 0)
+          [:p
+           (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
+                (pluralize (pm/days-left-in-trial plan) "more day")
+                ".")])
+
+        (when (config/enterprise?)
+          (om/build linux-plan {:app app}))]]))))
 
 (defn overview [app owner]
   (om/component
@@ -1252,63 +1464,25 @@
           price (-> plan :paid :template :price)
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name vcs_type)]
-      [:div
-       [:fieldset [:legend (str org-name "'s plan")]]
-       [:div.explanation
-        (when piggiebacked?
-          [:p "This organization's projects will build under "
-           [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                    :vcs_type (:vcs_type plan-org)})}
-            (:name plan-org) "'s plan."]])
-        [:h2 "Linux"]
-        (if (config/enterprise?)
-          [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
-          (cond (> containers 1)
-                [:p (str "All Linux builds will be distributed across " containers " containers.")]
-                (= containers 1)
-                [:div
-                 [:p (str org-name " is currently on the Hobbyist plan. Builds will run in a single, free container.")]
-                 [:p "By " [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                                    :vcs_type (:vcs_type plan-org)
-                                                                    :_fragment "linux-pricing"})}
-                            "upgrading"]
-                  (str " " org-name "'s plan, " org-name " will gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff.")]]
-                :else nil))
-        (when (> (pm/trial-containers plan) 0)
-          [:p
-           (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
-                (pluralize (pm/days-left-in-trial plan) "more day")
-                ".")])
-        (when (and (not (config/enterprise?))
-                   (pm/linux? plan))
-          [:p
-           (str (pm/paid-linux-containers plan) " of these are paid")
-           (if piggiebacked? ". "
-               (list ", at $" (pm/current-linux-cost plan) "/month. "))
-           (if (pm/grandfathered? plan)
-             (list "We've changed our pricing model since this plan began, so its current price "
-                   "is grandfathered in. "
-                   "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
-                   "We'll switch it to the new model if you upgrade or downgrade. ")
-             (list
-              "You can "
-              ;; make sure to link to the add-containers page of the plan's org,
-              ;; in case of piggiebacking.
+      [:div.overview-cards-container
+       (when piggiebacked?
+          [:div.alert.alert-warning
+           [:div.usage-message
+            [:div.text
+             [:span "This organization's projects will build under "
               [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                       :vcs_type (:vcs_type plan-org)
-                                                       :_fragment "linux-pricing"})}
-               "add more"]
-              (when-not piggiebacked?
-                (list " at $" linux-container-cost " per container"))
-              " for more parallelism and shorter queue times."))])
-        (when (and (pm/freemium? plan) (> containers 1))
-          [:p (str (pm/freemium-containers plan) " container is free.")])
-        (when-not (config/enterprise?)
-          [:div
-           [:p "Additionally, projects that are public on GitHub will build with " pm/oss-containers " extra containers -- our gift to free and open source software."]
-           (om/build osx-overview {:plan plan})])
-        (when (config/enterprise?)
-          (om/build linux-plan {:app app}))]]))))
+                                                       :vcs_type (:vcs_type plan-org)})}
+               (:name plan-org) "'s plan."]]]]])
+       [:div.overview-cards
+        (card/titled {:title (html [:span [:i.fa.fa-linux.title-icon] "Linux Plan Overview"])}
+                     (html
+                       [:div.plan-overview.linux-plan-overview
+                        (when (config/enterprise?)
+                          (om/build linux-plan {:app app}))]))
+        (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "macOS Plan Overview"])}
+                     (html
+                       [:div.plan-overview.macos-plan-overview
+                        (om/build osx-overview {:plan plan})]))]]))))
 
 (defn main-component []
   (merge
