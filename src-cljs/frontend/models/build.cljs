@@ -198,12 +198,23 @@
 (defn current-user-ssh?
   "Whether the given user has SSH access to the build"
   [build user]
-  (->> build :ssh_users (map :github_id) (some #{(:github_id user)})))
+  (let [cmp (fn [m] (select-keys m [:type :external-id]))
+        identities (->> user
+                        :identities
+                        vals
+                        (map cmp)
+                        (into #{}))
+        build-identities (->> build
+                              :ssh_users
+                              (map cmp))]
+    (or (some identities build-identities)
+        (->> build :ssh_users (map :github_id) (some #{(:github_id user)})))))
 
 (defn someone-else-ssh?
   "Whether a user other than the given one has SSH access to the build"
   [build user]
-  (->> build :ssh_users (map :github_id) (not-any? #{(:github_id user)})))
+  (not (or (empty? (:ssh_users build))
+           (current-user-ssh? build user))))
 
 (defn ssh-enabled-now?
   "Whether anyone can currently SSH into the build"
