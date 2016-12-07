@@ -30,11 +30,12 @@
 (defn setup-docs-banner [{:keys [owner build]}]
   (when (= (ab-test-treatment) :setup-docs-banner)
     (let [content
-          [:span
-           "It looks like we couldn't infer test settings for your project. Refer to our \""
+          [:span 
+           (str "We couldn't detect the settings for your project! Please make sure "
+                "you have a circle.yml configuration file in place, and check our doc about ")
            [:a (setup-docs-link-props owner)
-               "Setting your build up manually"]
-           "\" document to get started. It should only take a few minutes."]]
+               "manual build setup"]
+           "."]]
       (common/message {:type :warning
                        :content content}))))
 
