@@ -32,6 +32,7 @@
                    [frontend.utils :refer [html]]))
 
 (declare osx-overview)
+(declare osx-plan-overview)
 (declare linux-plan-overview)
 
 (defn non-admin-plan [{:keys [org-name login vcs_type]} owner]
@@ -458,8 +459,11 @@
         (html
           [:div.osx-plans {:data-component `osx-plans-list}
            [:fieldset
-            [:legend (str "OS X Plans")]
-            [:p [:em "Your selection below only applies to OS X service and will not affect Linux Containers."]]
+            (if (pm/osx? plan)
+              [:legend.update-plan "Update macOS plan"]
+              [:legend.update-plan "Choose macOS plan"]
+              )
+            [:p [:em "Your selection below only applies to macOS service and will not affect Linux containers."]]
             (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
               [:p "The OS X trial you've selected has expired, please choose a plan below."])
             (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
@@ -529,7 +533,9 @@
                                          (str "paid " containers-str
                                               (str (when-not (zero? new-total) (str " at $" new-total "/month")))
                                               " + 1 free container"))]]
-                 [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")]])
+                 [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")
+                  [:br]
+                  [:em "Changes to your Linux plan will not affect your macOS plan."]]])
               [:fieldset
                (if (and (not piggiebacked?)
                         (or (config/enterprise?)
@@ -588,10 +594,10 @@
          {:tab-row
           (om/build tabs/tab-row {:tabs [{:name :linux
                                           :icon (html [:i.fa.fa-linux.fa-lg])
-                                          :label "Build on Linux"}
+                                          :label "Linux Plan"}
                                          {:name :osx
                                           :icon (html [:i.fa.fa-apple.fa-lg])
-                                          :label "Build on OS X"}]
+                                          :label "macOS Plan"}]
                                   :selected-tab-name selected-tab-name
                                   :on-tab-click #(navigate! owner (routes/v1-org-settings-path {:org org-name
                                                                                                 :vcs_type vcs-type
@@ -602,6 +608,7 @@
                    (om/build faq linux-faq-items))
 
            :osx (list
+                 (om/build osx-plan-overview {:plan plan})
                  (om/build osx-plans-list {:plan plan
                                            :org-name (get-in app state/org-name-path)
                                            :vcs-type (get-in app state/org-vcs_type-path)})
@@ -1253,9 +1260,7 @@
                     [:p "The macOS trial you've selected has expired, please choose a plan below."])
                   (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
                     [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])]
-                 ;; FIXME 1833: ADD LINK TO FAQs
-                 [:p "Questions? "
-                  [:a "Check out the FAQs"]"."]]
+                 [:p "Questions? Check out the FAQs below."]]
                 [:div {:style {:width "49%" :margin-top "1em"}}
                  (om/build osx-usage-table-plan {:plan plan})]]))])))))
 
@@ -1371,7 +1376,13 @@
                  (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
                    [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])]]
                [:div
-                (om/build osx-usage-table-plan {:plan plan})]]))])))))
+                (om/build osx-usage-table-plan {:plan plan})]])
+            [:div
+             [:h1 "No macOS plan selected"]
+             [:p
+              [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                      :vcs_type plan-vcs-type
+                                                      :_fragment "osx-pricing"})} "Choose a macOS plan"]] "."]])])))))
 
 (defn linux-plan-overview [app owner]
   (om/component
@@ -1422,12 +1433,9 @@
                                  [:strong [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
                                                                          :vcs_type (:vcs_type plan-org)
                                                                          :_fragment "linux-pricing"})}
-                                 "change your Linux plan"]]
-                                 " below. "
-                                 [:em "It will not affect your macOS plan."]]))
-                            ;; FIXME 1833: ADD LINK TO FAQs
-                            [:p "Questions? "
-                             [:a "Check out the FAQs"]"."]])]
+                                 "update your Linux plan"]]
+                                 " below. "]))
+                            [:p "Questions? Check out the FAQs below."]])]
                 (= containers 1)
                 [:div
                  [:h1 (str "Current Linux plan: Hobbyist (1 container) - $0/month")]
@@ -1438,14 +1446,9 @@
                    [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
                                                                     :vcs_type (:vcs_type plan-org)
                                                                     :_fragment "linux-pricing"})}
-                            "Add more containers"]]
-                  (str " to gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff. ")]
-                 [:p
-                  "You can choose your Linux plan below. "
-                  [:em "It will not affect your macOS plan."]]
-                 ;; FIXME 1833: ADD LINK TO FAQs
-                 [:p "Questions? "
-                  [:a "Check out the FAQs"]"."]]
+                            "Add more containers to update your plan"]]
+                  (str " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff. ")]
+                 [:p "Questions? Check out the FAQs below."]]
                 :else nil))
         (when (> (pm/trial-containers plan) 0)
           [:p
@@ -1480,6 +1483,55 @@
         (card/titled {:title (html [:span [:i.fa.fa-linux.title-icon] "Linux Plan Overview"])}
                      (html
                        [:div.plan-overview.linux-plan-overview
+                        (if (config/enterprise?)
+                          [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
+
+                          (cond (> containers 1)
+                                [:div
+                                 [:h1 (str "Current Linux plan: " containers " containers - $" (pm/current-linux-cost plan) "/month.")]]
+                                (= containers 1)
+                                [:div
+                                 [:h1 (str "Current Linux plan: Hobbyist (1 container) - $0/month")]
+                                 [:p "0 containers are paid. 1 container is free."]
+                                 [:p
+                                  ;; FIXME 1833: THIS SHOULD ANCHOR TO SECTION BELOW
+                                  [:strong
+                                   [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                                    :vcs_type (:vcs_type plan-org)
+                                                                                    :_fragment "linux-pricing"})}
+                                            "Add more containers to update your plan"]]
+                                  (str " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff. ")]]
+                                :else nil))
+                        (when (> (pm/trial-containers plan) 0)
+                          [:p
+                           (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
+                                (pluralize (pm/days-left-in-trial plan) "more day")
+                                ".")])
+                        (when (and (not (config/enterprise?))
+                                   (pm/linux? plan))
+                          [:p
+                           (str (pm/paid-linux-containers plan) " of these are paid")
+                           (if piggiebacked? ". "
+                               (list ", at $" (pm/current-linux-cost plan) "/month. "))
+
+                           (when (and (pm/freemium? plan) (> containers 1))
+                             [:span (str (pm/freemium-containers plan) " container is free.")])
+                           [:br ]
+                           (if (pm/grandfathered? plan)
+                             (list "We've changed our pricing model since this plan began, so its current price "
+                                   "is grandfathered in. "
+                                   "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
+                                   "We'll switch it to the new model if you upgrade or downgrade. ")
+                             (list
+                              ;; make sure to link to the add-containers page of the plan's org,
+                              ;; in case of piggiebacking.
+                              [:p
+                                [:strong
+                                [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                       :vcs_type (:vcs_type plan-org)
+                                                                       :_fragment "linux-pricing"})}
+                                "Add more containers"]]
+                                " for more parallelism and shorter queue times."]))])
                         (when (config/enterprise?)
                           (om/build linux-plan {:app app}))]))
         (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "macOS Plan Overview"])}
