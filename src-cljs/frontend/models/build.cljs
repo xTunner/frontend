@@ -198,7 +198,7 @@
 (defn current-user-ssh?
   "Whether the given user has SSH access to the build"
   [build user]
-  (let [cmp (fn [m] (select-keys m [:type :external-id]))
+  (let [cmp (fn [m] (select-keys m [:type :external_id]))
         identities (->> user
                         :identities
                         vals
