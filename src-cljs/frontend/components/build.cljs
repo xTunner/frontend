@@ -116,9 +116,9 @@
           (common/messages (set (:messages build)))
           [:div.row
            [:div.col-xs-12
-            (when (no-test-intervention/show-intervention? build)
-              (no-test-intervention/setup-docs-banner {:track-fn (om/get-shared owner :track-event)
-                                                       :build build}))
+            (when (and (no-test-intervention/show-intervention? build)
+                       (= :setup-docs-banner (no-test-intervention/ab-test-treatment)))
+              (om/build no-test-intervention/setup-docs-banner nil))
 
             (when-let [error-div (report-infrastructure-error build owner)]
               error-div)

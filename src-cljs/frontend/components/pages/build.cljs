@@ -105,9 +105,11 @@
              (om/build jira-modal/jira-modal {:project project
                                               :jira-data jira-data
                                               :close-fn #(om/set-state! owner :show-jira-modal? false)})
-             show-setup-docs-modal?
-             (no-test-intervention/setup-docs-modal {:track-fn (om/get-shared owner :track-event)
-                                                     :close-fn #(om/set-state! owner :show-setup-docs-modal? false)}))
+             (and show-setup-docs-modal?
+                  (= :setup-docs-modal (no-test-intervention/ab-test-treatment)))
+             (om/build no-test-intervention/setup-docs-modal
+                       {:close-fn 
+                        #(om/set-state! owner :show-setup-docs-modal? false)}))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
              (list
               (forms/managed-button
