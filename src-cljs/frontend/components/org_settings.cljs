@@ -244,9 +244,9 @@
   (if (= num 1) (infl/singular word) (infl/plural word)))
 
 (def osx-faq-items
-  [{:question "Why would I choose an OS X plan (as opposed to a Linux Plan)?"
-    :answer [[:div "If you develop for Apple-related software (e.g., you are an iOS developer), you will likely need an OS X plan to ensure your tests run on our secure, private cloud of OS X machines."]
-             [:div "OS X plans start with a two-week trial with access to our Growth Plan (7x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
+  [{:question "Why would I choose an macOS plan (as opposed to a Linux Plan)?"
+    :answer [[:div "If you develop for Apple-related software (e.g., you are an iOS developer), you will likely need an macOS plan to ensure your tests run on our secure, private cloud of macOS machines."]
+             [:div "macOS plans start with a two-week trial with access to our Growth Plan (7x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
              [:div "Linux plans allow customers to build on multiple isolated Linux systems. All customers get 1 free linux container and then Linux plans offer access to additional containers available at $50/container."]]}
 
    {:question "What plan do I need?"
@@ -280,7 +280,7 @@
               [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]]}
 
    {:question "What if I am building open-source?"
-    :answer [[:div "We also offer the Seed plan for OS X open-source projects. Contact us at "
+    :answer [[:div "We also offer the Seed plan for macOS open-source projects. Contact us at "
               [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
               " for access. If you are building a bigger open-source project and need more resources, let us know how we can help you!"]]}])
 
@@ -380,7 +380,7 @@
               [:div.title title]
               [:div.price "$" [:span.bold price] "/mo"]]
              [:div.content
-              [:div.containers [:span.bold container-count] " OS X concurrency"]
+              [:div.containers [:span.bold container-count] " macOS concurrency"]
               [:div.daily-builds
                [:div "Recommended for teams building "]
                [:div.bold daily-build-count " builds/day"]]
@@ -405,7 +405,7 @@
                                                :on-click-fn #(do
                                                                (raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
                                                                                                      :price (:price plan-data)
-                                                                                                     :description (gstring/format "OS X %s - $%d/month "
+                                                                                                     :description (gstring/format "macOS %s - $%d/month "
                                                                                                                                   (clojure.string/capitalize (name plan-id))
                                                                                                                                   (:price plan-data))}])
                                                                ((om/get-shared owner :track-event) {:event-type :new-plan-clicked
@@ -465,9 +465,9 @@
              )
            [:p [:em "Your selection below only applies to macOS service and will not affect Linux containers."]]
            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
-             [:p "The OS X trial you've selected has expired, please choose a plan below."])
+             [:p "The macOS trial you've selected has expired, please choose a plan below."])
            (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
-             [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])
+             [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])
            [:div.plan-selection
             (om/build-all osx-plan (->> osx-plans
                                         (map #(assoc % :org-name org-name :vcs-type vcs-type))))]])))))
@@ -1290,7 +1290,7 @@
             osx-usage (-> plan :usage :os:osx)]
         (html
           [:div.card {:data-component `osx-usage-table}
-           [:div.header (str org-name "'s OS X usage")]
+           [:div.header (str org-name "'s macOS usage")]
            [:hr.divider]
            (let [osx-usage (->> osx-usage
                                 ;Remove any entries that do not have keys matching :yyyy_mm_dd.

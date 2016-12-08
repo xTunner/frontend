@@ -42,7 +42,7 @@
               "Learn more about "
               [:a (open-ext {:href "/"}) "CircleCI"]
               " , "
-              [:a (open-ext {:href "/mobile/osx/"}) "CircleCI for OS X"]
+              [:a (open-ext {:href "/mobile/osx/"}) "CircleCI for macOS"]
               ", or "
               [:a (open-ext {:href "/enterprise/"}) "CircleCI for Enterprise"]
               "."]]
