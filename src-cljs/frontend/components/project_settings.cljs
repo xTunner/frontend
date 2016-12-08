@@ -651,12 +651,17 @@
                                     "builds to use them and let others see your builds, both through the "
                                     "web UI and the API."]})
             (describe-flag {:flag :build-fork-prs
-                            :title "Permissive building of fork pull requests"
+                            :title "Build forked pull requests"
                             :blurb (list
                                     [:p
-                                     "Run builds of fork pull request changes with this project's configuration. "
+                                     "Run builds of pull requests from forks. "
                                      "CircleCI will automatically update the commit status shown on GitHub's "
-                                     "pull request page."]
+                                     "pull request page."])})
+            (describe-flag {:flag :forks-receive-secret-env-vars
+                            :title "Pass secrets to forked pull requests"
+                            :blurb (list
+                                    [:p
+                                     "Run builds of fork pull request changes with this project's configuration and secrets. "]
                                     [:p
                                      "There are serious security concerns with this setting (see "
                                      [:a (open-ext {:href "https://circleci.com/docs/fork-pr-builds/"}) "the documentation"] " for details.) "
