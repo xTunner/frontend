@@ -696,8 +696,7 @@
                                (filter #(= vcs-type (:vcs_type %)))
                                (map :name))
                               piggieback-orgs)]
-    ;; width has been set to 20% here
-    [:div.controls.col-md-3
+    [:div.controls
      [:h4 (str (utils/prettify-vcs_type vcs-type) " Organizations")]
      ;; orgs that this user can add to piggieback orgs and existing piggieback orgs
      (for [org-name (cond->> (disj (clojure.set/union vcs-org-names
@@ -736,35 +735,30 @@
                   (group-by :vcs_type))]
          [:div
           [:fieldset
-           [:legend "Extra organizations"]
            [:p
             "Your plan covers all projects (including forked repos) in the "
             [:strong org-name]
             " organization by default."]
            [:p "You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
-           [:p
-            [:span.label.label-info "Note:"]
-            " Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
+           [:p "Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
            (if-not (or gh-users-and-orgs bb-users-and-orgs)
              [:div "Loading organization list..."]
              [:form
-              [:div.container-fluid
-               [:div.row
-                (when (seq gh-users-and-orgs)
-                  (piggieback-org-list piggieback-orgs selected-piggieback-orgs gh-users-and-orgs owner))
-                (when (seq bb-users-and-orgs)
-                  (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
-               [:div.row
-                [:div.form-actions.span7
-                 (button/managed-button
-                  {:success-text "Saved"
-                   :loading-text "Saving..."
-                   :failed-text "Failed"
-                   :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
-                                                                            :vcs-type org-vcs_type
-                                                                            :selected-piggieback-orgs selected-piggieback-orgs}])
-                   :kind :primary}
-                  "Save")]]]])]])))))
+              [:div.org-lists
+               (when (seq gh-users-and-orgs)
+                 (piggieback-org-list piggieback-orgs selected-piggieback-orgs gh-users-and-orgs owner))
+               (when (seq bb-users-and-orgs)
+                 (piggieback-org-list piggieback-orgs selected-piggieback-orgs bb-users-and-orgs owner))]
+              [:div
+               (button/managed-button
+                {:success-text "Saved"
+                 :loading-text "Saving..."
+                 :failed-text "Failed"
+                 :on-click #(raise! owner [:save-piggieback-orgs-clicked {:org-name org-name
+                                                                          :vcs-type org-vcs_type
+                                                                          :selected-piggieback-orgs selected-piggieback-orgs}])
+                 :kind :primary}
+                "Pay for organizations")]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
   ;; split user-orgs from orgs and grab the first (and only) user-org
@@ -775,7 +769,7 @@
                               true (map :login)
                               true (sort-by string/lower-case)
                               user-login (cons user-login))]
-    [:div.controls.col-md-3
+    [:div.controls
      [:h4 (str (utils/prettify-vcs_type vcs_type) " Organizations")]
      (for [org-name sorted-org-names
            :let [org-map {:org-name org-name
@@ -803,55 +797,54 @@
                                                         (= (:vcs_type %) vcs_type)))
                                           (group-by :vcs_type))
           selected-transfer-org-name (:org-name selected-transfer-org)]
-      [:div.row-fluid
-       [:div.span8
-        [:fieldset
-         [:legend "Transfer plan to a different organization"]
-         [:div.alert.alert-warning
-          [:strong "Warning!"]
-          [:p "If you're not an admin on the "
-           (if selected-transfer-org-name
-             (str selected-transfer-org-name " organization,")
-             "organization you transfer to,")
-           " then you won't be able to transfer the plan back or edit the plan."]
-          [:p
-           "The transferred plan will be extended to include the "
-           org-name " organization, so your builds will continue to run. Only admins of the "
-           (if selected-transfer-org-name
-             (str selected-transfer-org-name " org")
-             "organization you transfer to")
-           " will be able to edit the plan."]]
-         (if-not user-orgs
-           [:div "Loading organization list..."]
-           [:div.container-fluid
-            [:form
-             [:div.row
-              (when gh-user-orgs
-                (transfer-organizations-list gh-user-orgs selected-transfer-org owner))
-              (when bb-user-orgs
-                (transfer-organizations-list bb-user-orgs selected-transfer-org owner))]
-             [:div.row
-              [:div.form-actions.span6
-               (button/managed-button
-                {:success-text "Transferred"
-                 :loading-text "Transferring..."
-                 :disabled? (not selected-transfer-org)
-                 :kind :primary
-                 :on-click #(raise! owner
-                                    [:transfer-plan-clicked
-                                     {:from-org {:org-name org-name
-                                                 :vcs-type vcs_type}
-                                      :to-org selected-transfer-org}])}
-                "Transfer Plan")]]]])]]]))))
+      [:div
+       [:fieldset
+        [:div.alert.alert-warning
+         [:p [:strong "Warning!"]]
+         [:p "If you're not an admin on the "
+          (if selected-transfer-org-name
+            (str selected-transfer-org-name " organization,")
+            "organization you transfer to,")
+          " then you won't be able to transfer the plan back or edit the plan."]
+         [:p
+          "The transferred plan will be extended to include the "
+          org-name " organization, so your builds will continue to run. Only admins of the "
+          (if selected-transfer-org-name
+            (str selected-transfer-org-name " org")
+            "organization you transfer to")
+          " will be able to edit the plan."]]
+        (if-not user-orgs
+          [:div "Loading organization list..."]
+          [:form
+           [:div.org-lists
+            (when gh-user-orgs
+              (transfer-organizations-list gh-user-orgs selected-transfer-org owner))
+            (when bb-user-orgs
+              (transfer-organizations-list bb-user-orgs selected-transfer-org owner))]
+           [:div
+            (button/managed-button
+             {:success-text "Transferred"
+              :loading-text "Transferring..."
+              :disabled? (not selected-transfer-org)
+              :kind :primary
+              :on-click #(raise! owner
+                                 [:transfer-plan-clicked
+                                  {:from-org {:org-name org-name
+                                              :vcs-type vcs_type}
+                                   :to-org selected-transfer-org}])}
+             "Transfer plan")]])]]))))
 
 (defn organizations [app owner]
   (om/component
    (html
     [:div.organizations
-     (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
-                                         :user-orgs (get-in app state/user-organizations-path)})
-     (om/build transfer-organizations {:current-org (get-in app state/org-data-path)
-                                       :user-orgs (get-in app state/user-organizations-path)})])))
+     (card/collection
+       [(card/titled {:title "Extra Organizations"}
+                     (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
+                                                         :user-orgs (get-in app state/user-organizations-path)}))
+        (card/titled {:title "Transfer plan to a different organization"}
+                     (om/build transfer-organizations {:current-org (get-in app state/org-data-path)
+                                                       :user-orgs (get-in app state/user-organizations-path)}))])])))
 
 (defn- billing-card [app owner]
   (reify
