@@ -150,7 +150,11 @@
                                   :type "file"
                                   :ref "file-input"
                                   :on-change #(file-selected-fn (-> % .-target .-files (aget 0)))}]
-                         (button/button {:on-click #(.click (om/get-node owner "file-input"))
+                         (button/button {:on-click #(do
+                                                      ;; this should be done at the top level
+                                                      ;; but for some reason doesn't get propagated
+                                                      (.preventDefault %)
+                                                      (.click (om/get-node owner "file-input")))
                                          :size :medium}
                                         (element :button-label
                                           (html
