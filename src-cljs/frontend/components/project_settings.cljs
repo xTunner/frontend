@@ -661,7 +661,7 @@
                             :title "Pass secrets to forked pull requests"
                             :blurb (list
                                     [:p
-                                     "Run builds of fork pull request changes with this project's configuration and secrets. "]
+                                     "Run builds of fork pull request changes with this project's configuration, environment variables, and secrets. "]
                                     [:p
                                      "There are serious security concerns with this setting (see "
                                      [:a (open-ext {:href "https://circleci.com/docs/fork-pr-builds/"}) "the documentation"] " for details.) "
