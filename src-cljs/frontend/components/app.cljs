@@ -130,7 +130,7 @@
                                                   (and (= (.-tagName target) "INPUT")
                                                        (= (.-type target) "submit")))
                                             ;; If the clicked element was a button or an
-                                            ;; input.submit, that's the button.
+                                            ;; input[type=submit], that's the button.
                                             target
                                             ;; Otherwise, it's the button (if any) that
                                             ;; contains the clicked element.

@@ -153,7 +153,7 @@
                                     :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
 
                                    {:header "Remove"
-                                    :type #{:shrink :right}
+                                    :type :shrink
                                     :cell-fn
                                     (fn [token]
                                       (table/action-button

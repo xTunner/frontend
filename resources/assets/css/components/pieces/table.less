@@ -41,14 +41,6 @@
 
           &.right {
             text-align: right;
-
-            // This wrapper lets us right-align block-level content.
-            > .contents {
-              width: -moz-min-content;
-              width: -webkit-min-content;
-              width: min-content;
-              margin-left: auto;
-            }
           }
         }
       }
@@ -73,12 +65,12 @@
   .action-button-styles() {
     display: block;
     width: 18px;
+    margin: 0 auto;
     color: @grayLight;
   }
 
   .ui("action-button", {
     .action-button-styles;
-    margin: 0;
     padding: 0;
     border: none;
     background: none;
