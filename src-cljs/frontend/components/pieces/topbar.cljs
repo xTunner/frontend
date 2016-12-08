@@ -96,11 +96,11 @@
                  [:li [:a {:href "/admin"} [:div.heading "Admin"]]])
                [:li [:a {:href "/logout/"} [:div.heading "Log out"]]]]]]
             [:button.navbar-toggler.hidden-md-up {:type "button"
-                                                          :data-toggle "collapse"
-                                                          :data-target "collapsing-nav"
-                                                          :aria-controls "collapsing-nav"
-                                                          :aria-expanded "false"
-                                                          :aria-label "Toggle navigation"}
+                                                  :data-toggle "collapse"
+                                                  :data-target "collapsing-nav"
+                                                  :aria-controls "collapsing-nav"
+                                                  :aria-expanded "false"
+                                                  :aria-label "Toggle navigation"}
                [:i.material-icons "menu"]]]])))))
 
 (dc/do
