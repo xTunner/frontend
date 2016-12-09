@@ -82,6 +82,8 @@
             line-height: 30px;
             color: @white;
             text-decoration: none;
+            white-space: nowrap;
+
             .transition(all .1s ease-in);
 
             @media (max-width: @screen-md-min) {
@@ -132,6 +134,7 @@
 
             > li > a {
               padding: 10px 20px;
+              // OVERRIDE--BOOTSTRAP WHITE-SPACE
               white-space: normal;
               color: @grayDarker;
               transition: none;
