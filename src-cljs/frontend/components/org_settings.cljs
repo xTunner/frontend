@@ -853,7 +853,7 @@
                 (om/build table/table
                           {:rows [card]
                            :key-fn (constantly "card")
-                           :columns [{:header "Name on Credit Card"
+                           :columns [{:header "Name"
                                       :cell-fn #(:name % "N/A")}
                                      {:header "Card type"
                                       :cell-fn #(:type % "N/A")}
