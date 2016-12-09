@@ -31,9 +31,9 @@
           [:p "Something doesn't look right ..."]
           (cond
             (= status 500) [:div [:p.error-message "If the problem persists, feel free to check out our "
-                                  [:a {:href "http://status.circleci.com/"} "status"]
+                                  [:a (open-ext {:href "http://status.circleci.com/"}) "status"]
                                   " or "
-                                  [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
+                                  [:a (open-ext {:href "mailto:sayhi@circleci.com"}) "contact us"]
                                   "."]]
             (or (= status 404) (= status 401))
             [:div
@@ -56,11 +56,11 @@
            [:span ". Next, you'll be taken to GitHub or Bitbucket to authenticate so you can start shipping faster."]]
           (om/build common/sign-up-cta {})
           [:div.fine-print
-           [:span "By clicking on \"Authorize GitHub\" or \"Authorize Bitbucket\" you are agreeing to our "]
-           [:a {:href "/terms-of-service/"} "Terms of Service"]
-           [:span " and "]
-           [:a {:href "/privacy/"} "Privacy Policy"]
-           [:span "."]]]]]))))
+           "By clicking on \"Authorize GitHub\" or \"Authorize Bitbucket\" you are agreeing to our "
+           [:a (open-ext {:href "https://circleci.com/terms-of-service/"}) "Terms of Service"]
+           " and "
+           [:a (open-ext {:href "https://circleci.com/privacy/"}) "Privacy Policy"]
+           "."]]]]))))
 
 
 (defn plain-error-page [{:keys [status logged-in?]} owner]
@@ -83,9 +83,9 @@
           [:p "Something doesn't look right ..."]
           (cond
             (= status 500) [:p.error-message "If the problem persists, feel free to check out our "
-                            [:a {:href "http://status.circleci.com/"} "status"]
+                            [:a (open-ext {:href "http://status.circleci.com/"}) "status"]
                             " or "
-                            [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
+                            [:a (open-ext {:href "mailto:sayhi@circleci.com"}) "contact us"]
                             "."]
             (or (= status 404) (= status 401))
             [:p.error-message "Try heading back to our "
@@ -99,7 +99,7 @@
                  (if (config/enterprise?)
                    [:span " or " logging-in]
                    [:span ", " logging-in ", or " [:a (open-ext {:href "/signup"}) "signing up"]])
-                 [:span " or checking out our " [:a {:href "http://blog.circleci.com/"} "blog"]]))]
+                 [:span " or checking out our " [:a (open-ext {:href "http://blog.circleci.com/"}) "blog"]]))]
             :else "Something completely unexpected happened")]]]))))
 
 (defn error-page [app owner]

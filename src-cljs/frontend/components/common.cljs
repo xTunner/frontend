@@ -251,7 +251,12 @@
     om/IRender
     (render [_]
       (let [track-signed-up-clicked #((om/get-shared owner :track-event) {:event-type :signup-clicked})
-            link-btn-attrs (fn [login-url] (open-ext {:href (str login-url "?return-to=" js/window.location.pathname js/window.location.hash)
+            link-btn-attrs (fn [login-url] (open-ext {:href (str login-url
+                                                                 "?return-to="
+                                                                 js/window.location.origin
+                                                                 js/window.location.pathname
+                                                                 "?signup-404=true"
+                                                                 js/window.location.hash)
                                                       :role "button"
                                                       :on-mouse-up track-signed-up-clicked}))]
         (html
