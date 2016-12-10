@@ -654,14 +654,14 @@
                             :title "Build forked pull requests"
                             :blurb (list
                                     [:p
-                                     "Run builds of pull requests from forks. "
+                                     "Run builds for pull requests from forks. "
                                      "CircleCI will automatically update the commit status shown on GitHub's "
                                      "pull request page."])})
             (describe-flag {:flag :forks-receive-secret-env-vars
-                            :title "Pass secrets to forked pull requests"
+                            :title "Pass secrets to builds from forked pull requests"
                             :blurb (list
                                     [:p
-                                     "Run builds of fork pull request changes with this project's configuration, environment variables, and secrets. "]
+                                     "Run builds for fork pull request changes with this project's configuration, environment variables, and secrets. "]
                                     [:p
                                      "There are serious security concerns with this setting (see "
                                      [:a (open-ext {:href "https://circleci.com/docs/fork-pr-builds/"}) "the documentation"] " for details.) "
