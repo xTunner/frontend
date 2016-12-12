@@ -12,6 +12,7 @@
             [frontend.components.statuspage :as statuspage]
             [frontend.config :as config]
             [frontend.state :as state]
+            [frontend.utils :as utils]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.seq :refer [dissoc-in]]
@@ -118,28 +119,7 @@
               outer? (contains? #{:landing :error} (:navigation-point app))]
           (html
            [:div {:class (if outer? "outer" "inner")
-                  ;; Disable natural form submission. This keeps us from having to
-                  ;; .preventDefault every submit button on every form.
-                  ;;
-                  ;; To let a button actually submit a form naturally, handle its click
-                  ;; event and call .stopPropagation on the event. That will stop the
-                  ;; event from bubbling to here and having its default behavior
-                  ;; prevented.
-                  :on-click #(let [target (.-target %)
-                                   button (if (or (= (.-tagName target) "BUTTON")
-                                                  (and (= (.-tagName target) "INPUT")
-                                                       (= (.-type target) "submit")))
-                                            ;; If the clicked element was a button or an
-                                            ;; input[type=submit], that's the button.
-                                            target
-                                            ;; Otherwise, it's the button (if any) that
-                                            ;; contains the clicked element.
-                                            (gdom/getAncestorByTagNameAndClass target "BUTTON"))]
-                               ;; Finally, if we found an applicable button and that
-                               ;; button is associated with a form which it would submit,
-                               ;; prevent that submission.
-                               (when (and button (.-form button))
-                                 (.preventDefault %)))}
+                  :on-click utils/disable-natural-form-submission}
             (when admin?
               (build-legacy head-admin app))
 
