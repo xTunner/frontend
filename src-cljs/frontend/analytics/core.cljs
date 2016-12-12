@@ -93,6 +93,7 @@
     :project-followed
     :project-settings-clicked
     :select-plan-clicked
+    :setup-docs-clicked
     :set-up-junit-clicked
     :set-up-junit-impression
     :show-all-branches-toggled
