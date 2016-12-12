@@ -449,3 +449,28 @@ top.  The remaining keys/values goes into the bottom."
                  full-name
                  " to a React element which already has data-element."))
     (js/React.cloneElement element #js {:data-element full-name})))
+
+(defn disable-natural-form-submission
+  "Disable natural form submission. This keeps us from having to
+  .preventDefault every submit button on every form.
+
+  To let a button actually submit a form naturally, handle its click
+  event and call .stopPropagation on the event. That will stop the
+  event from bubbling to here and having its default behavior
+  prevented."
+  [element]
+  (let [target (.-target element)
+        button (if (or (= (.-tagName target) "BUTTON")
+                       (and (= (.-tagName target) "INPUT")
+                            (= (.-type target) "submit")))
+                 ;; If the clicked element was a button or an
+                 ;; input[type=submit], that's the button.
+                 target
+                 ;; Otherwise, it's the button (if any) that
+                 ;; contains the clicked element.
+                 (dom/getAncestorByTagNameAndClass target "BUTTON"))]
+    ;; Finally, if we found an applicable button and that
+    ;; button is associated with a form which it would submit,
+    ;; prevent that submission.
+    (when (and button (.-form button))
+      (.preventDefault element))))
