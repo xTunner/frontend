@@ -34,9 +34,11 @@
   (render [this] nil))
 
 (def routes
-  {:route/loading (compassus/index-route Loading)
+  {:route/loading Loading
    :route/legacy-page legacy/LegacyPage
    :route/projects projects/Page})
+
+(def index-route :route/loading)
 
 (defn head-admin [app owner]
   (reify
@@ -105,7 +107,8 @@
 (defui ^:once Wrapper
   Object
   (render [this]
-    (let [{:keys [factory props owner]} (om-next/props this)
+    (let [ ;; {:keys [factory props owner]} (om-next/props this)
+          {:keys [factory props owner]} (om-next/props this) #_(om-next/get-computed this)
           app (:legacy/state props)]
       (if (app-blocked? app)
         (blocked-page app)
@@ -149,5 +152,3 @@
                    (build-legacy aside/aside-nav {:user user :current-route current-route}))))
 
              (factory props)]]))))))
-
-(def wrapper (om-next/factory Wrapper))
