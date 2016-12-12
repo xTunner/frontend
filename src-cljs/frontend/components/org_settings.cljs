@@ -559,7 +559,7 @@
                                     #(do
                                        (raise! owner [:update-containers-clicked
                                                       {:containers selected-paid-containers}])
-                                       #_(analytics-track/track-update-plan-clicked {:owner owner
+                                       (analytics-track/track-update-plan-clicked {:owner owner
                                                                                    :new-plan selected-paid-containers
                                                                                    :previous-plan (pm/paid-linux-containers plan)
                                                                                    :plan-type pm/linux-plan-type
