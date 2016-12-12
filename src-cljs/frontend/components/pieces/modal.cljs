@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.modal
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.button :as button]
+            [frontend.utils :as utils]
             [om.next :as om :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
 
@@ -90,8 +91,9 @@
       :transition-timeout 500}
      (element :modal
        (html
-        [:div {:on-click #(when (= (.-target %) (.-currentTarget %))
-                            (close-fn))}
+         [:div {:on-click #(do (utils/disable-natural-form-submission %)
+                               (when (= (.-target %) (.-currentTarget %))
+                                 (close-fn)))}
          [:.box
           content]])))))
 

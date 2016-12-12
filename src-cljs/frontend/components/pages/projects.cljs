@@ -69,7 +69,7 @@
                               :cell-fn #(count (:project/followers %))}
 
                              {:header "Settings"
-                              :type #{:right :shrink}
+                              :type :shrink
                               :cell-fn
                               #(table/action-link
                                 "Settings"

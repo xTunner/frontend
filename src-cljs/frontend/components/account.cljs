@@ -153,7 +153,7 @@
                                     :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
 
                                    {:header "Remove"
-                                    :type #{:shrink :right}
+                                    :type :shrink
                                     :cell-fn
                                     (fn [token]
                                       (table/action-button
@@ -361,7 +361,6 @@
               :checked web-notifications-enabled?
               :on-change #(raise! owner [:set-web-notifications-permissions {:enabled? true}])
               :disabled disabled?}]
-            (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             [:span.label-contents " Show me notifications when a build finishes"]]]
           [:div.radio
            [:label
@@ -371,7 +370,6 @@
               :checked (not web-notifications-enabled?)
               :on-change #(raise! owner [:set-web-notifications-permissions {:enabled? false}])
               :disabled disabled?}]
-            (when disabled? [:span [:i.material-icons.lock "lock" ] " "])
             [:span.label-contents " Don't show me notifications when a build finishes"]]]]]]
        ;; -- If browser doesn't support the Web Notifications API:
        [:div.body
