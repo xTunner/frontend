@@ -56,7 +56,7 @@
                                                                                                        index
                                                                                                        :checked)
                                                                                            %)}]
-                                                   (:reponame project)]]))))
+                                                   (str (:username project)" / "(:reponame project))]]))))
                    deselect-activity-repos (fn [path]
                                              ((om/get-shared owner :track-event) {:event-type :deselect-all-projects-clicked
                                                                                   :properties event-properties})
