@@ -5,7 +5,7 @@
             [frontend.state :as state]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component html]]))
+  (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn page [app owner]
   (reify
@@ -24,8 +24,8 @@
            {:app app
             :show-aside-menu? true
             :main-content
-            (html
-             [:div#account-settings
-              [:div.row (om/build common/flashes (get-in app state/error-message-path))]
-              [:div#subpage
-               (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled-path]))]])}))))))
+            (element :main-content
+              (html
+               [:div
+                (om/build common/flashes (get-in app state/error-message-path))
+                (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled-path]))]))}))))))

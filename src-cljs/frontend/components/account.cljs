@@ -39,7 +39,7 @@
       (let [user-and-orgs (sort-by (complement :org)
                                    (get-in app state/user-organizations-path))]
         (html
-         [:div#settings-plans
+         [:div#settings-plans.account-settings-subpage
           [:legend "Org Plan Settings"]
           [:div.plans-item
            [:h3 "Set up a plan for one of your Organizations:"]
@@ -76,7 +76,7 @@
             submit-form! #(raise! owner [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
             project-page? (:project-page? opts)]
         (html
-         [:div#settings-heroku.settings
+         [:div#settings-heroku.settings.account-settings-subpage
           [:legend "Heroku Settings"]
           [:div.heroku-item
            [:p
@@ -117,7 +117,7 @@
             create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
             new-user-token (get-in app state/new-user-token-path)]
         (html
-         [:div#settings-api.settings
+         [:div#settings-api.settings.account-settings-subpage
           [:legend "API Tokens"]
           [:div.api-item
            [:p
@@ -225,7 +225,7 @@
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
       (html
-       [:div
+       [:div.account-settings-subpage
         [:legend "Beta Program"]
         (card/basic
          (html
@@ -249,7 +249,7 @@
     om/IRender
     (render [_]
       (html
-       [:div
+       [:div.account-settings-subpage
         [:legend "Beta Program"]
         (card/basic
          (html
@@ -445,7 +445,7 @@
             projects (get-in app state/projects-path)
             notifications-enabled? (get-in app state/web-notifications-enabled-path)]
         (html
-         [:div#settings-notification
+         [:div#settings-notification.account-settings-subpage
           [:legend "Notification Settings"]
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))

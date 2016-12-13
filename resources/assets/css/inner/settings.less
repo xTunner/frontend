@@ -1,13 +1,6 @@
 @selectWidth: 200px;
 
-#account-settings {
-  line-height: 1.5em;
-  padding-top: 15px;
-
-  .account-top {
-    box-shadow: 0 -1px @grayBoxBorder inset;
-  }
-
+.account-settings-subpage {
   .subheading {
     text-transform: uppercase;
     color: @grayLight;
@@ -16,84 +9,6 @@
   legend {
     padding: .5em 0 1em;
     line-height: 21px;
-  }
-
-  // Requires .nav and .nav-tabs to work.
-  .account-settings-tabs {
-    .flexy();
-
-    > li {
-      flex-grow: 1;
-      background: @tab-background;
-      border-right: 1px solid @tab-separator-border;
-
-      &:last-child {
-        border-right: none;
-      }
-
-      &.active {
-        background: @white;
-      }
-
-      &.active a,
-      &.active a:hover,
-      &.active a:focus {
-        border: none; // BS RESET
-        font-weight: 500;
-      }
-
-      a {
-        padding: 10px 15px; // BS RESET
-        color: @grayDark; // BS RESET
-        border: none; // BS RESET
-        margin: 0; // BS RESET
-        border-radius: 0;
-
-        i.octicon, i.material-icons, i.fa {
-          vertical-align: initial;
-          margin-right: 1ex;
-          margin-left: 0;
-        }
-
-        i.fa.fa-bitbucket {
-          font-size: @fontSizeLarge;
-        }
-
-        &:hover {
-          background: none; // BS RESET
-          color: @grayDarker; // BS RESET
-          border: none; // BS RESET
-        }
-      }
-    }
-
-    border: none; // BS RESET
-
-    .active a {
-      background: none; // BS RESET
-      color: @linkColor;
-      box-shadow: 0 -1px @linkColor inset,
-      0  1px @linkColor;
-    }
-
-    li {
-      margin: 0; // BS RESET
-
-      a {
-        color: @grayLight;
-        line-height: 1em;
-        padding: 2em 1em 2em;
-        border: none; // BS RESET
-        margin: 0; // BS RESET
-
-        &:hover {
-          background: none; // BS RESET
-          color: @linkColor;
-          box-shadow: 0 -1px @linkColor inset,
-          0  1px @linkColor;
-        }
-      }
-    }
   }
 
   form {
