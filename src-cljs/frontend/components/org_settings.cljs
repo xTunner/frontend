@@ -9,7 +9,6 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
-            [frontend.components.pieces.form :as form]
             [frontend.components.inputs :as inputs]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
@@ -842,34 +841,42 @@
       (close! (om/get-state owner [:checkout-loaded-chan])))
     om/IRenderState
     (render-state [_ {:keys [checkout-loaded?]}]
-      (let [card (get-in app state/stripe-card-path)]
-        (if-not (and card checkout-loaded?)
-          (card/titled {:title "Card on File"}
-                       (spinner))
-          (card/titled {:title "Card on File"
-                        :action (button/managed-button
-                                  {:success-text "Success"
-                                   :failed-text "Failed"
-                                   :loading-text "Updating"
-                                   :on-click #(raise! owner [:update-card-clicked])
-                                   :kind :primary
-                                   :size :medium}
-                                  "Update Credit Card")}
-                       (om/build table/table
-                                 {:rows [card]
-                                  :key-fn (constantly "card")
-                                  :columns [{:header "Name on credit card"
-                                             :cell-fn #(:name % "N/A")}
-                                            {:header "Card type"
-                                             :cell-fn #(:type % "N/A")}
-                                            {:header "Card number"
-                                             :cell-fn #(if (contains? % :last4)
-                                                         (str "xxxx-xxxx-xxxx-" (:last4 %))
-                                                         "N/A")}
-                                            {:header "Expiry"
-                                             :cell-fn #(if (contains? % :exp_month)
-                                                         (gstring/format "%02d/%s" (:exp_month %) (:exp_year %))
-                                                         "N/A")}]})))))))
+      (html
+        (let [card (get-in app state/stripe-card-path)]
+          (if-not (and card checkout-loaded?)
+            [:div.row-fluid [:legend.span8 "Card on file"]
+             [:div.row-fluid [:div.offset1.span6 (spinner)]]]
+            [:div
+              [:div.row-fluid [:legend.span8 "Card on file"]]
+              [:div.row-fluid.space-below
+               [:div.offset1.span6
+                (om/build table/table
+                          {:rows [card]
+                           :key-fn (constantly "card")
+                           :columns [{:header "Name"
+                                      :cell-fn #(:name % "N/A")}
+                                     {:header "Card type"
+                                      :cell-fn #(:type % "N/A")}
+                                     {:header "Card Number"
+                                      :cell-fn #(if (contains? % :last4)
+                                                  (str "xxxx-xxxx-xxxx-" (:last4 %))
+                                                  "N/A")}
+                                     {:header "Expiry"
+                                      :cell-fn #(if (contains? % :exp_month)
+                                                  (gstring/format "%02d/%s" (:exp_month %) (:exp_year %))
+                                                  "N/A")}]})]]
+              [:div.row-fluid
+               [:div.offset1.span7
+                [:form.form-horizontal
+                 [:div.control-group
+                  [:div.control
+                   (button/managed-button
+                    {:success-text "Success"
+                     :failed-text "Failed"
+                     :loading-text "Updating"
+                     :on-click #(raise! owner [:update-card-clicked])
+                     :kind :primary}
+                    "Change Credit Card")]]]]]]))))))
 
 ;; Render a friendly human-readable version of a Stripe discount coupon.
 ;; Stripe has a convention for this that does not seem to be documented, so we
@@ -905,51 +912,68 @@
   (reify
     om/IRender
     (render [_]
-      (let [plan (get-in app state/org-plan-path)]
-        (when (pm/has-active-discount? plan)
-          (card/titled {:title "Discounts"}
-                       (format-discount plan)))))))
+      (html
+        (let [plan (get-in app state/org-plan-path)]
+          [:div.row-fluid
+            (when (pm/has-active-discount? plan)
+              [:fieldset
+                [:legend.span8 "Discounts"]
+                [:div.span8 (format-discount plan)]])])))))
 
 (defn- billing-invoice-data [app owner]
   (reify
     om/IRender
     (render [_]
-      (let [plan-data (get-in app state/org-plan-path)
-            settings (state-utils/merge-inputs plan-data
-                                               (inputs/get-inputs-from-app-state owner)
-                                               [:billing_email :billing_name :extra_billing_data])]
-        (if-not plan-data
-          (card/titled {:title "Statement Information"}
-                       (spinner))
-          (card/titled {:title "Statement Information"
-                        :action (button/managed-button {:kind :primary
-                                                        :success-text "Saved Statement Info"
-                                                        :loading-text "Saving Statement Info..."
-                                                        :size :medium
-                                                        :on-click #(raise! owner [:save-invoice-data-clicked])}
-                                                       "Save Statement Info")}
-
-                       (html
-                         [:div
-                          [:div.form-group
-                           [:p "Where would you like to receive your monthly statements?
-                                             Add as many recipients as you like to the field below.
-                                             Separate email addresses with a comma."]
-                           (om/build form/text-field {:label "Statement email(s)"
-                                                      :value (str (:billing_email settings))
-                                                      :on-change #(utils/edit-input owner (conj state/inputs-path :billing_email) %)})]
-                          [:div.form-group
-                           [:p "What is the name of your organization?
-                                             This name will appear on every statement."]
-                           (om/build form/text-field {:label "Organization name"
-                                                      :value (str (:billing_name settings))
-                                                      :on-change #(utils/edit-input owner (conj state/inputs-path :billing_name) %)})]
-                          [:div.form-group
-                           [:p "Is there anything else we should include on your statement?
-                                             Feel free to add any special information such as company address, PO#, or VAT ID."]
-                           (om/build form/text-area {:label "Additional statement information"
-                                                     :value (str (:extra_billing_data settings))
-                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :extra_billing_data) %)})]])))))))
+      (html
+        (let [plan-data (get-in app state/org-plan-path)
+              settings (state-utils/merge-inputs plan-data
+                                                 (inputs/get-inputs-from-app-state owner)
+                                                 [:billing_email :billing_name :extra_billing_data])]
+          (if-not plan-data
+            [:div.invoice-data.row-fluid
+             [:legend.span8 "Invoice data"]
+             [:div.row-fluid [:div.span8 (spinner)]]]
+            [:div.invoice-data.row-fluid
+             [:fieldset
+              [:legend.span8 "Invoice data"]
+              [:form.form-horizontal.span8
+               [:div.control-group
+                [:label.control-label {:for "billing_email"} "Billing email"]
+                [:div.controls
+                 [:input.span10
+                  {:value (str (:billing_email settings))
+                   :name "billing_email",
+                   :type "text"
+                   :on-change #(utils/edit-input owner (conj state/inputs-path :billing_email) %)}]]]
+               [:div.control-group
+                [:label.control-label {:for "billing_name"} "Billing name"]
+                [:div.controls
+                 [:input.span10
+                  {:value (str (:billing_name settings))
+                   :name "billing_name",
+                   :type "text"
+                   :on-change #(utils/edit-input owner (conj state/inputs-path :billing_name) %)}]]]
+               [:div.control-group
+                [:label.control-label
+                 {:for "extra_billing_data"}
+                 "Extra data to include in your invoice"]
+                [:div.controls
+                 [:textarea.span10
+                  {:value (str (:extra_billing_data settings))
+                   :placeholder
+                   "Extra information you would like us to include in your invoice, e.g. your company address or VAT ID.",
+                   :rows 3
+                   :name "extra_billing_data"
+                   ;; FIXME These edits are painfully slow with the whitespace compiled Javascript
+                   :on-change #(utils/edit-input owner (conj state/inputs-path :extra_billing_data) %)}]]]
+               [:div.control-group
+                [:div.controls
+                 (button/managed-button
+                  {:success-text "Saved invoice data"
+                   :loading-text "Saving invoice data..."
+                   :on-click #(raise! owner [:save-invoice-data-clicked])
+                   :kind :primary}
+                  "Save Invoice Data")]]]]]))))))
 
 (defn- invoice-total
   [invoice]
@@ -979,53 +1003,63 @@
                      {:animation false}))
     om/IRender
     (render [_]
-      (let [account-balance (get-in app state/org-plan-balance-path)
-            invoices (get-in app state/org-invoices-path)]
-        (if-not (and account-balance invoices)
-          (card/titled {:title "Past Statements"}
-                       (spinner))
-          (card/titled {:title "Past Statements"}
-                       (html
-                         [:div.invoice-data
-                          [:p.current-balance "Current account balance"
-                           [:i.fa.fa-question-circle#invoice-popover-hack
-                            {:title "Current account balance"
-                             :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
-                                                "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
-                                                "<p>This amount may take a few hours to refresh.</p>")}]
-                           [:span "- "(->balance-string account-balance)]]
-                          (om/build table/table
-                                    {:rows invoices
-                                     :key-fn :id
-                                     :columns [{:header "Invoice date"
-                                                :cell-fn (comp stripe-ts->date :date)}
-                                               {:header "Time period covered"
-                                                :cell-fn (comp str stripe-ts->date :period_start)}
-                                               {:header "Total"
-                                                :type :right
-                                                :cell-fn #(gstring/format "$%.2f" (invoice-total %))}
-                                               {:type :shrink
-                                                :cell-fn
-                                                (fn [invoice]
-                                                  (button/managed-button
-                                                    {:failed-text "Failed" ,
-                                                     :success-text "Sent" ,
-                                                     :loading-text "Sending..." ,
-                                                     :on-click #(raise! owner [:resend-invoice-clicked
-                                                                               {:invoice-id (:id invoice)}])
-                                                     :size :medium
-                                                     :kind :secondary}
-                                                    "Resend"))}]})])))))))
+      (html
+        (let [account-balance (get-in app state/org-plan-balance-path)
+              invoices (get-in app state/org-invoices-path)]
+          (if-not (and account-balance invoices)
+            [:div.row-fluid
+             [:div.span8
+               [:legend "Invoices"]
+              (spinner)]]
+            [:div.invoice-data.row-fluid
+             [:div.span8
+              [:legend "Invoices"]
+              [:dl.dl-horizontal
+               [:dt
+                "Account balance"
+                [:i.fa.fa-question-circle#invoice-popover-hack
+                 {:title "Account balance"
+                  :data-content (str "<p>This is the credit you have with Circle. If your credit is positive, then we will use it before charging your credit card.</p>"
+                                     "<p>Contact us if you'd like us to send you a refund for the balance.</p>"
+                                     "<p>This amount may take a few hours to refresh.</p>")}]]
+               [:dd
+                [:span (->balance-string account-balance)]]]
+              (om/build table/table
+                        {:rows invoices
+                         :key-fn :id
+                         :columns [{:header "Invoice date"
+                                    :cell-fn (comp stripe-ts->date :date)}
+
+                                   {:header "Time period covered"
+                                    :cell-fn (comp str stripe-ts->date :period_start)}
+
+                                   {:header "Total"
+                                    :type :right
+                                    :cell-fn #(gstring/format "$%.2f" (invoice-total %))}
+
+                                   {:type :shrink
+                                    :cell-fn
+                                    (fn [invoice]
+                                      (button/managed-button
+                                       {:failed-text "Failed" ,
+                                        :success-text "Sent" ,
+                                        :loading-text "Sending..." ,
+                                        :on-click #(raise! owner [:resend-invoice-clicked
+                                                                  {:invoice-id (:id invoice)}])
+                                        :size :medium
+                                        :kind :secondary}
+                                       "Resend"))}]})]]))))))
 
 (defn billing [app owner]
   (reify
     om/IRender
     (render [_]
-      (card/collection
-        [(om/build billing-card app)
-         (om/build billing-invoice-data app)
-         (om/build billing-discounts app)
-         (om/build billing-invoices app)]))))
+      (html
+        [:div.plans
+          (om/build billing-card app)
+          (om/build billing-invoice-data app)
+          (om/build billing-discounts app)
+          (om/build billing-invoices app)]))))
 
 (defn cancel [app owner]
   (reify
