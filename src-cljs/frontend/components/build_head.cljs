@@ -371,9 +371,7 @@
                          "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
         track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
                                                           :properties {:language language}})]
-    (case (-> (feature/ab-test-treatment-map)
-              feature/ab-test-treatments
-              :junit-ab-test)
+    (case (feature/ab-test-treatment :junit-ab-test)
       :junit-button (button/link (open-ext {:href junit-link
                                             :kind :primary
                                             :on-click track-junit})

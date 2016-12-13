@@ -132,9 +132,7 @@
                (and (empty? builds)
                     projects
                     (empty? projects))
-               (case (-> (feature/ab-test-treatment-map current-user)
-                         feature/ab-test-treatments
-                         :new-user-landing-page)
+               (case (feature/ab-test-treatment :new-user-landing-page current-user)
                  :dashboard (om/build build-empty-state {:building-projects (get-in data (state/vcs-recent-active-projects-path true :github))
                                                          :not-building-projects (get-in data (state/vcs-recent-active-projects-path false :github))
                                                          :current-user current-user})
