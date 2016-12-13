@@ -112,7 +112,9 @@
             _ (utils/mlog "error-page render with orig-nav-point " orig-nav-point " and logged-in? " (-> data :logged-in? boolean))]
         (html
          [:div
-          (case (:signup-cta-on-404 (feature/ab-test-treatment))
+          (case (-> (feature/ab-test-treatment-map)
+                    feature/ab-test-treatments
+                    :signup-cta-on-404)
             :signup-cta-on-404 (om/build error-page-with-cta data)
             :no-signup-cta-on-404 (om/build plain-error-page data))
           [:footer.main-foot

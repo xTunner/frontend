@@ -8,7 +8,9 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn ab-test-treatment []
-  (:setup-docs-ab-test (feature/ab-test-treatment)))
+  (-> (feature/ab-test-treatment-map)
+      feature/ab-test-treatments
+      :setup-docs-ab-test))
 
 (defn- track-setup-docs-clicked [track-fn]
   (track-fn {:event-type :setup-docs-clicked}))
