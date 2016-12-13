@@ -32,11 +32,10 @@
 (def nav-point->page
   (merge
    ;; Page component functions, which are good as they are.
-   {:build build/page
-    :project-settings project-settings/page
+   {:add-projects add-projects/page
+    :build build/page
     :project-insights project-insights/page
-    :add-projects add-projects/page
-    ;; :projects projects/page
+    :project-settings project-settings/page
     :team team/page}
    ;; Old-World dominant component functions which need to be wrapped in the `main` template.
    ;; As we migrate these, we'll move them into the map above.
