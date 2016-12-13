@@ -98,6 +98,9 @@
                                                  :loading-text "Following..."
                                                  :failed-text "Failed"
                                                  :success-text "Success!"
+                                                 :disabled? (->> (concat building-projects not-building-projects)
+                                                                 (some :checked)
+                                                                 not)
                                                  :on-click #(do
                                                               ((om/get-shared owner :track-event) {:event-type :follow-and-build-projects-clicked
                                                                                                    :properties event-properties})
