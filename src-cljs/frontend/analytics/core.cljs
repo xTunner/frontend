@@ -82,6 +82,8 @@
     :logout-icon-clicked
     :new-plan-clicked
     :no-plan-banner-impression
+    :open-pull-request-clicked
+    :open-pull-request-impression
     :org-clicked
     :org-settings-link-clicked
     :pr-link-clicked

@@ -6,6 +6,7 @@
             [frontend.components.forms :as forms]
             [frontend.components.jira-modal :as jira-modal]
             [frontend.components.templates.main :as main-template]
+            [frontend.experiments.open-pull-request :refer [open-pull-request-action]]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
@@ -124,6 +125,8 @@
                   :title             "cancel this build"
                   :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                  [:i.material-icons "cancel"]])))
+           (when (feature/enabled? :open-pull-request)
+             (om/build open-pull-request-action {:build build}))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
            (when can-write-settings?
@@ -138,7 +141,7 @@
                    :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
                                                                    :properties {:project (:vcs_url project)
                                                                                 :user (:login user)}})
-                    :title "Project settings"}
+                   :title "Project settings"}
                   [:i.material-icons "settings"]])
                [:div.build-settings
                 [:a.build-action
