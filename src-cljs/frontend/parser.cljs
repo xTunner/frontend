@@ -137,11 +137,6 @@
       (recalculate-query new-ast)
       nil)))
 
-;; This is solely to support frontend.components.app/Loading's do-nothing query,
-;; until a later version of Compassus allows it to have no query.
-(defmethod read-local :nothing/nothing [env key params] nil)
-(defmethod read-remote :nothing/nothing [env key params] nil)
-
 
 (defn read [{:keys [target] :as env} key params]
   ;; Dispatch to either read-local or read-remote. Remember that, despite the
