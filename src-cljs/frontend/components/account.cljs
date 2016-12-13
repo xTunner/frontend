@@ -1,4 +1,7 @@
 (ns frontend.components.account
+  "This is the old-world namespace for the User (Account) Settings page, which
+  is migrating to frontend.components.pages.user-settings. Components will
+  migrate there as they conform to Component-Oriented Style."
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
@@ -19,7 +22,8 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html component element]]))
+  (:require-macros
+   [frontend.utils :refer [component defrender element html]]))
 
 (defn active-class-if-active [current-subpage subpage-link]
   (if (= current-subpage subpage-link)
@@ -447,20 +451,3 @@
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
           (web-notifications owner notifications-enabled? (notifications/notifications-permission))])))))
-
-(defn account [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [subpage     (get-in app state/navigation-subpage-path)
-            coms        {:notifications notifications
-                         :heroku        heroku-key
-                         :api           api-tokens
-                         :plans         plans
-                         :beta          beta-program}
-            subpage-com (get coms subpage)]
-        (html
-         [:div#account-settings
-          [:div.row (om/build common/flashes (get-in app state/error-message-path))]
-          [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled-path]))]])))))

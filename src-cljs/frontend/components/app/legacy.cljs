@@ -12,6 +12,7 @@
             [frontend.components.pages.project-insights :as project-insights]
             [frontend.components.pages.project-settings :as project-settings]
             [frontend.components.pages.team :as team]
+            [frontend.components.pages.user-settings :as user-settings]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
             [frontend.utils.legacy :refer [build-legacy]]
@@ -63,7 +64,8 @@
 (def nav-point->page
   (merge
    ;; Page component functions, which are good as they are.
-   {:add-projects add-projects/page
+   {:account user-settings/page
+    :add-projects add-projects/page
     :build build/page
     :project-insights project-insights/page
     :project-settings project-settings/page
@@ -75,7 +77,6 @@
          {:dashboard dashboard/dashboard
           :build-insights insights/build-insights
           :org-settings org-settings/org-settings
-          :account account/account
 
           :admin-settings admin/admin-settings
           :build-state admin/build-state
