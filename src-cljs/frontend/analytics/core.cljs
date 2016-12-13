@@ -166,7 +166,10 @@
   (merge (properties-to-track-from-state current-state)
          {:ab-test-treatments (-> (get-in current-state state/user-path)
                                   feature/ab-test-treatment-map
-                                  feature/ab-test-treatments)}
+                                  feature/ab-test-treatments)
+          :ab-test-buckets (-> (get-in current-state state/user-path)
+                               feature/ab-test-treatment-map
+                               feature/ab-test-buckets)}
          properties))
 
 (defn- current-subpage

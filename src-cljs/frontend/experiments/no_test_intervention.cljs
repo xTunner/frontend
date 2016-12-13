@@ -1,14 +1,14 @@
 (ns frontend.experiments.no-test-intervention
   (:require [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
-            [frontend.components.pieces.modal :as modal]        
+            [frontend.components.pieces.modal :as modal]
             [frontend.models.feature :as feature]
             [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn ab-test-treatment []
-  (feature/ab-test-treatment :setup-docs-ab-test))
+  (:setup-docs-ab-test (feature/ab-test-treatment)))
 
 (defn- track-setup-docs-clicked [track-fn]
   (track-fn {:event-type :setup-docs-clicked}))

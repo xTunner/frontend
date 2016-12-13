@@ -74,19 +74,27 @@
                         false :no-signup-cta-on-404}})
   ([user]
    (merge (ab-test-treatment-map)
-          {:new-user-landing-page {true (if (:bitbucket_authorized user) :add-projects :dashboard)
+          {:new-user-landing-page {true (if (:bitbucket_authorized user)
+                                          :add-projects
+                                          :dashboard)
                                    false :add-projects}})))
 
-(defn ab-test-treatments [treatment-map]
+(defn ab-test-treatments
+  "Return a map of {:test :treatment}, where :test is the test we are running and
+  :treatment is the treatment this user sees."
+  [treatment-map]
   (->> treatment-map
        keys
        (map (fn [feature]
               [feature (get-in treatment-map [feature (-> feature enabled?  boolean)])]))
        (into {})))
 
-(s/defn ab-test-treatment [feature :- s/Keyword
-                           & [user]]
-  (let [ab-test-treatments (if user
-                             (ab-test-treatment-map user)
-                             (ab-test-treatment-map))]
-    (feature ab-test-treatments)))
+(defn ab-test-buckets
+  "Return a map of {:test :bucket}, where :test is the test we are running and
+  :bucket is the bucket this user is in."
+  [treatment-map]
+  (->> treatment-map
+       keys
+       (map (fn [feature]
+              [feature (-> feature enabled? boolean)]))
+       (into {})))
