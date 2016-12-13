@@ -152,19 +152,14 @@
 
 ;; frontend.routes/set-data sets the :app/route-data during navigation.
 (defmethod mutate `routes/set-data
-  [{:keys [state] :as env} key params]
+  [{:keys [state route] :as env} key params]
   {:action (fn []
              (let [route-data (cond-> {}
                                 (contains? params :organization)
                                 (assoc :route-data/organization
                                        [:organization/by-vcs-type-and-name
                                         (select-keys (:organization params)
-                                                     [:organization/vcs-type :organization/name])]))
-                   ;; Once Compassus lets us change the route and set route
-                   ;; data in one transaction, we can use the :route from the
-                   ;; env and stop passing it as a param. See
-                   ;; frontend.routes/open for more info.
-                   route (:route params)]
+                                                     [:organization/vcs-type :organization/name])]))]
                (swap! state #(-> %
                                  (assoc :app/route-data route-data)
 

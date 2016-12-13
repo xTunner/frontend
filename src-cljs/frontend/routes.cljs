@@ -11,19 +11,19 @@
    [cljs.core.async.macros :as am :refer [alt! go go-loop]]
    [frontend.utils :refer [inspect]]))
 
-(defn open! [app route data]
-  ;; Shortly, Compassus will let us add this to its own transaction:
-  ;; https://github.com/compassus/compassus/issues/8
-  ;; https://github.com/compassus/compassus/commit/9a92c185d71615284b40a71eb049bbf38d01ec96
-  (om-next/transact! (compassus/get-reconciler app)
-                     [`(set-data ~(assoc data
-                                         ;; Once Compassus lets us do this in one
-                                         ;; transaction, we can stop passing the route
-                                         ;; here. See the parser for more info.
-                                         :route route))])
-  (compassus/set-route! app route))
+(defn open!
+  "Navigate to a (non-legacy) route.
 
-(defn open-to-inner! [app nav-ch navigation-point args]
+  app   - The Compassus application.
+  route - The route keyword to navigate to.
+  data  - Additional route data gleaned from the URL."
+  [app route data]
+  (compassus/set-route! app route {:tx [`(set-data ~data)]}))
+
+(defn open-to-inner!
+  "Navigate to a legacy route. As pages move from legacy to Om Next, their
+  routes move from using `open-to-inner!` to using `open!`."
+  [app nav-ch navigation-point args]
   (compassus/set-route! app :route/legacy-page)
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
