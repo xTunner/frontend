@@ -38,19 +38,6 @@
   (let [st @state]
     (om-next/db->tree query (get st key) st)))
 
-;; Most keys pass their queries on to the remote. We add :query-root true so
-;; that the key will be sent to the remote as one of the root keys in the
-;; query (using om-next/process-roots).
-;;
-;; This matters because our parser sits inside Compassus. The query that goes to
-;; the send function will have a single root key, which will be the route key,
-;; and the route component's remote query will be joined on that key. The send
-;; function will then use om-next/process-roots to raise the :query-roots to the
-;; root, so it can ignore UI concerns.
-(defmethod read-remote :default
-  [{:keys [ast] :as env} key params]
-  (assoc ast :query-root true))
-
 
 (def
   ^{:private true
