@@ -37,19 +37,17 @@
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
+    :branch-clicked
+    :breadcrumb-branch-clicked
     :breadcrumb-build-clicked
     :breadcrumb-dashboard-clicked
     :breadcrumb-org-clicked
-    :breadcrumb-branch-clicked
     :breadcrumb-project-clicked
-    :revision-link-clicked
-    :branch-clicked
     :build-canceled
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
     :build-link-clicked
     :build-project-clicked
-    :rebuild-clicked
     :build-status-clicked
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
@@ -61,8 +59,8 @@
     :container-filter-clicked
     :container-selected
     :create-jira-issue-clicked
-    :create-jira-issue-success
     :create-jira-issue-failed
+    :create-jira-issue-success
     :deselect-all-projects-clicked
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
@@ -82,22 +80,25 @@
     :logout-icon-clicked
     :new-plan-clicked
     :no-plan-banner-impression
+    :nux-bootstrap-impression
     :open-pull-request-clicked
     :open-pull-request-impression
     :org-clicked
     :org-settings-link-clicked
-    :pr-link-clicked
     :parallelism-clicked
+    :pr-link-clicked
     :project-branch-changed
-    :projects-icon-clicked
     :project-clicked
     :project-enabled
     :project-followed
     :project-settings-clicked
+    :projects-icon-clicked
+    :rebuild-clicked
+    :revision-link-clicked
     :select-plan-clicked
-    :setup-docs-clicked
     :set-up-junit-clicked
     :set-up-junit-impression
+    :setup-docs-clicked
     :show-all-branches-toggled
     :signup-clicked
     :signup-impression
