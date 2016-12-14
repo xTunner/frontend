@@ -25,6 +25,9 @@
        (set/rename-keys build-keys-mapping)
        (select-keys (vals build-keys-mapping)))))
 
+(defn get-me [api-ch]
+  (ajax/ajax :get "/api/v1/me" :me api-ch :context {}))
+
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
 
