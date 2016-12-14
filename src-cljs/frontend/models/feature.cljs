@@ -1,7 +1,8 @@
 (ns frontend.models.feature
   "Functions related to enabling and disabling features."
   (:require [goog.net.cookies :as cookies]
-            [frontend.utils.launchdarkly :as ld])
+            [frontend.utils.launchdarkly :as ld]
+            [schema.core :as s])
   (:import goog.Uri))
 
 (def feature-manifest
@@ -51,8 +52,7 @@
 (defn ^:export disable-in-cookie [feature]
   (cookies/set (feature-flag-key-name feature) "false" feature-cookie-max-age))
 
-;; export so we can set this using javascript in production
-(defn ^:export enabled?
+(defn ^:dynamic enabled?
   "If a feature is enabled or disabled in the query string, use that
   value, otherwise look in a cookie for the feature. Returns false by
   default."
@@ -64,11 +64,47 @@
       (contains? feature-manifest feature-name) (get feature-manifest feature-name)
       (some? (get-in-cookie feature-name)) (enabled-in-cookie? feature-name))))
 
-(def ab-test-treatments
-  {:junit-ab-test {true :junit-button
-                   false :junit-banner}
-   :signup-cta-on-404 {true :signup-cta-on-404
-                       false :no-signup-cta-on-404}})
+(defn ab-test-treatment-map
+  ([]
+   {:junit-ab-test {true :junit-button
+                    false :junit-banner}
+    :setup-docs-ab-test {true :setup-docs-modal
+                         false :setup-docs-banner}
+    :signup-cta-on-404 {true :signup-cta-on-404
+                        false :no-signup-cta-on-404}})
+  ([user]
+   (merge (ab-test-treatment-map)
+          {:new-user-landing-page {true (if (:bitbucket_authorized user)
+                                          :add-projects
+                                          :dashboard)
+                                   false :add-projects}})))
 
-(defn ab-test-treatment [feature]
-  (get-in ab-test-treatments [feature (-> feature enabled? boolean)]))
+(defn ab-test-treatments
+  "Return a map of {:test :treatment}, where :test is the test we are running and
+  :treatment is the treatment this user sees."
+  [treatment-map]
+  (->> treatment-map
+       keys
+       (map (fn [feature]
+              [feature (get-in treatment-map [feature (-> feature enabled?  boolean)])]))
+       (into {})))
+
+(defn ab-test-treatment
+  ([feature]
+   (-> (ab-test-treatment-map)
+       (ab-test-treatments)
+       (get feature)))
+  ([feature user]
+   (-> (ab-test-treatment-map user)
+       (ab-test-treatments)
+       (get feature))))
+
+(defn ab-test-buckets
+  "Return a map of {:test :bucket}, where :test is the test we are running and
+  :bucket is the bucket this user is in."
+  [treatment-map]
+  (->> treatment-map
+       keys
+       (map (fn [feature]
+              [feature (-> feature enabled? boolean)]))
+       (into {})))

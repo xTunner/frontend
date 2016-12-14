@@ -1,10 +1,12 @@
 (ns frontend.components.pages.build
   (:require [frontend.async :refer [raise!]]
+            [frontend.experiments.no-test-intervention :as no-test-intervention]
             [frontend.components.build :as build-com]
             [frontend.components.build-head :as build-head]
             [frontend.components.forms :as forms]
             [frontend.components.jira-modal :as jira-modal]
             [frontend.components.templates.main :as main-template]
+            [frontend.experiments.open-pull-request :refer [open-pull-request-action]]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
@@ -74,9 +76,17 @@
   (reify
     om/IInitState
     (init-state [_]
-      :show-modal? false)
+      {:show-jira-modal? false
+       :show-setup-docs-modal? false})
+
+    om/IWillReceiveProps
+    (will-receive-props [_ data]
+      (let [build (get-in data state/build-path)]
+        (when (no-test-intervention/show-setup-docs-modal? build)
+          (om/set-state! owner :show-setup-docs-modal? true))))
+          
     om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
+    (render-state [_ {:keys [show-jira-modal? show-setup-docs-modal?]}]
       (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
             build (get-in data state/build-path)
             build-id (build-model/id build)
@@ -90,10 +100,17 @@
             can-write-settings? (project-model/can-write-settings? project)]
         (html
           [:div.build-actions-v2
-           (when show-modal?
+           ;; Ensure we never have more than 1 modal showing
+           (cond 
+             show-jira-modal?
              (om/build jira-modal/jira-modal {:project project
                                               :jira-data jira-data
-                                              :close-fn #(om/set-state! owner :show-modal? false)}))
+                                              :close-fn #(om/set-state! owner :show-jira-modal? false)})
+             (and show-setup-docs-modal?
+                  (= :setup-docs-modal (no-test-intervention/ab-test-treatment)))
+             (om/build no-test-intervention/setup-docs-modal
+                       {:close-fn 
+                        #(om/set-state! owner :show-setup-docs-modal? false)}))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
              (list
               (forms/managed-button
@@ -108,13 +125,15 @@
                   :title             "cancel this build"
                   :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                  [:i.material-icons "cancel"]])))
+           (when (feature/enabled? :open-pull-request)
+             (om/build open-pull-request-action {:build build}))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
            (when can-write-settings?
              (if (and (feature/enabled? :jira-integration) jira-data)
                (list
                  [:button.btn-icon.jira-container
-                   {:on-click #(om/set-state! owner :show-modal? true)
+                   {:on-click #(om/set-state! owner :show-jira-modal? true)
                     :title "Add ticket to JIRA"}
                    [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]]
                  [:a.exception.btn-icon.build-settings-container
@@ -122,7 +141,7 @@
                    :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
                                                                    :properties {:project (:vcs_url project)
                                                                                 :user (:login user)}})
-                    :title "Project settings"}
+                   :title "Project settings"}
                   [:i.material-icons "settings"]])
                [:div.build-settings
                 [:a.build-action

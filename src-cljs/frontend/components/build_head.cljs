@@ -370,8 +370,7 @@
                          "Java" "https://circleci.com/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
                          "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
         track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
-                                                          :properties {:language language
-                                                                       :junit-ab-test (feature/ab-test-treatment :junit-ab-test)}})]  
+                                                          :properties {:language language}})]
     (case (feature/ab-test-treatment :junit-ab-test)
       :junit-button (button/link (open-ext {:href junit-link
                                             :kind :primary
@@ -500,8 +499,7 @@
       (raise! owner [:tests-showed]))
     om/IDidMount
     (did-mount [_]
-      ((om/get-shared owner :track-event) {:event-type :set-up-junit-impression
-                                           :properties {:junit-ab-test (feature/ab-test-treatment :junit-ab-test)}})) 
+      ((om/get-shared owner :track-event) {:event-type :set-up-junit-impression}))
     om/IRender
     (render [_]
       (let [source-hash (->> tests

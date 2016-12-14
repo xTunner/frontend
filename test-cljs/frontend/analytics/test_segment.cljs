@@ -40,7 +40,9 @@
   {:user "test-user"
    :view :test-view
    :org  "test-org"
-   :repo "test-repo"})
+   :repo "test-repo"
+   :ab-test-treatments {:foo :bar}
+   :ab-test-buckets {:foo true}})
 
 (def outbound-segment-props
   (clj-keys-with-dashes->js-keys-with-underscores mock-segment-props))
