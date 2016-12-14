@@ -105,6 +105,8 @@
     :start-trial-clicked
     :stop-building-clicked
     :stop-building-modal-dismissed
+    :stripe-checkout-closed
+    :stripe-checkout-succeeded
     :support-icon-clicked
     :team-icon-clicked
     :teammates-invited
