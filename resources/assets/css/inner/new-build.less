@@ -321,17 +321,6 @@
     margin-left: 1px;
   }
 
-  &.add-containers {
-    .flexy(center, center);
-    font-size: 18px;
-    color: @white;
-    background: @blueLight;
-
-    &.upsell {
-      flex-grow: 0.85;
-    }
-  }
-
   &.active {
     .invert-status-icons;
     color: @white;
@@ -354,6 +343,25 @@
 
     &.canceled {
       background-color: @grayLight;
+    }
+  }
+
+  &:hover {
+    background: @whiten;
+  }
+
+  &.add-containers {
+    .flexy(center, center);
+    font-size: 18px;
+    color: @white;
+    background: @blueLight;
+
+    &.upsell {
+      flex-grow: 0.85;
+    }
+
+    &:hover {
+      background: @blueLightest;
     }
   }
 
