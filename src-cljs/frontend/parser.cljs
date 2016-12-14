@@ -32,11 +32,17 @@
 (defmulti read-local om-next/dispatch)
 (defmulti read-remote om-next/dispatch)
 
-;; Most keys resolve locally as an ordinary db->tree.
+;; Most keys resolve locally as an ordinary db->tree or as a simple key lookup.
 (defmethod read-local :default
-  [{:keys [state query] :as env} key params]
-  (let [st @state]
-    (om-next/db->tree query (get st key) st)))
+  [{:keys [state query ast] :as env} key params]
+  (let [st @state
+        value-at-key (get st key)]
+    (case (:type ast)
+      ;; For a :prop (eg. [:some/value]), just look up and return the value.
+      :prop value-at-key
+      ;; For a :join (eg. [{:some/complex-value [:with/a :deeper/query]}}]),
+      ;; resolve the deeper query with db->tree.
+      :join (om-next/db->tree query value-at-key st))))
 
 ;; When adding a new key, be sure to add a read-remote implementation. Returning
 ;; true will pass the entire query on to the remote send function. Returning
@@ -83,6 +89,12 @@
 
 ;; The :legacy/state is never read remotely.
 (defmethod read-remote :legacy/state
+  [env key params]
+  nil)
+
+
+;; The subpage is a purely local concern.
+(defmethod read-remote :app/subpage-route
   [env key params]
   nil)
 
@@ -144,16 +156,17 @@
 
 ;; frontend.routes/set-data sets the :app/route-data during navigation.
 (defmethod mutate `routes/set-data
-  [{:keys [state route] :as env} key params]
+  [{:keys [state route] :as env} key {:keys [subpage route-data]}]
   {:action (fn []
              (let [route-data (cond-> {}
-                                (contains? params :organization)
+                                (contains? route-data :organization)
                                 (assoc :route-data/organization
                                        [:organization/by-vcs-type-and-name
-                                        (select-keys (:organization params)
+                                        (select-keys (:organization route-data)
                                                      [:organization/vcs-type :organization/name])]))]
                (swap! state #(-> %
-                                 (assoc :app/route-data route-data)
+                                 (assoc :app/subpage-route subpage
+                                        :app/route-data route-data)
 
                                  ;; Clean up the legacy state so it doesn't leak
                                  ;; from the previous page. This goes away when
@@ -171,7 +184,7 @@
                                  :subpage :default
                                  :properties {:user (get-in @state [:app/current-user :user/login])
                                               :view route
-                                              :org (get-in params [:organization :organization/name])}})))})
+                                              :org (get-in route-data [:route-data/organization :organization/name])}})))})
 
 (def parser (compassus/parser {:read read
                                :mutate mutate

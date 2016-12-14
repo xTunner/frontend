@@ -539,7 +539,7 @@
 
              (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
                         show-aside-icons?)
-               [:a.aside-item {:class (when (= :account current-route) "current")
+               [:a.aside-item {:class (when (= :route/account current-route) "current")
                                :data-placement "right"
                                :data-trigger "hover"
                                :title "Account Settings"

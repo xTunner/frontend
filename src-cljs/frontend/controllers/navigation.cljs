@@ -451,25 +451,6 @@
                      500 "Internal server error"
                      "Something unexpected happened")))
 
-(defmethod navigated-to :account
-  [history-imp navigation-point {:keys [subpage] :as args} state]
-  (mlog "Navigated to account subpage:" subpage)
-  (-> state
-      state-utils/clear-page-state
-      (assoc state/current-view navigation-point
-             state/navigation-data args)
-      (assoc-in state/crumbs-path [{:type :account}])))
-
-(defmethod post-navigated-to! :account
-  [history-imp navigation-point {:keys [org-name subpage]} previous-state current-state comms]
-  (let [api-ch (:api comms)]
-    (when-not (seq (get-in current-state state/projects-path))
-      (api/get-projects (:api comms)))
-    (ajax/ajax :get "/api/v1/sync-github" :me api-ch)
-    (api/get-orgs api-ch :include-user? true)
-    (ajax/ajax :get "/api/v1/user/token" :tokens api-ch)
-    (set-page-title! "Account")))
-
 (defmethod navigated-to :admin-settings
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (-> state

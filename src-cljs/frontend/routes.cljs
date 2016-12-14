@@ -16,9 +16,14 @@
 
   app   - The Compassus application.
   route - The route keyword to navigate to.
-  data  - Additional route data gleaned from the URL."
-  [app route data]
-  (compassus/set-route! app route {:tx [`(set-data ~data)]}))
+  data  - (optional) Route data for the `set-data mutation, including:
+          :subpage    - (optional) The subpage route keyword to navigate to.
+          :route-data - (optional) Additional route data gleaned from the URL."
+  ([app route] (open! app route {}))
+  ([app route data]
+   ;; Note: We always call set-data: if values aren't given, we still want to
+   ;; set them to `nil`.
+   (compassus/set-route! app route {:tx [`(set-data ~data)]})))
 
 (defn open-to-inner!
   "Navigate to a legacy route. As pages move from legacy to Om Next, their
@@ -241,15 +246,16 @@
   (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
     (open-to-inner! app nav-ch :project-insights {:org org :repo repo :branch branch :vcs_type (vcs/->lengthen-vcs short-vcs-type)}))
   (defroute v1-account "/account" []
-    (open-to-inner! app nav-ch :account {:subpage :notifications}))
+    (open! app :route/account {:subpage :notifications}))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
-    (open-to-inner! app nav-ch :account {:subpage (keyword subpage)}))
+    (open! app :route/account {:subpage (keyword subpage)}))
   (defroute v1-organization-projects "/projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
-    (open! app :route/projects {:organization
-                                {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-                                 :organization/name org-name}}))
+    (open! app :route/projects {:route-data
+                                {:organization
+                                 {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+                                  :organization/name org-name}}}))
   (defroute v1-projects "/projects" []
-    (open! app :route/projects {}))
+    (open! app :route/projects))
   (defroute v1-team "/team" []
     (open-to-inner! app nav-ch :team {}))
   (defroute v1-logout "/logout" []
