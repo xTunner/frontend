@@ -21,7 +21,7 @@
 
 (defn show-setup-docs-modal? [build]
   (and (show-intervention? build)
-       (-> build :build_num (= 1))))
+       (-> build :build_num (<= 3))))
 
 (defn- setup-docs-link-props [track-fn]
   (open-ext {:href "https://circleci.com/docs/manually"
