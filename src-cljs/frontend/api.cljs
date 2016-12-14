@@ -35,6 +35,19 @@
              api-ch
              :context {:page page}))
 
+(defn get-vcs-activity [api-ch]
+  (ajax/ajax :get (str "/api/v1.1/user/vcs-project-activity")
+             :vcs-activity
+             api-ch
+             :params {:vcs "github"}))
+
+(defn follow-projects [vcs-urls api-ch uuid]
+  (ajax/ajax :post (str "/api/v1.1/user/follow-projects")
+             :follow-projects
+             api-ch
+             :params {:vcs-urls vcs-urls}
+             :context {:uuid uuid}))
+
 (defn get-bitbucket-repos [api-ch & {:keys [page]
                                   :or {page 1}}]
   (ajax/ajax :get (str "/api/v1.1/user/repos/bitbucket?page=" page)

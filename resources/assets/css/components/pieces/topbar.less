@@ -1,80 +1,172 @@
 .ns("frontend.components.pieces.topbar", {
   .ui("topbar", {
-    .flexy(row, space-between);
-    background-color: @top-bar-color;
+    .flexy(row);
     background-color: @grayDark;
     height: @top-bar-height;
 
-    > .logomark {
-      .flexy(center, center);
-      .icon-style(@white, (@em * 2));
-      width: 70px;
-      height: @top-bar-height;
+    > .navs-container {
+      .flexy(stretch, space-between, row);
+      width: 100%;
 
-      > i {
-        opacity: 1;
+      > .logomark {
+        .flexy(center, center);
+        .icon-style(@white, (@em * 2));
+        width: 70px;
+        height: @top-bar-height;
       }
-    }
 
-    > .nav-items {
-      .flexy;
+      > .logomark-narrow {
+        .flexy(center, center);
+        .icon-style(@white, (@em * 2));
+        width: 176px;
+        height: @top-bar-height;
 
-      > li {
+        > img {
+          height: 44px;
+        }
+      }
+
+      > button.navbar-toggler {
+        background: inherit;
+        border: none;
+        padding: 0 2ex;
+
+        i.material-icons {
+          margin-left: 0;
+          font-size: @fontSizeLargest;
+          color: @whiten;
+        }
+      }
+
+      > .nav-items {
         .flexy;
 
-        &:hover {
-          background-color: @gray;
+        margin-bottom: 0;
+        padding-left: 0;
+
+        &.nav-items-left {
+          margin-left: auto;
         }
 
-        > button.dropdown-toggle {
-          border: none;
-          background: none;
+        &.collapsing-nav {
+          @media (max-width: @screen-sm-min) {
+            display: none;
+          }
         }
 
-        > a, > button.dropdown-toggle {
-          display: block;
-          padding: 20px;
-          font-size: @fontSizeSmall;
-          font-weight: 400;
-          line-height: 30px;
-          color: @white;
-          text-decoration: none;
+        > li {
+          .flexy;
 
-          > i {
+          > button.dropdown-toggle {
+            border: none;
+            background: none;
+          }
+
+          > a {
+            > i {
+              // OVERRIDE--ICON-STYLE
+              margin-left: 0;
+              margin-right: 1ex;
+              @media (max-width: @screen-md-min) {
+                display: none;
+              }
+            }
+          }
+
+          > a,
+          > button.dropdown-toggle {
+            display: block;
+            padding: 20px;
+            font-size: @fontSizeSmall;
+            font-weight: 500;
+            line-height: 30px;
             color: @white;
+            text-decoration: none;
+            white-space: nowrap;
+
+            .transition(all .1s ease-in);
+
+            @media (max-width: @screen-md-min) {
+              padding: 20px 1em;
+            }
+
+            > i {
+              // OVERRIDE--ICON-STYLE
+              color: @white;
+              .transition(all .1s ease-in);
+
+              .material-icons {
+                margin-top: -3px
+              }
+            }
+
+            > .nav-label {
+              vertical-align: middle;
+            }
+
+            // TODO -ac Note, this should become its own component, since we
+            // reuse it - *a lot*
+            > .gravatar {
+              min-width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              border: 1px solid @white;
+            }
+
+            &:hover {
+              // OVERRIDE--ICON-STYLE
+              color: @grayLighter;
+
+              i {
+                color: @grayLighter;
+              }
+            }
           }
 
-          // TODO -ac Note, this should become its own component, since we
-          // reuse it - *a lot*
-          > .gravatar {
-            min-width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 1px solid @white;
+          > .dropdown-menu {
+            // Bootstrap Overrides
+            margin-top: -4px;
+            padding: 0;
+            border: none;
+            margin-right: 1em;
+            border-radius: 0;
+            min-width: 260px;
+
+            > li > a {
+              padding: 10px 20px;
+              // OVERRIDE--BOOTSTRAP WHITE-SPACE
+              white-space: normal;
+              color: @grayDarker;
+              transition: none;
+
+              &:hover {
+                background-color: @blueDarkest;
+                color: @whiten;
+
+                .heading {
+                  color: @whiten;
+                }
+              }
+
+              > &.has-icon i {
+                // OVERRIDE--ICON-STYLE
+                margin-left: 8px;
+              }
+
+              .heading {
+                font-weight: 600;
+                color: @blueDarkest;
+              }
+            }
           }
-        }
 
-        > .dropdown-menu {
-          // Bootstrap Overrides
-          margin-top: -4px;
-          padding: 8px 0;
-          border: none;
-          margin-right: 1em;
+          &.user-menu {
+            border-left: 1px solid fade(@gray, 50%);
 
-          > li > a {
-            padding: 6px 20px;
-            white-space: pre-wrap;
-          }
-        }
-
-        &.user-menu {
-          margin-left: 9px;
-          padding-left: 9px;
-          border-left: 2px solid fade(@gray, 50%);
-
-          @media (max-width: @screen-sm-max) {
-            padding-left: 0;
-            border-left: none;
+            @media (max-width: @screen-sm-max) {
+              padding-left: 0;
+              border-left: none;
+            }
           }
         }
       }

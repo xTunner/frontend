@@ -2,7 +2,6 @@
   (:require [cljs.test :refer-macros [use-fixtures]]
             [clojure.string]
             [doo.runner :refer-macros [doo-tests]]
-            [frontend.analytics.test-ab]
             [frontend.analytics.test-core]
             [frontend.analytics.test-segment]
             [frontend.analytics.test-track]
@@ -33,8 +32,7 @@
 (aset js/window "renderContext" "{}")
 (aset js/window "SVGInjector" (fn [node] node))
 
-(doo-tests 'frontend.analytics.test-ab
-           'frontend.analytics.test-core
+(doo-tests 'frontend.analytics.test-core
            'frontend.analytics.test-segment
            'frontend.analytics.test-track
            'frontend.components.project.test-common

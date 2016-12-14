@@ -198,12 +198,23 @@
 (defn current-user-ssh?
   "Whether the given user has SSH access to the build"
   [build user]
-  (->> build :ssh_users (map :github_id) (some #{(:github_id user)})))
+  (let [cmp (fn [m] (select-keys m [:type :external_id]))
+        identities (->> user
+                        :identities
+                        vals
+                        (map cmp)
+                        (into #{}))
+        build-identities (->> build
+                              :ssh_users
+                              (map cmp))]
+    (or (some identities build-identities)
+        (->> build :ssh_users (map :github_id) (some #{(:github_id user)})))))
 
 (defn someone-else-ssh?
   "Whether a user other than the given one has SSH access to the build"
   [build user]
-  (->> build :ssh_users (map :github_id) (not-any? #{(:github_id user)})))
+  (not (or (empty? (:ssh_users build))
+           (current-user-ssh? build user))))
 
 (defn ssh-enabled-now?
   "Whether anyone can currently SSH into the build"
@@ -296,3 +307,17 @@
    :build-num (num build)
    :ref-name (vcs-ref-name build)
    :reponame (:reponame build)})
+
+(defn new-pull-request-url [build]
+  (when-let [vcs-url (vcs-url build)]
+    (case (vcs-url/vcs-type vcs-url)
+      "github"
+      (str (:vcs_url build) "/compare/" (:branch build))
+
+      "bitbucket"
+      (letfn [(branch-url [build branch]
+                (-> build :vcs_url vcs-url/project-name (str "::" branch)))]
+        (str (:vcs_url build)
+             "/pull-requests/new?"
+             "source=" (branch-url build (:branch build))
+             "&dest=" (branch-url build "master"))))))

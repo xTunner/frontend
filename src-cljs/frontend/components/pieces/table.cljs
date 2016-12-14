@@ -58,8 +58,7 @@
               (for [[idx {:keys [cell-fn type]}] (map-indexed vector columns)]
                 [:td {:key idx
                       :class (cell-classes type)}
-                 [:.contents
-                  (cell-fn row)]])])]])))))
+                 (cell-fn row)])])]])))))
 
 (defn action-button
   "A button suitable for the action button cell of a table row.

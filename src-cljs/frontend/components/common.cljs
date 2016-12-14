@@ -105,26 +105,38 @@
   {:show-warning-text? true})
 
 (defn message-severity-display-options [message]
-  (get {"error"    ["alert-danger"  "Info-Error"]
-        "warning"  ["alert-warning" "Info-Warning"]
-        "info"     ["alert-info"    "Info-Info"]}
-       (:type message)
-       ["alert-info" "Info-Info"]))
+  (case (-> message :type keyword)
+        :error    ["alert-danger"  "Info-Error"]
+        :warning  ["alert-warning" "Info-Warning"]
+        :info     ["alert-info"    "Info-Info"]
+        ["alert-info" "Info-Info"]))
+
+(defn message [{:keys [type content]}]
+  (let [[alert-class alert-icon] 
+        (message-severity-display-options {:type type})]
+    (html
+      [:div {:class ["alert" alert-class "iconified"]}
+       [:div.alert-icon
+        [:img {:src (icon-path alert-icon)}]]
+       content])))
 
 (defn messages
   ([msgs]
    (messages msgs {}))
   ([msgs opts]
-   (let [{:keys [show-warning-text?]} (merge messages-default-opts opts)]
+   (let [{:keys [show-warning-text?]} (merge messages-default-opts opts)
+         content (fn [message] 
+                   (html
+                     [:div 
+                      {:dangerouslySetInnerHTML 
+                       #js 
+                       {"__html" (normalize-html (:message message))}}]))]
      (when (pos? (count msgs))
        [:div.col-xs-12
-        (map (fn [message]
-               (let [[alert-class alert-icon] (message-severity-display-options message)]
-                 [:div.row
-                  [:div {:class ["alert" alert-class "iconified"]}
-                   [:div.alert-icon
-                    [:img {:src (icon-path alert-icon)}]]
-                   [:div {:dangerouslySetInnerHTML #js {"__html" (normalize-html (:message message))}}]]]))
+        (map (fn [msg]
+               [:div.row
+                (message {:type (:type msg) 
+                          :content (content msg)})])
              msgs)]))))
 
 ;; TODO: Why do we have ico and icon?
@@ -251,7 +263,12 @@
     om/IRender
     (render [_]
       (let [track-signed-up-clicked #((om/get-shared owner :track-event) {:event-type :signup-clicked})
-            link-btn-attrs (fn [login-url] (open-ext {:href (str login-url "?return-to=" js/window.location.pathname js/window.location.hash)
+            link-btn-attrs (fn [login-url] (open-ext {:href (str login-url
+                                                                 "?return-to="
+                                                                 js/window.location.origin
+                                                                 js/window.location.pathname
+                                                                 "?signup-404=true"
+                                                                 js/window.location.hash)
                                                       :role "button"
                                                       :on-mouse-up track-signed-up-clicked}))]
         (html

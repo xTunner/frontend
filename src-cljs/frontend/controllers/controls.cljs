@@ -961,10 +961,14 @@
     (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
-          (condp = message
-            :stripe-checkout-closed (release-button! uuid :idle)
+          (case message
+            :stripe-checkout-closed
+            (do (analytics-track/stripe-checkout-closed :new-linux-plan-clicked)
+                (release-button! uuid :idle))
+
             :stripe-checkout-succeeded
             (let [card-info (:card data)]
+              (analytics-track/stripe-checkout-succeeded :new-linux-plan-clicked)
               (put! api-ch [:plan-card :success {:resp card-info
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
@@ -983,6 +987,7 @@
                               (assoc api-result :context {:org-name org-name
                                                           :vcs-type vcs-type})])
                 (release-button! uuid (:status api-result))))
+
             nil)))))
 
 (defmethod post-control-event! :new-osx-plan-clicked
@@ -995,10 +1000,14 @@
     (utils/mlog "calling stripe/open-checkout")
     (stripe/open-checkout {:price price :description description} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
-          (condp = message
-            :stripe-checkout-closed (release-button! uuid :idle)
+          (case message
+            :stripe-checkout-closed
+            (do (analytics-track/stripe-checkout-closed :new-osx-plan-clicked)
+                (release-button! uuid :idle))
+
             :stripe-checkout-succeeded
             (let [card-info (:card data)]
+              (analytics-track/stripe-checkout-succeeded :new-osx-plan-clicked)
               (put! api-ch [:plan-card :success {:resp card-info
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
@@ -1015,6 +1024,7 @@
                               (assoc api-result :context {:org-name org-name
                                                           :vcs-type vcs-type})])
                 (release-button! uuid (:status api-result))))
+
             nil)))))
 
 (defmethod post-control-event! :new-checkout-key-clicked
@@ -1290,10 +1300,14 @@
         {org-name :name, vcs-type :vcs_type} (get-in current-state state/org-data-path)]
     (stripe/open-checkout {:panelLabel "Update card"} stripe-ch)
     (go (let [[message data] (<! stripe-ch)]
-          (condp = message
-            :stripe-checkout-closed (release-button! uuid :idle)
+          (case message
+            :stripe-checkout-closed
+            (do (analytics-track/stripe-checkout-closed :update-card-clicked)
+                (release-button! uuid :idle))
+
             :stripe-checkout-succeeded
             (let [token-id (:id data)]
+              (analytics-track/stripe-checkout-succeeded :update-card-clicked)
               (let [api-result (<! (ajax/managed-ajax
                                     :put
                                     (gstring/format "/api/v1.1/organization/%s/%s/card"
@@ -1303,6 +1317,7 @@
                 (put! api-ch [:plan-card (:status api-result) (assoc api-result :context {:vcs-type vcs-type
                                                                                           :org-name org-name})])
                 (release-button! uuid (:status api-result))))
+
             nil)))))
 
 (defmethod post-control-event! :save-invoice-data-clicked
@@ -1636,3 +1651,22 @@
                                  :component "web-notifications-confirmation-banner"}})
   (let [nav-ch (:nav comms)]
     (put! nav-ch [:navigate! {:path (routes/v1-account-subpage {:subpage "notifications"})}])))
+
+(defmethod post-control-event! :followed-projects
+  [_ _ _ previous-state current-state comms]
+  (let [api-ch (:api comms)
+        selected-vcs-urls (fn [path]
+                            (->> (get-in current-state path)
+                                 (filter :checked)
+                                 (map :vcs_url)))
+        building-vcs-urls (selected-vcs-urls (state/vcs-recent-active-projects-path true :github))
+        not-building-vcs-urls (selected-vcs-urls (state/vcs-recent-active-projects-path false :github))
+        uuid frontend.async/*uuid*]
+    (button-ajax :post
+                 (api/follow-projects (concat building-vcs-urls not-building-vcs-urls) api-ch uuid)
+                 :follow-projects
+                 api-ch)))
+
+(defmethod control-event :deselect-activity-repos
+  [_ _ {:keys [path]} state]
+  (update-in state path (partial mapv #(assoc % :checked false))))

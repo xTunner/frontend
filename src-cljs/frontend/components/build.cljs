@@ -1,9 +1,11 @@
 (ns frontend.components.build
   (:require [frontend.async :refer [raise!]]
+            [frontend.experiments.no-test-intervention :as no-test-intervention]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.components.build-head :as build-head]
@@ -114,6 +116,10 @@
           (common/messages (set (:messages build)))
           [:div.row
            [:div.col-xs-12
+            (when (and (no-test-intervention/show-intervention? build)
+                       (= :setup-docs-banner (no-test-intervention/ab-test-treatment)))
+              (om/build no-test-intervention/setup-docs-banner nil))
+
             (when-let [error-div (report-infrastructure-error build owner)]
               error-div)
 
@@ -152,7 +158,7 @@
                 (.getTime (js/Date. end_time))
                 (datetime/server-now))]
       (- end start))
-      0))
+    0))
 
 ;; TODO this seems a little bit slow when calculating durations for really complex builds with
 ;; lots of containers. Is there a good way to avoid recalculating this when selecting container pills? (Perhaps caching the calculated value using IWillUpdate / IShouldUpdate?)
@@ -226,7 +232,7 @@
                          :waiting "Status-Queued"
                          nil)
              {:keys [vcs_type username reponame build_num]} build]
-         [:a.container-selector
+         [:a.container-selector.exception
           {:href (routes/v1-build-path vcs_type username
                                        reponame build_num
                                        (or current-tab (build-utils/default-tab build scopes))
@@ -326,7 +332,7 @@
                                                          (> subsequent-container-count 0))
                                                 "prev-and-next")}
                   (if (pos? previous-container-count)
-                    [:a.container-selector.page-container-pills
+                    [:a.container-selector.page-container-pills.exception
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (- paging-offset paging-width)}])}
                      [:div.nav-caret
                       [:i.fa.fa-2x.fa-angle-left]]
@@ -349,7 +355,7 @@
                   (cond
 
                     (pos? subsequent-container-count)
-                    [:a.container-selector.page-container-pills
+                    [:a.container-selector.page-container-pills.exception
                      {:on-click #(raise! owner [:container-paging-offset-changed {:paging-offset (+ paging-offset paging-width)}])}
                      [:div.pill-details ;; just for flexbox container
                       [:div "Next " subsequent-container-count]
@@ -358,7 +364,7 @@
                       [:i.fa.fa-2x.fa-angle-right]]]
 
                     (project-model/parallel-available? project)
-                    [:a.container-selector.add-containers
+                    [:a.container-selector.add-containers.exception
                      {:href (routes/v1-org-settings-path {:org plan-org-name
                                                           :vcs_type plan-vcs-type
                                                           :_fragment "linux-pricing"})
