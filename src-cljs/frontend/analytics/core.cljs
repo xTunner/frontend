@@ -99,6 +99,7 @@
     :set-up-junit-clicked
     :set-up-junit-impression
     :setup-docs-clicked
+    :setup-docs-impression
     :show-all-branches-toggled
     :signup-clicked
     :signup-impression
