@@ -81,9 +81,9 @@
 
     om/IWillReceiveProps
     (will-receive-props [_ data]
-      (let [build (get-in data state/build-path)]
-        (when (no-test-intervention/show-setup-docs-modal? build)
-          (om/set-state! owner :show-setup-docs-modal? true))))
+      (let [build (get-in data state/build-path)
+            show-setup-docs-modal? (no-test-intervention/show-setup-docs-modal? build)]
+        (om/set-state! owner :show-setup-docs-modal? show-setup-docs-modal?)))
           
     om/IRenderState
     (render-state [_ {:keys [show-jira-modal? show-setup-docs-modal?]}]
