@@ -1,10 +1,10 @@
 (ns frontend.analytics.core
-  (:require [frontend.analytics.ab :as ab]
-            [frontend.analytics.segment :as segment]
+  (:require [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
+            [frontend.models.feature :as feature]
             [frontend.utils :refer [merror]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -37,19 +37,17 @@
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
+    :branch-clicked
+    :breadcrumb-branch-clicked
     :breadcrumb-build-clicked
     :breadcrumb-dashboard-clicked
     :breadcrumb-org-clicked
-    :breadcrumb-branch-clicked
     :breadcrumb-project-clicked
-    :revision-link-clicked
-    :branch-clicked
     :build-canceled
     :build-insights-upsell-clicked
     :build-insights-upsell-impression
     :build-link-clicked
     :build-project-clicked
-    :rebuild-clicked
     :build-status-clicked
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
@@ -61,11 +59,13 @@
     :container-filter-clicked
     :container-selected
     :create-jira-issue-clicked
-    :create-jira-issue-success
     :create-jira-issue-failed
+    :create-jira-issue-success
+    :deselect-all-projects-clicked
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
     :expand-repo-toggled
+    :follow-and-build-projects-clicked
     :follow-project-clicked
     :insights-bar-clicked
     :insights-icon-clicked
@@ -80,19 +80,25 @@
     :logout-icon-clicked
     :new-plan-clicked
     :no-plan-banner-impression
+    :nux-bootstrap-impression
+    :open-pull-request-clicked
+    :open-pull-request-impression
     :org-clicked
     :org-settings-link-clicked
-    :pr-link-clicked
     :parallelism-clicked
+    :pr-link-clicked
     :project-branch-changed
-    :projects-icon-clicked
     :project-clicked
     :project-enabled
     :project-followed
     :project-settings-clicked
+    :projects-icon-clicked
+    :rebuild-clicked
+    :revision-link-clicked
     :select-plan-clicked
     :set-up-junit-clicked
     :set-up-junit-impression
+    :setup-docs-clicked
     :show-all-branches-toggled
     :signup-clicked
     :signup-impression
@@ -100,6 +106,8 @@
     :start-trial-clicked
     :stop-building-clicked
     :stop-building-modal-dismissed
+    :stripe-checkout-closed
+    :stripe-checkout-succeeded
     :support-icon-clicked
     :team-icon-clicked
     :teammates-invited
@@ -161,7 +169,12 @@
   "Fill in any unsuppplied property values with those supplied
   in the current app state."
   (merge (properties-to-track-from-state current-state)
-         {:ab-test-treatments (ab/ab-test-treatments)}
+         {:ab-test-treatments (-> (get-in current-state state/user-path)
+                                  feature/ab-test-treatment-map
+                                  feature/ab-test-treatments)
+          :ab-test-buckets (-> (get-in current-state state/user-path)
+                               feature/ab-test-treatment-map
+                               feature/ab-test-buckets)}
          properties))
 
 (defn- current-subpage

@@ -724,14 +724,13 @@
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state (conj state/project-path :followed) true)))
-
+    (assoc-in state (conj state/project-path :following) true)))
 
 (defmethod api-event [:unfollow-project :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-id context) (project-model/id (get-in state state/project-path)))
     state
-    (assoc-in state (conj state/project-path :followed) false)))
+    (assoc-in state (conj state/project-path :following) false)))
 
 (defmethod api-event [:stop-building-project :success]
   [target message status {:keys [resp context]} state]
@@ -1127,3 +1126,42 @@
                     :current-state current-state
                     :properties {:status-code (:status-code context)
                                  :message (-> context :resp :message)}}))
+
+(defmethod api-event [:vcs-activity :success]
+  [_ _ _ {:keys [resp]} state]
+  (let [recent-active-projects (->> resp
+                                    (group-by repo-model/building-on-circle?)
+                                    ; in the case the vcs returns no projects, assoc empty list to remove the spinner
+                                    (merge {true [] false []}))
+        trim-recent-active-projects (fn [projects]
+                                      (->> projects
+                                           (sort-by :count >)
+                                           (take 5)
+                                           (map #(assoc % :checked true))
+                                           (into [])))]
+    (->> recent-active-projects
+         (reduce-kv (fn [state building? projects]
+                      (assoc-in state
+                                (state/vcs-recent-active-projects-path building? :github)
+                                (trim-recent-active-projects projects)))
+                    state))))
+
+(defmethod post-api-event! [:follow-projects :success]
+  [_ _ status {:keys [context]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
+    (forms/release-button! (:uuid context) status)
+    (api/get-dashboard-builds {} api-ch)
+    (api/get-projects api-ch)))
+
+(defmethod post-api-event! [:follow-projects :failed]
+  [_ _ status {:keys [context]} previous-state current-state comms]
+  (let [api-ch (:api comms)]
+    (forms/release-button! (:uuid context) status)
+    ;; Below is a hack because of the fact that with the current flow we have
+    ;; no way of knowing whether or not a user is an admin on projects when we
+    ;; show them the NUX Bootstrap experience on the dashboard page. So, it is possible
+    ;; that we receive a 403 as one project is unable to be followed although others were
+    ;; followed. So, do a fetch to get the builds and projects in case the user was followed
+    ;; to some but not all projects.
+    (api/get-dashboard-builds {} api-ch)
+    (api/get-projects api-ch)))
