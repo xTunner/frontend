@@ -35,15 +35,21 @@
              [:div.spinner (spinner)]
              (let [avatar-url (get-in data [:current-user :identities :github :avatar_url])
                    cta-button-text (if (not-empty not-building-projects) "Follow and Build" "Follow")
-                   event-properties  {:button-text cta-button-text
-                                      :selected-building-projects-count (->> building-projects
-                                                                             (filter :checked)
-                                                                             count)
-                                      :selected-not-building-projects-count (->> not-building-projects
-                                                                                 (filter :checked)
-                                                                                 count)
-                                      :displayed-building-projects-count (count building-projects)
-                                      :displayed-not-building-projects-count (count not-building-projects)}
+                   event-properties (let [selected-building-projects-count (->> building-projects
+                                                                                (filter :checked)
+                                                                                count)
+                                          selected-not-building-projects-count (->> not-building-projects
+                                                                                    (filter :checked)
+                                                                                    count)]
+                                      {:button-text cta-button-text
+                                       :selected-building-projects-count selected-building-projects-count
+                                       :selected-not-building-projects-count selected-not-building-projects-count
+                                       :displayed-building-projects-count (count building-projects)
+                                       :displayed-not-building-projects-count (count not-building-projects)
+                                       :total-displayed-projects-count (+ (count building-projects)
+                                                                          (count not-building-projects))
+                                       :total-selected-projects-count (+ selected-building-projects-count
+                                                                         selected-not-building-projects-count)})
                    project-checkboxes (fn [projects path]
                                         (->> projects
                                              (map-indexed
@@ -57,7 +63,7 @@
                                                                                                        index
                                                                                                        :checked)
                                                                                            %)}]
-                                                   (str (:username project)" / "(:reponame project))]]))))
+                                                   (str (:username project) " / " (:reponame project))]]))))
                    deselect-activity-repos (fn [path]
                                              ((om/get-shared owner :track-event) {:event-type :deselect-all-projects-clicked
                                                                                   :properties event-properties})

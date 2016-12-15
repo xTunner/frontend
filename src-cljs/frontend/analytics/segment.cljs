@@ -13,7 +13,6 @@
    :org  (s/maybe s/Str)
    :repo (s/maybe s/Str)
    :ab-test-treatments {s/Keyword s/Keyword}
-   :ab-test-buckets {s/Keyword s/Bool}
    s/Keyword s/Any})
 
 (def LoggedOutEvent
