@@ -90,7 +90,6 @@
     :project-branch-changed
     :project-clicked
     :project-enabled
-    :project-followed
     :project-settings-clicked
     :projects-icon-clicked
     :rebuild-clicked
@@ -124,9 +123,7 @@
   ;;       where we update the data in the db.
   ;; These are the api response events.
   ;; They are in the format of <object>-<action in the past tense>
-  #{:project-builds-stopped
-    :project-followed
-    :project-unfollowed})
+  #{:project-builds-stopped})
 
 (def SupportedEvents
   (apply s/enum
