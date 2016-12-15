@@ -1,7 +1,7 @@
 (ns frontend.analytics.track
-  (:require [frontend.state :as state]
-            [om.core :as om :include-macros true]
-            [frontend.analytics.core :as analytics]))
+  (:require [frontend.analytics.core :as analytics]
+            [frontend.state :as state]
+            [om.core :as om :include-macros true]))
 
 (def trusty-beta-flag :trusty-beta)
 
@@ -50,3 +50,11 @@
                                  :component (:component args)
                                  :is-ssh-build (:ssh? args)
                                  :is-build-without-cache (:no-cache? args)}}))
+
+(defn stripe-checkout-closed [action]
+  (analytics/track {:event-type :stripe-checkout-closed
+                    :properties {:action action}}))
+
+(defn stripe-checkout-succeeded [action]
+  (analytics/track {:event-type :stripe-checkout-succeeded
+                    :properties {:action action}}))

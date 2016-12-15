@@ -102,7 +102,7 @@
     cursor: pointer;
   }
 
-  .rebuild-container {
+  .rebuild-container, .open-pull-request-container {
     @container-height: 30px;
     @container-width: 160px;
     @button-right-margin: 2px;
@@ -120,10 +120,7 @@
       }
     }
 
-    button {
-      .button-look();
-
-      width: @container-width - @container-height - @button-right-margin;
+    .button-common() {
       height: @container-height;
       border-radius: 3px;
 
@@ -131,13 +128,32 @@
       padding: 0;
       text-align: inherit;
       font-size: 14px;
+    }
 
+    button {
+      .button-look();
+      .button-common();
+
+      width: @container-width - @container-height - @button-right-margin;
       &.rebuild {
         border-radius: 3px 0 0 3px;
       }
 
       > .rebuild-icon {
         margin: 6px 10px;
+      }
+    }
+
+    a.btn {
+      .button-look();
+      .button-common();
+
+      > .open-pull-request-icon {
+        margin: 6px 10px;
+      }
+
+      > .open-pull-request-text {
+        margin-right: 10px;
       }
     }
 
@@ -236,7 +252,7 @@
 
 .container-pills-container {
   .controls {
-    .flexy(stretch, flex-end, row);
+    .flexy(stretch, flex-start, row);
 
     margin-bottom: 3px;
 
@@ -305,17 +321,6 @@
     margin-left: 1px;
   }
 
-  &.add-containers {
-    .flexy(center, center);
-    font-size: 18px;
-    color: @white;
-    background: @blueLight;
-
-    &.upsell {
-      flex-grow: 0.85;
-    }
-  }
-
   &.active {
     .invert-status-icons;
     color: @white;
@@ -338,6 +343,25 @@
 
     &.canceled {
       background-color: @grayLight;
+    }
+  }
+
+  &:hover {
+    background: @whiten;
+  }
+
+  &.add-containers {
+    .flexy(center, center);
+    font-size: 18px;
+    color: @white;
+    background: @blueLight;
+
+    &.upsell {
+      flex-grow: 0.85;
+    }
+
+    &:hover {
+      background: @blueLightest;
     }
   }
 

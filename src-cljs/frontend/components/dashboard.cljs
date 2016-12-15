@@ -23,7 +23,8 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (api/get-vcs-activity (om/get-shared owner [:comms :api])))
+      (api/get-vcs-activity (om/get-shared owner [:comms :api]))
+      ((om/get-shared owner :track-event) {:event-type :nux-bootstrap-impression}))
     om/IRender
     (render [_]
       (let [building-projects (:building-projects data)
@@ -56,7 +57,7 @@
                                                                                                        index
                                                                                                        :checked)
                                                                                            %)}]
-                                                   (:reponame project)]]))))
+                                                   (str (:username project)" / "(:reponame project))]]))))
                    deselect-activity-repos (fn [path]
                                              ((om/get-shared owner :track-event) {:event-type :deselect-all-projects-clicked
                                                                                   :properties event-properties})
@@ -98,6 +99,9 @@
                                                  :loading-text "Following..."
                                                  :failed-text "Failed"
                                                  :success-text "Success!"
+                                                 :disabled? (->> (concat building-projects not-building-projects)
+                                                                 (some :checked)
+                                                                 not)
                                                  :on-click #(do
                                                               ((om/get-shared owner :track-event) {:event-type :follow-and-build-projects-clicked
                                                                                                    :properties event-properties})

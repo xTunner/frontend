@@ -1151,8 +1151,19 @@
   (let [api-ch (:api comms)]
     (forms/release-button! (:uuid context) status)
     (api/get-dashboard-builds {} api-ch)
-    (api/get-projects api-ch)))
+    (api/get-projects api-ch)
+    (api/get-me api-ch)))
 
 (defmethod post-api-event! [:follow-projects :failed]
   [_ _ status {:keys [context]} previous-state current-state comms]
-  (forms/release-button! (:uuid context) status))
+  (let [api-ch (:api comms)]
+    (forms/release-button! (:uuid context) status)
+    ;; Below is a hack because of the fact that with the current flow we have
+    ;; no way of knowing whether or not a user is an admin on projects when we
+    ;; show them the NUX Bootstrap experience on the dashboard page. So, it is possible
+    ;; that we receive a 403 as one project is unable to be followed although others were
+    ;; followed. So, do a fetch to get the builds and projects in case the user was followed
+    ;; to some but not all projects.
+    (api/get-dashboard-builds {} api-ch)
+    (api/get-projects api-ch)
+    (api/get-me api-ch)))

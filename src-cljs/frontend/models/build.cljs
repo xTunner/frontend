@@ -307,3 +307,17 @@
    :build-num (num build)
    :ref-name (vcs-ref-name build)
    :reponame (:reponame build)})
+
+(defn new-pull-request-url [build]
+  (when-let [vcs-url (vcs-url build)]
+    (case (vcs-url/vcs-type vcs-url)
+      "github"
+      (str (:vcs_url build) "/compare/" (:branch build))
+
+      "bitbucket"
+      (letfn [(branch-url [build branch]
+                (-> build :vcs_url vcs-url/project-name (str "::" branch)))]
+        (str (:vcs_url build)
+             "/pull-requests/new?"
+             "source=" (branch-url build (:branch build))
+             "&dest=" (branch-url build "master"))))))
