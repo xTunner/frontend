@@ -31,13 +31,3 @@
                                             false :x-no}
                                         :y {true :y-yes
                                             false :y-no}})))))
-
-(deftest ab-test-buckets-works
-  (bond/with-stub [[feature/enabled? (fn [feature]
-                                       (= :x feature))]]
-
-    (is (= {:x true :y false}
-           (feature/ab-test-buckets {:x {true :x-yes
-                                         false :x-no}
-                                     :y {true :y-yes
-                                         false :y-no}})))))
