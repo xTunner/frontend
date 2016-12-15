@@ -98,13 +98,3 @@
    (-> (ab-test-treatment-map user)
        (ab-test-treatments)
        (get feature))))
-
-(defn ab-test-buckets
-  "Return a map of {:test :bucket}, where :test is the test we are running and
-  :bucket is the bucket this user is in."
-  [treatment-map]
-  (->> treatment-map
-       keys
-       (map (fn [feature]
-              [feature (-> feature enabled? boolean)]))
-       (into {})))

@@ -98,23 +98,13 @@
         project (vcs-url/project-name vcs-url)
         org-name (vcs-url/org-name vcs-url)
         repo-name (vcs-url/repo-name vcs-url)
-        vcs-type (vcs-url/vcs-type vcs-url)
-        analytics-event (case control-event
-                          :follow-repo :project-followed
-                          :follow-project :project-followed
-                          :unfollow-repo :project-unfollowed
-                          :unfollow-project :project-unfollowed)]
+        vcs-type (vcs-url/vcs-type vcs-url)]
 
       (button-ajax :post
-                  (follow-path vcs-type project)
-                  control-event
-                  api-ch
-                  :context context
-                  :events {:success #(analytics/track {:event-type analytics-event
-                                                       :current-state current-state
-                                                       :properties {:org org-name
-                                                                    :repo repo-name
-                                                                    :vcs-type vcs-type}})})))
+                   (follow-path vcs-type project)
+                   control-event
+                   api-ch
+                   :context context)))
 
 ;; --- Navigation Multimethod Declarations ---
 
@@ -544,10 +534,7 @@
 (defmethod post-control-event! :followed-project
   [target message {:keys [vcs-url project-id]} previous-state current-state comms]
   (toggle-project current-state comms vcs-url {:project-id project-id}
-                  :follow-project api-path/project-follow)
-  (analytics/track {:event-type :project-followed
-                    :current-state current-state
-                    :properties {:vcs-url vcs-url}}))
+                  :follow-project api-path/project-follow))
 
 
 (defmethod post-control-event! :unfollowed-repo
@@ -1555,9 +1542,9 @@
   (let [uuid frontend.async/*uuid*
         api-ch (:api comms)]
     (api/create-jira-issue project-name vcs-type jira-issue-data api-ch uuid on-success))
-    (analytics/track {:event-type :create-jira-issue-clicked
-                      :current-state current-state
-                      :properties {:issue-type (:type jira-issue-data)}}))
+  (analytics/track {:event-type :create-jira-issue-clicked
+                    :current-state current-state
+                    :properties {:issue-type (:type jira-issue-data)}}))
 
 (defmethod post-control-event! :load-jira-projects
   [_ _ {:keys [project-name vcs-type]} previous-state current-state comms]
