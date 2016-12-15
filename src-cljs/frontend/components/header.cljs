@@ -288,7 +288,8 @@
     om/IDisplayName (display-name [_] "Inner Header")
     om/IRender
     (render [_]
-      (let [logged-out? (not (get-in app state/user-path))
+      (let [user (get-in app state/user-path)
+            logged-out? (not user)
             license (get-in app state/license-path)
             project (get-in app state/project-path)
             plan (get-in app state/project-plan-path)
@@ -349,7 +350,11 @@
                                      [:a {:on-click #(raise! owner [:web-notifications-confirmation-account-settings-clicked {:response response}])}
                                       "Account Notifications"]]
                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
-          (when (seq crumbs)
+          (when (and (seq crumbs)
+                     (or (-> (feature/ab-test-treatment :new-user-landing-page user)
+                             (= :dashboard)
+                             not)
+                         (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
                                           :actions (cond-> []
                                                      (show-settings-link? app)
