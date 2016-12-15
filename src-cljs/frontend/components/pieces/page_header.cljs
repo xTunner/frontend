@@ -11,7 +11,7 @@
   (reify
     om/IRender
     (render [_]
-      (component      
+      (component
         (html 
           (if active
             [:li.active

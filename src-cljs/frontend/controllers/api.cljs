@@ -1151,7 +1151,8 @@
   (let [api-ch (:api comms)]
     (forms/release-button! (:uuid context) status)
     (api/get-dashboard-builds {} api-ch)
-    (api/get-projects api-ch)))
+    (api/get-projects api-ch)
+    (api/get-me api-ch)))
 
 (defmethod post-api-event! [:follow-projects :failed]
   [_ _ status {:keys [context]} previous-state current-state comms]
@@ -1164,4 +1165,5 @@
     ;; followed. So, do a fetch to get the builds and projects in case the user was followed
     ;; to some but not all projects.
     (api/get-dashboard-builds {} api-ch)
-    (api/get-projects api-ch)))
+    (api/get-projects api-ch)
+    (api/get-me api-ch)))
