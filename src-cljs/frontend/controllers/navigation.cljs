@@ -19,6 +19,7 @@
             [frontend.utils.vcs :as vcs]
             [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
             [frontend.routes :as routes]
+            [frontend.experiments.workflow-spike :as workflow]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
@@ -126,6 +127,12 @@
     (api/get-build-state api-ch))
   (set-page-title! "Build State"))
 
+(defn- maybe-add-workflow-response-data [state]
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
+    (cond-> state
+      workflow-id
+      (assoc-in state/workflow-path workflow/fake-progress-response))))
+
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args}
    state]
@@ -154,7 +161,8 @@
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
             %))
-        state-utils/reset-dismissed-osx-usage-level)))
+        state-utils/reset-dismissed-osx-usage-level
+        maybe-add-workflow-response-data)))
 
 (defn initialize-pusher-subscriptions
   "Subscribe to pusher channels for initial messaging. This subscribes

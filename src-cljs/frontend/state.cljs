@@ -69,6 +69,7 @@
 (defn build-invite-member-path [index] (conj build-invite-members-path index))
 
 (def build-path [:current-build-data :build])
+(def workflow-path [:current-workflow-data :workflow])
 (def dismiss-invite-form-path (conj build-invite-data-path :dismiss-invite-form))
 (def dismiss-config-errors-path (conj build-data-path :dismiss-config-errors))
 (def invite-logins-path (conj build-data-path :invite-data :invite-logins))

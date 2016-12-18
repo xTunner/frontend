@@ -236,6 +236,7 @@
       (open-to-inner! app nav-ch :build (merge fragment-args
                                                {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                                 :project-name (str org "/" repo)
+                                                :workflow-id workflow-id
                                                 :build-num (js/parseInt build-num)
                                                 :org org
                                                 :repo repo}))))
