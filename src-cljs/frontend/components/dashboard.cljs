@@ -1,5 +1,8 @@
 (ns frontend.components.dashboard
-  (:require [frontend.async :refer [raise!]]
+  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+            [frontend.api :as api]
+            [frontend.async :refer [raise!]]
+            [frontend.components.aside :as aside]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
@@ -25,7 +28,7 @@
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)
             current-user (:current-user data)
-            vcs-types [:github :bitbucket]]
+            on-branch? (boolean (:branch nav-data))]
         (html
           ;; ensure the both projects and builds are loaded before rendering to prevent
           ;; the build list and branch picker from resizing.
@@ -44,7 +47,6 @@
                                                   (get-in data (state/all-repos-loaded-path :bitbucket)))
                            :current-user current-user
                            :organizations (get-in data state/user-organizations-path)})
-
                :else
                [:div.dashboard
                 (when (project-common/show-trial-notice? project plan (get-in data state/dismissed-trial-update-banner))
@@ -56,25 +58,28 @@
                 (when (plan-model/suspended? plan)
                   (om/build project-common/suspended-notice {:plan plan
                                                              :vcs_type (:vcs_type project)}))
-
-                (om/build builds-table/builds-table
-                          {:builds builds
-                           :projects projects
-                           :workflow workflow}
-                          {:opts {:show-actions? true
-                                  :show-branch? (not (:branch nav-data))
-                                  :show-project? (not (:repo nav-data))}})
-                [:div.recent-builds-pager
-                 [:a
-                  {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))
-                   ;; no newer builds if you're on the first page
-                   :class (when (zero? page) "disabled")}
-                  [:i.fa.fa-long-arrow-left.newer]
-                  [:span "Newer builds"]]
-                 [:a
-                  {:href (routes/v1-dashboard-path (assoc nav-data :page (inc page)))
-                   ;; no older builds if you have less builds on the page than an
-                   ;; API call returns
-                   :class (when (> builds-per-page (count builds)) "disabled")}
-                  [:span "Older builds"]
-                  [:i.fa.fa-long-arrow-right.older]]]]))))))
+                [:div.toggle-builds
+                  (om/build aside/builds-table-filter {:data data :on-branch? on-branch?})]
+                
+                [:.wrapper               
+                 (om/build builds-table/builds-table
+                           {:builds builds
+                            :projects projects
+                            :workflow workflow}
+                           {:opts {:show-actions? true
+                                   :show-branch? (not (:branch nav-data))
+                                   :show-project? (not (:repo nav-data))}})
+                 [:div.recent-builds-pager
+                  [:a
+                   {:href (routes/v1-dashboard-path (assoc nav-data :page (max 0 (dec page))))
+                    ;; no newer builds if you're on the first page
+                    :class (when (zero? page) "disabled")}
+                   [:i.fa.fa-long-arrow-left.newer]
+                   [:span "Newer builds"]]
+                  [:a
+                   {:href (routes/v1-dashboard-path (assoc nav-data :page (inc page)))
+                    ;; no older builds if you have less builds on the page than an
+                    ;; API call returns
+                    :class (when (> builds-per-page (count builds)) "disabled")}
+                   [:span "Older builds"]
+                   [:i.fa.fa-long-arrow-right.older]]]]]))))))

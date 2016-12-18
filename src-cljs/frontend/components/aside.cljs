@@ -271,6 +271,43 @@
           [:div.aside-user-options
            (expand-menu-items items subpage)]])))))
 
+(defn builds-table-filter [{:keys [data on-branch?]} owner]
+  ;; Create an additional filter for the builds-table to feed into
+  ; Currently just duplicating the my branches / all fiels
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip ".toggle-all-builds"))
+    om/IRender
+    (render [_]
+      (let [show-all-builds? (get-in data state/show-all-builds-path)
+            disable-toggle? on-branch?]
+        (html
+          [:div.toggle-all-builds
+           (when disable-toggle?
+             {:data-original-title "My / All builds sort is not available on branches."
+              :data-placement "left"})
+           [:input {:id "my-builds"
+                    :name "toggle-all-builds"
+                    :type "radio"
+                    :value "false"
+                    :checked (not show-all-builds?)
+                    :react-key "toggle-all-builds-my-builds"
+                    :disabled disable-toggle?
+                    :on-change #(raise! owner [:show-all-builds-toggled false])}]
+           [:label {:for "my-builds"}
+            "My builds"] 
+           [:input {:id "all-builds"
+                    :name "toggle-all-builds"
+                    :type "radio"
+                    :value "true"
+                    :checked show-all-builds?
+                    :react-key "toggle-all-builds-all-builds"
+                    :disabled disable-toggle?
+                    :on-change #(raise! owner [:show-all-builds-toggled true])}]
+           [:label {:for "all-builds"}
+            "All builds"]])))))
+
 (defn collapse-group-id [project]
   "Computes a hash of the project id.  Includes the :current-branch if
   available.  The hashing is performed because this data is stored on
@@ -302,7 +339,7 @@
                      :on-change #(raise! owner [:sort-branches-toggled
                                                 (utils/parse-uri-bool (.. % -target -value))])
                      :value (pr-str sort-branches-by-recency?)}
-            [:option {:value "false"} "By Project"]
+            [:option {:value "false"} "By project"]
             [:option {:value "true"} "Recent"]]
 
            [:div.toggle-all-branches
@@ -314,7 +351,7 @@
                      :react-key "toggle-all-branches-my-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled false])}]
             [:label {:for "my-branches"}
-             "Mine"]
+             "My branches"]
             [:input {:id "all-branches"
                      :name "toggle-all-branches"
                      :type "radio"
@@ -323,7 +360,7 @@
                      :react-key "toggle-all-branches-all-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled true])}]
             [:label {:for "all-branches"}
-             "All"]]]
+             "All branches"]]]
 
           (if sort-branches-by-recency?
             (om/build branch-list

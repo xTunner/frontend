@@ -135,7 +135,6 @@
   [target message _ state]
   (update-in state [:settings :menus :user :open] not))
 
-
 (defmethod control-event :show-all-branches-toggled
   [target message value state]
   (assoc-in state state/show-all-branches-path value))
@@ -144,12 +143,33 @@
   [target message value previous-state current-state comms]
   (let [element-state (fn [state]
                         (condp = (get-in state state/show-all-branches-path)
-                          true "All"
-                          false "Mine"))]
-   (analytics/track {:event-type :show-all-branches-toggled
-                     :current-state current-state
-                     :properties {:current-state (element-state current-state)
-                                  :previous-state (element-state previous-state)}})))
+                          true "All branches"
+                          false "My branches"))]
+    (analytics/track {:event-type :show-all-branches-toggled
+                      :current-state current-state
+                      :properties {:current-state (element-state current-state)
+                                   :previous-state (element-state previous-state)}})))
+
+(defmethod control-event :show-all-builds-toggled
+  [target message value state]
+  (assoc-in state state/show-all-builds-path value))
+
+(defmethod post-control-event! :show-all-builds-toggled
+  [target message value previous-state current-state comms]
+  (let [element-state (fn [state]
+                        (condp = (get-in state state/show-all-builds-path)
+                          true "All builds"
+                          false "My builds"))
+        all? (get-in current-state state/show-all-builds-path)]
+    (api/get-dashboard-builds (merge
+                                (assoc (state/navigation-data current-state)
+                                       :builds-per-page (:builds-per-page current-state))
+                                {:all? all?})
+                              (:api comms))
+    (analytics/track {:event-type :show-all-builds-toggled
+                      :current-state current-state
+                      :properties {:current-state (element-state current-state)
+                                   :previous-state (element-state previous-state)}})))
 
 (defmethod control-event :expand-repo-toggled
   [target message {:keys [repo]} state]
