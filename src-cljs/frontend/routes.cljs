@@ -226,6 +226,20 @@
                                                 :org org
                                                 :repo repo}))))
 
+  (defroute v1-workflow-job #"/(gh|bb)/([^/]+)/([^/]+)/workflows/([^/]+)/jobs/(\d+)"
+    [short-vcs-type org repo workflow-id build-num _ maybe-fragment]
+    ;; normal destructuring for this broke the closure compiler
+    (let [fragment-args (-> maybe-fragment
+                            :_fragment
+                            parse-build-page-fragment
+                            (select-keys [:tab :action-id :container-id]))]
+      (open-to-inner! app nav-ch :build (merge fragment-args
+                                               {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+                                                :project-name (str org "/" repo)
+                                                :build-num (js/parseInt build-num)
+                                                :org org
+                                                :repo repo}))))
+
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                                   :project-name (str org "/" repo)
