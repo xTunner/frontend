@@ -36,6 +36,12 @@
                         :path (routes/v1-dashboard-path {})
                         :track-event-type :breadcrumb-dashboard-clicked}))
 
+(defmethod crumb :workflows-dashboard
+  [{:keys [owner]}]
+  (om/build crumb-node {:name "Jobs"
+                        :path (routes/v1-dashboard-path {})
+                        :track-event-type :breadcrumb-workflows-dashboard-clicked}))
+
 (defmethod crumb :project
   [{:keys [vcs_type username project active owner]}]
   (om/build crumb-node {:name project
@@ -68,6 +74,20 @@
   (om/build crumb-node {:name (str "build " build-num)
                         :track-event-type :breadcrumb-build-clicked
                         :path (routes/v1-build-path vcs_type username project build-num)
+                        :active active}))
+
+(defmethod crumb :workflow-job
+  [{:keys [vcs_type username project build-num active]}]
+  (om/build crumb-node {:name (str "job " build-num)
+                        :track-event-type :breadcrumb-build-clicked
+                        :path (routes/v1-build-path vcs_type username project build-num)
+                        :active active}))
+
+(defmethod crumb :workflow
+  [{:keys [vcs_type username project workflow-id active]}]
+  (om/build crumb-node {:name (str "workflow " workflow-id)
+                        :track-event-type :breadcrumb-workflow-clicked
+                        :path (routes/v1-workflow-path vcs_type username project workflow-id)
                         :active active}))
 
 (defmethod crumb :org

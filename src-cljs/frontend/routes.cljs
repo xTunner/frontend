@@ -80,6 +80,13 @@
    (let [fragment (build-page-fragment tab container-id action-id)]
      (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/" build-num (when fragment (str "#" fragment))))))
 
+(defn v1-workflow-path
+  "Temporary helper method for v1-build until we figure out how to make
+   secretary's render-route work for regexes"
+  ([vcs_type org repo workflow-id]
+   (let [fragment (build-page-fragment tab container-id action-id)]
+     (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows/" workflow-id))))
+
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to
    make secretary's render-route work for multiple pages"

@@ -127,11 +127,36 @@
     (api/get-build-state api-ch))
   (set-page-title! "Build State"))
 
-(defn- maybe-add-workflow-response-data [state]
+(defn- workflow-id [state]
   (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
-    (cond-> state
-      workflow-id
-      (assoc-in state/workflow-path workflow/fake-progress-response))))
+    workflow-id))
+
+(defn- maybe-add-workflow-response-data [state]
+  (cond-> state
+    (workflow-id state)
+    (assoc-in state/workflow-path workflow/fake-progress-response)))
+
+(defn- add-crumbs [state {:keys [vcs_type project-name build-num org repo tab container-id action-id]}]
+  (let [workflow-id (workflow-id state)
+        crumbs (if workflow-id
+                 [{:type :workflows-dashboard}
+                  {:type :org :username org :vcs_type vcs_type}
+                  {:type :project :username org :project repo :vcs_type vcs_type}
+                  {:type :project-branch :username org :project repo :vcs_type vcs_type}
+                  {:type :workflow :username org :project repo
+                   :workflow-id workflow-id
+                   :vcs_type vcs_type}
+                  {:type :workflow-job :username org :project repo
+                   :build-num build-num
+                   :vcs_type vcs_type}]
+                 [{:type :dashboard}
+                  {:type :org :username org :vcs_type vcs_type}
+                  {:type :project :username org :project repo :vcs_type vcs_type}
+                  {:type :project-branch :username org :project repo :vcs_type vcs_type}
+                  {:type :build :username org :project repo
+                   :build-num build-num
+                   :vcs_type vcs_type}])]
+    (assoc-in state state/crumbs-path crumbs)))
 
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args}
@@ -150,13 +175,7 @@
         (assoc state/current-view navigation-point
                state/navigation-data (assoc args :show-settings-link? false)
                :project-settings-project-name project-name)
-        (assoc-in state/crumbs-path [{:type :dashboard}
-                                     {:type :org :username org :vcs_type vcs_type}
-                                     {:type :project :username org :project repo :vcs_type vcs_type}
-                                     {:type :project-branch :username org :project repo :vcs_type vcs_type}
-                                     {:type :build :username org :project repo
-                                      :build-num build-num
-                                      :vcs_type vcs_type}])
+        (add-crumbs args)
         state-utils/reset-current-build
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
