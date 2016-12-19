@@ -891,7 +891,7 @@
            [:span.summary-label "Estimated: "]
            [:span (formatter past-ms)]])))))
 
-(defn build-head [{:keys [container-id build-data project-data] :as data} owner]
+(defn build-head-content [{:keys [build-data project-data] :as data} owner]
   (reify
     om/IRender
     (render [_]
@@ -900,65 +900,87 @@
                     all_commit_details all_commit_details_truncated] :as build} (:build build-data)
             {:keys [project plan]} project-data]
         (html
-          [:div
-           [:div.summary-header
-            [:div.summary-items
-             [:div.summary-item
-              (builds-table/build-status-badge build)]
-             (if-not stop_time
-               (when start_time
-                 (build-running-status build))
-               (build-finished-status build))]
-            [:div.summary-items
-             (when (build-model/running? build)
-               (om/build expected-duration build))
-             (om/build previous-build-label build)
-             (when (project-model/parallel-available? project)
-               [:div.summary-item
-                [:span.summary-label "Parallelism: "]
-                [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
-                                                                                           :properties {:repo (project-model/repo-name project)
-                                                                                                        :org (project-model/org-name project)}})
-                                           :href (build-model/path-for-parallelism build)}
-                 (let [parallelism (str parallel "x")]
-                   (if (enterprise?)
-                     parallelism
-                     (str parallelism
-                          " out of "
-                          (min (+ (plan-model/linux-containers plan)
-                                  (if (project-model/oss? project)
-                                    plan-model/oss-containers
-                                    0))
-                               (plan-model/max-parallelism plan))
-                          "x")))]])]
-            (when usage_queued_at
-              [:div.summary-items
-               [:div.summary-item
-                [:span.summary-label "Queued: "]
-                [:span (queued-time build)]]])
+         [:div
+          [:div.summary-header
+           [:div.summary-items
+            [:div.summary-item
+             (builds-table/build-status-badge build)]
+            (if-not stop_time
+              (when start_time
+                (build-running-status build))
+              (build-finished-status build))]
+           [:div.summary-items
+            (when (build-model/running? build)
+              (om/build expected-duration build))
+            (om/build previous-build-label build)
+            (when (project-model/parallel-available? project)
+              [:div.summary-item
+               [:span.summary-label "Parallelism: "]
+               [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
+                                          :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                                                                          :properties {:repo (project-model/repo-name project)
+                                                                                                       :org (project-model/org-name project)}})
+                                          :href (build-model/path-for-parallelism build)}
+                (let [parallelism (str parallel "x")]
+                  (if (enterprise?)
+                    parallelism
+                    (str parallelism
+                         " out of "
+                         (min (+ (plan-model/linux-containers plan)
+                                 (if (project-model/oss? project)
+                                   plan-model/oss-containers
+                                   0))
+                              (plan-model/max-parallelism plan))
+                         "x")))]])]
+           (when usage_queued_at
+             [:div.summary-items
+              [:div.summary-item
+               [:span.summary-label "Queued: "]
+               [:span (queued-time build)]]])
 
-            [:div.summary-build-contents
-             [:div.summary-item
-              [:span.summary-label "Triggered by: "]
-              [:span (trigger-html build)]]
+           [:div.summary-build-contents
+            [:div.summary-item
+             [:span.summary-label "Triggered by: "]
+             [:span (trigger-html build)]]
 
-             (when-let [canceler (and (= status "canceled")
-                                      canceler)]
-               [:div.summary-item
-                [:span.summary-label "Canceled by: "]
-                [:span (build-canceler canceler)]])
+            (when-let [canceler (and (= status "canceled")
+                                     canceler)]
+              [:div.summary-item
+               [:span.summary-label "Canceled by: "]
+               [:span (build-canceler canceler)]])
 
-             (when (build-model/has-pull-requests? build)
-               (pull-requests {:urls (map :url pull_requests)} owner))]]
+            (when (build-model/has-pull-requests? build)
+              (pull-requests {:urls (map :url pull_requests)} owner))]]
 
-           [:div.card
-            [:div.small-emphasis
-             (let [n (count all_commit_details)]
-               (if all_commit_details_truncated
-                 (gstring/format "Last %d Commits" n)
-                 (gstring/format "Commits (%d)" n)))]
-            (om/build build-commits build-data)]
-           [:div.build-head-wrapper
-            [:div.build-head
-             (om/build build-sub-head data)]]])))))
+          [:div.card
+           [:div.small-emphasis
+            (let [n (count all_commit_details)]
+              (if all_commit_details_truncated
+                (gstring/format "Last %d Commits" n)
+                (gstring/format "Commits (%d)" n)))]
+           (om/build build-commits build-data)]])))))
+
+(defn build-head-content-workflow [{:keys [build-data workflow-data] :as data} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [stop_time start_time parallel usage_queued_at
+                    pull_requests status canceler
+                    all_commit_details all_commit_details_truncated] :as build} (:build build-data)
+            {:keys [workflow]} workflow-data]
+        (html
+         [:div
+          (str (keys workflow))])))))
+
+(defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        (if workflow-data
+          (om/build build-head-content-workflow (select-keys data [:build-data :workflow-data]))
+          (om/build build-head-content (select-keys data [:build-data :project-data])))
+        [:div.build-head-wrapper
+         [:div.build-head
+          (om/build build-sub-head data)]]]))))
