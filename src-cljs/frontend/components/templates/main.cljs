@@ -9,12 +9,10 @@
 
 (defn- default-show-aside-menu? [app]
   (let [nav-point (:navigation-point app)
-        projects (get-in app state/projects-path)
-        builds (:recent-builds app)]
+        projects (get-in app state/projects-path)]
     (cond
       (and (= :dashboard (:navigation-point app))
-           (or (nil? builds)
-               (nil? projects)
+           (or (nil? projects)
                (empty? projects)))
       false
 

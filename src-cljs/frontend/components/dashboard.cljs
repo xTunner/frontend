@@ -136,8 +136,7 @@
             builds-per-page (:builds-per-page data)
             current-user (:current-user data)]
         (html
-         (cond (or (nil? builds)
-                   (nil? projects))
+         (cond (nil? builds)
                [:div.empty-placeholder (spinner)]
 
                (and (empty? builds)
