@@ -21,7 +21,7 @@
           [:div
            [:div.navs-container
             [:a.logomark {:href "/dashboard"
-                                         :aria-label "Dashboard"}
+                          :aria-label "Dashboard"}
              (common/ico :logo)]
             [:ul.nav-items.collapsing-nav
               [:li
