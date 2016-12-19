@@ -20,12 +20,9 @@
         (html
           [:div
            [:div.navs-container
-            [:a.logomark.hidden-sm-down {:href "/dashboard"
-                                         :aria-label "Dashboard"}
+            [:a.logomark {:href "/dashboard"
+                          :aria-label "Dashboard"}
              (common/ico :logo)]
-            [:a.logomark-narrow.hidden-md-up {:href "/dashboard"
-                                              :aria-label "Dashboard"}
-             [:img {:src (utils/cdn-path "/img/inner/icons/Logo-Wordmark.svg")}]]
             [:ul.nav-items.collapsing-nav
               [:li
                 [:a.has-icon {:href "/dashboard"
