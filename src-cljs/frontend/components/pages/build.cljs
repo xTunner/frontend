@@ -81,9 +81,9 @@
 
     om/IWillReceiveProps
     (will-receive-props [_ data]
-      (let [build (get-in data state/build-path)]
-        (when (no-test-intervention/show-setup-docs-modal? build)
-          (om/set-state! owner :show-setup-docs-modal? true))))
+      (let [build (get-in data state/build-path)
+            show-setup-docs-modal? (no-test-intervention/show-setup-docs-modal? build)]
+        (om/set-state! owner :show-setup-docs-modal? show-setup-docs-modal?)))
           
     om/IRenderState
     (render-state [_ {:keys [show-jira-modal? show-setup-docs-modal?]}]
@@ -125,7 +125,8 @@
                   :title             "cancel this build"
                   :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                  [:i.material-icons "cancel"]])))
-           (when (feature/enabled? :open-pull-request)
+           (when (and (feature/enabled? :open-pull-request)
+                      (not-empty build))
              (om/build open-pull-request-action {:build build}))
            (when can-trigger-builds?
              (om/build rebuild-actions {:build build :project project}))
