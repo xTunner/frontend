@@ -71,7 +71,9 @@
     :setup-docs-ab-test {true :setup-docs-modal
                          false :setup-docs-banner}
     :signup-cta-on-404 {true :signup-cta-on-404
-                        false :no-signup-cta-on-404}})
+                        false :no-signup-cta-on-404}
+    :show-project-settings-on-branch-picker {true :project-settings-icon-show
+                                             false :project-settings-icon-hover-only}})
   ([user]
    (merge (ab-test-treatment-map)
           {:new-user-landing-page {true (if (:bitbucket_authorized user)
@@ -98,13 +100,3 @@
    (-> (ab-test-treatment-map user)
        (ab-test-treatments)
        (get feature))))
-
-(defn ab-test-buckets
-  "Return a map of {:test :bucket}, where :test is the test we are running and
-  :bucket is the bucket this user is in."
-  [treatment-map]
-  (->> treatment-map
-       keys
-       (map (fn [feature]
-              [feature (-> feature enabled? boolean)]))
-       (into {})))
