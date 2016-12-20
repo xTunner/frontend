@@ -55,33 +55,35 @@
       [:span.button-text text]])])
 
 (defrender pull-requests [{:keys [build]} owner]
-  (when-let [urls (seq (map :url (:pull_requests build)))]
-    [:div.metadata-item.pull-requests {:title "Pull Requests"}
-     [:i.octicon.octicon-git-pull-request]
-     (interpose
-      ", "
-      (for [url urls]
-        ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-        ;; When that happens, this code blows up the page. To work around that,
-        ;; we just skip the PR if its URL is nil.
-        (when url
-          [:a {:href url
-               :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
-                                                               :properties {:repo (:reponame build)
-                                                                            :org (:username build)}})}
-           "#"
-           (gh-utils/pull-request-number url)])))]))
+  (html
+   (when-let [urls (seq (map :url (:pull_requests build)))]
+     [:div.metadata-item.pull-requests {:title "Pull Requests"}
+      [:i.octicon.octicon-git-pull-request]
+      (interpose
+       ", "
+       (for [url urls]
+         ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+         ;; When that happens, this code blows up the page. To work around that,
+         ;; we just skip the PR if its URL is nil.
+         (when url
+           [:a {:href url
+                :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
+                                                                :properties {:repo (:reponame build)
+                                                                             :org (:username build)}})}
+            "#"
+            (gh-utils/pull-request-number url)])))])))
 
 (defrender commits [{:keys [build]} owner]
-  (when (:vcs_revision build)
-    [:div.metadata-item.revision
-     [:i.octicon.octicon-git-commit]
-     [:a {:title (build-model/github-revision build)
-          :href (build-model/commit-url build)
-          :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
-                                                          :properties {:repo (:reponame build)
-                                                                       :org (:username build)}})}
-      (build-model/github-revision build)]]))
+  (html
+   (when (:vcs_revision build)
+     [:div.metadata-item.revision
+      [:i.octicon.octicon-git-commit]
+      [:a {:title (build-model/github-revision build)
+           :href (build-model/commit-url build)
+           :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
+                                                           :properties {:repo (:reponame build)
+                                                                        :org (:username build)}})}
+       (build-model/github-revision build)]])))
 
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)

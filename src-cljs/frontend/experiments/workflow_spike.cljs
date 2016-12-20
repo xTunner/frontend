@@ -15,12 +15,18 @@
     "busy" "Status-Running"))
 
 (def fake-progress-response
-  {:name "mock workflow"
+  {:name "mock_workflow_name"
    :created-at "2016-12-15T15:05:41.938-00:00"
+   :id "mock-wofkflow-id"
    :status "running"
    :trigger-resource {:type "git-commit"
                       :data {
+                             :vcs_revision "c9790fd2c3a4ef69b94dac403f090e34783c8bde"
+                             :vcs_type "github"
+                             :vcs_url "https://github.com/circleci/workflows-poc"
                              :branch "master"
+                             :reponame "workflows-poc"
+                             :username "circleci"
                              :all_commit_details [{:committer_date "2016-11-22T14:46:14Z"
                                                    :body "This is actually just a dummy commit to see if the workflow will be\nkicked off properly by the Git trigger."
                                                    :author_date "2016-11-22T14:46:14Z"

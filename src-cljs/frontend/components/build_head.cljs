@@ -976,37 +976,50 @@
     om/IRender
     (render [_]
       (let [{:keys [project]} project-data
-            {:keys [build_num
+            {:keys [build_num start_time
 
-                    stop_time start_time parallel usage_queued_at
+                    stop_time  parallel usage_queued_at
                     pull_requests status canceler
                     all_commit_details all_commit_details_truncated] :as build} (:build build-data)
-            {:keys [jobs trigger-resource] :as workflow} (:workflow workflow-data)
+            {:keys [jobs
+                    trigger-resource]
+             workflow-id :id
+             workflow-name :name
+             :as workflow} (:workflow workflow-data)
             current-job-index (->> jobs
-                                   (keep-indexed #(when (= (:build_num %2) build_num)
+                                   (keep-indexed #(when (= (-> %2 :data :build_num) build_num)
                                                     %1))
                                    first)
             {job-name :name} (jobs current-job-index)
-            trigger (if (zero? current-job-index)
-                      "commit url"
-                      "build url")
+            job-trigger (if (zero? current-job-index)
+                          (om/build builds-table/commits {:build (:data trigger-resource)})
+                          "build url")
             ]
         (html
          [:div.workflow-head
           [:div.details.job
-           [:div.test-heading
+           [:div.heading
             (str job-name " " build_num)
-            (om/build workflow-status-badge {:workflow workflow})]
+            (builds-table/build-status-badge build)]
            [:div.card
             [:dl
-             [:dd "Trigger"] [:dt trigger]
+             [:dd "Trigger"] [:dt job-trigger]
              [:dd "Start Time"] [:dt (om/build common/updating-duration {:start start_time} {:opts {:formatter datetime/time-ago-abbreviated}})
                                  " ago"]
              [:dd "Duration"] [:dt (build-model/duration build)]
              ]]]
           [:div.details.workflow
+           [:div.heading
+            (str workflow-name " " workflow-id)
+            (om/build workflow-status-badge {:workflow workflow})]
            [:div.card
-            "right  abcd"]]])))))
+            [:dl
+             [:dd "Trigger"] [:dt
+                              (om/build builds-table/pull-requests {:build (:data trigger-resource)})
+                              (println "---" (:data trigger-resource))
+                              (om/build builds-table/commits {:build (:data trigger-resource)})]
+             [:dd "Previous Job"] [:dt "previous URL"]
+             [:dd "Next Job"] [:dt "next URL"]]]]])))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
