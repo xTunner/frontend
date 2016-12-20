@@ -1,8 +1,23 @@
 (ns frontend.experiments.workflow-spike)
 
+(defn status-class [{:keys [status] :as workflow}]
+  (case status
+    "fail" "fail"
+    "success" "pass"
+    "running" "busy"
+    "canceled" "stop"))
+
+(defn status-icon [{:keys [status] :as workflow}]
+  (case (status-class workflow)
+    "fail" "Status-Failed"
+    "stop" "Status-Canceled"
+    "pass" "Status-Passed"
+    "busy" "Status-Running"))
+
 (def fake-progress-response
   {:name "mock workflow"
    :created-at "2016-12-15T15:05:41.938-00:00"
+   :status "running"
    :trigger-resource {:type "git-commit"
                       :data {
                              :branch "master"
@@ -23,6 +38,7 @@
    :jobs [{:name "build"
            :type "picard"
            :id "e36d2025-e3f9-47c5-bdca-2259efe44685"
+           :status "success"
            :data {:usage_queued_at "2016-12-13T14:44:00.620Z"
                   :committer_name "Nate Smith"
                   :why "api"

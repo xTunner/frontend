@@ -27,6 +27,7 @@
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.html :refer [open-ext]]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.experiments.workflow-spike :as workflow]
             [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
@@ -960,17 +961,52 @@
                 (gstring/format "Commits (%d)" n)))]
            (om/build build-commits build-data)]])))))
 
-(defn build-head-content-workflow [{:keys [build-data workflow-data] :as data} owner]
+(defn workflow-status-badge [{:keys [workflow]}]
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [stop_time start_time parallel usage_queued_at
+      (html [:div.recent-status-badge {:class (workflow/status-class workflow)}
+             (om/build svg {:class "badge-icon"
+                            :src (-> workflow workflow/status-icon common/icon-path)})
+             [:div {:class "badge-text"}
+              (:status workflow)]]))))
+
+(defn build-head-content-workflow [{:keys [build-data project-data workflow-data] :as data} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [project]} project-data
+            {:keys [build_num
+
+                    stop_time start_time parallel usage_queued_at
                     pull_requests status canceler
                     all_commit_details all_commit_details_truncated] :as build} (:build build-data)
-            {:keys [workflow]} workflow-data]
+            {:keys [jobs trigger-resource] :as workflow} (:workflow workflow-data)
+            current-job-index (->> jobs
+                                   (keep-indexed #(when (= (:build_num %2) build_num)
+                                                    %1))
+                                   first)
+            {job-name :name} (jobs current-job-index)
+            trigger (if (zero? current-job-index)
+                      "commit url"
+                      "build url")
+            ]
         (html
-         [:div
-          (str (keys workflow))])))))
+         [:div.workflow-head
+          [:div.details.job
+           [:div.test-heading
+            (str job-name " " build_num)
+            (om/build workflow-status-badge {:workflow workflow})]
+           [:div.card
+            [:dl
+             [:dd "Trigger"] [:dt trigger]
+             [:dd "Start Time"] [:dt (om/build common/updating-duration {:start start_time} {:opts {:formatter datetime/time-ago-abbreviated}})
+                                 " ago"]
+             [:dd "Duration"] [:dt (build-model/duration build)]
+             ]]]
+          [:div.details.workflow
+           [:div.card
+            "right  abcd"]]])))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
@@ -979,7 +1015,7 @@
       (html
        [:div
         (if workflow-data
-          (om/build build-head-content-workflow (select-keys data [:build-data :workflow-data]))
+          (om/build build-head-content-workflow (select-keys data [:build-data :project-data :workflow-data]))
           (om/build build-head-content (select-keys data [:build-data :project-data])))
         [:div.build-head-wrapper
          [:div.build-head
