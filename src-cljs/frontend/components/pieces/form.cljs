@@ -34,8 +34,10 @@
   :disabled?        - (optional) If true, the field is disabled.
                       (default: false)
   :auto-complete    - (optional) If given, the value of the field's
-                      :auto-complete attribute."
-  [{:keys [label value on-change password? size validation-error disabled? auto-complete] :or {size :full}}]
+                      :auto-complete attribute.
+  :auto-focus       - (optional) If given, the text field will be focused on render."
+
+  [{:keys [label value on-change password? size validation-error disabled? auto-complete auto-focus] :or {size :full}}]
   (reify
     om/IInitState
     (init-state [_]
@@ -63,7 +65,8 @@
                                 :value value
                                 :disabled disabled?
                                 :on-change on-change}
-                         auto-complete (assoc :auto-complete auto-complete))]))})))))
+                         auto-complete (assoc :auto-complete auto-complete)
+                         auto-focus (assoc :auto-focus auto-focus))]))})))))
 
 (defn text-area
   "A text area, with a label.

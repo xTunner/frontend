@@ -546,6 +546,7 @@
                                                           (om/build form/text-field {:label "Name"
                                                                                      :required true
                                                                                      :value new-env-var-name
+                                                                                     :auto-focus true
                                                                                      :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
                                                           (om/build form/text-field {:label "Value"
                                                                                      :required true
