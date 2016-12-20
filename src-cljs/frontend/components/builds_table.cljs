@@ -13,7 +13,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.utils.github :as gh-utils])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [html defrender]]))
 
 (defn dashboard-icon [name]
   [:img.dashboard-icon {:src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
@@ -54,6 +54,35 @@
         icon-class [:i.button-icon {:class icon-class}])
       [:span.button-text text]])])
 
+(defrender pull-requests [{:keys [build]} owner]
+  (when-let [urls (seq (map :url (:pull_requests build)))]
+    [:div.metadata-item.pull-requests {:title "Pull Requests"}
+     [:i.octicon.octicon-git-pull-request]
+     (interpose
+      ", "
+      (for [url urls]
+        ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+        ;; When that happens, this code blows up the page. To work around that,
+        ;; we just skip the PR if its URL is nil.
+        (when url
+          [:a {:href url
+               :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
+                                                               :properties {:repo (:reponame build)
+                                                                            :org (:username build)}})}
+           "#"
+           (gh-utils/pull-request-number url)])))]))
+
+(defrender commits [{:keys [build]} owner]
+  (when (:vcs_revision build)
+    [:div.metadata-item.revision
+     [:i.octicon.octicon-git-commit]
+     [:a {:title (build-model/github-revision build)
+          :href (build-model/commit-url build)
+          :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
+                                                          :properties {:repo (:reponame build)
+                                                                       :org (:username build)}})}
+      (build-model/github-revision build)]]))
+
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         build-args (merge (build-model/build-args build) {:component "build-row" :no-cache? false})
@@ -77,19 +106,19 @@
       (cond
         should-show-cancel?
         (build-action
-          {:text "cancel"
-           :loading-text "Cancelling..."
-           :icon-name "Status-Canceled"
-           :on-click #(do
-                        (raise! owner [:cancel-build-clicked build-args])
-                        ((om/get-shared owner :track-event) {:event-type :cancel-build-clicked}))})
+         {:text "cancel"
+          :loading-text "Cancelling..."
+          :icon-name "Status-Canceled"
+          :on-click #(do
+                       (raise! owner [:cancel-build-clicked build-args])
+                       ((om/get-shared owner :track-event) {:event-type :cancel-build-clicked}))})
 
         should-show-rebuild?
         (build-action
-          {:text "rebuild"
-           :loading-text "Rebuilding..."
-           :icon-name "Rebuild"
-           :on-click #(raise! owner [:retry-build-clicked build-args])})
+         {:text "rebuild"
+          :loading-text "Rebuilding..."
+          :icon-name "Rebuild"
+          :on-click #(raise! owner [:retry-build-clicked build-args])})
         :else nil)]
      
      [:div.build-info
@@ -127,54 +156,30 @@
 
      [:div.metadata
       [:div.metadata-row.timing
-        (if (or (not (:start_time build))
-                (= "not_run" (:status build)))
-          (list
-           [:div.metadata-item.recent-time.start-time
-            {:title "Started: not started"}
-            [:i.material-icons "today"]
-            "–"]
-           [:div.metadata-item.recent-time.duration
-            {:title "Duration: not run"}
-            [:i.material-icons "timer"]
-            "–"])
-          (list [:div.metadata-item.recent-time.start-time
-                 {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
-                 [:i.material-icons "today"]
-                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                 " ago"]
-                [:div.metadata-item.recent-time.duration
-                 {:title (str "Duration: " (build-model/duration build))}
-                 [:i.material-icons "timer"]
-                 (om/build common/updating-duration {:start (:start_time build)
-                                                     :stop (:stop_time build)})]))]
+       (if (or (not (:start_time build))
+               (= "not_run" (:status build)))
+         (list
+          [:div.metadata-item.recent-time.start-time
+           {:title "Started: not started"}
+           [:i.material-icons "today"]
+           "–"]
+          [:div.metadata-item.recent-time.duration
+           {:title "Duration: not run"}
+           [:i.material-icons "timer"]
+           "–"])
+         (list [:div.metadata-item.recent-time.start-time
+                {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
+                [:i.material-icons "today"]
+                (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
+                " ago"]
+               [:div.metadata-item.recent-time.duration
+                {:title (str "Duration: " (build-model/duration build))}
+                [:i.material-icons "timer"]
+                (om/build common/updating-duration {:start (:start_time build)
+                                                    :stop (:stop_time build)})]))]
       [:div.metadata-row.pull-revision
-       (when-let [urls (seq (map :url (:pull_requests build)))]
-         [:div.metadata-item.pull-requests {:title "Pull Requests"}
-          [:i.octicon.octicon-git-pull-request]
-          (interpose
-           ", "
-           (for [url urls]
-             ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-             ;; When that happens, this code blows up the page. To work around that,
-             ;; we just skip the PR if its URL is nil.
-             (when url
-               [:a {:href url
-                    :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked
-                                                                    :properties {:repo (:reponame build)
-                                                                                 :org (:username build)}})}
-                "#"
-                (gh-utils/pull-request-number url)])))])
-
-       (when (:vcs_revision build)
-         [:div.metadata-item.revision
-          [:i.octicon.octicon-git-commit]
-          [:a {:title (build-model/github-revision build)
-               :href (build-model/commit-url build)
-               :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked
-                                                               :properties {:repo (:reponame build)
-                                                                            :org (:username build)}})}
-           (build-model/github-revision build)]])]]]))
+       (om/build pull-requests {:build build})
+       (om/build commits {:build build})]]]))
 
 (defn builds-table [data owner {:keys [show-actions? show-branch? show-project?]
                                 :or {show-branch? true
