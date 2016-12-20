@@ -93,7 +93,8 @@
                [:label {:placeholder "Current Heroku key"}]])
             [:input#heroku-key
              {:required  true
-              :type      "text",
+              :auto-focus true
+              :type      "text"
               :value     heroku-api-key-input
               :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
             [:label {:placeholder "Add new key"}]

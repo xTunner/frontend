@@ -712,6 +712,7 @@
                [:label "Pre-dependency commands"]
                [:textarea.dumb.form-control {:name "setup",
                                              :required true
+                                             :auto-focus true
                                              :value (str (:setup settings))
                                              :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
                [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]]
@@ -761,6 +762,7 @@
               [:label "Test commands"]
               [:textarea.dumb.form-control {:name "test",
                                             :required true
+                                            :auto-focus true
                                             :value (str (:test settings))
                                             :on-change #(utils/edit-input owner (conj state/inputs-path :test) %)}]
               [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]]
@@ -1530,7 +1532,10 @@
            " for use by CircleCI."]
           [:form
            [:input#access-key-id
-            {:required true, :type "text", :value (or access_key_id "")
+            {:required true
+             :auto-focus true
+             :type "text"
+             :value (or access_key_id "")
              :on-change #(utils/edit-input owner (input-path :access_key_id) %)}]
            [:label {:placeholder "Access Key ID"}]
 

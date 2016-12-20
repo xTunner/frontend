@@ -78,8 +78,9 @@
   :validation-error - (optional) A validation error to display. If given, the
                       field will appear as invalid.
   :disabled?        - (optional) If true, the field is disabled.
-                      (default: false)"
-  [{:keys [label value on-change validation-error disabled? size] :or {size :full}}]
+                      (default: false)
+  :auto-focus       - (optional) If given, the text area will be focused on render."
+  [{:keys [label value on-change validation-error disabled? auto-focus size] :or {size :full}}]
   (reify
     om/IInitState
     (init-state [_]
@@ -97,11 +98,13 @@
                      (html
                       ;; This `.dumb` class opts us out of old global form styles. We can
                       ;; remove it once those styles are dead.
-                      [:textarea.dumb {:id id
-                                       :class (when validation-error "invalid")
-                                       :value value
-                                       :disabled disabled?
-                                       :on-change on-change}]))})))))
+                      [:textarea.dumb
+                       (cond-> {:id id
+                                :class (when validation-error "invalid")
+                                :value value
+                                :disabled disabled?
+                                :on-change on-change}
+                               auto-focus (assoc :auto-focus auto-focus))]))})))))
 
 (defn file-selector
   "A file selector, which accepts dropped files and provides a button which
