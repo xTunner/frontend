@@ -234,7 +234,7 @@
              {:keys [vcs_type username reponame build_num]} build]
          [:a.container-selector.exception
           {:href (routes/v1-build-path vcs_type username
-                                       reponame build_num
+                                       reponame nil build_num
                                        (or current-tab (build-utils/default-tab build scopes))
                                        container-id)
            :on-click #(do

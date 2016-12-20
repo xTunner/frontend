@@ -51,7 +51,7 @@
 
 (defn sidebar-build [build {:keys [vcs_type org repo branch latest?]}]
   [:a.status {:class (when latest? "latest")
-              :href (routes/v1-build-path vcs_type org repo (:build_num build))
+              :href (routes/v1-build-path vcs_type org repo nil (:build_num build))
               :title (str (build-model/status-words build) ": " (:build_num build))}
    (common/ico (status-ico-name build))])
 

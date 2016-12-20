@@ -599,6 +599,7 @@
                  (vcs-url/vcs-type (:vcs_url build))
                  (:username build)
                  (:reponame build)
+                 nil
                  retry-id)}
      retry-id]))
 
@@ -767,6 +768,7 @@
                                                        (vcs-url/vcs-type (:vcs_url build))
                                                        (:username build)
                                                        (:reponame build)
+                                                       nil
                                                        (:build_num build)
                                                        (name %)
                                                        container-id))})}
@@ -873,7 +875,7 @@
     (html
      [:div.summary-item
       [:span.summary-label "Previous: "]
-      [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
+      [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) nil build-number)}
        build-number]])))
 
 (defn expected-duration
@@ -971,6 +973,25 @@
              [:div {:class "badge-text"}
               (:status workflow)]]))))
 
+(defrender build-link [{:keys [build workflow]} owner]
+  (html
+   (if (:build_num build)
+     (let [{vcs-url :vcs_url
+            build-number :build_num} build
+           {workflow-id :id} workflow
+           url (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) workflow-id build-number)]
+       [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+            :href url
+            :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
+                                                            :properties {:org (vcs-url/org-name (:vcs_url build))
+                                                                         :repo (:reponame build)
+                                                                         :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
+
+        (str (:username build) " / " (:reponame build) " ")
+        " #"
+        (:build_num build)])
+     [:div "not run yet"])))
+
 (defn build-head-content-workflow [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
     om/IRender
@@ -991,10 +1012,16 @@
                                                     %1))
                                    first)
             {job-name :name} (jobs current-job-index)
-            job-trigger (if (zero? current-job-index)
-                          (om/build builds-table/commits {:build (:data trigger-resource)})
-                          "build url")
-            ]
+            next-link
+            (if (< current-job-index (dec (count jobs)))
+              (om/build build-link  {:build (get-in jobs [(inc current-job-index) :data])
+                                     :workflow workflow})
+              "n/a")
+            [job-trigger previous-link]
+            (if (zero? current-job-index)
+              [(om/build builds-table/commits {:build (:data trigger-resource)}) "n/a"]
+              (repeat (om/build build-link  {:build (get-in jobs [(dec current-job-index) :data])
+                                             :workflow workflow})))]
         (html
          [:div.workflow-head
           [:div.details.job
@@ -1016,10 +1043,9 @@
             [:dl
              [:dd "Trigger"] [:dt
                               (om/build builds-table/pull-requests {:build (:data trigger-resource)})
-                              (println "---" (:data trigger-resource))
                               (om/build builds-table/commits {:build (:data trigger-resource)})]
-             [:dd "Previous Job"] [:dt "previous URL"]
-             [:dd "Next Job"] [:dt "next URL"]]]]])))))
+             [:dd "Previous Job"] [:dt previous-link]
+             [:dd "Next Job"] [:dt next-link]]]]])))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify

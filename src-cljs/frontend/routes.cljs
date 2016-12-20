@@ -70,22 +70,24 @@
 (defn v1-build-path
   "Temporary helper method for v1-build until we figure out how to make
    secretary's render-route work for regexes"
-  ([vcs_type org repo build-num]
-   (v1-build-path vcs_type org repo build-num nil nil nil))
-  ([vcs_type org repo build-num tab]
-   (v1-build-path vcs_type org repo build-num tab nil nil))
-  ([vcs_type org repo build-num tab container-id]
-   (v1-build-path vcs_type org repo build-num tab container-id nil))
-  ([vcs_type org repo build-num tab container-id action-id]
+  ([vcs_type org repo workflow-id build-num]
+   (v1-build-path vcs_type org repo workflow-id build-num nil nil nil))
+  ([vcs_type org repo workflow-id build-num tab]
+   (v1-build-path vcs_type org repo workflow-id build-num tab nil nil))
+  ([vcs_type org repo workflow-id build-num tab container-id]
+   (v1-build-path vcs_type org repo workflow-id build-num tab container-id nil))
+  ([vcs_type org repo workflow-id build-num tab container-id action-id]
    (let [fragment (build-page-fragment tab container-id action-id)]
-     (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/" build-num (when fragment (str "#" fragment))))))
+     (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/"
+          (when workflow-id
+            (str "workflows/" workflow-id "/jobs/"))
+          build-num (when fragment (str "#" fragment))))))
 
 (defn v1-workflow-path
   "Temporary helper method for v1-build until we figure out how to make
    secretary's render-route work for regexes"
   ([vcs_type org repo workflow-id]
-   (let [fragment (build-page-fragment tab container-id action-id)]
-     (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows/" workflow-id))))
+   (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows/" workflow-id)))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to

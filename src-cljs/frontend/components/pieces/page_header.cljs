@@ -73,14 +73,14 @@
   [{:keys [vcs_type username project build-num active]}]
   (om/build crumb-node {:name (str "build " build-num)
                         :track-event-type :breadcrumb-build-clicked
-                        :path (routes/v1-build-path vcs_type username project build-num)
+                        :path (routes/v1-build-path vcs_type username project nil build-num)
                         :active active}))
 
 (defmethod crumb :workflow-job
   [{:keys [vcs_type username project build-num active]}]
   (om/build crumb-node {:name (str "job " build-num)
                         :track-event-type :breadcrumb-build-clicked
-                        :path (routes/v1-build-path vcs_type username project build-num)
+                        :path (routes/v1-build-path vcs_type username project nil build-num)
                         :active active}))
 
 (defmethod crumb :workflow
