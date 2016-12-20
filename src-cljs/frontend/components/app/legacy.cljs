@@ -31,34 +31,34 @@
     (reify
       om/IRender
       (render [_]
-        (om/build main-template/template
-                  {:app app
-                   :main-content (om/build old-world-dominant-component-f app)
-                   ;; Use some rather complex logic to decide whether to show
-                   ;; the aside menu. This logic reproduces logic which used to
-                   ;; be in the navigation handler: each handler would
-                   ;; set :show-aside-menu? as true or false in the state.
-                   ;; Instead, each page should pass this to the template. In a
-                   ;; normal page function the value is normally a literal true
-                   ;; or false, but this shim is designed to give the correct
-                   ;; answer for any un-migrated navigation point.
-                   :show-aside-menu? (let [nav-point (:navigation-point app)
-                                           projects (get-in app state/projects-path)
-                                           builds (get-in app state/recent-builds-path)]
-                                       (cond
-                                         (and (= :dashboard (:navigation-point app))
-                                              (or (nil? builds)
-                                                  (nil? projects)
-                                                  (empty? projects)))
-                                         false
+        (main-template/template
+         {:app app
+          :main-content (om/build old-world-dominant-component-f app)
+          ;; Use some rather complex logic to decide whether to show
+          ;; the aside menu. This logic reproduces logic which used to
+          ;; be in the navigation handler: each handler would
+          ;; set :show-aside-menu? as true or false in the state.
+          ;; Instead, each page should pass this to the template. In a
+          ;; normal page function the value is normally a literal true
+          ;; or false, but this shim is designed to give the correct
+          ;; answer for any un-migrated navigation point.
+          :show-aside-menu? (let [nav-point (:navigation-point app)
+                                  projects (get-in app state/projects-path)
+                                  builds (get-in app state/recent-builds-path)]
+                              (cond
+                                (and (= :dashboard (:navigation-point app))
+                                     (or (nil? builds)
+                                         (nil? projects)
+                                         (empty? projects)))
+                                false
 
-                                         :else
-                                         (not (#{:build
-                                                 :add-projects
-                                                 :build-insights
-                                                 :project-insights
-                                                 :team}
-                                               nav-point))))})))))
+                                :else
+                                (not (#{:build
+                                        :add-projects
+                                        :build-insights
+                                        :project-insights
+                                        :team}
+                                      nav-point))))})))))
 
 (def nav-point->page
   (merge

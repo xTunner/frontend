@@ -177,8 +177,7 @@
     (set-page-title! "Projects"))
   (render [this]
     (component
-      (build-legacy
-       main-template/template
+      (main-template/template
        {:app (:legacy/state (om-next/props this))
         :crumbs [{:type :projects}]
         :header-actions (add-project-button {:empty-state? false})

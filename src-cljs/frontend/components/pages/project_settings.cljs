@@ -10,16 +10,16 @@
   (reify
     om/IRender
     (render [_]
-      (om/build main-template/template
-                {:app app
-                 :show-aside-menu? true
-                 :main-content (om/build project-settings/project-settings app)
-                 :header-actions (let [project (get-in app state/project-path)
-                                       project-name (:reponame project)
-                                       project-user (:username project)
-                                       vcs-type (:vcs-type project)]
-                                   (html
-                                    [:a.header-settings-link {:href (routes/v1-dashboard-path {:org project-user
-                                                                                               :repo project-name
-                                                                                               :vcs_type vcs-type})}
-                                     (str "View " project-name " »")]))}))))
+      (main-template/template
+       {:app app
+        :show-aside-menu? true
+        :main-content (om/build project-settings/project-settings app)
+        :header-actions (let [project (get-in app state/project-path)
+                              project-name (:reponame project)
+                              project-user (:username project)
+                              vcs-type (:vcs-type project)]
+                          (html
+                           [:a.header-settings-link {:href (routes/v1-dashboard-path {:org project-user
+                                                                                      :repo project-name
+                                                                                      :vcs_type vcs-type})}
+                            (str "View " project-name " »")]))}))))

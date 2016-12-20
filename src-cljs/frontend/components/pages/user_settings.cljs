@@ -50,8 +50,7 @@
                           :api old-components/api-tokens
                           :plans old-components/plans
                           :beta old-components/beta-program)]
-        (build-legacy
-         main-template/template
+        (main-template/template
          {:app legacy-state
           :crumbs [{:type :account}]
           :show-aside-menu? true

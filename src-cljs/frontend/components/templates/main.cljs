@@ -1,4 +1,5 @@
 (ns frontend.components.templates.main
+  "Provides a template for the root of a normal page."
   (:require [frontend.components.aside :as aside]
             [frontend.components.header :as header]
             [frontend.config :as config]
@@ -18,27 +19,23 @@
   header-actions   - A component which will be placed on the right in the
                      header. This is used for page-wide actions.
   show-aside-menu? - If true, show the aside menu."
-  [{:keys [app main-content crumbs header-actions show-aside-menu?]}
-   owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       (let [outer? (contains? #{:landing :error} (:navigation-point app))
-             logged-in? (get-in app state/user-path)
-             ;; simple optimzation for real-time updates when the build is running
-             app-without-container-data (dissoc-in app state/container-data-path)]
-         ;; Outer gets just a plain div here.
-         [(if outer? :div :main.app-main)
-          (om/build header/header {:app app-without-container-data
-                                   :crumbs (or crumbs (get-in app state/crumbs-path))
-                                   :actions header-actions})
+  [{:keys [app main-content crumbs header-actions show-aside-menu?]}]
+  (html
+   (let [outer? (contains? #{:landing :error} (:navigation-point app))
+         logged-in? (get-in app state/user-path)
+         ;; simple optimzation for real-time updates when the build is running
+         app-without-container-data (dissoc-in app state/container-data-path)]
+     ;; Outer gets just a plain div here.
+     [(if outer? :div :main.app-main)
+      (om/build header/header {:app app-without-container-data
+                               :crumbs (or crumbs (get-in app state/crumbs-path))
+                               :actions header-actions})
 
-          [:div.app-dominant
-           (when (and (not outer?) logged-in?)
-             (om/build aside/aside {:app (dissoc app-without-container-data :current-build-data)
-                                    :show-aside-menu? show-aside-menu?}))
+      [:div.app-dominant
+       (when (and (not outer?) logged-in?)
+         (om/build aside/aside {:app (dissoc app-without-container-data :current-build-data)
+                                :show-aside-menu? show-aside-menu?}))
 
 
-           [:div.main-body
-            main-content]]])))))
+       [:div.main-body
+        main-content]]])))

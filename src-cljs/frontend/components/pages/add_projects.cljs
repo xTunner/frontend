@@ -7,7 +7,7 @@
   (reify
     om/IRender
     (render [_]
-      (om/build main-template/template
-                {:app app
-                 :main-content (om/build add-projects/add-projects app)
-                 :header-actions (om/build add-projects/add-projects-head-actions app)}))))
+      (main-template/template
+       {:app app
+        :main-content (om/build add-projects/add-projects app)
+        :header-actions (om/build add-projects/add-projects-head-actions app)}))))
