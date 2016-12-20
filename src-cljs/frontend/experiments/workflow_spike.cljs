@@ -17,7 +17,7 @@
 (def fake-progress-response
   {:name "mock_workflow_name"
    :created-at "2016-12-15T15:05:41.938-00:00"
-   :id "mock-wofkflow-id"
+   :id "mock-workflow-id"
    :status "running"
    :trigger-resource {:type "git-commit"
                       :data {

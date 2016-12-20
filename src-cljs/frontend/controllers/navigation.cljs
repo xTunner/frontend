@@ -133,7 +133,7 @@
 
 (defn- maybe-add-workflow-response-data [state]
   (cond-> state
-    (workflow-id state)
+    (= (workflow-id state) "mock-workflow-id")
     (assoc-in state/workflow-path workflow/fake-progress-response)))
 
 (defn- add-crumbs [state {:keys [vcs_type project-name build-num org repo tab container-id action-id]}]
