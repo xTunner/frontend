@@ -126,7 +126,7 @@
     om/IDisplayName (display-name [_] "Dashboard")
     om/IRender
     (render [_]
-      (let [builds (:recent-builds data)
+      (let [builds (get-in data state/recent-builds-path)
             projects (get-in data state/projects-path)
             current-project (get-in data state/project-data-path)
             plan (:plan current-project)
@@ -136,7 +136,8 @@
             builds-per-page (:builds-per-page data)
             current-user (:current-user data)]
         (html
-         (cond (nil? builds)
+         (cond (or (nil? builds)
+                   (nil? projects))
                [:div.empty-placeholder (spinner)]
 
                (and (empty? builds)

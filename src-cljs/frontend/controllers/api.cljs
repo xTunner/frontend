@@ -155,7 +155,7 @@
                   (get-in args [:context :query-params :page])))
     state
     (-> state
-        (assoc-in [:recent-builds] (:resp args))
+        (assoc-in state/recent-builds-path (:resp args))
         (assoc-in state/project-scopes-path (:scopes args))
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
@@ -177,7 +177,8 @@
                                           project-key (api/project-build-key project)]]
                                 (cond-> project
                                   (= (dissoc project-key :branch) (dissoc target-key :branch))
-                                  (assoc-in [:recent-builds branch] all-recent-builds))))]
+                                  (assoc-in (state/recent-builds-branch-path branch)
+                                            all-recent-builds))))]
       (update-in state state/projects-path add-recent-builds))
     state))
 
