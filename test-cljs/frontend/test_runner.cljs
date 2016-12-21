@@ -21,7 +21,6 @@
             [frontend.models.test-user]
             [frontend.test-analytics]
             [frontend.test-datetime]
-            [frontend.test-parser]
             [frontend.test-pusher]
             [frontend.test-routes]
             [frontend.utils-test]
@@ -51,7 +50,6 @@
            'frontend.models.test-user
            'frontend.test-analytics
            'frontend.test-datetime
-           'frontend.test-parser
            'frontend.test-pusher
            'frontend.test-routes
            'frontend.utils-test
