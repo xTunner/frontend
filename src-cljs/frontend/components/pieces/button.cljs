@@ -50,8 +50,11 @@
   :href          - The link target.
   :on-click      - A function called when the link is clicked.
   :kind          - The kind of button. One of #{:primary :secondary :danger :flat}.
-                   (default: :secondary)"
-  [{:keys [href on-click kind size data-external]
+                   (default: :secondary)
+  :size          - The size of the button. One of #{:full :medium}.
+                   (default: :full)
+  :target        - Specifies where to display the linked URL."
+  [{:keys [href on-click kind size target data-external]
     :or {kind :secondary size :full}}
    content]
   (component
@@ -63,6 +66,7 @@
                               :medium "medium")])
        :data-external data-external
        :href href
+       :target target
        :on-click on-click}
       content])))
 
