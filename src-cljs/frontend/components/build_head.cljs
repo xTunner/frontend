@@ -973,24 +973,27 @@
              [:div {:class "badge-text"}
               (:status workflow)]]))))
 
-(defrender build-link [{:keys [build workflow]} owner]
-  (html
-   (if (:build_num build)
-     (let [{vcs-url :vcs_url
-            build-number :build_num} build
-           {workflow-id :id} workflow
-           url (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) workflow-id build-number)]
-       [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
-            :href url
-            :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
-                                                            :properties {:org (vcs-url/org-name (:vcs_url build))
-                                                                         :repo (:reponame build)
-                                                                         :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
-
-        (str (:username build) " / " (:reponame build) " ")
-        " #"
-        (:build_num build)])
-     [:div "not run yet"])))
+(defrender build-link [{:keys [job workflow]} owner]
+  (do
+    (print "---" job)
+    (html
+     (if (get-in job [:data :build :build_num])
+       (let [build (get-in job [:data :build])
+             {vcs-url :vcs_url
+              build-number :build_num} build
+             {workflow-id :id} workflow
+             url (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) workflow-id build-number)]
+         [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+              :href url
+              :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
+                                                              :properties {:org (vcs-url/org-name (:vcs_url build))
+                                                                           :repo (:reponame build)
+                                                                           :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
+          [:i.material-icons "adjust"]
+          (:name job)
+          " #"
+          (:build_num build)])
+       [:div "not run yet"]))))
 
 (defn build-head-content-workflow [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
@@ -1008,44 +1011,56 @@
              workflow-name :name
              :as workflow} (:workflow workflow-data)
             current-job-index (->> jobs
-                                   (keep-indexed #(when (= (-> %2 :data :build_num) build_num)
+                                   (keep-indexed #(when (= (-> %2 :data :build :build_num) build_num)
                                                     %1))
                                    first)
             {job-name :name} (jobs current-job-index)
             next-link
             (if (< current-job-index (dec (count jobs)))
-              (om/build build-link  {:build (get-in jobs [(inc current-job-index) :data])
+              (om/build build-link  {:job (get jobs (inc current-job-index))
                                      :workflow workflow})
               "n/a")
             [job-trigger previous-link]
             (if (zero? current-job-index)
               [(om/build builds-table/commits {:build (:data trigger-resource)}) "n/a"]
-              (repeat (om/build build-link  {:build (get-in jobs [(dec current-job-index) :data])
+              (repeat (om/build build-link  {:job (get jobs (dec current-job-index))
                                              :workflow workflow})))]
         (html
          [:div.workflow-head
           [:div.details.job
            [:div.heading
-            (str job-name " " build_num)
+            (str job-name (gstring/unescapeEntities " &mdash; ")  build_num)
             (builds-table/build-status-badge build)]
            [:div.card
-            [:dl
-             [:dd "Trigger"] [:dt job-trigger]
-             [:dd "Start Time"] [:dt (om/build common/updating-duration {:start start_time} {:opts {:formatter datetime/time-ago-abbreviated}})
-                                 " ago"]
-             [:dd "Duration"] [:dt (build-model/duration build)]
-             ]]]
+            [:div.line
+             [:div.head "Trigger"] [:div.value job-trigger]]
+            [:div.line
+             [:div.head "Start Time"] [:div.value
+                                       [:div.metadata-item.start-time
+                                        {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
+                                        [:i.material-icons "today"]
+                                        (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
+                                        " ago"]]]
+            [:div.line
+             [:div.head "Duration"] [:div.value
+                                     [:div.metadata-item.duration
+                                      {:title (str "Duration: " (build-model/duration build))}
+                                      [:i.material-icons "timer"]
+                                      (om/build common/updating-duration {:start (:start_time build)
+                                                                          :stop (:stop_time build)})]]]]]
           [:div.details.workflow
            [:div.heading
-            (str workflow-name " " workflow-id)
+            (str workflow-name (gstring/unescapeEntities " &mdash; ") workflow-id)
             (om/build workflow-status-badge {:workflow workflow})]
            [:div.card
-            [:dl
-             [:dd "Trigger"] [:dt
+            [:div.line
+             [:div.head "Trigger"] [:div.value
                               (om/build builds-table/pull-requests {:build (:data trigger-resource)})
-                              (om/build builds-table/commits {:build (:data trigger-resource)})]
-             [:dd "Previous Job"] [:dt previous-link]
-             [:dd "Next Job"] [:dt next-link]]]]])))))
+                              (om/build builds-table/commits {:build (:data trigger-resource)})]]
+            [:div.line
+             [:div.head "Previous Job"] [:div.value previous-link]]
+            [:div.line
+             [:div.head "Next Job"] [:div.value next-link]]]]])))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify

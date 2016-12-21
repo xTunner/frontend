@@ -248,6 +248,48 @@
       color: @gray;
     }
   }
+
+  .workflow-head {
+    .flexy();
+    .justify-content(space-between);
+    & > .details {
+      .flex(0, 0, 49%);
+      .heading {
+        .flexy();
+        font-size: 20px;
+        > .recent-status-badge {
+          .flex(0, 0, 130px);
+          margin-left: auto;
+        }
+      }
+      .card {
+        margin-bottom: 0;
+      }
+      .line {
+        .flexy();
+        .justify-content(space-between);
+        font-size: 16px;
+
+        > .value {
+          .flex(0, 0, 65%);
+          .revision, .pull-requests {
+            display: inline-block;
+            &:last-child {
+              margin-left: 9px;
+            }
+          }
+          .material-icons, .octicon {
+            margin-right: 10px;
+            padding-left: 0;
+            margin-left: 0;
+            & + * {
+            vertical-align: middle;
+          }}
+        }
+      }
+    }
+
+  }
 }
 
 .container-pills-container {
