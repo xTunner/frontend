@@ -221,6 +221,14 @@
                                               :repo repo
                                               :branch branch})))
 
+  (defroute v1-workflow-dashboard #"/(gh|bb)/([^/]+)/([^/]+)/workflows/([^/]+)" ; workaround secretary's annoying auto-decode
+    [short-vcs-type org repo workflow-id params]
+    (open-to-inner! app nav-ch :dashboard (merge params
+                                                 {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+                                                  :org org
+                                                  :repo repo
+                                                  :workflow-id workflow-id})))
+
   (defroute v1-build #"/(gh|bb)/([^/]+)/([^/]+)/(\d+)"
     [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler

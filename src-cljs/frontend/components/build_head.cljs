@@ -974,26 +974,24 @@
               (:status workflow)]]))))
 
 (defrender build-link [{:keys [job workflow]} owner]
-  (do
-    (print "---" job)
-    (html
-     (if (get-in job [:data :build :build_num])
-       (let [build (get-in job [:data :build])
-             {vcs-url :vcs_url
-              build-number :build_num} build
-             {workflow-id :id} workflow
-             url (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) workflow-id build-number)]
-         [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
-              :href url
-              :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
-                                                              :properties {:org (vcs-url/org-name (:vcs_url build))
-                                                                           :repo (:reponame build)
-                                                                           :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
-          [:i.material-icons "adjust"]
-          (:name job)
-          " #"
-          (:build_num build)])
-       [:div "not run yet"]))))
+  (html
+   (if (get-in job [:data :build :build_num])
+     (let [build (get-in job [:data :build])
+           {vcs-url :vcs_url
+            build-number :build_num} build
+           {workflow-id :id} workflow
+           url (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) workflow-id build-number)]
+       [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+            :href url
+            :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
+                                                            :properties {:org (vcs-url/org-name (:vcs_url build))
+                                                                         :repo (:reponame build)
+                                                                         :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
+        [:i.material-icons "adjust"]
+        (:name job)
+        " #"
+        (:build_num build)])
+     [:div "not run yet"])))
 
 (defn build-head-content-workflow [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify

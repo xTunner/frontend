@@ -14,6 +14,9 @@
     "pass" "Status-Passed"
     "busy" "Status-Running"))
 
+(defn trigger-vcs_url [workflow]
+  (get-in workflow [:trigger-resource :data :vcs_url]))
+
 (def fake-progress-response
   {:name "mock_workflow_name"
    :created-at "2016-12-15T15:05:41.938-00:00"

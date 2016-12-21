@@ -24,6 +24,15 @@
             [goog.string :as gstring])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
+(defn- workflow-id [state]
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
+    workflow-id))
+
+(defn- maybe-add-workflow-response-data [state]
+  (cond-> state
+    (= (workflow-id state) "mock-workflow-id")
+    (assoc-in state/workflow-path workflow/fake-progress-response)))
+
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
 ;;      We could also use a declarative way to specify each page.
@@ -84,7 +93,8 @@
              :recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build
-      state-utils/reset-current-project))
+      state-utils/reset-current-project
+      maybe-add-workflow-response-data))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state comms]
@@ -126,15 +136,6 @@
       (api/get-projects api-ch))
     (api/get-build-state api-ch))
   (set-page-title! "Build State"))
-
-(defn- workflow-id [state]
-  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
-    workflow-id))
-
-(defn- maybe-add-workflow-response-data [state]
-  (cond-> state
-    (= (workflow-id state) "mock-workflow-id")
-    (assoc-in state/workflow-path workflow/fake-progress-response)))
 
 (defn- add-crumbs [state {:keys [vcs_type project-name build-num org repo tab container-id action-id]}]
   (let [workflow-id (workflow-id state)
