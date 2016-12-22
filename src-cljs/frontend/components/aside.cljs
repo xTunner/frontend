@@ -447,8 +447,6 @@
 (defn aside-menu [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Menu")
-    om/IInitState (init-state [_] {:scrollbar-width 0})
-    om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
     om/IRender
     (render [_]
       (html
@@ -457,7 +455,7 @@
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
         (om/build account-settings-menu app)
-        (om/build branch-activity-list app {:opts {:scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
+        (om/build branch-activity-list app)]))))
 
 (defn- aside-nav-clicked
   [owner event-name]
