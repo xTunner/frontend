@@ -256,7 +256,7 @@
     (render [_]
       (let [subpage (-> app :navigation-data :subpage)]
         (html
-         [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
+         [:div.aside-user
           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
            (common/ico :fail-light)]
           [:div.aside-user-options
@@ -298,13 +298,13 @@
     (render [_]
       (let [subpage (-> app :navigation-data :subpage)]
         (html
-          [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
-           [:header
-            [:h4 "Account Settings"]
-            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-             (common/ico :fail-light)]]
-           [:div.aside-user-options
-            (expand-menu-items (account-settings-nav-items) subpage)]])))))
+         [:div.aside-user
+          [:header
+           [:h4 "Account Settings"]
+           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+            (common/ico :fail-light)]]
+          [:div.aside-user-options
+           (expand-menu-items (account-settings-nav-items) subpage)]])))))
 
 (defn admin-settings-nav-items []
   (filter
@@ -326,13 +326,13 @@
     (render [_]
       (let [subpage (-> app :navigation-data :subpage)]
         (html
-          [:div.aside-user {:class (when (= :admin-settings (:navigation-point app)) "open")}
-           [:header
-            [:h4 "Admin Settings"]
-            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-             (common/ico :fail-light)]]
-           [:div.aside-user-options
-            (expand-menu-items (admin-settings-nav-items) subpage)]])))))
+         [:div.aside-user
+          [:header
+           [:h4 "Admin Settings"]
+           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+            (common/ico :fail-light)]]
+          [:div.aside-user-options
+           (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
 (defn redirect-org-settings-subpage
   "Piggiebacked plans can't go to :containers, :organizations, :billing, or :cancel.
@@ -363,7 +363,7 @@
             subpage (redirect-org-settings-subpage (-> app :navigation-data :subpage) plan (:name org-data) (:vcs_type org-data))
             items (org-settings-nav-items plan org-data)]
         (html
-         [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
+         [:div.aside-user
           [:header.aside-item.aside-heading "Organization Settings"
            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
             (common/ico :fail-light)]]
@@ -394,7 +394,7 @@
                                      (partial project-model/personal-recent-project? identities)
                                      identity)]
         (html
-         [:div.aside-activity.open
+         [:div.aside-activity
           [:header
            [:select {:class "toggle-sorting"
                      :name "toggle-sorting"
@@ -593,8 +593,9 @@
   (html
    [:aside.app-aside
     [:nav.aside-left-menu
-     (om/build project-settings-menu app)
-     (om/build org-settings-menu app)
-     (om/build admin-settings-menu app)
-     (om/build account-settings-menu app)
-     (om/build branch-activity-list app)]]))
+     (case (:navigation-point app)
+       :project-settings (om/build project-settings-menu app)
+       :org-settings (om/build org-settings-menu app)
+       :admin-settings (om/build admin-settings-menu app)
+       :account (om/build account-settings-menu app)
+       (om/build branch-activity-list app))]]))
