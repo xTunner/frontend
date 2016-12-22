@@ -136,9 +136,13 @@
             builds-per-page (:builds-per-page data)
             current-user (:current-user data)]
         (html
-         (cond (or (nil? builds)
-                   (nil? projects))
-               [:div.empty-placeholder (spinner)]
+          ;; ensure the both projects and builds are loaded before rendering to prevent
+          ;; the build list and branch picker from resizing.
+          (cond (or (nil? builds)
+                    ;; if the user isn't logged in, but is viewing an oss build,
+                    ;; then we will not load any projects.
+                    (and current-user (nil? projects)))
+                [:div.empty-placeholder (spinner)]
 
                (and (empty? builds)
                     projects
