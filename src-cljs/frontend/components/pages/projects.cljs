@@ -181,7 +181,6 @@
        {:app (:legacy/state (om-next/props this))
         :crumbs [{:type :projects}]
         :header-actions (add-project-button {:empty-state? false})
-        :show-aside-menu? false
         :main-content
         (element :main-content
           (let [current-user (:app/current-user (om-next/props this))

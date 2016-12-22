@@ -1,6 +1,6 @@
 (ns frontend.components.app.legacy
-  (:require [frontend.components.account :as account]
-            [frontend.components.admin :as admin]
+  (:require [frontend.components.admin :as admin]
+            [frontend.components.aside :as aside]
             [frontend.components.dashboard :as dashboard]
             [frontend.components.enterprise-landing :as enterprise-landing]
             [frontend.components.errors :as errors]
@@ -14,10 +14,10 @@
             [frontend.components.pages.team :as team]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
+            [frontend.state :as state]
             [frontend.utils.legacy :refer [build-legacy]]
             [om.core :as om :include-macros true]
-            [om.next :as om-next :refer-macros [defui]]
-            [frontend.state :as state]))
+            [om.next :as om-next :refer-macros [defui]]))
 
 (defn- templated
   "Compatibility shim during transition to Component-Oriented pages. Takes an
@@ -32,33 +32,39 @@
       om/IRender
       (render [_]
         (main-template/template
-         {:app app
-          :main-content (om/build old-world-dominant-component-f app)
-          ;; Use some rather complex logic to decide whether to show
-          ;; the aside menu. This logic reproduces logic which used to
-          ;; be in the navigation handler: each handler would
-          ;; set :show-aside-menu? as true or false in the state.
-          ;; Instead, each page should pass this to the template. In a
-          ;; normal page function the value is normally a literal true
-          ;; or false, but this shim is designed to give the correct
-          ;; answer for any un-migrated navigation point.
-          :show-aside-menu? (let [nav-point (:navigation-point app)
-                                  projects (get-in app state/projects-path)
-                                  builds (get-in app state/recent-builds-path)]
-                              (cond
-                                (and (= :dashboard (:navigation-point app))
-                                     (or (nil? builds)
-                                         (nil? projects)
-                                         (empty? projects)))
-                                false
+         (let [nav-point (:navigation-point app)
+               projects (get-in app state/projects-path)
+               builds (get-in app state/recent-builds-path)
+               ;; Use some rather complex logic to decide whether to show
+               ;; the aside menu. This logic reproduces logic which used to
+               ;; be in the navigation handler: each handler would
+               ;; set :show-aside-menu? as true or false in the state.
+               ;; Instead, each page should pass this to the template. In a
+               ;; normal page function the value is normally a literal true
+               ;; or false, but this shim is designed to give the correct
+               ;; answer for any un-migrated navigation point.
+               show-aside-menu?
+               (cond
+                 (and (= :dashboard (:navigation-point app))
+                      (or (nil? builds)
+                          (nil? projects)
+                          (empty? projects)))
+                 false
 
-                                :else
-                                (not (#{:build
-                                        :add-projects
-                                        :build-insights
-                                        :project-insights
-                                        :team}
-                                      nav-point))))})))))
+                 :else
+                 (not (#{:build
+                         :add-projects
+                         :build-insights
+                         :project-insights
+                         :team}
+                       nav-point)))]
+           {:app app
+            :main-content (om/build old-world-dominant-component-f app)
+            :sidebar (when show-aside-menu?
+                       (case (:navigation-point app)
+                         :org-settings (om/build aside/org-settings-menu app)
+                         :admin-settings (om/build aside/admin-settings-menu app)
+                         (om/build aside/branch-activity-list app)))}))))))
 
 (def nav-point->page
   (merge

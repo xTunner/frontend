@@ -1,5 +1,6 @@
 (ns frontend.components.pages.project-settings
-  (:require [frontend.components.project-settings :as project-settings]
+  (:require [frontend.components.aside :as aside]
+            [frontend.components.project-settings :as project-settings]
             [frontend.components.templates.main :as main-template]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -12,7 +13,7 @@
     (render [_]
       (main-template/template
        {:app app
-        :show-aside-menu? true
+        :sidebar (om/build aside/project-settings-menu app)
         :main-content (om/build project-settings/project-settings app)
         :header-actions (let [project (get-in app state/project-path)
                               project-name (:reponame project)

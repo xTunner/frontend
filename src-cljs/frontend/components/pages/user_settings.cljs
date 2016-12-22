@@ -2,6 +2,7 @@
   (:require [frontend.analytics :as analytics]
             [frontend.api :as api]
             [frontend.components.account :as old-components]
+            [frontend.components.aside :as aside]
             [frontend.components.common :as common]
             [frontend.components.templates.main :as main-template]
             [frontend.state :as state]
@@ -53,7 +54,7 @@
         (main-template/template
          {:app legacy-state
           :crumbs [{:type :account}]
-          :show-aside-menu? true
+          :sidebar (om/build aside/account-settings-menu legacy-state)
           :main-content
           (element :main-content
             (html
