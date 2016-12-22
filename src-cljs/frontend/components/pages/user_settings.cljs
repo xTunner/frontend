@@ -45,7 +45,8 @@
   (render [this]
     (component
       (let [legacy-state (:legacy/state (om-next/props this))
-            subpage-com (case (:app/subpage-route (om-next/props this))
+            subpage (:app/subpage-route (om-next/props this))
+            subpage-com (case subpage
                           :notifications old-components/notifications
                           :heroku old-components/heroku-key
                           :api old-components/api-tokens
@@ -54,7 +55,7 @@
         (main-template/template
          {:app legacy-state
           :crumbs [{:type :account}]
-          :sidebar (om/build aside/account-settings-menu legacy-state)
+          :sidebar (aside/account-settings-menu subpage)
           :main-content
           (element :main-content
             (html

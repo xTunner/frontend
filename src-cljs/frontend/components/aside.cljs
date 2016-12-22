@@ -285,19 +285,15 @@
      (when-not (config/enterprise?)
        {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
 
-(defn account-settings-menu [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [subpage (-> app :navigation-data :subpage)]
-        (html
-         [:div.aside-user
-          [:header
-           [:h4 "Account Settings"]
-           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-            (common/ico :fail-light)]]
-          [:div.aside-user-options
-           (expand-menu-items (account-settings-nav-items) subpage)]])))))
+(defn account-settings-menu [subpage]
+  (html
+   [:div.aside-user
+    [:header
+     [:h4 "Account Settings"]
+     [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+      (common/ico :fail-light)]]
+    [:div.aside-user-options
+     (expand-menu-items (account-settings-nav-items) subpage)]]))
 
 (defn admin-settings-nav-items []
   (filter
