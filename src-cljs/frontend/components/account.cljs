@@ -25,10 +25,6 @@
   (:require-macros
    [frontend.utils :refer [component defrender element html]]))
 
-(defn active-class-if-active [current-subpage subpage-link]
-  (if (= current-subpage subpage-link)
-    {:class "active"}))
-
 (defn handle-email-notification-change [owner pref]
   (raise! owner [:preferences-updated {:basic_email_prefs pref}]))
 
