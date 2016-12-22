@@ -37,9 +37,14 @@
           :sidebar (case (:navigation-point app)
                      :org-settings (om/build aside/org-settings-menu app)
                      :admin-settings (om/build aside/admin-settings-menu app)
-                     :dashboard (when (and (get-in app state/recent-builds-path)
+                     ;; The dashboard doesn't show a sidebar when you're not
+                     ;; logged in (OSS), when the projects or builds haven't
+                     ;; loaded yet, or when you're not yet following any
+                     ;; projects.
+                     :dashboard (when (and (get-in app state/user-path)
+                                           (get-in app state/recent-builds-path)
                                            (seq (get-in app state/projects-path)))
-                                    (om/build aside/branch-activity-list app))
+                                  (om/build aside/branch-activity-list app))
                      nil)})))))
 
 (def nav-point->page

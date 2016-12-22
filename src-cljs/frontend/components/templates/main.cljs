@@ -22,7 +22,6 @@
   [{:keys [app main-content crumbs header-actions sidebar]}]
   (html
    (let [outer? (contains? #{:landing :error} (:navigation-point app))
-         logged-in? (get-in app state/user-path)
          ;; simple optimzation for real-time updates when the build is running
          app-without-container-data (dissoc-in app state/container-data-path)]
      ;; Outer gets just a plain div here.
@@ -32,7 +31,7 @@
                                :actions header-actions})
 
       [:div.app-dominant
-       (when (and (not outer?) logged-in? sidebar)
+       (when sidebar
          [:aside.app-aside
           [:nav.aside-left-menu
            sidebar]])
