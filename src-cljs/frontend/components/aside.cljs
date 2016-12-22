@@ -378,7 +378,7 @@
         branch (:current-branch project)]
     (utils/md5 (str project-id branch))))
 
-(defn branch-activity-list [app owner opts]
+(defn branch-activity-list [app owner]
   (reify
     om/IRender
     (render [_]
@@ -387,9 +387,11 @@
             sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path false)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
+            user (get-in app state/user-path)
+            identities (:identities user)
             recent-projects-filter (if (and sort-branches-by-recency?
                                             (not show-all-branches?))
-                                     (partial project-model/personal-recent-project? (:identities opts))
+                                     (partial project-model/personal-recent-project? identities)
                                      identity)]
         (html
          [:div.aside-activity.open
@@ -430,7 +432,7 @@
                                       (take 100))
                        :show-all-branches? show-all-branches?
                        :navigation-data (:navigation-data app)}
-                      {:opts {:identities (:identities opts)
+                      {:opts {:identities identities
                               :show-project? true}})
             [:ul.projects
              (for [project (sort project-model/sidebar-sort projects)]
@@ -440,9 +442,9 @@
                           :expanded-repos expanded-repos
                           :navigation-data (:navigation-data app)}
                          {:react-key (project-model/id project)
-                          :opts {:identities (:identities opts)}}))])])))))
+                          :opts {:identities identities}}))])])))))
 
-(defn aside-menu [app owner opts]
+(defn aside-menu [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Menu")
     om/IInitState (init-state [_] {:scrollbar-width 0})
@@ -455,8 +457,7 @@
         (om/build org-settings-menu app)
         (om/build admin-settings-menu app)
         (om/build account-settings-menu app)
-        (om/build branch-activity-list app {:opts {:identities (:identities opts)
-                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
+        (om/build branch-activity-list app {:opts {:scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
 
 (defn- aside-nav-clicked
   [owner event-name]
@@ -608,8 +609,6 @@
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
-      (let [user (get-in app state/user-path)
-            identities (:identities user)]
-        (html
-         [:aside.app-aside
-          (om/build aside-menu app {:opts {:identities identities}})])))))
+      (html
+       [:aside.app-aside
+        (om/build aside-menu app)]))))
