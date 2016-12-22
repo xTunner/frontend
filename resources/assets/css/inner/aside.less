@@ -416,7 +416,6 @@
   .flex(0 1 @tile);
   .flexy(center, center, column);
 
-  background: transparent;
   white-space: nowrap;
   transition: (@aside-transition-speed / 2) ease-in-out;
   min-height: 1.5em;
@@ -426,8 +425,7 @@
     transition-duration: 0;
   }
 
-  &.active,
-  &.open {
+  &.active {
     background: @grayLightest;
     transition-duration: 0;
   }
