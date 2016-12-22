@@ -2,11 +2,18 @@
   "Provides a template for the root of a normal page."
   (:require [frontend.components.aside :as aside]
             [frontend.components.header :as header]
-            [frontend.config :as config]
             [frontend.state :as state]
             [frontend.utils.seq :refer [dissoc-in]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
+
+(defn aside [app]
+  (case (:navigation-point app)
+    :project-settings (om/build aside/project-settings-menu app)
+    :org-settings (om/build aside/org-settings-menu app)
+    :admin-settings (om/build aside/admin-settings-menu app)
+    :account (om/build aside/account-settings-menu app)
+    (om/build aside/branch-activity-list app)))
 
 (defn template
   "The template for building a page in the app.
@@ -33,7 +40,9 @@
 
       [:div.app-dominant
        (when (and (not outer?) logged-in? show-aside-menu?)
-         (aside/aside (dissoc app-without-container-data :current-build-data)))
+         [:aside.app-aside
+          [:nav.aside-left-menu
+           (aside app)]])
 
 
        [:div.main-body

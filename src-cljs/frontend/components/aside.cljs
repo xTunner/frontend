@@ -1,29 +1,22 @@
 (ns frontend.components.aside
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :refer [lower-case]]
+  (:require [clojure.string :refer [lower-case]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.license :as license]
-            [frontend.components.shared :as shared]
             [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
-            [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
+            [frontend.models.project :as project-model]
             [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.seq :refer [select-in]]
-            [goog.style]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [frontend.utils.launchdarkly :as ld])
-  (:require-macros [frontend.utils :refer [html inspect]]))
+            [frontend.utils.launchdarkly :as ld]
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -587,15 +580,3 @@
                                             :on-click #(aside-nav-clicked owner :logout-icon-clicked)}
               [:i.material-icons "power_settings_new"]
               [:div.nav-label "Log Out"]])])))))
-
-
-(defn aside [app]
-  (html
-   [:aside.app-aside
-    [:nav.aside-left-menu
-     (case (:navigation-point app)
-       :project-settings (om/build project-settings-menu app)
-       :org-settings (om/build org-settings-menu app)
-       :admin-settings (om/build admin-settings-menu app)
-       :account (om/build account-settings-menu app)
-       (om/build branch-activity-list app))]]))
