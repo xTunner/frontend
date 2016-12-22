@@ -32,39 +32,15 @@
       om/IRender
       (render [_]
         (main-template/template
-         (let [nav-point (:navigation-point app)
-               projects (get-in app state/projects-path)
-               builds (get-in app state/recent-builds-path)
-               ;; Use some rather complex logic to decide whether to show
-               ;; the aside menu. This logic reproduces logic which used to
-               ;; be in the navigation handler: each handler would
-               ;; set :show-aside-menu? as true or false in the state.
-               ;; Instead, each page should pass this to the template. In a
-               ;; normal page function the value is normally a literal true
-               ;; or false, but this shim is designed to give the correct
-               ;; answer for any un-migrated navigation point.
-               show-aside-menu?
-               (cond
-                 (and (= :dashboard (:navigation-point app))
-                      (or (nil? builds)
-                          (nil? projects)
-                          (empty? projects)))
-                 false
-
-                 :else
-                 (not (#{:build
-                         :add-projects
-                         :build-insights
-                         :project-insights
-                         :team}
-                       nav-point)))]
-           {:app app
-            :main-content (om/build old-world-dominant-component-f app)
-            :sidebar (when show-aside-menu?
-                       (case (:navigation-point app)
-                         :org-settings (om/build aside/org-settings-menu app)
-                         :admin-settings (om/build aside/admin-settings-menu app)
-                         (om/build aside/branch-activity-list app)))}))))))
+         {:app app
+          :main-content (om/build old-world-dominant-component-f app)
+          :sidebar (case (:navigation-point app)
+                     :org-settings (om/build aside/org-settings-menu app)
+                     :admin-settings (om/build aside/admin-settings-menu app)
+                     :dashboard (when (and (get-in app state/recent-builds-path)
+                                           (seq (get-in app state/projects-path)))
+                                    (om/build aside/branch-activity-list app))
+                     nil)})))))
 
 (def nav-point->page
   (merge
