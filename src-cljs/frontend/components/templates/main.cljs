@@ -32,9 +32,8 @@
                                :actions header-actions})
 
       [:div.app-dominant
-       (when (and (not outer?) logged-in?)
-         (om/build aside/aside {:app (dissoc app-without-container-data :current-build-data)
-                                :show-aside-menu? show-aside-menu?}))
+       (when (and (not outer?) logged-in? show-aside-menu?)
+         (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
 
 
        [:div.main-body

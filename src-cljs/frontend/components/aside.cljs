@@ -603,17 +603,13 @@
               [:div.nav-label "Log Out"]])])))))
 
 
-(defn aside [{:keys [app show-aside-menu?]} owner]
+(defn aside [app owner]
   (reify
     om/IDisplayName (display-name [_] "Aside")
     om/IRender
     (render [_]
       (let [user (get-in app state/user-path)
-            identities (:identities user)
-            avatar-url (gh-utils/make-avatar-url user)
-            license (get-in app state/license-path)]
+            identities (:identities user)]
         (html
-         [:aside.app-aside {:class (cond-> []
-                                     (not show-aside-menu?) (conj "menuless"))}
-          (when show-aside-menu?
-            (om/build aside-menu app {:opts {:identities identities}}))])))))
+         [:aside.app-aside
+          (om/build aside-menu app {:opts {:identities identities}})])))))
