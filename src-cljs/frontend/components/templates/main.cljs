@@ -33,7 +33,7 @@
 
       [:div.app-dominant
        (when (and (not outer?) logged-in? show-aside-menu?)
-         (om/build aside/aside (dissoc app-without-container-data :current-build-data)))
+         (aside/aside (dissoc app-without-container-data :current-build-data)))
 
 
        [:div.main-body

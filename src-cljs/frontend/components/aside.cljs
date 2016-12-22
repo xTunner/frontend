@@ -444,19 +444,6 @@
                          {:react-key (project-model/id project)
                           :opts {:identities identities}}))])])))))
 
-(defn aside-menu [app owner]
-  (reify
-    om/IDisplayName (display-name [_] "Aside Menu")
-    om/IRender
-    (render [_]
-      (html
-       [:nav.aside-left-menu
-        (om/build project-settings-menu app)
-        (om/build org-settings-menu app)
-        (om/build admin-settings-menu app)
-        (om/build account-settings-menu app)
-        (om/build branch-activity-list app)]))))
-
 (defn- aside-nav-clicked
   [owner event-name]
   ((om/get-shared owner :track-event) {:event-type event-name
@@ -602,11 +589,12 @@
               [:div.nav-label "Log Out"]])])))))
 
 
-(defn aside [app owner]
-  (reify
-    om/IDisplayName (display-name [_] "Aside")
-    om/IRender
-    (render [_]
-      (html
-       [:aside.app-aside
-        (om/build aside-menu app)]))))
+(defn aside [app]
+  (html
+   [:aside.app-aside
+    [:nav.aside-left-menu
+     (om/build project-settings-menu app)
+     (om/build org-settings-menu app)
+     (om/build admin-settings-menu app)
+     (om/build account-settings-menu app)
+     (om/build branch-activity-list app)]]))
