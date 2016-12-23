@@ -5,14 +5,39 @@
             [frontend.components.aside :as aside]
             [frontend.components.common :as common]
             [frontend.components.templates.main :as main-template]
+            [frontend.config :as config]
+            [frontend.models.user :as user]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer [set-page-title!]]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.seq :refer [select-in]]
-            [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
+
+(defn nav-items []
+  (remove
+    nil?
+    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
+     (when-not (config/enterprise?)
+       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans})
+     (when-not (config/enterprise?)
+       {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
+
+(defn menu [subpage]
+  (html
+   ;; TODO: Now that this is rendered from here, the settings menus should use a
+   ;; styled component. See CIRCLE-2545.
+   [:div.aside-user
+    [:header
+     [:h4 "Account Settings"]
+     [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+      (common/ico :fail-light)]]
+    [:div.aside-user-options
+     (aside/expand-menu-items (nav-items) subpage)]]))
 
 (defui ^:once Page
   static om-next/IQuery
@@ -55,7 +80,7 @@
         (main-template/template
          {:app legacy-state
           :crumbs [{:type :account}]
-          :sidebar (aside/account-settings-menu subpage)
+          :sidebar (menu subpage)
           :main-content
           (element :main-content
             (html

@@ -274,27 +274,6 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
-(defn account-settings-nav-items []
-  (remove
-    nil?
-    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
-     (when-not (config/enterprise?)
-       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans})
-     (when-not (config/enterprise?)
-       {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
-
-(defn account-settings-menu [subpage]
-  (html
-   [:div.aside-user
-    [:header
-     [:h4 "Account Settings"]
-     [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-      (common/ico :fail-light)]]
-    [:div.aside-user-options
-     (expand-menu-items (account-settings-nav-items) subpage)]]))
-
 (defn admin-settings-nav-items []
   (filter
     identity
