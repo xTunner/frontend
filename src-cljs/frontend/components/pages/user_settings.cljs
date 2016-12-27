@@ -13,13 +13,14 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.seq :refer [select-in]]
-            [om.next :as om-next :refer-macros [defui]])
+            [om.next :as om-next :refer-macros [defui ui]])
   (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn nav-items []
   (remove
     nil?
-    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
+    [{:type :subpage :href (routes/v1-account) :title "Account Integrations" :subpage :integrations}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notifications" :subpage :notifications}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
      (when-not (config/enterprise?)
@@ -37,6 +38,61 @@
     [:div.aside-user-options
      (aside/expand-menu-items (nav-items) subpage)]]))
 
+;; Stub implementation of the Integrations page.
+(defui Integrations
+  static om-next/IQuery
+  (query [this]
+    [{:app/current-user [:user/bitbucket-authorized?]}])
+  Object
+  (render [this]
+    (html
+     [:div
+      [:pre [:code (pr-str (om-next/props this))]]
+      "Integrations!"])))
+
+(defn component-class-for-old-subpage
+  "Takes a legacy (old-Om) component function and returns an Om Next class which
+  renders it, querying for the `:legacy/state`. This lets us migrate the
+  subpages to Om Next one at a time."
+  [old-subpage]
+  (ui
+    static om-next/IQuery
+    (query [this]
+      '[{:legacy/state [*]}])
+    Object
+    (render [this]
+      (build-legacy old-subpage
+                    (select-in (:legacy/state (om-next/props this))
+                               [state/general-message-path
+                                state/user-path
+                                state/projects-path
+                                state/web-notifications-enabled-path])))))
+(def subpage-routes
+  {:integrations Integrations
+   :notifications (component-class-for-old-subpage old-components/notifications)
+   :heroku (component-class-for-old-subpage old-components/heroku-key)
+   :api (component-class-for-old-subpage old-components/api-tokens)
+   :plans (component-class-for-old-subpage old-components/plans)
+   :beta (component-class-for-old-subpage old-components/beta-program)})
+
+;; In the model of Compassus.
+(def subpage-route->query
+  (into {}
+        (map (fn [[subpage-route class]]
+               (when (om-next/iquery? class)
+                 [subpage-route (om-next/get-query class)])))
+        subpage-routes))
+
+;; In the model of Compassus.
+(def subpage-route->factory
+  (zipmap (keys subpage-routes)
+          (map om-next/factory (vals subpage-routes))))
+
+(def
+  ^{:doc "When the subpage-route is nil, pretend it's this."}
+  default-subpage-route
+  :integrations)
+
 (defui ^:once Page
   static om-next/IQuery
   (query [this]
@@ -46,7 +102,10 @@
     ;; See https://circleci.atlassian.net/browse/CIRCLE-2412
     ['{:legacy/state [*]}
      {:app/current-user [:user/login]}
-     :app/subpage-route])
+     :app/subpage-route
+     {:app/subpage-route-data (assoc subpage-route->query
+                                     ;; Add the default route at nil.
+                                     nil (subpage-route->query default-subpage-route))}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
@@ -68,20 +127,14 @@
   (render [this]
     (component
       (let [legacy-state (:legacy/state (om-next/props this))
-            subpage (:app/subpage-route (om-next/props this) :notifications)
-            subpage-com (case subpage
-                          :notifications old-components/notifications
-                          :heroku old-components/heroku-key
-                          :api old-components/api-tokens
-                          :plans old-components/plans
-                          :beta old-components/beta-program)]
+            subpage-route (:app/subpage-route (om-next/props this) default-subpage-route)]
         (main-template/template
          {:app legacy-state
           :crumbs [{:type :account}]
-          :sidebar (menu subpage)
+          :sidebar (menu subpage-route)
           :main-content
           (element :main-content
             (html
              [:div
               (build-legacy common/flashes (get-in legacy-state state/error-message-path))
-              (build-legacy subpage-com (select-in legacy-state [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled-path]))]))})))))
+              ((get subpage-route->factory subpage-route) (:app/subpage-route-data (om-next/props this)))]))})))))

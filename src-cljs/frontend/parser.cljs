@@ -98,6 +98,24 @@
   [env key params]
   nil)
 
+;; :app/subpage-route-data expects to have a union query (a map), where each key
+;; is a subpage route and each value is the query for that route's subpage.
+;;
+;; :app/subpage-route-data will read the query for whichever subpage route is
+;; current, by calling the parser recursively. (This is exactly how Compassus works.)
+(defmethod read-local :app/subpage-route-data
+  [{:keys [state query parser] :as env} key params]
+  (let [subpage-route (get @state :app/subpage-route)
+        subpage-query (get query subpage-route)]
+    ;; Make the subpage's query against the parser.
+    (parser env subpage-query nil)))
+
+;; Subpage data can't read from the remote server yet.
+(defmethod read-remote :app/subpage-route-data
+  [env key params]
+  nil)
+
+
 ;; The keys in :app/route-data have idents for values. If we query through
 ;; them, we replace the key with the current ident value before passing it
 ;; on to the remote. That is, if the UI queries for
