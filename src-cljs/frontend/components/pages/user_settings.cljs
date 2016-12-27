@@ -4,6 +4,7 @@
             [frontend.components.account :as old-components]
             [frontend.components.aside :as aside]
             [frontend.components.common :as common]
+            [frontend.components.pages.user-settings.integrations :as integrations]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
             [frontend.models.user :as user]
@@ -38,17 +39,6 @@
     [:div.aside-user-options
      (aside/expand-menu-items (nav-items) subpage)]]))
 
-;; Stub implementation of the Integrations page.
-(defui Integrations
-  static om-next/IQuery
-  (query [this]
-    [{:app/current-user [:user/bitbucket-authorized?]}])
-  Object
-  (render [this]
-    (html
-     [:div
-      [:pre [:code (pr-str (om-next/props this))]]
-      "Integrations!"])))
 
 (defn component-class-for-old-subpage
   "Takes a legacy (old-Om) component function and returns an Om Next class which
@@ -68,7 +58,7 @@
                                 state/projects-path
                                 state/web-notifications-enabled-path])))))
 (def subpage-routes
-  {:integrations Integrations
+  {:integrations integrations/Subpage
    :notifications (component-class-for-old-subpage old-components/notifications)
    :heroku (component-class-for-old-subpage old-components/heroku-key)
    :api (component-class-for-old-subpage old-components/api-tokens)
