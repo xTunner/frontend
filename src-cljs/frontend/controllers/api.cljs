@@ -1147,6 +1147,35 @@
                                 (trim-recent-active-projects projects)))
                     state))))
 
+(defmethod api-event [:vcs-activity :failed]
+  [_ _ _ _ state]
+  (-> state
+      (assoc-in (state/vcs-recent-active-projects-path true :github) [])
+      (assoc-in (state/vcs-recent-active-projects-path false :github) [])))
+
+(defmethod post-api-event! [:vcs-activity :success]
+  [_ _ status {:keys [resp]} _ current-state]
+  (let [recent-active-projects (->> resp
+                                    (group-by repo-model/building-on-circle?)
+                                    ; in the case the vcs returns no projects, assoc empty list to remove the spinner
+                                    (merge {true [] false []}))
+        total-projects-count #(-> recent-active-projects
+                                  (get %)
+                                  (count))]
+    (analytics/track {:event-type :vcs-activity-fetched
+                      :current-state current-state
+                      :properties {:status status
+                                   :total-building-projects-count (total-projects-count true)
+                                   :total-not-building-projects-count (total-projects-count false)}})))
+
+(defmethod post-api-event! [:vcs-activity :failed]
+  [_ _ status {:keys [status-code resp]} _ current-state]
+  (analytics/track {:event-type :vcs-activity-fetched
+                    :current-state current-state
+                    :properties {:status status
+                                 :status-code status-code
+                                 :message (:message resp)}}))
+
 (defmethod post-api-event! [:follow-projects :success]
   [_ _ status {:keys [context]} previous-state current-state comms]
   (let [api-ch (:api comms)]
