@@ -70,7 +70,7 @@
   (render [this]
     (component
       (let [legacy-state (:legacy/state (om-next/props this))
-            subpage (:app/subpage-route (om-next/props this))
+            subpage (:app/subpage-route (om-next/props this) :notifications)
             subpage-com (case subpage
                           :notifications old-components/notifications
                           :heroku old-components/heroku-key

@@ -246,7 +246,7 @@
   (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
     (open-to-inner! app nav-ch :project-insights {:org org :repo repo :branch branch :vcs_type (vcs/->lengthen-vcs short-vcs-type)}))
   (defroute v1-account "/account" []
-    (open! app :route/account {:subpage :notifications}))
+    (open! app :route/account))
   (defroute v1-account-subpage "/account/:subpage" [subpage]
     (open! app :route/account {:subpage (keyword subpage)}))
   (defroute v1-organization-projects "/projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
