@@ -33,9 +33,7 @@
    ;; styled component. See CIRCLE-2545.
    [:div.aside-user
     [:header
-     [:h4 "Account Settings"]
-     [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-      (common/ico :fail-light)]]
+     [:h4 "Account Settings"]]
     [:div.aside-user-options
      (aside/expand-menu-items (nav-items) subpage)]]))
 
