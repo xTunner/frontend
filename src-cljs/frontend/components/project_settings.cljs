@@ -1914,15 +1914,15 @@
     (render [_]
       (om/build table/table
                 {:rows rows
-                 :key-fn :uuid
+                 :key-fn :id
                  :columns [{:header "Description"
                             :cell-fn :description}
                            {:header "Filename"
                             :type :shrink
                             :cell-fn :filename}
-                           {:header "UUID"
+                           {:header "ID"
                             :type :shrink
-                            :cell-fn :uuid}
+                            :cell-fn :id}
                            {:header "Uploaded"
                             :type :shrink
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
@@ -1947,15 +1947,15 @@
     (render [_]
       (om/build table/table
                 {:rows rows
-                 :key-fn :id
+                 :key-fn :uuid
                  :columns [{:header "Description"
                             :cell-fn :description}
                            {:header "Filename"
                             :type :shrink
                             :cell-fn :filename}
-                           {:header "ID"
+                           {:header "UUID"
                             :type :shrink
-                            :cell-fn :id}
+                            :cell-fn :uuid}
                            {:header "Uploaded"
                             :type :shrink
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
