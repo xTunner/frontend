@@ -352,18 +352,11 @@
   (defroute v1-signup "/signup" {:as params}
     (open-to-outer! nav-ch :signup params)))
 
-(defn define-spec-routes! [app nav-ch]
-  (defroute trailing-slash #"(.+)/$" [path]
-    (put! nav-ch [:navigate! {:path path :replace-token? true}]))
-  (defroute v1-not-found "*" []
-    (open-to-inner! app nav-ch :error {:status 404})))
-
 (defn define-routes! [current-user app nav-ch]
   (let [authenticated? (boolean current-user)]
     (define-user-routes! app nav-ch authenticated?)
     (when (:admin current-user)
-      (define-admin-routes! app nav-ch))
-    (define-spec-routes! app nav-ch)))
+      (define-admin-routes! app nav-ch))))
 
 (defn parse-uri [uri]
   (let [[uri-path fragment] (str/split (sec/uri-without-prefix uri) "#")

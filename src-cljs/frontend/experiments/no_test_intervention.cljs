@@ -3,7 +3,6 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.modal :as modal]
             [frontend.models.feature :as feature]
-            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -24,9 +23,9 @@
        (-> build :build_num (<= 3))))
 
 (defn- setup-docs-link-props [track-fn]
-  (open-ext {:href "https://circleci.com/docs/manually"
-             :target "_blank"
-             :on-click #(track-setup-docs-clicked track-fn)}))
+  {:href "/docs/manually"
+   :target "_blank"
+   :on-click #(track-setup-docs-clicked track-fn)})
 
 (defn setup-docs-banner [_ owner]
   (let [track-fn (om/get-shared owner :track-event)]
