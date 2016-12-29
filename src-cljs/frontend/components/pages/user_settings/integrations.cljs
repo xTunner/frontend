@@ -1,16 +1,31 @@
 (ns frontend.components.pages.user-settings.integrations
-  (:require [frontend.models.user :as user]
+  (:require [frontend.components.pieces.card :as card]
+            [frontend.models.user :as user]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [html]]))
 
-;; Stub implementation of the Integrations page.
 (defui Subpage
   static om-next/IQuery
   (query [this]
-    [{:app/current-user [:user/bitbucket-authorized?]}])
+    [{:app/current-user [{:user/identities [:identity/type :identity/login]}]}])
   Object
   (render [this]
-    (html
-     [:div
-      [:pre [:code (pr-str (om-next/props this))]]
-      "Integrations!"])))
+    (let [{[github-identity] "github"
+           [bitbucket-identity] "bitbucket"}
+          (group-by :identity/type
+                    (-> (om-next/props this) :app/current-user :user/identities))]
+      (card/collection
+       [(card/titled {:title "GitHub"}
+                     (html
+                      [:div
+                       [:p "Build and deploy your GitHub repositories."]
+                       (if github-identity
+                         [:p "Connected to " (:identity/login github-identity) "."]
+                         [:p "Not connected."])]))
+        (card/titled {:title "Bitbucket"}
+                     (html
+                      [:div
+                       [:p "Build and deploy your Bitbucket repositories."]
+                       (if bitbucket-identity
+                         [:p "Connected to " (:identity/login bitbucket-identity) "."]
+                         [:p "Not connected."])]))]))))
