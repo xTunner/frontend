@@ -127,12 +127,11 @@
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (events/listen
    top-level-node "click"
-   #(let [-target (.. % -target)
-          {:keys [attr-href attr-target host-name]} (closest-a-tag-and-populate-properties -target)
+   #(let [{:keys [attr-href attr-target host-name]} (closest-a-tag-and-populate-properties (.-target %))
           new-token (when (seq attr-href) (subs attr-href 1))]
       (when (and (= (-> js/window .-location .-hostname)
                     host-name)
-                 (sec/locate-route new-token) ; Returns nil when no route is found in the app.
+                 (sec/locate-route attr-href) ; Returns nil when no route is found in the app.
                  (not (or (new-window-click? %)
                           (= attr-target "_blank"))))
         (.preventDefault %)
