@@ -384,13 +384,13 @@
                        "Help us provide better insight around your tests and failures. "
                        [:a (open-ext {:href junit-link
                                       :class "junit-link"
-                                      :on-mouse-up track-junit}) 
-                           "Set up your test runner to output in JUnit-style XML"] 
+                                      :on-mouse-up track-junit})
+                           "Set up your test runner to output in JUnit-style XML"]
                        ", so we can:"
                        [:ul
                          [:li "Show a summary of all test failures across all containers"]
                          [:li "Identify your slowest tests"]
-                         [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) 
+                         [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"})
                                   "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
@@ -987,7 +987,6 @@
                                                             :properties {:org (vcs-url/org-name (:vcs_url build))
                                                                          :repo (:reponame build)
                                                                          :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
-        [:i.material-icons "adjust"]
         (:name job)
         " #"
         (:build_num build)])
@@ -1026,39 +1025,43 @@
         (html
          [:div.workflow-head
           [:div.details.job
-           [:div.heading
-            (str job-name (gstring/unescapeEntities " &mdash; ")  build_num)
-            (builds-table/build-status-badge build)]
-           [:div.card
-            [:div.line
-             [:div.head "Trigger"] [:div.value job-trigger]]
-            [:div.line
-             [:div.head "Start Time"] [:div.value
-                                       [:div.metadata-item.start-time
-                                        {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
-                                        [:i.material-icons "today"]
-                                        (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                                        " ago"]]]
-            [:div.line
-             [:div.head "Duration"] [:div.value
-                                     [:div.metadata-item.duration
-                                      {:title (str "Duration: " (build-model/duration build))}
-                                      [:i.material-icons "timer"]
-                                      (om/build common/updating-duration {:start (:start_time build)
-                                                                          :stop (:stop_time build)})]]]]]
+           (card/titled {:title (str "Job: " job-name (gstring/unescapeEntities " ") build_num)
+                         :action (builds-table/build-status-badge build)}
+                        [:div
+                         [:div.line
+                          [:div.head "Trigger"]
+                          [:div.value job-trigger]]
+                         [:div.line
+                          [:div.head "Start Time"]
+                          [:div.value
+                           [:div.metadata-item.start-time
+                            {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
+                            [:i.material-icons "today"]
+                            (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
+                            " ago"]]]
+                         [:div.line
+                          [:div.head "Duration"]
+                          [:div.value
+                           [:div.metadata-item.duration
+                            {:title (str "Duration: " (build-model/duration build))}
+                            [:i.material-icons "timer"]
+                            (om/build common/updating-duration {:start (:start_time build)
+                                                                :stop (:stop_time build)})]]]])]
           [:div.details.workflow
-           [:div.heading
-            (str workflow-name (gstring/unescapeEntities " &mdash; ") workflow-id)
-            (om/build workflow-status-badge {:workflow workflow})]
-           [:div.card
-            [:div.line
-             [:div.head "Trigger"] [:div.value
-                              (om/build builds-table/pull-requests {:build (:data trigger-resource)})
-                              (om/build builds-table/commits {:build (:data trigger-resource)})]]
-            [:div.line
-             [:div.head "Previous Job"] [:div.value previous-link]]
-            [:div.line
-             [:div.head "Next Job"] [:div.value next-link]]]]])))))
+           (card/titled {:title (str "Workflow: " workflow-name (gstring/unescapeEntities " ") workflow-id)
+                         :action (om/build workflow-status-badge {:workflow workflow})}
+                        [:div
+                         [:div.line
+                          [:div.head "Trigger"]
+                          [:div.value.metadata-row
+                           (om/build builds-table/pull-requests {:build (:data trigger-resource)})
+                           (om/build builds-table/commits {:build (:data trigger-resource)})]]
+                         [:div.line
+                          [:div.head "Previous Job"]
+                          [:div.value previous-link]]
+                         [:div.line
+                          [:div.head "Next Job"]
+                          [:div.value next-link]]])]])))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
