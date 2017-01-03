@@ -1,20 +1,39 @@
 (ns frontend.components.pages.user-settings.integrations
-  (:require [frontend.components.pieces.card :as card]
+  (:require [frontend.analytics :as analytics]
+            [frontend.components.common :as common]
+            [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
             [frontend.models.user :as user]
+            [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.function-query :as fq :include-macros true]
+            [frontend.utils.github :as gh-utils]
             [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn- card
   {::fq/queries {:identity [:identity/login]}}
-  [name identity]
-  (card/titled {:title name}
-               (html
-                [:div
-                 [:p "Build and deploy your " name " repositories."]
-                 (if identity
-                   [:p "Connected to " (:identity/login identity) "."]
-                   [:p "Not connected."])])))
+  [c {:keys [name type icon-path auth-url identity]}]
+  (component
+    (card/titled {:title
+                  (element :icon
+                    (html
+                     [:img {:src icon-path
+                            :alt name}]))
+                  :action (when-not identity
+                            (button/link {:href auth-url
+                                          :on-click #(analytics/track! c {:event-type :authorize-vcs-clicked
+                                                                          :properties {:vcs-type type}})
+                                          :kind :primary
+                                          :size :medium}
+                                         "Connect"))}
+                 (element :body
+                   (html
+                    [:div
+                     [:p "Build and deploy your " name " repositories."]
+                     [:p.connection-status
+                      (if identity
+                        (list "Connected to " (:identity/login identity) ".")
+                        "Not connected.")]])))))
 
 (defui Subpage
   static om-next/IQuery
@@ -28,5 +47,13 @@
           (group-by :identity/type
                     (-> (om-next/props this) :app/current-user :user/identities))]
       (card/collection
-       [(card "GitHub" github-identity)
-        (card "Bitbucket" bitbucket-identity)]))))
+       [(card this {:name "GitHub"
+                    :type "github"
+                    :icon-path (common/icon-path "brand-github")
+                    :auth-url (gh-utils/auth-url)
+                    :identity github-identity})
+        (card this {:name "Bitbucket"
+                    :type "bitbucket"
+                    :icon-path (common/icon-path "brand-bitbucket")
+                    :auth-url (bitbucket/auth-url)
+                    :identity bitbucket-identity})]))))
