@@ -205,7 +205,8 @@
                    [:li
                     [:a.signup-link.btn.btn-success.navbar-btn.menu-item
                      {:href "/signup/"
-                      :on-click #((om/get-shared owner :track-event) {:event-type :signup-clicked})} "Sign Up"]])])]]]
+                      :on-click #((om/get-shared owner :track-event) {:event-type :signup-clicked})}
+                     "Sign Up"]])])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
                         :title "Mobile"}
