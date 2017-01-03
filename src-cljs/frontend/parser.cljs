@@ -24,7 +24,7 @@
 ;; Many of our keys have the same local reading behavior, and many of our keys
 ;; have the same remote reading behavior, but they're not always the same keys.
 ;; For our app, then, it makes sense to divide the read function into two
-;; multimethods, each with a default: read-local and read-remote.
+;; multimethods: read-local and read-remote.
 ;;
 ;; The values they return will become the values of the :value and :remote keys,
 ;; respectively, in the read function's result.
@@ -38,6 +38,13 @@
   (let [st @state]
     (om-next/db->tree query (get st key) st)))
 
+;; When adding a new key, be sure to add a read-remote implementation. Returning
+;; true will pass the entire query on to the remote send function. Returning
+;; false will send nothing to the remote. Returning a modified AST will send
+;; that modified query to the remote.
+(defmethod read-remote :default [env key params]
+  (throw (js/Error. (str "No remote behavior defined in the parser for " (pr-str key) "."))))
+
 
 (def
   ^{:private true
@@ -49,22 +56,20 @@
     :user/bitbucket-authorized?})
 
 
-;; :app/current-user works much like :default, but it's a bit of a special case,
-;; as some of its data is never fetched by the remote, and only exists in the
-;; initial app state, added from the page's renderContext. We exclude those keys
-;; here so we don't try to read them remotely.
+;; Some of :app/current-user's data is never fetched by the remote, and only
+;; exists in the initial app state, added from the page's renderContext. We
+;; exclude those keys here so we don't try to read them remotely.
 (defmethod read-remote :app/current-user
   [{:keys [ast] :as env} key params]
-  (-> ast
-      (assoc :query-root true)
-      ;; Don't pass renderContext keys on to the remote. They're
-      ;; local-only.
-      (update :children
-              (fn [children]
-                (into []
-                      (remove #(contains? render-context-keys (:key %)))
-                      children)))
-      recalculate-query))
+  (let [new-ast (update ast :children
+                        (fn [children]
+                          (into []
+                                (remove #(contains? render-context-keys (:key %)))
+                                children)))]
+    ;; Only include this key in the remote query if there are any children left.
+    (if (seq (:children new-ast))
+      (recalculate-query new-ast)
+      nil)))
 
 ;; :legacy/state reads the entire map under :legacy/state in the app state. It
 ;; does no db->tree massaging, because the legacy state lives in the om.core
@@ -119,7 +124,7 @@
                                               :dispatch-key (first ident)
                                               :query-root true))))))]
 
-    ;; Only include this in the remote query if there are any children.
+    ;; Only include this key in the remote query if there are any children left.
     (if (seq (:children new-ast))
       (recalculate-query new-ast)
       nil)))
