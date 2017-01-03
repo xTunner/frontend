@@ -16,7 +16,6 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])

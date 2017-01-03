@@ -16,7 +16,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils]
             [frontend.utils.github :refer [auth-url]]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -87,7 +86,7 @@
          [:ul.nav.navbar-nav
           (for [[point {:keys [path title]}] %]
             [:li.list-item (maybe-active nav-point point)
-             [:a.menu-item (open-ext {:href path}) title]])]]])
+             [:a.menu-item {:href path} title]])]]])
     nav-maps))
 
 (defn outer-header [app owner]
@@ -124,9 +123,9 @@
               (if logged-in?
                 [:a.mobile-nav {:href "/dashboard"} "Back to app"]
                 [:a.mobile-nav.signup
-                 (open-ext {:href (if (config/enterprise?)
-                                    (auth-url)
-                                    "/signup/")})
+                 {:href (if (config/enterprise?)
+                          (auth-url)
+                          "/signup/")}
                  "Sign up"])]
              [:div.navbar-container {:class hamburger-state}
               [:ul.nav.navbar-nav
@@ -140,41 +139,40 @@
                                                             :enterprise}
                                                           nav-point)
                                            "active")}
-                    [:a.menu-item (open-ext {:href "/features/"})
+                    [:a.menu-item {:href "/features/"}
                      "Product "
                      [:i.fa.fa-caret-down]]
                     [:ul.dropdown-menu
                      [:li {:role "presentation"}
-                      [:a.sub.menu-item (
-                                         merge
-                                          (maybe-active nav-point :features)
-                                         (open-ext {:role "menuitem"
-                                                    :tabIndex "-1"
-                                                    :href "/features/"}))
+                      [:a.sub.menu-item (merge
+                                         (maybe-active nav-point :features)
+                                         {:role "menuitem"
+                                          :tabIndex "-1"
+                                          :href "/features/"})
                        "Features"]]
                      [:li {:role "presentation"}
                       [:a.sub.menu-item (merge
                                           (maybe-active nav-point :mobile)
-                                          (open-ext {:role "menuitem"
-                                                     :tabIndex "-1"
-                                                     :href "/mobile/"}))
+                                          {:role "menuitem"
+                                           :tabIndex "-1"
+                                           :href "/mobile/"})
                        "Mobile"]]
                      [:li {:role "presentation"}
                       [:a.sub.menu-item (merge
                                           (maybe-active nav-point :integrations)
-                                          (open-ext {:role "menuitem"
-                                                     :tabIndex "-1"
-                                                     :href "/integrations/docker/"}))
+                                          {:role "menuitem"
+                                           :tabIndex "-1"
+                                           :href "/integrations/docker/"})
                        "Docker"]]
                      [:li {:role "presentation"}
                       [:a.sub.menu-item (merge
                                           (maybe-active nav-point :enterprise)
-                                          (open-ext {:role "menuitem"
-                                                     :tabIndex "-1"
-                                                     :href "/enterprise/"}))
+                                          {:role "menuitem"
+                                           :tabIndex "-1"
+                                           :href "/enterprise/"})
                        "Enterprise"]]]]
                    [:li (maybe-active nav-point :pricing)
-                    [:a.menu-item (open-ext {:href "/pricing/"}) "Pricing"]]))
+                    [:a.menu-item {:href "/pricing/"} "Pricing"]]))
                [:li (maybe-active nav-point :documentation)
                 [:a.menu-item {:href "https://circleci.com/docs/"}
                  (if (config/enterprise?)
@@ -192,7 +190,7 @@
                                                    :press}
                                                  nav-point)
                                   "active")}
-                    [:a.menu-item (open-ext {:href "/about/"}) "About Us"]]
+                    [:a.menu-item {:href "/about/"} "About Us"]]
                    [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))]
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right.back-to-app
@@ -205,8 +203,10 @@
                    "Log In"]]
                  (when (not (config/enterprise?))
                    [:li
-                    [:a.signup-link.btn.btn-success.navbar-btn.menu-item (open-ext {:href "/signup/"
-                                                                                    :on-click #((om/get-shared owner :track-event) {:event-type :signup-clicked})}) "Sign Up"]])])]]]
+                    [:a.signup-link.btn.btn-success.navbar-btn.menu-item
+                     {:href "/signup/"
+                      :on-click #((om/get-shared owner :track-event) {:event-type :signup-clicked})}
+                     "Sign Up"]])])]]]
            (outer-subheader
              [{:mobile {:path "/mobile"
                         :title "Mobile"}

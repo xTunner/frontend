@@ -132,7 +132,7 @@
           new-token (when (seq attr-href) (subs attr-href 1))]
       (when (and (= (-> js/window .-location .-hostname)
                     host-name)
-                 (not (html/external-link? (closest-a-tag -target)))
+                 (sec/locate-route new-token) ; Returns nil when no route is found in the app.
                  (not (or (new-window-click? %)
                           (= attr-target "_blank"))))
         (.preventDefault %)

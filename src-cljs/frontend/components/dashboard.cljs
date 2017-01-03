@@ -15,7 +15,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
