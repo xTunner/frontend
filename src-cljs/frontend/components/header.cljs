@@ -128,70 +128,74 @@
                           "/signup/")}
                  "Sign up"])]
              [:div.navbar-container {:class hamburger-state}
-              [:ul.nav.navbar-nav
-               (when (config/show-marketing-pages?)
-                 (list
-                   [:li.dropdown {:class (when (contains? #{:features
-                                                            :mobile
-                                                            :ios
-                                                            :android
-                                                            :integrations
-                                                            :enterprise}
-                                                          nav-point)
-                                           "active")}
-                    [:a.menu-item {:href "/features/"}
-                     "Product "
-                     [:i.fa.fa-caret-down]]
-                    [:ul.dropdown-menu
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                         (maybe-active nav-point :features)
-                                         {:role "menuitem"
-                                          :tabIndex "-1"
-                                          :href "/features/"})
-                       "Features"]]
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                          (maybe-active nav-point :mobile)
-                                          {:role "menuitem"
-                                           :tabIndex "-1"
-                                           :href "/mobile/"})
-                       "Mobile"]]
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                          (maybe-active nav-point :integrations)
-                                          {:role "menuitem"
-                                           :tabIndex "-1"
-                                           :href "/integrations/docker/"})
-                       "Docker"]]
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                          (maybe-active nav-point :enterprise)
-                                          {:role "menuitem"
-                                           :tabIndex "-1"
-                                           :href "/enterprise/"})
-                       "Enterprise"]]]]
-                   [:li (maybe-active nav-point :pricing)
-                    [:a.menu-item {:href "/pricing/"} "Pricing"]]))
-               [:li (maybe-active nav-point :documentation)
-                [:a.menu-item {:href "https://circleci.com/docs/"}
+              (if (:current-build-data app)
+                [:ul.nav.navbar-nav
+                  [:li [:span.demo "You are viewing the CircleCI open source dashboard!"]]]
+                [:ul.nav.navbar-nav
+                 (when (config/show-marketing-pages?)
+                   (list
+                     [:li.dropdown {:class (when (contains? #{:features
+                                                              :mobile
+                                                              :ios
+                                                              :android
+                                                              :integrations
+                                                              :enterprise}
+                                                            nav-point)
+                                             "active")}
+                      [:a.menu-item {:href "/features/"}
+                       "Product "
+                       [:i.fa.fa-caret-down]]
+                      [:ul.dropdown-menu
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                           (maybe-active nav-point :features)
+                                           {:role "menuitem"
+                                            :tabIndex "-1"
+                                            :href "/features/"})
+                         "Features"]]
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                            (maybe-active nav-point :mobile)
+                                            {:role "menuitem"
+                                             :tabIndex "-1"
+                                             :href "/mobile/"})
+                         "Mobile"]]
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                            (maybe-active nav-point :integrations)
+                                            {:role "menuitem"
+                                             :tabIndex "-1"
+                                             :href "/integrations/docker/"})
+                         "Docker"]]
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                            (maybe-active nav-point :enterprise)
+                                            {:role "menuitem"
+                                             :tabIndex "-1"
+                                             :href "/enterprise/"})
+                         "Enterprise"]]]]
+                     [:li (maybe-active nav-point :pricing)
+                      [:a.menu-item {:href "/pricing/"} "Pricing"]]))
+                 [:li (maybe-active nav-point :documentation)
+                  [:a.menu-item {:href "https://circleci.com/docs/"}
+                   (if (config/enterprise?)
+                    "CircleCI Documentation"
+                    "Documentation")]]
                  (if (config/enterprise?)
-                  "CircleCI Documentation"
-                  "Documentation")]]
-               (if (config/enterprise?)
-                 [:li [:a.menu-item {:href "https://enterprise-docs.circleci.com"} "Enterprise Documentation"]])
-               [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
-               (when (config/show-marketing-pages?)
-                 (list
-                   [:li {:class (when (contains? #{:about
-                                                   :contact
-                                                   :team
-                                                   :jobs
-                                                   :press}
-                                                 nav-point)
-                                  "active")}
-                    [:a.menu-item {:href "/about/"} "About Us"]]
-                   [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))]
+                   [:li [:a.menu-item {:href "https://enterprise-docs.circleci.com"} "Enterprise Documentation"]])
+                 [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
+                 (when (config/show-marketing-pages?)
+                   (list
+                     [:li {:class (when (contains? #{:about
+                                                     :contact
+                                                     :team
+                                                     :jobs
+                                                     :press}
+                                                   nav-point)
+                                    "active")}
+                      [:a.menu-item {:href "/about/"} "About Us"]]
+                     [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))])
+              
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right.back-to-app
                  [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]
