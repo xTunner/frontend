@@ -1029,20 +1029,20 @@
                          :action (builds-table/build-status-badge build)}
                         [:div
                          [:div.line
-                          [:div.head "Trigger"]
-                          [:div.value job-trigger]]
+                          [:span.head "Trigger"]
+                          [:span.value job-trigger]]
                          [:div.line
-                          [:div.head "Start Time"]
-                          [:div.value
-                           [:div.metadata-item.start-time
+                          [:span.head "Start Time"]
+                          [:span.value
+                           [:span.metadata-item.start-time
                             {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
                             [:i.material-icons "today"]
                             (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
                             " ago"]]]
                          [:div.line
-                          [:div.head "Duration"]
-                          [:div.value
-                           [:div.metadata-item.duration
+                          [:span.head "Duration"]
+                          [:span.value
+                           [:span.metadata-item.duration
                             {:title (str "Duration: " (build-model/duration build))}
                             [:i.material-icons "timer"]
                             (om/build common/updating-duration {:start (:start_time build)
@@ -1052,16 +1052,16 @@
                          :action (om/build workflow-status-badge {:workflow workflow})}
                         [:div
                          [:div.line
-                          [:div.head "Trigger"]
-                          [:div.value.metadata-row
+                          [:span.head "Trigger"]
+                          [:span.value.metadata-row
                            (om/build builds-table/pull-requests {:build (:data trigger-resource)})
                            (om/build builds-table/commits {:build (:data trigger-resource)})]]
                          [:div.line
-                          [:div.head "Previous Job"]
-                          [:div.value previous-link]]
+                          [:span.head "Previous Job"]
+                          [:span.value previous-link]]
                          [:div.line
-                          [:div.head "Next Job"]
-                          [:div.value next-link]]])]])))))
+                          [:span.head "Next Job"]
+                          [:span.value next-link]]])]])))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
