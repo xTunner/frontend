@@ -103,14 +103,14 @@
            [:div
             (when flash
               [:div#flash {:dangerouslySetInnerHTML {:__html flash}}])]
-           [:div.navbar.navbar-default.navbar-fixed-top {:class (case nav-point
-                                                                  :language-landing
-                                                                  (get-in app [:navigation-data :language])
-                                                                  :integrations
-                                                                  (name (get-in app [:navigation-data :integration]))
-                                                                  nil)
-                                                         :on-touch-end #(raise! owner [:change-hamburger-state])}
-            [:div.container-fluid
+           [:div.navbar.navbar-default {:class (case nav-point
+                                                 :language-landing
+                                                 (get-in app [:navigation-data :language])
+                                                 :integrations
+                                                 (name (get-in app [:navigation-data :integration]))
+                                                 nil)
+                                        :on-touch-end #(raise! owner [:change-hamburger-state])}
+            [:div.container
              [:div.hamburger-menu
               (condp = hamburger-state
                 "closed" [:i.fa.fa-bars.fa-2x]
