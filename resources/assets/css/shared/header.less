@@ -1,3 +1,5 @@
+@import "../shared/variables.less";
+
 #logo {
   display: block;
   & > svg {
@@ -302,6 +304,12 @@
 
   .mobile-nav {
     display: none;
+  }
+
+  .demo-label {
+    position: relative;
+    display: block;
+    padding: @navbar-padding-vertical @nav-link-padding;
   }
 
   @media (max-width: @screen-sm-min) {

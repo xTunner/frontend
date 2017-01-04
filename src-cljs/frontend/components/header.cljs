@@ -130,7 +130,7 @@
              [:div.navbar-container {:class hamburger-state}
               (if (:current-build-data app)
                 [:ul.nav.navbar-nav
-                  [:li [:span.demo "You are viewing the CircleCI open source dashboard!"]]]
+                  [:li [:span.demo-label "You are viewing the CircleCI open source dashboard!"]]]
                 [:ul.nav.navbar-nav
                  (when (config/show-marketing-pages?)
                    (list
