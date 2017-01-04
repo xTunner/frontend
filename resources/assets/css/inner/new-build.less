@@ -254,9 +254,17 @@
     .flexy();
     .justify-content(space-between);
 
-    & > .details {
+    > .details {
 
-      .flex(0, 0, 49%);
+      .flex(1, 0, 0);
+
+      &:last-child {
+        margin-left: 15px;
+      }
+
+      &:first-child {
+        margin-left: 0;
+      }
 
       .heading {
 
