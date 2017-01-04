@@ -1166,7 +1166,8 @@
                       :current-state current-state
                       :properties {:status status
                                    :total-building-projects-count (total-projects-count true)
-                                   :total-not-building-projects-count (total-projects-count false)}})))
+                                   :total-not-building-projects-count (total-projects-count false)
+                                   :total-projects-count (count resp)}})))
 
 (defmethod post-api-event! [:vcs-activity :failed]
   [_ _ status {:keys [status-code resp]} _ current-state]
