@@ -1234,6 +1234,10 @@
   [target message {:keys [org-name vcs-type]} state]
   (update-in state [:organization/by-vcs-type-and-name [vcs-type org-name]] dissoc :users))
 
+(defmethod control-event :clear-build-data
+  [target message {:keys [org-name vcs-type]} state]
+  (dissoc state :current-build-data))
+
 (defmethod post-control-event! :org-settings-normalized
   [target message {:keys [org-name vcs-type]} previous-state current-state comms]
   (let [previous-users (:users (get-in previous-state [:organization/by-vcs-type-and-name [vcs-type org-name]]))]

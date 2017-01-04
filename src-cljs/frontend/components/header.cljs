@@ -117,7 +117,8 @@
                 "open" [:i.fa.fa-close.fa-2x])]
              [:div.navbar-header
               [:a#logo.navbar-brand
-               {:href "/"}
+               {:href "/"
+                :on-click #(raise! owner [:clear-build-data nil])}
                (common/circle-logo {:width nil
                                     :height 25})]
               (if logged-in?
