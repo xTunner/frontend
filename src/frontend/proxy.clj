@@ -68,7 +68,7 @@
 ;; This is for development only. Do not commit code with values in this set.
 ;; Instead, add the route to the backend. (And while you're there, add it to the
 ;; nginx config if necessary.)
-(def new-urls #{#"/workflows/"})
+(def new-urls #{})
 
 (defn- match? [regex-or-string target]
   (condp instance? regex-or-string
