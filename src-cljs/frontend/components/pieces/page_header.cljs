@@ -7,21 +7,25 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn crumb-node [{:keys [active name path track-event-type]} owner]
+(defn crumb-node [{:keys [active name path track-event-type demo]} owner]
+  ;; demo intended for OSS users, external viewers of builds page
   (reify
     om/IRender
     (render [_]
       (component
-        (html 
-          (if active
-            [:li.active
-             [:a {:disabled true :title name} name " "]]
+        (html
+          (if-not demo
             [:li
-             [:a {:href path
-                  :title name
-                  :on-click (when track-event-type
-                              #((om/get-shared owner :track-event) {:event-type track-event-type}))}
-                 name " "]]))))))
+             [:span name]]
+            (if active
+              [:li.active
+               [:a {:disabled true :title name} name " "]]
+              [:li
+               [:a {:href path
+                    :title name
+                    :on-click (when track-event-type
+                                #((om/get-shared owner :track-event) {:event-type track-event-type}))}
+                   name " "]])))))))
 
 (defmulti crumb
   (fn [{:keys [type]}] type))
@@ -34,14 +38,16 @@
   [{:keys [owner]}]
   (om/build crumb-node {:name "Builds"
                         :path (routes/v1-dashboard-path {})
-                        :track-event-type :breadcrumb-dashboard-clicked}))
+                        :track-event-type :breadcrumb-dashboard-clicked
+                        :demo false}))
 
 (defmethod crumb :project
   [{:keys [vcs_type username project active owner]}]
   (om/build crumb-node {:name project
                         :path (routes/v1-dashboard-path {:vcs_type vcs_type :org username :repo project})
                         :active active
-                        :track-event-type :breadcrumb-project-clicked}))
+                        :track-event-type :breadcrumb-project-clicked
+                        :demo true}))
 
 (defmethod crumb :project-settings
   [{:keys [vcs_type username project active]}]
@@ -55,18 +61,20 @@
                                 tag (utils/trim-middle (utils/display-tag tag) 45)
                                 branch (utils/trim-middle (utils/display-branch branch) 45)
                                 :else "...")
-                       :path (when branch
+                        :path (when branch
                                (routes/v1-dashboard-path {:vcs_type vcs_type
                                                           :org username
                                                           :repo project
                                                           :branch branch}))
-                       :track-event-type :breadcrumb-branch-clicked
-                       :active active}))
+                        :track-event-type :breadcrumb-branch-clicked
+                        :active active
+                        :demo true}))
 
 (defmethod crumb :build
   [{:keys [vcs_type username project build-num active]}]
   (om/build crumb-node {:name (str "build " build-num)
                         :track-event-type :breadcrumb-build-clicked
+                        :demo true
                         :path (routes/v1-build-path vcs_type username project build-num)
                         :active active}))
 
@@ -74,6 +82,7 @@
   [{:keys [vcs_type username active owner]}]
   (om/build crumb-node {:name username
                         :track-event-type :breadcrumb-org-clicked
+                        :demo false
                         :path (routes/v1-dashboard-path {:vcs_type vcs_type
                                                          :org username})
                         :active active}))
