@@ -248,7 +248,7 @@
             [:span "% of your "]
             [:a.plan-link
              {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                  :vcs_type plan-vcs-type})} "current macOS plan"]
+                                                  :vcs_type plan-vcs-type})} "current OS X plan"]
             [:span ". Please "]
             [:a.plan-link {:href (routes/v1-org-settings-path {:org plan-org-name
                                                                :vcs_type plan-vcs-type

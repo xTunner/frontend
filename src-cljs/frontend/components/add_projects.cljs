@@ -223,9 +223,9 @@
        [:div.no-plan-empty-state
         [:i.fa.fa-apple.apple-logo]
         [:div.title
-         [:span.bold login] " has no " [:span.bold "macOS plan"] " on CircleCI."]
+         [:span.bold login] " has no " [:span.bold "OS X plan"] " on CircleCI."]
         [:div.info
-         "Select a plan to build your macOS projects now."]
+         "Select a plan to build your OS X projects now."]
         [:div.buttons
          (om/build select-plan-button {:selected-org selected-org})
          " "
@@ -279,7 +279,7 @@
                                              :label "Linux"}
                                             {:name :osx
                                              :icon (html [:i.fa.fa-apple.fa-lg])
-                                             :label "macOS"}]
+                                             :label "OS X"}]
                                      :selected-tab-name selected-tab-name
                                      :on-tab-click #(om/set-state! owner [:selected-tab-name] %)})
 

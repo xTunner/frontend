@@ -211,7 +211,7 @@
       (when (pos? containers)
         (str containers " paid Linux containers"))
       (when (and (pos? containers) (pm/osx? plan))
-        " and the macOS ")
+        " and the OS X ")
       (when (pm/osx? plan)
         (-> plan :osx :template :name)) " plan.")))
 
@@ -245,9 +245,9 @@
   (if (= num 1) (infl/singular word) (infl/plural word)))
 
 (def osx-faq-items
-  [{:question "Why would I choose an macOS plan (as opposed to a Linux Plan)?"
-    :answer [[:div "If you develop for Apple-related software (e.g., you are an iOS developer), you will likely need an macOS plan to ensure your tests run on our secure, private cloud of macOS machines."]
-             [:div "macOS plans start with a two-week trial with access to our Growth Plan (7x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
+  [{:question "Why would I choose an OS X plan (as opposed to a Linux Plan)?"
+    :answer [[:div "If you develop for Apple-related software (e.g., you are an iOS developer), you will likely need an OS X plan to ensure your tests run on our secure, private cloud of OS X machines."]
+             [:div "OS X plans start with a two-week trial with access to our Growth Plan (7x concurrent builds). At the end of your two-week trial, you may choose the plan that fits your needs best."]
              [:div "Linux plans allow customers to build on multiple isolated Linux systems. All customers get 1 free linux container and then Linux plans offer access to additional containers available at $50/container."]]}
 
    {:question "What plan do I need?"
@@ -281,7 +281,7 @@
               [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]]]}
 
    {:question "What if I am building open-source?"
-    :answer [[:div "We also offer the Seed plan for macOS open-source projects. Contact us at "
+    :answer [[:div "We also offer the Seed plan for OS X open-source projects. Contact us at "
               [:a {:href "mailto:billing@circleci.com"} "billing@circleci.com"]
               " for access. If you are building a bigger open-source project and need more resources, let us know how we can help you!"]]}])
 
@@ -381,7 +381,7 @@
               [:div.title title]
               [:div.price "$" [:span.bold price] "/mo"]]
              [:div.content
-              [:div.containers [:span.bold container-count] " macOS concurrency"]
+              [:div.containers [:span.bold container-count] " OS X concurrency"]
               [:div.daily-builds
                [:div "Recommended for teams building "]
                [:div.bold daily-build-count " builds/day"]]
@@ -406,7 +406,7 @@
                                                :on-click-fn #(do
                                                                (raise! owner [:new-osx-plan-clicked {:plan-type {:template (name plan-id)}
                                                                                                      :price (:price plan-data)
-                                                                                                     :description (gstring/format "macOS %s - $%d/month "
+                                                                                                     :description (gstring/format "OS X %s - $%d/month "
                                                                                                                                   (clojure.string/capitalize (name plan-id))
                                                                                                                                   (:price plan-data))}])
                                                                ((om/get-shared owner :track-event) {:event-type :new-plan-clicked
@@ -461,14 +461,14 @@
         (html
           [:div#plan-anchor-osx.osx-plans {:data-component `osx-plans-list}
            (if (pm/osx? plan)
-             [:legend.update-plan "Update macOS plan"]
-             [:legend.update-plan "Choose macOS plan"]
+             [:legend.update-plan "Update OS X plan"]
+             [:legend.update-plan "Choose OS X plan"]
              )
-           [:p [:em "Your selection below only applies to macOS service and will not affect Linux containers."]]
+           [:p [:em "Your selection below only applies to OS X service and will not affect Linux containers."]]
            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
-             [:p "The macOS trial you've selected has expired, please choose a plan below."])
+             [:p "The OS X trial you've selected has expired, please choose a plan below."])
            (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
-             [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])
+             [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])
            [:div.plan-selection
             (om/build-all osx-plan (->> osx-plans
                                         (map #(assoc % :org-name org-name :vcs-type vcs-type))))]])))))
@@ -536,7 +536,7 @@
                                               " + 1 free container"))]]
                  [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")
                   [:br]
-                  [:em "Changes to your Linux plan will not affect your macOS plan."]]])
+                  [:em "Changes to your Linux plan will not affect your OS X plan."]]])
               [:fieldset
                (if (and (not piggiebacked?)
                         (or (config/enterprise?)
@@ -615,7 +615,7 @@
                                           :label "Linux Plan"}
                                          {:name :osx
                                           :icon (html [:i.fa.fa-apple.fa-lg])
-                                          :label "macOS Plan"}]
+                                          :label "OS X Plan"}]
                                   :selected-tab-name selected-tab-name
                                   :on-tab-click #(navigate! owner (routes/v1-org-settings-path {:org org-name
                                                                                                 :vcs_type vcs-type
@@ -1215,30 +1215,30 @@
                  [:h1
                   (cond
                     (pm/osx-trial-active? plan)
-                    (gstring/format "You're currently on the CircleCI macOS trial and have %s left. " (pm/osx-trial-days-left plan))
+                    (gstring/format "You're currently on the CircleCI OS X trial and have %s left. " (pm/osx-trial-days-left plan))
 
                     (and (pm/osx-trial-plan? plan)
                          (not (pm/osx-trial-active? plan)))
-                    [:span "Your free trial of CircleCI for macOS has expired. Please "
+                    [:span "Your free trial of CircleCI for OS X has expired. Please "
                      [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                               :vcs_type plan-vcs-type
                                                               :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
 
                     :else
-                    (gstring/format "Current macOS plan: %s - $%d/month " plan-name(pm/osx-cost plan)))]
+                    (gstring/format "Current OS X plan: %s - $%d/month " plan-name(pm/osx-cost plan)))]
                  [:div
-                  [:p "You can update your macOS plan below."]
+                  [:p "You can update your OS X plan below."]
                   (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
-                    [:p "The macOS trial you've selected has expired, please choose a plan below."])
+                    [:p "The OS X trial you've selected has expired, please choose a plan below."])
                   (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
-                    [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])]
+                    [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
                  [:p "Questions? Check out the FAQs below."]]
                 [:div {:style {:width "49%" :margin-top "1em"}}
                  (om/build osx-usage-table-plan {:plan plan})]])
              [:div.osx-plan-header
               [:div {:style {:width "49%"}}
-               [:h1 "No macOS plan selected"]
-               [:p "Choose a macOS plan below."]]])])))))
+               [:h1 "No OS X plan selected"]
+               [:p "Choose a OS X plan below."]]])])))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1249,7 +1249,7 @@
             osx-usage (-> plan :usage :os:osx)]
         (html
           [:div.card {:data-component `osx-usage-table}
-           [:div.header (str org-name "'s macOS usage")]
+           [:div.header (str org-name "'s OS X usage")]
            [:hr.divider]
            (let [osx-usage (->> osx-usage
                                 ;Remove any entries that do not have keys matching :yyyy_mm_dd.
@@ -1324,39 +1324,39 @@
                 [:h1
                  (cond
                    (pm/osx-trial-active? plan)
-                   (gstring/format "You're currently on the CircleCI macOS trial and have %s left. " (pm/osx-trial-days-left plan))
+                   (gstring/format "You're currently on the CircleCI OS X trial and have %s left. " (pm/osx-trial-days-left plan))
 
                    (and (pm/osx-trial-plan? plan)
                         (not (pm/osx-trial-active? plan)))
-                   [:span "Your free trial of CircleCI for macOS has expired. Please "
+                   [:span "Your free trial of CircleCI for OS X has expired. Please "
                     [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                              :vcs_type plan-vcs-type
                                                              :_fragment "osx-pricing"})} "select a plan"]" to continue building!"]
                    :else
-                   (gstring/format "Current macOS plan: %s - $%d/month " plan-name(pm/osx-cost plan)))]
+                   (gstring/format "Current OS X plan: %s - $%d/month " plan-name(pm/osx-cost plan)))]
                 [:p
                  (if (pm/osx? plan)
                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                          :vcs_type plan-vcs-type
-                                                         :_fragment "osx-pricing"})} "Update macOS plan"]]
+                                                         :_fragment "osx-pricing"})} "Update OS X plan"]]
                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                            :vcs_type plan-vcs-type
-                                                           :_fragment "osx-pricing"})} "Choose macOS plan"]]
+                                                           :_fragment "osx-pricing"})} "Choose OS X plan"]]
                   )
                  "."]
                 [:fieldset
                  (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
-                   [:p "The macOS trial you've selected has expired, please choose a plan below."])
+                   [:p "The OS X trial you've selected has expired, please choose a plan below."])
                  (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
-                   [:p (gstring/format "You have %s left on the macOS trial." (pm/osx-trial-days-left plan))])]]
+                   [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]]
                [:div
                 (om/build osx-usage-table-plan {:plan plan})]])
             [:div
-             [:h1 "No macOS plan selected"]
+             [:h1 "No OS X plan selected"]
              [:p
               [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                                 :vcs_type plan-vcs-type
-                                                                :_fragment "osx-pricing"})} "Choose a macOS plan"]] "."]])])))))
+                                                                :_fragment "osx-pricing"})} "Choose a OS X plan"]] "."]])])))))
 
 (defn linux-plan-overview [app owner]
   (om/component
@@ -1406,7 +1406,7 @@
                             [:p "Questions? Check out the FAQs below."]])]
                 (= containers 1)
                 [:div
-                 [:h1 (str "Current Linux plan: Hobbyist (1 container) - $0/month")]
+                 [:h1 "Current Linux plan: Hobbyist (1 container) - $0/month"]
                  [:p "0 containers are paid. 1 container is free."]
                  [:p
                   [:strong "Add more containers to update your plan below"
@@ -1497,7 +1497,7 @@
                                 " for more parallelism and shorter queue times."]))])
                         (when (config/enterprise?)
                           (om/build linux-plan {:app app}))]))
-        (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "macOS Plan Overview"])}
+        (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "OS X Plan Overview"])}
                      (html
                        [:div.plan-overview.macos-plan-overview
                         (om/build osx-overview {:plan plan})]))]]))))

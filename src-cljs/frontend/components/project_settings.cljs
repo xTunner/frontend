@@ -255,11 +255,11 @@
             [:legend "Build Environment"]
             [:ul
              (describe-flag {:flag :osx
-                             :title "Build macOS project"
+                             :title "Build OS X project"
                              :blurb [:div
                                      [:p
                                       [:strong
-                                       "Note: this option only works if the project builds under an macOS plan. "
+                                       "Note: this option only works if the project builds under an OS X plan. "
                                        "Configure that option "
                                        [:a {:href (routes/v1-org-settings-path {:org (:org_name plan)
                                                                                 :vcs_type (-> plan :org :vcs_type)
@@ -267,7 +267,7 @@
                                        "."]]
                                      [:p
                                       "This option reflects whether CircleCI will run builds for this project "
-                                      "against Linux-based hardware or macOS-based hardware. Please use this "
+                                      "against Linux-based hardware or OS X-based hardware. Please use this "
                                       "setting as an override if we have incorrectly inferred where this build should run."]]})
              (when-not (config/enterprise?)
                [:li
@@ -324,7 +324,7 @@
               ;; number of available OS X VMs. Setting parallelism for OS X
               ;; wastes VMs, reducing the number of builds we can run.
               [:div.insufficient-plan
-               "macOS projects are currently limited to 1x parallelism."]
+               "OS X projects are currently limited to 1x parallelism."]
 
               (> parallelism (plan-model/max-parallelism plan))
               [:div.insufficient-plan
@@ -2083,7 +2083,7 @@
              "Upload Key")]
            [:hr.divider]
            [:div.info "The following code-signing identities will be added to the system keychain when your build
-                        begins, and will be available to sign iOS and macOS apps. For more information about code-signing
+                        begins, and will be available to sign iOS and OS X apps. For more information about code-signing
                         on CircleCI see our "
             [:a
              {:href "/docs/ios-code-signing/"}
