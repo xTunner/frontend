@@ -22,7 +22,6 @@
             [goog.style]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.launchdarkly :as ld])
   (:require-macros [frontend.utils :refer [html inspect]]))
 
@@ -83,15 +82,18 @@
     (let [org-name (:username project)
           repo-name (:reponame project)
           vcs-type (:vcs_type project)]
-      [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type vcs-type
-                                                                         :org org-name
-                                                                         :repo repo-name})
-                                 :title  (str
-                                           (project-model/project-name project)
-                                           " settings")
-                                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                                 :properties {:org org-name
-                                                                                              :repo repo-name}})}
+      [:a {:class (cond-> "project-settings-icon"
+                          (= :project-settings-icon-hover-only
+                             (feature/ab-test-treatment :show-project-settings-on-branch-picker))
+                          (str " hover-only"))
+           :href (routes/v1-project-settings-path {:vcs_type vcs-type
+                                                   :org org-name
+                                                   :repo repo-name})
+           :title (str (project-model/project-name project)
+                       " settings")
+           :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                           :properties {:org org-name
+                                                                        :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
 (defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [identities show-project?]}]
@@ -548,12 +550,12 @@
 
              (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
                         show-aside-icons?)
-               [:a.aside-item (open-ext {:title "Documentation"
-                                         :data-placement "right"
-                                         :data-trigger "hover"
-                                         :target "_blank"
-                                         :href "https://circleci.com/docs/"
-                                         :on-click #(aside-nav-clicked owner :docs-icon-clicked)})
+               [:a.aside-item {:title "Documentation"
+                               :data-placement "right"
+                               :data-trigger "hover"
+                               :target "_blank"
+                               :href "/docs/"
+                               :on-click #(aside-nav-clicked owner :docs-icon-clicked)}
                 [:i.material-icons "description"]
                 [:div.nav-label "Docs"]])
 
@@ -572,12 +574,12 @@
              (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
                         show-aside-icons?)
                (when-not (config/enterprise?)
-                 [:a.aside-item (open-ext {:data-placement "right"
-                                           :data-trigger "hover"
-                                           :title "Changelog"
-                                           :target "_blank"
-                                           :href "/changelog"
-                                           :on-click #(aside-nav-clicked owner :changelog-icon-clicked)})
+                 [:a.aside-item {:data-placement "right"
+                                 :data-trigger "hover"
+                                 :title "Changelog"
+                                 :target "_blank"
+                                 :href "/changelog/"
+                                 :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
                   [:i.material-icons "receipt"]
                   [:div.nav-label "Changelog"]]))
 

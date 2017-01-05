@@ -25,7 +25,6 @@
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.experiments.workflow-spike :as workflow]
             [goog.string :as gstring]
@@ -214,7 +213,7 @@
    [:p
     "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
        This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
-       More information " [:a (open-ext {:href "https://circleci.com/docs/ssh-build/"}) "in our docs"] "."
+       More information " [:a {:href "/docs/ssh-build/"} "in our docs"] "."
     (om/build ssh-buttons build)]])
 
 (defn ssh-command [node]
@@ -245,7 +244,7 @@
                            (utils/prettify-vcs_type vcs_type))]
        [:div
         "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
-        [:a (open-ext {:href "https://circleci.com/docs/browser-debugging#interact-with-the-browser-over-vnc/"}) "our docs"]
+        [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc/"} "our docs"]
         " on how to use VNC with CircleCI."]]
 
       (om/build ssh-node-list nodes)])))
@@ -275,7 +274,7 @@
   [:div
    [:p "We didn't find any build artifacts for this build. You can upload build artifacts by moving files to the $CIRCLE_ARTIFACTS directory."]
    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
-   [:p "More information " [:a (open-ext {:href "https://circleci.com/docs/build-artifacts/"}) "in our docs"] "."]])
+   [:p "More information " [:a {:href "/docs/build-artifacts/"} "in our docs"] "."]])
 
 (defn artifacts-tree [prefix artifacts]
   (->> (for [artifact artifacts
@@ -364,34 +363,34 @@
 
 (defn tests-ad [owner language build-succeeded?]
   (let [junit-link (case language
-                         "Clojure" "https://circleci.com/docs/test-metadata/#test2junit-for-clojure-tests"
-                         "Ruby" "https://circleci.com/docs/test-metadata/#rspec"
-                         "JavaScript" "https://circleci.com/docs/test-metadata/#js"
-                         "Python" "https://circleci.com/docs/test-metadata#python"
-                         "Java" "https://circleci.com/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-                         "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps")
+                         "Clojure" "/docs/test-metadata/#test2junit-for-clojure-tests"
+                         "Ruby" "/docs/test-metadata/#rspec"
+                         "JavaScript" "/docs/test-metadata/#js"
+                         "Python" "/docs/test-metadata#python"
+                         "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
+                         "/docs/test-metadata/#metadata-collection-in-custom-test-steps")
         track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
                                                           :properties {:language language}})]
     (case (feature/ab-test-treatment :junit-ab-test)
-      :junit-button (button/link (open-ext {:href junit-link
-                                            :kind :primary
-                                            :on-click track-junit})
+      :junit-button (button/link {:href junit-link
+                                  :kind :primary
+                                  :on-click track-junit}
                                  "Set Up Test Summary")
       :junit-banner [:div.alert.iconified {:class "alert-info"}
                      [:div [:img.alert-icon {:src (common/icon-path
                                                    (if build-succeeded? "Info-Info" "Info-Error"))}]]
                      [:div
-                       "Help us provide better insight around your tests and failures. "
-                       [:a (open-ext {:href junit-link
-                                      :class "junit-link"
-                                      :on-mouse-up track-junit}) 
-                           "Set up your test runner to output in JUnit-style XML"] 
-                       ", so we can:"
-                       [:ul
-                         [:li "Show a summary of all test failures across all containers"]
-                         [:li "Identify your slowest tests"]
-                         [:li [:a (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"}) 
-                                  "Balance tests between containers when using properly configured parallelization"]]]]])))
+                      "Help us provide better insight around your tests and failures. "
+                      [:a {:href junit-link
+                           :class "junit-link"
+                           :on-mouse-up track-junit} 
+                       "Set up your test runner to output in JUnit-style XML"] 
+                      ", so we can:"
+                      [:ul
+                       [:li "Show a summary of all test failures across all containers"]
+                       [:li "Identify your slowest tests"]
+                       [:li [:a {:href "/docs/parallel-manual-setup/"}
+                             "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
   (html
@@ -551,7 +550,7 @@
 (defn circle-yml-ad []
   [:div
    [:p "We didn't find a circle.yml for this build. You can specify deployment or override our inferred test steps from a circle.yml checked in to your repo's root directory."]
-   [:p "More information " [:a (open-ext {:href "https://circleci.com/docs/configuration/"}) "in our docs"] "."]])
+   [:p "More information " [:a {:href "/docs/configuration/"} "in our docs"] "."]])
 
 (defn build-config [{:keys [config-string build build-data]} owner opts]
   (reify

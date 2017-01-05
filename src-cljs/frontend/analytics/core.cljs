@@ -98,6 +98,7 @@
     :set-up-junit-clicked
     :set-up-junit-impression
     :setup-docs-clicked
+    :setup-docs-impression
     :show-all-branches-toggled
     :signup-clicked
     :signup-impression
@@ -113,6 +114,7 @@
     :trial-offer-banner-impression
     :update-parallelism-clicked
     :update-plan-clicked
+    :vcs-activity-fetched
     :web-notifications-permissions-banner-dismissed
     :web-notifications-permissions-banner-impression
     :web-notifications-permissions-set})

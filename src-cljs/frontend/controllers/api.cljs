@@ -155,7 +155,7 @@
                   (get-in args [:context :query-params :page])))
     state
     (-> state
-        (assoc-in [:recent-builds] (:resp args))
+        (assoc-in state/recent-builds-path (:resp args))
         (assoc-in state/project-scopes-path (:scopes args))
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
@@ -177,7 +177,8 @@
                                           project-key (api/project-build-key project)]]
                                 (cond-> project
                                   (= (dissoc project-key :branch) (dissoc target-key :branch))
-                                  (assoc-in [:recent-builds branch] all-recent-builds))))]
+                                  (assoc-in (state/recent-builds-branch-path branch)
+                                            all-recent-builds))))]
       (update-in state state/projects-path add-recent-builds))
     state))
 
@@ -1145,6 +1146,36 @@
                                 (state/vcs-recent-active-projects-path building? :github)
                                 (trim-recent-active-projects projects)))
                     state))))
+
+(defmethod api-event [:vcs-activity :failed]
+  [_ _ _ _ state]
+  (-> state
+      (assoc-in (state/vcs-recent-active-projects-path true :github) [])
+      (assoc-in (state/vcs-recent-active-projects-path false :github) [])))
+
+(defmethod post-api-event! [:vcs-activity :success]
+  [_ _ status {:keys [resp]} _ current-state]
+  (let [recent-active-projects (->> resp
+                                    (group-by repo-model/building-on-circle?)
+                                    ; in the case the vcs returns no projects, assoc empty list to remove the spinner
+                                    (merge {true [] false []}))
+        total-projects-count #(-> recent-active-projects
+                                  (get %)
+                                  (count))]
+    (analytics/track {:event-type :vcs-activity-fetched
+                      :current-state current-state
+                      :properties {:status status
+                                   :total-building-projects-count (total-projects-count true)
+                                   :total-not-building-projects-count (total-projects-count false)
+                                   :total-projects-count (count resp)}})))
+
+(defmethod post-api-event! [:vcs-activity :failed]
+  [_ _ status {:keys [status-code resp]} _ current-state]
+  (analytics/track {:event-type :vcs-activity-fetched
+                    :current-state current-state
+                    :properties {:status status
+                                 :status-code status-code
+                                 :message (:message resp)}}))
 
 (defmethod post-api-event! [:follow-projects :success]
   [_ _ status {:keys [context]} previous-state current-state comms]

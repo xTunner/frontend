@@ -15,7 +15,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -126,7 +125,7 @@
     om/IDisplayName (display-name [_] "Dashboard")
     om/IRender
     (render [_]
-      (let [builds (:recent-builds data)
+      (let [builds (get-in data state/recent-builds-path)
             workflow (get-in data state/workflow-path)
             projects (get-in data state/projects-path)
             current-project (get-in data state/project-data-path)
@@ -137,8 +136,13 @@
             builds-per-page (:builds-per-page data)
             current-user (:current-user data)]
         (html
-         (cond (nil? builds)
-               [:div.empty-placeholder (spinner)]
+          ;; ensure the both projects and builds are loaded before rendering to prevent
+          ;; the build list and branch picker from resizing.
+          (cond (or (nil? builds)
+                    ;; if the user isn't logged in, but is viewing an oss build,
+                    ;; then we will not load any projects.
+                    (and current-user (nil? projects)))
+                [:div.empty-placeholder (spinner)]
 
                (and (empty? builds)
                     projects

@@ -30,12 +30,8 @@
                  [cljsjs/react-dom "0.14.5-0"]
                  [cljsjs/c3 "0.4.10-0"]
 
-                 ;; The Om team assures us that the alpha label refers only to
-                 ;; om.next. The old Om (om.core) is production-ready in the
-                 ;; 1.0.0 alphas. We need 1.0 for React 0.14, which in turn is
-                 ;; required for devcards.
-                 [org.omcljs/om "1.0.0-alpha45"]
-                 [compassus "0.2.1"]
+                 [org.omcljs/om "1.0.0-alpha47"]
+                 [compassus "1.0.0-alpha2"]
 
                  [hiccups "0.3.0"]
                  [sablono "0.7.2"]

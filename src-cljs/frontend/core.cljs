@@ -237,38 +237,23 @@
 
         a (compassus/application
            {:routes app/routes
-            :wrapper app/wrapper
-            :reconciler-opts {:state state-atom
-                              :normalize true
-                              :parser parser/parser
-                              :send send/send
-                              :merge compassus/compassus-merge
+            :index-route app/index-route
+            :mixins [(compassus/wrap-render app/Wrapper)]
+            :reconciler (om-next/reconciler
+                         {:state state-atom
+                          :normalize true
+                          :parser parser/parser
+                          :send send/send
 
-                              ;; Workaround for
-                              ;; https://github.com/omcljs/om/issues/781
-                              :merge-tree #(utils/deep-merge %1 (nils->maps %2))
+                          ;; Workaround for
+                          ;; https://github.com/omcljs/om/issues/781
+                          :merge-tree #(utils/deep-merge %1 (nils->maps %2))
 
-                              ;; Workaround for
-                              ;; https://github.com/omcljs/om/issues/772 with
-                              ;; solution merged in
-                              ;; https://github.com/omcljs/om/pull/775. Should
-                              ;; be able to remove this once we're on Om
-                              ;; 1.0.0-alpha46 or greater.
-                              :indexer (fn []
-                                         (om-next/indexer
-                                          {:index-component (fn [indexes component] indexes)
-                                           :drop-component (fn [indexes component] indexes)
-                                           :ref->components (fn [indexes k]
-                                                              (transduce (map #(get-in indexes [:class->components %]))
-                                                                         (completing into)
-                                                                         (get-in indexes [:ref->components k] #{})
-                                                                         (get-in indexes [:prop->classes k])))}))
-
-                              :shared {:comms comms
-                                       :timer-atom (timer/initialize)
-                                       :track-event #(analytics/track (assoc % :current-state @legacy-state-atom))
-                                       ;; Make the legacy-state-atom available to the legacy inputs system.
-                                       :_app-state-do-not-use legacy-state-atom}}})]
+                          :shared {:comms comms
+                                   :timer-atom (timer/initialize)
+                                   :track-event #(analytics/track (assoc % :current-state @legacy-state-atom))
+                                   ;; Make the legacy-state-atom available to the legacy inputs system.
+                                   :_app-state-do-not-use legacy-state-atom}})})]
 
     (set! application a)
 

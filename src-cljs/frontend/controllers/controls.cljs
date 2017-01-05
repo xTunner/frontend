@@ -1442,7 +1442,7 @@
 
 (defmethod control-event :refresh-admin-build-list
   [_ _ _ state]
-  (assoc state :recent-builds nil))
+  (assoc-in state state/recent-builds-path nil))
 
 (defmethod post-control-event! :refresh-admin-build-list
   [target _ {:keys [tab]} _ current-state comms]

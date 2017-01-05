@@ -2,15 +2,10 @@
   (:require [clojure.set :as set]
             [frontend.api.path :as path]
             [frontend.models.action :as action-model]
-            [frontend.models.user :as user-model]
             [frontend.models.build :as build-model]
-            [frontend.routes :as routes]
-            [frontend.utils :as utils :include-macros true]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.state :as state-utils]
             [goog.string :as gstring]
-            [goog.string.format]
             [secretary.core :as sec]))
 
 (def build-keys-mapping {:username :org

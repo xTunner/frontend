@@ -183,7 +183,7 @@
                                     :on-tab-click #(navigate! owner (routes/v1-admin-fleet-state-path {:_fragment (name %)}))})
             (if (#{:running-builds :queued-builds} current-tab)
               (om/build admin-builds-table
-                        {:builds (:recent-builds app)
+                        {:builds (get-in app state/recent-builds-path)
                          :projects (get-in app state/projects-path)}
                         {:opts {:tab current-tab}})
               (om/build builders fleet-state))]])))))
