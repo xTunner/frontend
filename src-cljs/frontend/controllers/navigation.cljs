@@ -24,14 +24,12 @@
             [goog.string :as gstring])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
-(defn- workflow-id [state]
-  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
-    workflow-id))
 
 (defn- maybe-add-workflow-response-data [state]
-  (cond-> state
-    (= (workflow-id state) "mock-workflow-id")
-    (assoc-in state/workflow-path workflow/fake-progress-response)))
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
+    (cond-> state
+      (= workflow-id "mock-workflow-id")
+      (assoc-in state/workflow-path workflow/fake-progress-response))))
 
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
@@ -138,7 +136,7 @@
   (set-page-title! "Build State"))
 
 (defn- add-crumbs [state {:keys [vcs_type project-name build-num org repo tab container-id action-id]}]
-  (let [workflow-id (workflow-id state)
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path) (workflow-id state)
         crumbs (if workflow-id
                  [{:type :workflows-dashboard}
                   {:type :org :username org :vcs_type vcs_type}
