@@ -638,12 +638,14 @@
                                     [:a {:href "/docs/test-metadata/#metadata-collection-in-custom-test-steps"}
                                      "the docs"] " for more information."]})
 
-            (describe-flag {:flag :set-github-status
-                            :title "GitHub Status updates"
-                            :blurb [:p
-                                    "By default, we update the status of every pushed commit with "
-                                    "GitHub's status API. If you'd like to turn this off (if, for example, "
-                                    "this is conflicting with another service), you can do so below."]})
+            (let [pretty-vcs (utils/prettify-vcs_type (:vcs-type project))]
+              (describe-flag {:flag :set-github-status
+                              :title (gstring/format "%s Status updates" pretty-vcs)
+                              :blurb [:p
+                                      "By default, we update the status of every pushed commit with "
+                                      (gstring/format "%s's status API. If you'd like to turn this off (if, for example, "
+                                                      pretty-vcs)
+                                      "this is conflicting with another service), you can do so below."]}))
             (describe-flag {:flag :oss
                             :title "Free and Open Source"
                             :blurb [:p

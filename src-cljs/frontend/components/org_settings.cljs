@@ -1040,7 +1040,7 @@
                                                      :on-click #(raise! owner [:resend-invoice-clicked
                                                                                {:invoice-id (:id invoice)}])
                                                      :size :medium
-                                                     :kind :secondary}
+                                                     :kind :flat}
                                                     "Resend"))}]})])))))))
 
 (defn billing [app owner]
