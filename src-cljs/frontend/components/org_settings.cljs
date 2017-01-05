@@ -1444,7 +1444,8 @@
                                                        :vcs_type (:vcs_type plan-org)})}
                (:name plan-org) "'s plan."]]]]])
        [:div.overview-cards
-        (card/titled {:title (html [:span [:i.fa.fa-linux.title-icon] "Linux Plan Overview"])}
+        (card/collection
+          [(card/titled {:title (html [:span [:i.fa.fa-linux.title-icon] "Linux Plan Overview"])}
                      (html
                        [:div.plan-overview.linux-plan-overview
                         (if (config/enterprise?)
@@ -1500,7 +1501,7 @@
         (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "OS X Plan Overview"])}
                      (html
                        [:div.plan-overview.macos-plan-overview
-                        (om/build osx-overview {:plan plan})]))]]))))
+                        (om/build osx-overview {:plan plan})]))])]]))))
 
 (defn main-component []
   (merge
