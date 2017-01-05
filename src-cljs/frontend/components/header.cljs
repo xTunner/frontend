@@ -1,5 +1,6 @@
 (ns frontend.components.header
-  (:require [frontend.async :refer [raise!]]
+  (:require [clojure.string :as string]
+            [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.license :as license]
@@ -97,7 +98,8 @@
       (let [flash (get-in app state/flash-path)
             logged-in? (get-in app state/user-path)
             nav-point (:navigation-point app)
-            hamburger-state (get-in app state/hamburger-menu-path)]
+            hamburger-state (get-in app state/hamburger-menu-path)
+            first-build (first (:recent-builds app))]
         (html
           [:div.outer-header
            [:div
@@ -131,7 +133,9 @@
              [:div.navbar-container {:class hamburger-state}
               (if (:current-build-data app)
                 [:ul.nav.navbar-nav
-                  [:li [:span.demo-label "You are viewing the CircleCI open source dashboard!"]]]
+                  (if first-build
+                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard with builds from " (string/capitalize (:username first-build)) "'s " (string/capitalize (:reponame first-build)) " repo!"]]
+                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard"]])]
                 [:ul.nav.navbar-nav
                  (when (config/show-marketing-pages?)
                    (list
