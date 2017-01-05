@@ -28,7 +28,7 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.html :refer [hiccup->html-str open-ext]]
+            [frontend.utils.html :refer [hiccup->html-str]]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
@@ -141,7 +141,7 @@
                      [:b "Option 3"]
                      [:p
                       "Override all settings via a "
-                      [:a (open-ext {:href "https://circleci.com/docs/configuration/"}) "circle.yml file"]
+                      [:a {:href "/docs/configuration/"} "circle.yml file"]
                       " in your repo. Very powerful."]]))]
                (if (:following project)
                  [(card/titled
@@ -546,6 +546,7 @@
                                                           (om/build form/text-field {:label "Name"
                                                                                      :required true
                                                                                      :value new-env-var-name
+                                                                                     :auto-focus true
                                                                                      :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
                                                           (om/build form/text-field {:label "Value"
                                                                                      :required true
@@ -634,7 +635,7 @@
                                     " efficient.  It also adds the necessary flags for collecting this to automatically"
                                     " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
                                     " to add the necessary formatter gem - see "
-                                    [:a (open-ext {:href "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps"})
+                                    [:a {:href "/docs/test-metadata/#metadata-collection-in-custom-test-steps"}
                                      "the docs"] " for more information."]})
 
             (describe-flag {:flag :set-github-status
@@ -664,7 +665,7 @@
                                      "Run builds for fork pull request changes with this project's configuration, environment variables, and secrets. "]
                                     [:p
                                      "There are serious security concerns with this setting (see "
-                                     [:a (open-ext {:href "https://circleci.com/docs/fork-pr-builds/"}) "the documentation"] " for details.) "
+                                     [:a {:href "/docs/fork-pr-builds/"} "the documentation"] " for details.) "
                                      "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                      "untrusted forks can make pull requests against your repo, then this option "
                                      "isn't for you!"])})
@@ -699,7 +700,7 @@
            [:legend "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your dependencies commands from your "
-            [:a (open-ext {:href "https://circleci.com/docs/configuration/#dependencies"}) "circle.yml"] ". "
+            [:a {:href "/docs/configuration/#dependencies"} "circle.yml"] ". "
             "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
             "Don't put any secrets here that you wouldn't check in! Use our "
             [:a {:href "#env-vars"} "environment variables settings page"]
@@ -711,6 +712,7 @@
                [:label "Pre-dependency commands"]
                [:textarea.dumb.form-control {:name "setup",
                                              :required true
+                                             :auto-focus true
                                              :value (str (:setup settings))
                                              :on-change #(utils/edit-input owner (conj state/inputs-path :setup) % owner)}]
                [:p "Run extra commands before the normal setup, these run before our inferred commands. All commands are arbitrary bash statements, and run on Ubuntu 12.04. Use this to install and setup unusual services, such as specific DNS provisions, connections to a private services, etc."]]
@@ -749,7 +751,7 @@
            [:legend "Set up tests for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your test commands from your "
-            [:a (open-ext {:href "https://circleci.com/docs/configuration/#dependencies"}) "circle.yml"] ". "
+            [:a {:href "/docs/configuration/#dependencies"} "circle.yml"] ". "
             "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
             "Don't put any secrets here that you wouldn't check in! Use our "
             [:a {:href "#env-vars"} "environment variables settings page"]
@@ -760,6 +762,7 @@
               [:label "Test commands"]
               [:textarea.dumb.form-control {:name "test",
                                             :required true
+                                            :auto-focus true
                                             :value (str (:test settings))
                                             :on-change #(utils/edit-input owner (conj state/inputs-path :test) %)}]
               [:p "Replace our inferred test commands with your own inferred commands. These test commands run instead of our inferred test commands. If our inferred commands are not to your liking, replace them here. As usual, all commands are arbitrary bash, and run on Ubuntu 12.04."]]
@@ -847,7 +850,7 @@
       [:div.doc
        [:p
         "CircleCI also supports webhooks, which run at the end of a build. They can be configured in your "
-        [:a (open-ext {:href "https://circleci.com/docs/configuration#notify" :target "_blank"})
+        [:a {:href "/docs/configuration#notify" :target "_blank"}
          "circle.yml file"]
         "."]]]])))
 
@@ -874,7 +877,7 @@
           [:article
            [:legend "Chatroom Integrations"]
            [:p "If you want to control chat notifications on a per branch basis, "
-            [:a (open-ext {:href "https://circleci.com/docs/configuration#per-branch-notifications"}) "see our documentation"] "."]
+            [:a {:href "/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
            [:div.chat-rooms
             (for [chat-spec [{:service "Slack"
                               :doc (list [:p "To get your Webhook URL, visit Slack's "
@@ -1306,7 +1309,7 @@
                 [:h2 "About checkout keys"]
                 [:h4 "What is a deploy key?"]
                 [:p "A deploy key is a repo-specific SSH key. " vcs-name " has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
-                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a (open-ext {:href "https://circleci.com/docs/adding-read-write-deployment-key/"}) "read-write deployment key"]"."]
+                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a {:href "/docs/adding-read-write-deployment-key/"} "read-write deployment key"]"."]
                 [:h4 "What is a user key?"]
                 [:p "A user key is a user-specific SSH key. " vcs-name " has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to projects."]
                 [:h4 "How are these keys used?"]
@@ -1338,9 +1341,9 @@
     [:h5 "Status"]
     [:p
      "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
-     [:a (open-ext {:target "_blank" :href "https://circleci.com/docs/status-badges/"}) "sharing status badges"]
+     [:a {:target "_blank" :href "/docs/status-badges/"} "sharing status badges"]
      " and "
-     [:a (open-ext {:target "_blank", :href "https://circleci.com/docs/polling-project-status/"}) "status polling tools"]
+     [:a {:target "_blank", :href "/docs/polling-project-status/"} "status polling tools"]
      " for private projects."]
 
     [:h5 "Build Artifacts"]
@@ -1480,7 +1483,7 @@
            [:div.heroku-step
             [:h4
              "Step 3: Add deployment settings to your "
-             [:a (open-ext {:href "https://circleci.com/docs/configuration/#deployment"}) "circle.yml file"] " (example below)."]
+             [:a {:href "/docs/configuration/#deployment"} "circle.yml file"] " (example below)."]
             [:pre
              [:code
               "deployment:\n"
@@ -1498,8 +1501,8 @@
        "Other deployments for " (vcs-url/project-name (get-in project-data [:project :vcs_url]))]
       [:div.doc
        [:p "CircleCI supports deploying to any server, using custom commands. See "
-        [:a (open-ext {:target "_blank",
-                       :href "https://circleci.com/docs/configuration#deployment"})
+        [:a {:target "_blank",
+             :href "/docs/configuration#deployment"}
          "our deployment documentation"]
         " to set it up."]]]])))
 
@@ -1525,11 +1528,14 @@
            [:a {:href "https://boto.readthedocs.org/en/latest/"} "Python's boto"] ", and "
            [:a {:href "http://rubygems.org/gems/aws-sdk"} "the Ruby SDK"] "."]
           [:p "We recommend that you create a unique "
-           [:a (open-ext {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"}) "IAM user"]
+           [:a {:href "http://docs.aws.amazon.com/general/latest/gr/root-vs-iam.html"} "IAM user"]
            " for use by CircleCI."]
           [:form
            [:input#access-key-id
-            {:required true, :type "text", :value (or access_key_id "")
+            {:required true
+             :auto-focus true
+             :type "text"
+             :value (or access_key_id "")
              :on-change #(utils/edit-input owner (input-path :access_key_id) %)}]
            [:label {:placeholder "Access Key ID"}]
 
@@ -1771,7 +1777,7 @@
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Key Pattern"
                         :content (hiccup->html-str [:p "A template used to construct S3 keys for storing application revisions."
-                                                    "You can use " [:a (open-ext {:href "https://circleci.com/docs/continuous-deployment-with-aws-codedeploy/#key-patterns"}) "substitution variables"]
+                                                    "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy/#key-patterns"} "substitution variables"]
                                                     " in the Key Pattern to generate a unique key for each build."])})))
     om/IRender
     (render [_]
@@ -1857,7 +1863,7 @@
           [:article
            [:legend "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
            [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
-            "Check out our " [:a (open-ext {:href "https://circleci.com/docs/continuous-deployment-with-aws-codedeploy/"}) "getting started with CodeDeploy"]
+            "Check out our " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy/"} "getting started with CodeDeploy"]
             " guide for detailed information on getting set up."]
            [:div.aws-page-inner
             [:div.aws-codedeploy-step
@@ -1871,7 +1877,7 @@
               "(e.g. staging, production) depending on which branch was built. "
               "With application settings configured in the UI you only need to set the "
               "deployment group and, optionally, deployment configuration, in each deployment "
-              "block in your " [:a (open-ext {:href "https://circleci.com/docs/configuration/#deployment"}) "circle.yml file"] ". "
+              "block in your " [:a {:href "/docs/configuration/#deployment"} "circle.yml file"] ". "
               "If you skip this step you will need to add all deployment settings into your circle.yml file."]
              (if (not (seq applications))
                ;; No settings set, need to get the application name first
@@ -1881,7 +1887,7 @@
             [:div.aws-codedeploy-step
              [:h4 "Step 3"]
              [:p "Add deployment settings to your "
-              [:a (open-ext {:href "https://circleci.com/docs/configuration/#deployment"}) "circle.yml file"]
+              [:a {:href "/docs/configuration/#deployment"} "circle.yml file"]
               " (example below)."]
              [:pre
               [:code
@@ -1908,15 +1914,15 @@
     (render [_]
       (om/build table/table
                 {:rows rows
-                 :key-fn :uuid
+                 :key-fn :id
                  :columns [{:header "Description"
                             :cell-fn :description}
                            {:header "Filename"
                             :type :shrink
                             :cell-fn :filename}
-                           {:header "UUID"
+                           {:header "ID"
                             :type :shrink
-                            :cell-fn :uuid}
+                            :cell-fn :id}
                            {:header "Uploaded"
                             :type :shrink
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
@@ -1941,15 +1947,15 @@
     (render [_]
       (om/build table/table
                 {:rows rows
-                 :key-fn :id
+                 :key-fn :uuid
                  :columns [{:header "Description"
                             :cell-fn :description}
                            {:header "Filename"
                             :type :shrink
                             :cell-fn :filename}
-                           {:header "ID"
+                           {:header "UUID"
                             :type :shrink
-                            :cell-fn :id}
+                            :cell-fn :uuid}
                            {:header "Uploaded"
                             :type :shrink
                             :cell-fn (comp datetime/as-time-since :uploaded_at)}
@@ -2080,7 +2086,7 @@
                         begins, and will be available to sign iOS and macOS apps. For more information about code-signing
                         on CircleCI see our "
             [:a
-             {:href "https://circleci.com/docs/ios-code-signing/"}
+             {:href "/docs/ios-code-signing/"}
              "code-signing documentation."]]
            (if-not (empty? osx-keys)
              (om/build p12-key-table {:rows (->> osx-keys
@@ -2126,7 +2132,7 @@
                       usually be required for running tests, but will be required for ad-hoc, TestFlight, and
                       App Store builds. See our "
             [:a
-             {:href "https://circleci.com/docs/ios-code-signing/"}
+             {:href "/docs/ios-code-signing/"}
              "code-signing documentation"]
             " for more details."]
            (if-not (empty? osx-profiles)

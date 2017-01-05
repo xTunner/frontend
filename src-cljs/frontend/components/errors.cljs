@@ -7,7 +7,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils :refer [auth-url]]
-            [frontend.utils.html :refer [open-ext]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -31,20 +30,20 @@
           [:p "Something doesn't look right ..."]
           (cond
             (= status 500) [:div [:p.error-message "If the problem persists, feel free to check out our "
-                                  [:a (open-ext {:href "http://status.circleci.com/"}) "status"]
+                                  [:a {:href "http://status.circleci.com/"} "status"]
                                   " or "
-                                  [:a (open-ext {:href "mailto:sayhi@circleci.com"}) "contact us"]
+                                  [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
                                   "."]]
             (or (= status 404) (= status 401))
             [:div
              [:h3 "You may have been logged out. "]
              [:p.error-message
               "Learn more about "
-              [:a (open-ext {:href "/"}) "CircleCI"]
+              [:a {:href "/"} "CircleCI"]
               " , "
-              [:a (open-ext {:href "/mobile/osx/"}) "CircleCI for macOS"]
+              [:a {:href "/mobile/osx/"} "CircleCI for OS X"]
               ", or "
-              [:a (open-ext {:href "/enterprise/"}) "CircleCI for Enterprise"]
+              [:a {:href "/enterprise/"} "CircleCI for Enterprise"]
               "."]]
             :else "Something completely unexpected happened")]]
         [:.jumbotron
@@ -57,9 +56,9 @@
           (om/build common/sign-up-cta {})
           [:div.fine-print
            "By clicking on \"Authorize GitHub\" or \"Authorize Bitbucket\" you are agreeing to our "
-           [:a (open-ext {:href "https://circleci.com/terms-of-service/"}) "Terms of Service"]
+           [:a {:href "/terms-of-service/"} "Terms of Service"]
            " and "
-           [:a (open-ext {:href "https://circleci.com/privacy/"}) "Privacy Policy"]
+           [:a {:href "/privacy/"} "Privacy Policy"]
            "."]]]]))))
 
 
@@ -83,9 +82,9 @@
           [:p "Something doesn't look right ..."]
           (cond
             (= status 500) [:p.error-message "If the problem persists, feel free to check out our "
-                            [:a (open-ext {:href "http://status.circleci.com/"}) "status"]
+                            [:a {:href "http://status.circleci.com/"} "status"]
                             " or "
-                            [:a (open-ext {:href "mailto:sayhi@circleci.com"}) "contact us"]
+                            [:a {:href "mailto:sayhi@circleci.com"} "contact us"]
                             "."]
             (or (= status 404) (= status 401))
             [:p.error-message "Try heading back to our "
@@ -98,8 +97,8 @@
                (if (not logged-in?)
                  (if (config/enterprise?)
                    [:span " or " logging-in]
-                   [:span ", " logging-in ", or " [:a (open-ext {:href "/signup"}) "signing up"]])
-                 [:span " or checking out our " [:a (open-ext {:href "http://blog.circleci.com/"}) "blog"]]))]
+                   [:span ", " logging-in ", or " [:a {:href "/signup/"} "signing up"]])
+                 [:span " or checking out our " [:a {:href "http://blog.circleci.com/"} "blog"]]))]
             :else "Something completely unexpected happened")]]]))))
 
 (defn error-page [app owner]

@@ -22,7 +22,6 @@
             [goog.style]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.launchdarkly :as ld])
   (:require-macros [frontend.utils :refer [html inspect]]))
 
@@ -551,12 +550,12 @@
 
              (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
                         show-aside-icons?)
-               [:a.aside-item (open-ext {:title "Documentation"
-                                         :data-placement "right"
-                                         :data-trigger "hover"
-                                         :target "_blank"
-                                         :href "https://circleci.com/docs/"
-                                         :on-click #(aside-nav-clicked owner :docs-icon-clicked)})
+               [:a.aside-item {:title "Documentation"
+                               :data-placement "right"
+                               :data-trigger "hover"
+                               :target "_blank"
+                               :href "/docs/"
+                               :on-click #(aside-nav-clicked owner :docs-icon-clicked)}
                 [:i.material-icons "description"]
                 [:div.nav-label "Docs"]])
 
@@ -575,12 +574,12 @@
              (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
                         show-aside-icons?)
                (when-not (config/enterprise?)
-                 [:a.aside-item (open-ext {:data-placement "right"
-                                           :data-trigger "hover"
-                                           :title "Changelog"
-                                           :target "_blank"
-                                           :href "/changelog"
-                                           :on-click #(aside-nav-clicked owner :changelog-icon-clicked)})
+                 [:a.aside-item {:data-placement "right"
+                                 :data-trigger "hover"
+                                 :title "Changelog"
+                                 :target "_blank"
+                                 :href "/changelog/"
+                                 :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
                   [:i.material-icons "receipt"]
                   [:div.nav-label "Changelog"]]))
 

@@ -91,11 +91,9 @@
           [:br]
           (if (= "running" (:status action))
             "You can download the output once this step is finished."
-            [:a
-             (html-utils/open-ext
-              {:href (:user-facing-output-url action)
-               :download "BuildOutput.txt"
-               :target "_new"})
+            [:a {:href (:user-facing-output-url action)
+                 :download "BuildOutput.txt"
+                 :target "_blank"}
              (if (:truncated action)
                "Download the first 4MB as a file."
                "Download the full output as a file.")])])))))

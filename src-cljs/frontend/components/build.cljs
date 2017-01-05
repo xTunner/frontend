@@ -20,7 +20,6 @@
             [frontend.config :as config]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.seq :refer [find-index]]
             [frontend.utils.build :as build-utils]
             [frontend.utils.vcs-url :as vcs-url]

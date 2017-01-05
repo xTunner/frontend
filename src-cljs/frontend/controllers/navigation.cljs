@@ -80,7 +80,7 @@
       state-utils/clear-page-state
       (assoc state/current-view navigation-point
              state/navigation-data args
-             :recent-builds nil)
+             state/recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build
       state-utils/reset-current-project))
@@ -477,7 +477,7 @@
       (assoc state/current-view navigation-point
              state/navigation-data args
              :admin-settings-subpage subpage
-             :recent-builds nil)))
+             state/recent-builds nil)))
 
 (defmethod post-navigated-to! :admin-settings
   [history-imp navigation-point {:keys [subpage tab]} previous-state current-state comms]

@@ -157,9 +157,9 @@
   static om-next/IQuery
   (query [this]
     ;; NB: Every Page *must* query for {:legacy/state [*]}, to make it available
-    ;; to frontend.components.app/Wrapper. This is necessary until the compassus
-    ;; root query can be customized. See
-    ;; https://github.com/compassus/compassus/issues/3
+    ;; to frontend.components.header/header. This is necessary until the
+    ;; wrapper, not the template, renders the header.
+    ;; See https://circleci.atlassian.net/browse/CIRCLE-2412
     ['{:legacy/state [*]}
      {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
                          :user/login

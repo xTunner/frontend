@@ -20,12 +20,9 @@
         (html
           [:div
            [:div.navs-container
-            [:a.logomark.hidden-sm-down {:href "/dashboard"
-                                         :aria-label "Dashboard"}
+            [:a.logomark {:href "/dashboard"
+                          :aria-label "Dashboard"}
              (common/ico :logo)]
-            [:a.logomark-narrow.hidden-md-up {:href "/dashboard"
-                                              :aria-label "Dashboard"}
-             [:img {:src (utils/cdn-path "/img/inner/icons/Logo-Wordmark.svg")}]]
             [:ul.nav-items.collapsing-nav
               [:li
                 [:a.has-icon {:href "/dashboard"
@@ -52,12 +49,12 @@
                "Updates" [:i.material-icons "keyboard_arrow_down"]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                (when-not (config/enterprise?)
-                 [:li [:a (html/open-ext {:href "https://circleci.com/changelog/"
-                                          :target "_blank"})
+                 [:li [:a {:href "/changelog/"
+                           :target "_blank"}
                        [:div.heading "Changelog"]
                        [:div.description "The latest CircleCI product updates."]]])
-               [:li [:a (html/open-ext {:href "https://discuss.circleci.com/c/announcements"
-                                        :target "_blank"})
+               [:li [:a {:href "https://discuss.circleci.com/c/announcements"
+                         :target "_blank"}
                      [:div.heading "Announcements"]
                      [:div.description "Important announcements from CircleCI about upcoming features and updates."]]]]]
              [:li.dropdown
@@ -68,13 +65,13 @@
                "Support" [:i.material-icons "keyboard_arrow_down"]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                [:li
-                [:a (html/open-ext {:href "https://circleci.com/docs/"
-                                    :target "_blank"})
+                [:a {:href "/docs/"
+                     :target "_blank"}
                  [:div.heading "Docs"]
                  [:div.description "Read about building, testing, and deploying your software on CircleCI."]]]
                [:li
-                [:a (html/open-ext {:href "https://discuss.circleci.com/"
-                                    :target "_blank"})
+                [:a {:href "https://discuss.circleci.com/"
+                     :target "_blank"}
                  [:div.heading "Discuss"]
                  [:div.description "Get help and meet developers talking about testing, continuous integration, and continuous delivery."]]]
                [:li
@@ -82,12 +79,12 @@
                  [:div.heading "Support"]
                  [:div.description "Send us a message. We are here to help!"]]]
                [:li
-                [:a (html/open-ext {:href "https://discuss.circleci.com/c/feature-request"
-                                    :target "_blank"})
+                [:a {:href "https://discuss.circleci.com/c/feature-request"
+                     :target "_blank"}
                  [:div.heading "Suggest a feature"]]]
                [:li
-                [:a (html/open-ext {:href "https://discuss.circleci.com/c/bug-reports"
-                                    :target "_blank"})
+                [:a {:href "https://discuss.circleci.com/c/bug-reports"
+                     :target "_blank"}
                  [:div.heading "Report an issue"]]]]]
              [:li.dropdown.user-menu
               [:button.dropdown-toggle

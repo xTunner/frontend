@@ -12,7 +12,6 @@
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.html :refer [open-ext]]
             [cljs-time.format :as time-format]
             [goog.string :as gstring]
             [goog.string.format]
@@ -170,8 +169,7 @@
      "Each machine is completely separated (sandboxed and firewalled) from the others, so that your tests can't conflict with each other: separate databases, file systems, process space, and memory."]
     [:p
      "For RSpec, Cucumber and Test::Unit, we'll automatically run your tests, splitting them appropriately among different machines. If you have a different test suite, you can "
-     [:a
-      (open-ext {:href "https://circleci.com/docs/parallel-manual-setup/"})
+     [:a {:href "/docs/parallel-manual-setup/"}
       "control the parallelism directly"]
      "."]]
    (when-not (config/enterprise?)

@@ -16,7 +16,6 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
@@ -93,7 +92,8 @@
                [:label {:placeholder "Current Heroku key"}]])
             [:input#heroku-key
              {:required  true
-              :type      "text",
+              :auto-focus true
+              :type      "text"
               :value     heroku-api-key-input
               :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
             [:label {:placeholder "Add new key"}]

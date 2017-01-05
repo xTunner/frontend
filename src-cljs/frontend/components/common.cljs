@@ -8,7 +8,6 @@
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]
-            [frontend.utils.html :refer [open-ext]]
             [frontend.timer :as timer]
             [frontend.elevio :as elevio]
             [goog.dom]
@@ -263,14 +262,15 @@
     om/IRender
     (render [_]
       (let [track-signed-up-clicked #((om/get-shared owner :track-event) {:event-type :signup-clicked})
-            link-btn-attrs (fn [login-url] (open-ext {:href (str login-url
-                                                                 "?return-to="
-                                                                 js/window.location.origin
-                                                                 js/window.location.pathname
-                                                                 "?signup-404=true"
-                                                                 js/window.location.hash)
-                                                      :role "button"
-                                                      :on-mouse-up track-signed-up-clicked}))]
+            link-btn-attrs (fn [login-url]
+                             {:href (str login-url
+                                         "?return-to="
+                                         js/window.location.origin
+                                         js/window.location.pathname
+                                         "?signup-404=true"
+                                         js/window.location.hash)
+                              :role "button"
+                              :on-mouse-up track-signed-up-clicked})]
         (html
           [:div.container-fluid.signup
            [:div.col-sm-5.col-sm-offset-1

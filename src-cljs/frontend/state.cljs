@@ -63,6 +63,12 @@
 
 (def build-data-path [:current-build-data])
 
+(def recent-builds :recent-builds)
+(def recent-builds-path [recent-builds])
+
+(defn recent-builds-branch-path [branch]
+  (conj recent-builds-path branch))
+
 ;; state related to the first-green-build invite box
 (def build-invite-data-path (conj build-data-path :invite-data))
 (def build-invite-members-path (conj build-invite-data-path :org-members))

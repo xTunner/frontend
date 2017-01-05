@@ -23,20 +23,15 @@
   (:require-macros [frontend.utils :refer [html]]))
 
 (defui ^:once Loading
-  ;; This component should actually not implement IQuery and have no query.
-  ;; However, this will break Compassus until
-  ;; https://github.com/compassus/compassus/issues/5's fix,
-  ;; https://github.com/compassus/compassus/commit/584551699346ba62c47c96e5ae342d5e8a73be75
-  ;; is released. Until then, ask for a key which the parser knows to ignore.
-  static om-next/IQuery
-  (query [this] '[:nothing/nothing])
   Object
   (render [this] nil))
 
 (def routes
-  {:route/loading (compassus/index-route Loading)
+  {:route/loading Loading
    :route/legacy-page legacy/LegacyPage
    :route/projects projects/Page})
+
+(def index-route :route/loading)
 
 (defn head-admin [app owner]
   (reify
@@ -103,10 +98,13 @@
        (= "blocked" (get-in app [:enterprise :site-status :status]))))
 
 (defui ^:once Wrapper
+  static om-next/IQuery
+  (query [this]
+    '[{:legacy/state [*]}])
   Object
   (render [this]
-    (let [{:keys [factory props owner]} (om-next/props this)
-          app (:legacy/state props)]
+    (let [app (:legacy/state (om-next/props this))
+          {:keys [factory props owner]} (om-next/get-computed this)]
       (if (app-blocked? app)
         (blocked-page app)
         (let [user (get-in app state/user-path)
@@ -149,5 +147,3 @@
                    (build-legacy aside/aside-nav {:user user :current-route current-route}))))
 
              (factory props)]]))))))
-
-(def wrapper (om-next/factory Wrapper))

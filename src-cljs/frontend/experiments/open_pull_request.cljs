@@ -1,6 +1,6 @@
 (ns frontend.experiments.open-pull-request
-  (:require [frontend.models.build :as build-model]
-            [frontend.utils.html :refer [open-ext]]
+  (:require [frontend.components.pieces.button :as button]
+            [frontend.models.build :as build-model]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -15,12 +15,14 @@
     om/IRender
     (render [_]
       (html
-       [:div.open-pull-request-container
-        [:a.exception.btn (open-ext {:href (build-model/new-pull-request-url build)
-                                     :target "_blank"
-                                     :on-click #((om/get-shared owner :track-event) {:event-type :open-pull-request-clicked
-                                                                                     :properties {:branch (:branch build)
-                                                                                                  :build-outcome (:outcome build)}})})
-         [:i.octicon.octicon-git-pull-request.open-pull-request-icon]
-         [:span.open-pull-request-text
-          "Open a Pull Request"]]]))))
+       (button/link {:href (build-model/new-pull-request-url build)
+                     :data-external true
+                     :target "_blank"
+                     :kind (if (= "success" (:outcome build))
+                             :primary
+                             :secondary)
+                     :size :medium
+                     :on-click #((om/get-shared owner :track-event) {:event-type :open-pull-request-clicked
+                                                                     :properties {:branch (:branch build)
+                                                                                  :build-outcome (:outcome build)}})}
+                    "Open a Pull Request")))))
