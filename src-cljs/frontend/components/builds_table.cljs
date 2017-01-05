@@ -60,7 +60,7 @@
 (defrender pull-requests [{:keys [build]} owner]
   (html
    (when-let [urls (seq (map :url (:pull_requests build)))]
-     [:div.metadata-item.pull-requests {:title "Pull Requests"}
+     [:span.metadata-item.pull-requests {:title "Pull Requests"}
       [:i.octicon.octicon-git-pull-request]
       (interpose
        ", "
@@ -79,7 +79,7 @@
 (defrender commits [{:keys [build]} owner]
   (html
    (when (:vcs_revision build)
-     [:div.metadata-item.revision
+     [:span.metadata-item.revision
       [:i.octicon.octicon-git-commit]
       [:a {:title (build-model/github-revision build)
            :href (build-model/commit-url build)
@@ -125,7 +125,7 @@
           :icon-name "Rebuild"
           :on-click #(raise! owner [:retry-build-clicked build-args])})
         :else nil)]
-     
+
      [:div.build-info
       [:div.build-info-header
        [:div.contextual-identifier
@@ -164,20 +164,20 @@
        (if (or (not (:start_time build))
                (= "not_run" (:status build)))
          (list
-          [:div.metadata-item.recent-time.start-time
+          [:span.metadata-item.recent-time.start-time
            {:title "Started: not started"}
            [:i.material-icons "today"]
            "–"]
-          [:div.metadata-item.recent-time.duration
+          [:span.metadata-item.recent-time.duration
            {:title "Duration: not run"}
            [:i.material-icons "timer"]
            "–"])
-         (list [:div.metadata-item.recent-time.start-time
+         (list [:span.metadata-item.recent-time.start-time
                 {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
                 [:i.material-icons "today"]
                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
                 " ago"]
-               [:div.metadata-item.recent-time.duration
+               [:span.metadata-item.recent-time.duration
                 {:title (str "Duration: " (build-model/duration build))}
                 [:i.material-icons "timer"]
                 (om/build common/updating-duration {:start (:start_time build)
@@ -185,8 +185,6 @@
       [:div.metadata-row.pull-revision
        (om/build pull-requests {:build build})
        (om/build commits {:build build})]]]))
-
-
 
 (defn job-waiting-badge
   "badge for waiting job."
