@@ -17,6 +17,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils]
             [frontend.utils.github :refer [auth-url]]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -120,7 +121,7 @@
              [:div.navbar-header
               [:a#logo.navbar-brand
                {:href "/"
-                :on-click #(raise! owner [:clear-build-data nil])}
+                :on-click #(raise! owner [:clear-build-data])}
                (common/circle-logo {:width nil
                                     :height 25})]
               (if logged-in?
@@ -131,11 +132,11 @@
                           "/signup/")}
                  "Sign up"])]
              [:div.navbar-container {:class hamburger-state}
-              (if (:current-build-data app)
+              (if (and (:current-build-data app) (ld/feature-on? "show-demo-label"))
                 [:ul.nav.navbar-nav
                   (if first-build
                     [:li [:span.demo-label "You are viewing the CircleCI open source dashboard with builds from " (string/capitalize (:username first-build)) "'s " (string/capitalize (:reponame first-build)) " repo!"]]
-                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard"]])]
+                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard!"]])]
                 [:ul.nav.navbar-nav
                  (when (config/show-marketing-pages?)
                    (list

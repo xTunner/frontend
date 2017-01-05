@@ -1235,7 +1235,7 @@
   (update-in state [:organization/by-vcs-type-and-name [vcs-type org-name]] dissoc :users))
 
 (defmethod control-event :clear-build-data
-  [target message {:keys [org-name vcs-type]} state]
+  [target message args state]
   (dissoc state :current-build-data))
 
 (defmethod post-control-event! :org-settings-normalized
