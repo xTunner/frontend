@@ -176,6 +176,7 @@
 (defn vcs-recent-active-projects-path [building? vcs-type]
   (assert (= :github vcs-type))
   (conj user-path :vcs-activity vcs-type (-> building? str keyword)))
+(def vcs-activity-loaded-path (conj user-path :vcs-activity :loaded?))
 
 (def user-email-prefs-key :basic_email_prefs)
 (def user-email-prefs-path (conj user-path :basic_email_prefs))
