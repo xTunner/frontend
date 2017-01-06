@@ -42,7 +42,6 @@
 
 .linux-plan-header,
 .osx-plan-header {
-  .flexy(flex-start space-between);
 
   h1 {
     margin-top: 4px;
@@ -52,7 +51,6 @@
 }
 
 .osx-plans {
-
   margin-bottom: 2em;
 
   .plan-selection {
@@ -69,5 +67,17 @@
     .unselected {
       border: 1px solid @grayLighter;
     }
+  }
+}
+
+@media (min-width: 1250px) {
+  .linux-plan-header,
+  .osx-plan-header {
+    .flexy(flex-start space-between);
+  }
+
+  #linux-plan-info,
+  #linux-oss-note {
+    width: 49%;
   }
 }

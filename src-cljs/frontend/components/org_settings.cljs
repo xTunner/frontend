@@ -506,10 +506,9 @@
          [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
           [:div.main-content
            [:div.linux-plan-header
-            [:div {:style {:width "49%"}}
-             (om/build linux-plan-overview app)]
+            (om/build linux-plan-overview app)
 
-            [:div {:style {:width "49%"}}
+            [:div#linux-oss-note
              [:h1.text-center "More containers = faster builds & lower queue times."]
              (when-not (config/enterprise?)
                [:div
@@ -1233,12 +1232,10 @@
                   (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
                     [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
                  [:p "Questions? Check out the FAQs below."]]
-                [:div {:style {:width "49%" :margin-top "1em"}}
-                 (om/build osx-usage-table-plan {:plan plan})]])
+                (om/build osx-usage-table-plan {:plan plan})])
              [:div.osx-plan-header
-              [:div {:style {:width "49%"}}
-               [:h1 "No OS X plan selected"]
-               [:p "Choose a OS X plan below."]]])])))))
+              [:h1 "No OS X plan selected"]
+              [:p "Choose a OS X plan below."]])])))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1369,7 +1366,7 @@
           price (-> plan :paid :template :price)
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name vcs_type)]
-      [:div
+      [:div#linux-plan-info
        [:div.explanation
         (when piggiebacked?
           [:div.alert.alert-warning
