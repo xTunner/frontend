@@ -16,7 +16,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils]
             [frontend.utils.github :refer [auth-url]]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :refer [format capitalize]]
             [om.core :as om :include-macros true]) 
@@ -132,10 +131,10 @@
                           "/signup/")}
                  "Sign up"])]
              [:div.navbar-container {:class hamburger-state}
-              (if (and (:current-build-data app) (ld/feature-on? "show-demo-label"))
+              (if (and (:current-build-data app) (feature/enabled? "show-demo-label"))
                 [:ul.nav.navbar-nav
-                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard"
-                          (when first-build (format " with builds from %s's %s repo" (capitalize (:username first-build)) (capitalize (:reponame first-build))))]]]
+                    [:li [:span.demo-label " "
+                          (when first-build (format "You are viewing the CircleCI open source dashboard with builds from %s's %s repo" (capitalize (:username first-build)) (capitalize (:reponame first-build))))]]]
                 [:ul.nav.navbar-nav
                  (when (config/show-marketing-pages?)
                    (list
