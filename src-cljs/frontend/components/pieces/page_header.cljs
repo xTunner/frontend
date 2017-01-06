@@ -7,16 +7,19 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn crumb-node [{:keys [active name path track-event-type demo]} owner]
-  ;; demo intended for OSS users, external viewers of builds page
+(defn crumb-node [{:keys [active name path track-event-type demo? user?]} owner]
+  "Individual breadcrumbs in page header.
+
+   :demo? - Boolean value to indicate whether or not a header should be visible
+            to external (e.g. OSS) viewers of the builds page, such as those
+            viewing a demo of CircleCI."
   (reify
     om/IRender
     (render [_]
       (component
         (html
-          (if-not demo
-            [:li
-             [:span name]]
+          (if (or user?
+                  (and (not user?) demo?))
             (if active
               [:li.active
                [:a {:disabled true :title name} name " "]]
@@ -25,7 +28,9 @@
                     :title name
                     :on-click (when track-event-type
                                 #((om/get-shared owner :track-event) {:event-type track-event-type}))}
-                   name " "]])))))))
+                   name " "]])
+            [:li
+             [:span name]]))))))
 
 (defmulti crumb
   (fn [{:keys [type]}] type))
@@ -35,19 +40,21 @@
   (om/build crumb-node attrs))
 
 (defmethod crumb :dashboard
-  [{:keys [owner]}]
+  [{:keys [owner user?]}]
   (om/build crumb-node {:name "Builds"
                         :path (routes/v1-dashboard-path {})
                         :track-event-type :breadcrumb-dashboard-clicked
-                        :demo false}))
+                        :demo? false
+                        :user? user?}))
 
 (defmethod crumb :project
-  [{:keys [vcs_type username project active owner]}]
+  [{:keys [vcs_type username project active owner user?]}]
   (om/build crumb-node {:name project
                         :path (routes/v1-dashboard-path {:vcs_type vcs_type :org username :repo project})
                         :active active
                         :track-event-type :breadcrumb-project-clicked
-                        :demo true}))
+                        :demo? true
+                        :user? user?}))
 
 (defmethod crumb :project-settings
   [{:keys [vcs_type username project active]}]
@@ -56,7 +63,7 @@
                         :active active}))
 
 (defmethod crumb :project-branch
-  [{:keys [vcs_type username project branch active tag owner]}]
+  [{:keys [vcs_type username project branch active tag owner user?]}]
   (om/build crumb-node {:name (cond
                                 tag (utils/trim-middle (utils/display-tag tag) 45)
                                 branch (utils/trim-middle (utils/display-branch branch) 45)
@@ -68,24 +75,26 @@
                                                           :branch branch}))
                         :track-event-type :breadcrumb-branch-clicked
                         :active active
-                        :demo true}))
+                        :demo? true
+                        :user? user?}))
 
 (defmethod crumb :build
   [{:keys [vcs_type username project build-num active]}]
   (om/build crumb-node {:name (str "build " build-num)
                         :track-event-type :breadcrumb-build-clicked
-                        :demo true
+                        :demo? true
                         :path (routes/v1-build-path vcs_type username project build-num)
                         :active active}))
 
 (defmethod crumb :org
-  [{:keys [vcs_type username active owner]}]
+  [{:keys [vcs_type username active owner user?]}]
   (om/build crumb-node {:name username
                         :track-event-type :breadcrumb-org-clicked
-                        :demo false
+                        :demo? false
                         :path (routes/v1-dashboard-path {:vcs_type vcs_type
                                                          :org username})
-                        :active active}))
+                        :active active
+                        :user? user?}))
 
 (defmethod crumb :org-settings
   [{:keys [vcs_type username active]}]
@@ -129,19 +138,24 @@
   "The page header.
 
   :crumbs  - The breadcrumbs to display.
+  :user    - User information to determine if a user is logged in.
+             If no user, then page is being viewed from the outer .com,
+             typically a view of an OSS-project
   :actions - (optional) A component (or collection of components) which will be
              placed on the right of the header. This is where page-wide actions are
              placed."
-  [{:keys [crumbs actions]} owner]
-  (reify
-    om/IDisplayName (display-name [_] "User Header")
-    om/IRender
-    (render [_]
-      (component
-        (html
-         [:div
-          [:ol.breadcrumbs (map crumb crumbs)]
-          [:.actions actions]])))))
+  [{:keys [crumbs actions user]} owner]
+  (let [user? (boolean (:name user))
+        crumbs-login (map #(assoc % :user? user?) crumbs)]
+    (reify
+      om/IDisplayName (display-name [_] "User Header")
+      om/IRender
+      (render [_]
+        (component
+          (html
+           [:div
+            [:ol.breadcrumbs (map crumb crumbs-login)]
+            [:.actions actions]]))))))
 
 (dc/do
   (def ^:private crumbs

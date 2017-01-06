@@ -48,7 +48,7 @@
           :success-text "Followed"
           :kind :primary
           :size :medium}
-          "Follow Project")))))
+         "Follow Project")))))
 
 (defn show-settings-link? [app]
   (and
@@ -366,6 +366,7 @@
                              not)
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
+                                          :user user
                                           :actions (cond-> []
                                                      (show-settings-link? app)
                                                      (conj (settings-link app owner))
