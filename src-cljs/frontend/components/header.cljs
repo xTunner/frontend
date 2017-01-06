@@ -1,6 +1,5 @@
 (ns frontend.components.header
-  (:require [clojure.string :as string]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.license :as license]
@@ -19,7 +18,8 @@
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true])
+            [goog.string :refer [format capitalize]]
+            [om.core :as om :include-macros true]) 
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-follow-project-button? [app]
@@ -134,9 +134,8 @@
              [:div.navbar-container {:class hamburger-state}
               (if (and (:current-build-data app) (ld/feature-on? "show-demo-label"))
                 [:ul.nav.navbar-nav
-                  (if first-build
-                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard with builds from " (string/capitalize (:username first-build)) "'s " (string/capitalize (:reponame first-build)) " repo!"]]
-                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard!"]])]
+                    [:li [:span.demo-label "You are viewing the CircleCI open source dashboard"
+                          (when first-build (format " with builds from %s's %s repo" (capitalize (:username first-build)) (capitalize (:reponame first-build))))]]]
                 [:ul.nav.navbar-nav
                  (when (config/show-marketing-pages?)
                    (list
