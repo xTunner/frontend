@@ -76,8 +76,15 @@
     .flexy(flex-start space-between);
   }
 
-  #linux-plan-info,
-  #linux-oss-note {
-    width: 49%;
+  .split-plan-block {
+    .flex(1, 0, 0);
+
+    &:last-child {
+      margin-left: 15px;
+    }
+
+    &:first-child {
+      margin-left: 0;
+    }
   }
 }

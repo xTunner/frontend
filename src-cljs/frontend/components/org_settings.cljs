@@ -508,7 +508,7 @@
            [:div.linux-plan-header
             (om/build linux-plan-overview app)
 
-            [:div#linux-oss-note
+            [:div.split-plan-block
              [:h1.text-center "More containers = faster builds & lower queue times."]
              (when-not (config/enterprise?)
                [:div
@@ -1209,7 +1209,7 @@
            (if (pm/osx? plan)
              (let [plan-name (some-> plan :osx :template :name)]
                [:div.osx-plan-header
-                [:div {:style {:width "49%"}}
+                [:div.split-plan-block
                  ;FIXME: need to add conditional for you have no plan selected. select plan below.
                  [:h1
                   (cond
@@ -1232,7 +1232,8 @@
                   (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
                     [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])]
                  [:p "Questions? Check out the FAQs below."]]
-                (om/build osx-usage-table-plan {:plan plan})])
+                [:div.split-plan-block
+                 (om/build osx-usage-table-plan {:plan plan})]])
              [:div.osx-plan-header
               [:h1 "No OS X plan selected"]
               [:p "Choose a OS X plan below."]])])))))
@@ -1366,7 +1367,7 @@
           price (-> plan :paid :template :price)
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name vcs_type)]
-      [:div#linux-plan-info
+      [:div.split-plan-block
        [:div.explanation
         (when piggiebacked?
           [:div.alert.alert-warning
