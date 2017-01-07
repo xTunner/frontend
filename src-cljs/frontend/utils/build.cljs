@@ -13,11 +13,11 @@
     ;; the user is has the right permissions (and is logged in).
     (and (:read-settings scopes)
          (build-model/in-usage-queue? build))
-    :usage-queue
+    :queue-placeholder
     ;; If there's no SSH info, build isn't finished, show the config or commits.
     ;; "config" takes up too much room for paid customers.
     (build-model/running? build) (if (:read-settings scopes)
-                                   :usage-queue
+                                   :queue-placeholder
                                    :config)
     ;; Otherwise, just use the first one.
     :else :tests))

@@ -77,6 +77,26 @@
        [:span "Check " [:a {:href "/admin/fleet-state"} "Fleet State"] " for details and potentially start new builders"]
        "Ask a CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
 
+(defn build-queue-placeholder [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div.build-queue.active
+         [:div.queue-message
+          [:p
+           "Avoid queues by "
+           [:a {:href "/"} "adding containers"]
+           ", skipping redundant builds (though "
+           [:a {:href "/"} "project settings"]
+           " or "
+           [:a {:href "/"} "configuring your yml"]
+           ")"]
+          [:p "NOTE: Showing queued builds can cause page performance issues."]]
+         (button/link {:kind :secondary
+                       :href "#usage-queue"}
+                      "Show Queued Builds")]))))
+
 (defn build-queue [data owner]
   (reify
     om/IWillMount
@@ -791,6 +811,8 @@
                                              :build-data build-data})
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
+
+             :queue-placeholder (om/build build-queue-placeholder {})
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
