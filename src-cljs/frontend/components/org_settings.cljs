@@ -514,14 +514,13 @@
                [:div
                 (om/build linux-oss-alert app)])]]
 
-             [:div#plan-anchor-linux
+             [:div
               [:form
               (when-not (config/enterprise?)
                 [:div.container-picker
                  (if (pm/linux? plan)
                    [:legend.update-plan "Update Linux plan"]
-                   [:legend.update-plan "Choose Linux plan"]
-                   )
+                   [:legend.update-plan "Choose Linux plan"])
                  [:h1.container-input
                   [:span "Use "]
                   [:input.form-control
@@ -586,7 +585,7 @@
                      "Pay Now")))
                (when-not (config/enterprise?)
                  ;; TODO: Clean up conditional here - super nested and many interactions
-                 ;; FIXME 1833: ON CURRENT PLAN, ADD MESSAGE 'CHANGE CONTAINERS TO UPDATE PLAN'
+                 ;; FIXME CIRCLE-1833 ON CURRENT PLAN, ADD MESSAGE 'CHANGE CONTAINERS TO UPDATE PLAN'
                  (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
                    [:div
                     [:p.hint
