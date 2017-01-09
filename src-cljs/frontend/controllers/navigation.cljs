@@ -136,7 +136,7 @@
   (set-page-title! "Build State"))
 
 (defn- add-crumbs [state {:keys [vcs_type project-name build-num org repo tab container-id action-id]}]
-  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path) (workflow-id state)
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)
         crumbs (if workflow-id
                  [{:type :workflows-dashboard}
                   {:type :org :username org :vcs_type vcs_type}
