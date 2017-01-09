@@ -87,7 +87,7 @@
           [:p
            "Avoid queues by "
            [:a {:href "/"} "adding containers"]
-           ", skipping redundant builds (though "
+           ", skipping redundant builds (through "
            [:a {:href "/"} "project settings"]
            " or "
            [:a {:href "/"} "configuring your yml"]
