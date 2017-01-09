@@ -475,10 +475,9 @@
 (defn linux-oss-alert [app owner]
   (om/component
     (html
-      [:div.alert.alert-default.mb-0
-       [:div.usage-message
-        [:div.text
-         [:span "We "[:span.heart-emoji "❤"]" OSS. Projects that are public will build with " pm/oss-containers " extra containers - our gift to free and open source software."]]]])))
+      [:div.usage-message
+       [:div.text
+        [:span "We "[:span.heart-emoji "❤"]" OSS. Projects that are public will build with " pm/oss-containers " extra containers - our gift to free and open source software."]]])))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
   (reify
@@ -509,7 +508,7 @@
             (om/build linux-plan-overview app)
 
             [:div.split-plan-block
-             [:h1.text-center "More containers = faster builds & lower queue times."]
+             [:h1 "More containers = faster builds & lower queue times."]
              (when-not (config/enterprise?)
                [:div
                 (om/build linux-oss-alert app)])]]
