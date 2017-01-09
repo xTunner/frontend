@@ -364,7 +364,7 @@
                              not)
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
-                                          :user user
+                                          :logged-out? (not (:name user))
                                           :actions (cond-> []
                                                      (show-settings-link? app)
                                                      (conj (settings-link app owner))

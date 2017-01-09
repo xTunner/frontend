@@ -7,7 +7,7 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn crumb-node [{:keys [active name path track-event-type demo? user?]} owner]
+(defn crumb-node [{:keys [active name path track-event-type demo? logged-out?]} owner]
   "Individual breadcrumbs in page header.
 
    :demo? - Boolean value to indicate whether or not a header should be visible
@@ -18,8 +18,8 @@
     (render [_]
       (component
         (html
-          (if (or user?
-                  (and (not user?) demo?))
+          (if (or (not logged-out?)
+                  (and logged-out? demo?))
             (if active
               [:li.active
                [:a {:disabled true :title name} name " "]]
@@ -40,21 +40,21 @@
   (om/build crumb-node attrs))
 
 (defmethod crumb :dashboard
-  [{:keys [owner user?]}]
+  [{:keys [owner logged-out?]}]
   (om/build crumb-node {:name "Builds"
                         :path (routes/v1-dashboard-path {})
                         :track-event-type :breadcrumb-dashboard-clicked
                         :demo? false
-                        :user? user?}))
+                        :logged-out? logged-out?}))
 
 (defmethod crumb :project
-  [{:keys [vcs_type username project active owner user?]}]
+  [{:keys [vcs_type username project active owner logged-out?]}]
   (om/build crumb-node {:name project
                         :path (routes/v1-dashboard-path {:vcs_type vcs_type :org username :repo project})
                         :active active
                         :track-event-type :breadcrumb-project-clicked
                         :demo? true
-                        :user? user?}))
+                        :logged-out? logged-out?}))
 
 (defmethod crumb :project-settings
   [{:keys [vcs_type username project active]}]
@@ -63,7 +63,7 @@
                         :active active}))
 
 (defmethod crumb :project-branch
-  [{:keys [vcs_type username project branch active tag owner user?]}]
+  [{:keys [vcs_type username project branch active tag owner logged-out?]}]
   (om/build crumb-node {:name (cond
                                 tag (utils/trim-middle (utils/display-tag tag) 45)
                                 branch (utils/trim-middle (utils/display-branch branch) 45)
@@ -76,7 +76,7 @@
                         :track-event-type :breadcrumb-branch-clicked
                         :active active
                         :demo? true
-                        :user? user?}))
+                        :logged-out? logged-out?}))
 
 (defmethod crumb :build
   [{:keys [vcs_type username project build-num active]}]
@@ -87,14 +87,14 @@
                         :active active}))
 
 (defmethod crumb :org
-  [{:keys [vcs_type username active owner user?]}]
+  [{:keys [vcs_type username active owner logged-out?]}]
   (om/build crumb-node {:name username
                         :track-event-type :breadcrumb-org-clicked
                         :demo? false
                         :path (routes/v1-dashboard-path {:vcs_type vcs_type
                                                          :org username})
                         :active active
-                        :user? user?}))
+                        :logged-out? logged-out?}))
 
 (defmethod crumb :org-settings
   [{:keys [vcs_type username active]}]
@@ -137,16 +137,15 @@
 (defn header
   "The page header.
 
-  :crumbs  - The breadcrumbs to display.
-  :user    - User information to determine if a user is logged in.
-             If no user, then page is being viewed from the outer .com,
-             typically a view of an OSS-project
-  :actions - (optional) A component (or collection of components) which will be
-             placed on the right of the header. This is where page-wide actions are
-             placed."
-  [{:keys [crumbs actions user]} owner]
-  (let [user? (boolean (:name user))
-        crumbs-login (map #(assoc % :user? user?) crumbs)]
+  :crumbs      - The breadcrumbs to display.
+  :logged-out? - Whether or not a viewer is logged out
+                 If they are logged out, then page is being viewed from the outer .com,
+                 typically to view of an OSS-project
+  :actions     - (optional) A component (or collection of components) which will be
+                 placed on the right of the header. This is where page-wide actions are
+                 placed."
+  [{:keys [crumbs actions logged-out?]} owner]
+  (let [crumbs-login (map #(assoc % :logged-out? logged-out?) crumbs)]
     (reify
       om/IDisplayName (display-name [_] "User Header")
       om/IRender
