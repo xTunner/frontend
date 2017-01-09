@@ -459,7 +459,7 @@
                            (vals)
                            (map (partial merge {:plan plan})))]
         (html
-          [:div#plan-anchor-osx.osx-plans {:data-component `osx-plans-list}
+          [:div.osx-plans {:data-component `osx-plans-list}
            (if (pm/osx? plan)
              [:legend.update-plan "Update OS X plan"]
              [:legend.update-plan "Choose OS X plan"]
@@ -504,7 +504,7 @@
         (html
          [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
           [:div.main-content
-           [:div.linux-plan-header
+           [:div.plan-header
             (om/build linux-plan-overview app)
 
             [:div.split-plan-block
@@ -1206,7 +1206,7 @@
          [:div
            (if (pm/osx? plan)
              (let [plan-name (some-> plan :osx :template :name)]
-               [:div.osx-plan-header
+               [:div.plan-header
                 [:div.split-plan-block
                  ;FIXME: need to add conditional for you have no plan selected. select plan below.
                  [:h1
@@ -1232,7 +1232,7 @@
                  [:p "Questions? Check out the FAQs below."]]
                 [:div.split-plan-block
                  (om/build osx-usage-table-plan {:plan plan})]])
-             [:div.osx-plan-header
+             [:div.plan-header
               [:h1 "No OS X plan selected"]
               [:p "Choose a OS X plan below."]])])))))
 
