@@ -830,7 +830,7 @@
                                   {:from-org {:org-name org-name
                                               :vcs-type vcs_type}
                                    :to-org selected-transfer-org}])}
-             "Transfer plan")]])]]))))
+             "Transfer Plan")]])]]))))
 
 (defn organizations [app owner]
   (om/component
