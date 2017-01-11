@@ -16,8 +16,10 @@
             [frontend.state :as state]
             [frontend.analytics.core :as analytics]
             [frontend.favicon]
+            [frontend.elevio :as elevio]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.state :as state-utils]
+            [frontend.utils.map :as map-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
@@ -334,6 +336,12 @@
                  api-ch
                  :context {:project-name project-name
                            :vcs-type vcs_type}))
+    ;; Attach information about this build so support knows the last build a user
+    ;; was viewing before the sent in a support ticket.
+    (elevio/add-user-props! {:last-build-viewed (merge (select-keys build [:vcs_url :build_url :build_num :branch])
+                                                       {:repo-name (:reponame build)
+                                                        :org-name (-> build :vcs_url vcs-url/org-name)
+                                                        :scopes scopes})})
     (when (build-model/finished? build)
       (api/get-build-tests build api-ch))
     (when (and (= build-num (get-in args [:resp :build_num]))
@@ -1128,54 +1136,83 @@
                     :properties {:status-code (:status-code context)
                                  :message (-> context :resp :message)}}))
 
+(defmethod api-event [:supplement-vcs-activity :success]
+  [target message status {:keys [resp] :as args} state]
+  (if (empty? resp)
+    ;; this is the last api request, update the loading flag.
+    (assoc-in state state/vcs-activity-loaded-path true)
+    ;; Add the items on this page of results to the state.
+    (update-in state (state/vcs-recent-active-projects-path true :github) (fn [current-val]
+                                                                            (->> resp
+                                                                                 (filter repo-model/building-on-circle?)
+                                                                                 (map #(assoc % :checked true))
+                                                                                 (map-utils/coll-to-map :vcs_url)
+                                                                                 (merge current-val))))))
+
+(defmethod api-event [:supplement-vcs-activity :failed]
+  [target message status {:keys [resp]} state]
+  (assoc-in state state/vcs-activity-loaded-path true))
+
+(defmethod post-api-event! [:supplement-vcs-activity :success]
+  [target message status args previous-state current-state comms]
+  (when-not (empty? (:resp args))
+    ;; fetch the next page
+    (let [page (-> args :context :page)]
+      (api/get-github-repos (:api comms)
+                            :page (inc page)
+                            :message :supplement-vcs-activity))))
+
 (defmethod api-event [:vcs-activity :success]
   [_ _ _ {:keys [resp]} state]
   (let [recent-active-projects (->> resp
+                                    (map #(assoc % :checked true))
                                     (group-by repo-model/building-on-circle?)
-                                    ; in the case the vcs returns no projects, assoc empty list to remove the spinner
-                                    (merge {true [] false []}))
-        trim-recent-active-projects (fn [projects]
-                                      (->> projects
-                                           (sort-by :count >)
-                                           (take 5)
-                                           (map #(assoc % :checked true))
-                                           (into [])))]
+                                    (map-utils/map-vals #(map-utils/coll-to-map :vcs_url %))
+                                    (merge {true {} false {}}))]
     (->> recent-active-projects
          (reduce-kv (fn [state building? projects]
                       (assoc-in state
                                 (state/vcs-recent-active-projects-path building? :github)
-                                (trim-recent-active-projects projects)))
+                                projects))
                     state))))
 
 (defmethod api-event [:vcs-activity :failed]
   [_ _ _ _ state]
   (-> state
-      (assoc-in (state/vcs-recent-active-projects-path true :github) [])
-      (assoc-in (state/vcs-recent-active-projects-path false :github) [])))
+      (assoc-in (state/vcs-recent-active-projects-path true :github) {})
+      (assoc-in (state/vcs-recent-active-projects-path false :github) {})))
 
-(defmethod post-api-event! [:vcs-activity :success]
-  [_ _ status {:keys [resp]} _ current-state]
+(defn- post-vcs-activity-fetched [{:keys [current-state status status-code resp comms]}]
   (let [recent-active-projects (->> resp
                                     (group-by repo-model/building-on-circle?)
-                                    ; in the case the vcs returns no projects, assoc empty list to remove the spinner
-                                    (merge {true [] false []}))
+                                    (map-utils/map-vals #(map-utils/coll-to-map :vcs_url %)))
         total-projects-count #(-> recent-active-projects
                                   (get %)
                                   (count))]
     (analytics/track {:event-type :vcs-activity-fetched
                       :current-state current-state
                       :properties {:status status
+                                   :status-code status-code
                                    :total-building-projects-count (total-projects-count true)
                                    :total-not-building-projects-count (total-projects-count false)
-                                   :total-projects-count (count resp)}})))
+                                   :total-projects-count (count resp)}})
+    (api/get-github-repos (:api comms) :message :supplement-vcs-activity)))
+
+(defmethod post-api-event! [:vcs-activity :success]
+  [_ _ status {:keys [status-code resp]} _ current-state comms]
+  (post-vcs-activity-fetched {:current-state current-state
+                              :resp resp
+                              :status status
+                              :status-code status-code
+                              :comms comms}))
 
 (defmethod post-api-event! [:vcs-activity :failed]
-  [_ _ status {:keys [status-code resp]} _ current-state]
-  (analytics/track {:event-type :vcs-activity-fetched
-                    :current-state current-state
-                    :properties {:status status
-                                 :status-code status-code
-                                 :message (:message resp)}}))
+  [_ _ status {:keys [status-code resp]} _ current-state comms]
+  (post-vcs-activity-fetched {:current-state current-state
+                              :resp resp
+                              :status status
+                              :status-code status-code
+                              :comms comms}))
 
 (defmethod post-api-event! [:follow-projects :success]
   [_ _ status {:keys [context]} previous-state current-state comms]
