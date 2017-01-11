@@ -29,14 +29,21 @@
 
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
+    &:focus {
+      border-color: @blueLight;
+      outline: none;
+      box-shadow: 0 0 4px 0 rgba(29, 132, 148, 0.8);
+    }
+
+    &:focus,
     &:hover {
       background-color: @grayLighter;
     }
 
-    &:focus,
     &:active {
-      background-color: @grayLighter;
+      background-color: @grayLight;
       outline: none;
+      color: @whiten;
     }
 
     &.medium {
@@ -54,13 +61,14 @@
       color: @white;
       background-color: @blue;
 
+      &:focus,
       &:hover {
         background-color: @blueDark;
       }
 
-      &:focus,
       &:active {
         background-color: @blueDarkest;
+        outline: none;
       }
 
       &[disabled] {
@@ -72,13 +80,14 @@
       color: @white;
       background-color: @red;
 
+      &:focus,
       &:hover {
         background-color: @redDark;
       }
 
-      &:focus,
       &:active {
         background-color: @redDarkest;
+        outline: none;
       }
 
       &[disabled] {
@@ -94,9 +103,9 @@
         background-color: @grayLightest;
       }
 
-      &:focus,
       &:active {
         background-color: @grayLightest;
+        outline: none;
       }
 
       &[disabled] {
@@ -122,6 +131,19 @@
     // OVERRIDE--ICON-STYLE
     i {
       margin-left: 0;
+      color: inherit;
+    }
+
+    &:active {
+      i {
+        color: @whiten;
+      }
+    }
+
+    &[disabled] {
+      i {
+        color: inherit;
+      }
     }
   });
 
