@@ -233,9 +233,24 @@
       (api/get-org-plan login vcs_type api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
+(defmethod control-event :refreshed-user-orgs
+  [target message args state]
+  (let [current-user (get-in state state/user-path)]
+    (-> state
+        (assoc-in state/user-organizations-path nil)
+        (assoc-in state/repos-path [])
+        (assoc-in state/github-repos-loading-path (user-model/github-authorized? current-user))
+        (assoc-in state/bitbucket-repos-loading-path (user-model/bitbucket-authorized? current-user)))))
+
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state comms]
-  (let [api-ch (:api comms)]
-    (api/get-orgs api-ch :include-user? true)))
+  (let [api-ch (:api comms)
+        load-gh-repos? (get-in current-state state/github-repos-loading-path)
+        load-bb-repos? (get-in current-state state/bitbucket-repos-loading-path)]
+    (api/get-orgs api-ch :include-user? true)
+    (when load-gh-repos?
+      (api/get-github-repos api-ch))
+    (when load-bb-repos?
+      (api/get-bitbucket-repos api-ch))))
 
 (defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state comms]

@@ -43,6 +43,9 @@
     "bitbucket" (vcs-bitbucket? item)
     "github"    (vcs-github?    item)))
 
+(defn loading-repos-for-vcs-type? [user vcs-type]
+  (get-in user [:repos-loading vcs-type]))
+
 ;; This is only the keys that we're interested in in this namespace. We'd give
 ;; this a broader scope if we could, but that's the trouble with legacy keys:
 ;; they vary from context to context. These are known to be correct here.
@@ -266,7 +269,7 @@
     om/IRenderState
     (render-state [_ {:keys [selected-tab-name]}]
       (let [selected-org-login (:login selected-org)
-            loading-repos? (get-in user [:repos-loading (keyword (:vcs_type selected-org))])
+            loading-repos? (loading-repos-for-vcs-type? user (:vcs_type selected-org))
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])
             show-forks (true? (get-in settings [:add-projects :show-forks]))]
         (html
@@ -404,7 +407,8 @@
     [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
      "GitHub's application permissions"]
     ". "
-    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
+    [:a {:href "javascript:void(0)"
+         :on-click #(raise! owner [:refreshed-user-orgs {}])
          :class "active"}
      "Refresh this list"]
     " after you have updated permissions."]))
@@ -479,7 +483,9 @@
      [:div#add-projects
       (when (seq (user-model/missing-scopes user))
         (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
-      (when (seq followed-inaccessible)
+      (when (and (seq followed-inaccessible)
+                 (not (loading-repos-for-vcs-type? user :github))
+                 (not (loading-repos-for-vcs-type? user :bitbucket)))
         (inaccessible-orgs-notice followed-inaccessible settings))
       [:h2 "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."]
       [:p "To kick things off, you'll need to pick some projects to build:"]
