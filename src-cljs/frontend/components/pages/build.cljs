@@ -56,20 +56,20 @@
                               :action #(do (raise! owner [:ssh-build-clicked rebuild-args])
                                            (update-status! "Rebuilding..."))}}
             text-for    #(-> actions % :text)
-            action-for  #(-> actions % :action)]
+            action-for  #(-> actions % :action)
+            can-trigger-builds? (project-model/can-trigger-builds? project)]
         (html
          [:div.rebuild-container
-          [:button.rebuild {:on-click (action-for :rebuild)}
+          [:button.rebuild {:on-click (action-for :rebuild) :disabled (not can-trigger-builds?)}
            [:img.rebuild-icon {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
            rebuild-status]
           [:span.dropdown.rebuild
            [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
            [:ul.dropdown-menu.pull-right
-            [:li
+            [:li {:class (when (not can-trigger-builds?) "disabled")} 
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            (when (ssh-available? project build)
-              [:li
-               [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]])]]])))))
+            [:li {:class (when (not (and can-trigger-builds? (ssh-available? project build))) "disabled")} 
+             [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]]]]])))))
 
 (defn- header-actions
   [data owner]
@@ -128,8 +128,7 @@
            (when (and (feature/enabled? :open-pull-request)
                       (not-empty build))
              (om/build open-pull-request-action {:build build}))
-           (when can-trigger-builds?
-             (om/build rebuild-actions {:build build :project project}))
+           (om/build rebuild-actions {:build build :project project})
            (when can-write-settings?
              (if (and (feature/enabled? :jira-integration) jira-data)
                (list
