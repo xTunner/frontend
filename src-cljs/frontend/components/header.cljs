@@ -146,7 +146,7 @@
                                                               :enterprise}
                                                             nav-point)
                                              "active")}
-                      [:a.menu-item {:href "/features/"}
+                      [:a.menu-item {:href "https://circleci.com/features/"}
                        "Product "
                        [:i.fa.fa-caret-down]]
                       [:ul.dropdown-menu
@@ -155,38 +155,38 @@
                                            (maybe-active nav-point :features)
                                            {:role "menuitem"
                                             :tabIndex "-1"
-                                            :href "/features/"})
+                                            :href "https://circleci.com/features/"})
                          "Features"]]
                        [:li {:role "presentation"}
                         [:a.sub.menu-item (merge
                                             (maybe-active nav-point :mobile)
                                             {:role "menuitem"
                                              :tabIndex "-1"
-                                             :href "/mobile/"})
+                                             :href "https://circleci.com/mobile/"})
                          "Mobile"]]
                        [:li {:role "presentation"}
                         [:a.sub.menu-item (merge
                                             (maybe-active nav-point :integrations)
                                             {:role "menuitem"
                                              :tabIndex "-1"
-                                             :href "/integrations/docker/"})
+                                             :href "https://circleci.com/integrations/docker/"})
                          "Docker"]]
                        [:li {:role "presentation"}
                         [:a.sub.menu-item (merge
                                             (maybe-active nav-point :enterprise)
                                             {:role "menuitem"
                                              :tabIndex "-1"
-                                             :href "/enterprise/"})
+                                             :href "https://circleci.com/enterprise/"})
                          "Enterprise"]]]]
                      [:li (maybe-active nav-point :pricing)
-                      [:a.menu-item {:href "/pricing/"} "Pricing"]]))
+                      [:a.menu-item {:href "https://circleci.com/pricing/"} "Pricing"]]))
                  [:li (maybe-active nav-point :documentation)
-                  [:a.menu-item {:href "/docs/"}
+                  [:a.menu-item {:href "https://circleci.com/docs/"}
                    (if (config/enterprise?)
                     "CircleCI Documentation"
                     "Documentation")]]
                  (if (config/enterprise?)
-                   [:li [:a.menu-item {:href "/docs/enterprise/"} "Enterprise Documentation"]])
+                   [:li [:a.menu-item {:href "https://circleci.com/docs/enterprise/"} "Enterprise Documentation"]])
                  [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
                  (when (config/show-marketing-pages?)
                    (list
@@ -197,7 +197,7 @@
                                                      :press}
                                                    nav-point)
                                     "active")}
-                      [:a.menu-item {:href "/about/"} "About Us"]]
+                      [:a.menu-item {:href "https://circleci.com/about/"} "About Us"]]
                      [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))])
               
               (if logged-in?

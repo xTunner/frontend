@@ -137,7 +137,7 @@
              (common/feature-icon "circle")
              [:h2.text-center "Fewer Headaches"]
              [:p "Reduce DevOps management overhead and ship with confidence. CircleCI Enterprise has all the modern, powerful, and easily managed "
-              [:a {:href "/features"} "CircleCi.com features"]
+              [:a {:href "https://circleci.com/features"} "CircleCi.com features"]
               " that are trusted by tens of thousands of developers around the world, so your teams can quickly and securely build, test, and deploy with confidence."]]
             ]
            [:div.col-xs-4
@@ -158,9 +158,9 @@
             [:div.col-xs-8.col-xs-offset-2.enterprise-section
              [:h2.text-center "Supported Installation Environments"]
               [:p "CircleCI Enterprise is currently available for deployment on "
-               [:a {:href "/enterprise/aws"} "AWS"]
+               [:a {:href "https://circleci.com/enterprise/aws"} "AWS"]
                " and "
-               [:a {:href "/enterprise/azure"} "Azure"]
+               [:a {:href "https://circleci.com/enterprise/azure"} "Azure"]
                ". Support for others such as VMware and OpenStack will be available soon. "
                [:a {:href "#contact-form"} "Get in touch"]
                " to let us know what deployment environment you would like to see available next."]]]
@@ -187,7 +187,7 @@
                "Director of Engineering at "
                [:span.customer-company-name "Shopify"]
                " – "
-               [:a.customer-story {:href "/stories/shopify"}
+               [:a.customer-story {:href "https://circleci.com/stories/shopify"}
                 "Read the story"]]]]]]]]
 
         [:div.outer-section

@@ -41,9 +41,9 @@
               "Learn more about "
               [:a {:href "/"} "CircleCI"]
               " , "
-              [:a {:href "/mobile/osx/"} "CircleCI for OS X"]
+              [:a {:href "https://circleci.com/mobile/osx/"} "CircleCI for OS X"]
               ", or "
-              [:a {:href "/enterprise/"} "CircleCI for Enterprise"]
+              [:a {:href "https://circleci.com/enterprise/"} "CircleCI for Enterprise"]
               "."]]
             :else "Something completely unexpected happened")]]
         [:.jumbotron
@@ -56,9 +56,9 @@
           (om/build common/sign-up-cta {})
           [:div.fine-print
            "By clicking on \"Authorize GitHub\" or \"Authorize Bitbucket\" you are agreeing to our "
-           [:a {:href "/terms-of-service/"} "Terms of Service"]
+           [:a {:href "https://circleci.com/terms-of-service/"} "Terms of Service"]
            " and "
-           [:a {:href "/privacy/"} "Privacy Policy"]
+           [:a {:href "https://circleci.com/privacy/"} "Privacy Policy"]
            "."]]]]))))
 
 
