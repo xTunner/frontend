@@ -217,12 +217,26 @@
 .build-settings {
   white-space: nowrap;
 
-  a:hover {
-    text-decoration: none !important;
+  &:not(.disabled) {
+    a:hover {
+      text-decoration: none !important;
+    }
+
+    a:hover span {
+      text-decoration: underline;
+    }
   }
 
-  a:hover span {
-    text-decoration: underline;
+  &.disabled {
+    cursor: not-allowed;
+
+    a {
+      pointer-events: none;
+      opacity: 0.5;
+      > span {
+        color: @gray;
+      }
+    }
   }
 
   a i.material-icons {

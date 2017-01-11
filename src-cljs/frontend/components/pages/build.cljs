@@ -66,9 +66,9 @@
           [:span.dropdown.rebuild
            [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
            [:ul.dropdown-menu.pull-right
-            [:li {:class (when (not can-trigger-builds?) "disabled")} 
+            [:li {:class (when-not can-trigger-builds? "disabled")} 
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            [:li {:class (when (not (and can-trigger-builds? (ssh-available? project build))) "disabled")} 
+            [:li {:class (when-not (and can-trigger-builds? (ssh-available? project build)) "disabled")} 
              [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]]]]])))))
 
 (defn- header-actions
@@ -129,28 +129,28 @@
                       (not-empty build))
              (om/build open-pull-request-action {:build build}))
            (om/build rebuild-actions {:build build :project project})
-           (when can-write-settings?
-             (if (and (feature/enabled? :jira-integration) jira-data)
-               (list
+           (if (and (feature/enabled? :jira-integration) jira-data)
+             (list
+               (when can-write-settings?
                  [:button.btn-icon.jira-container
-                   {:on-click #(om/set-state! owner :show-jira-modal? true)
-                    :title "Add ticket to JIRA"}
-                   [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]]
-                 [:a.exception.btn-icon.build-settings-container
-                  {:href (routes/v1-project-settings-path (:navigation-data data))
-                   :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                   :properties {:project (:vcs_url project)
-                                                                                :user (:login user)}})
-                   :title "Project settings"}
-                  [:i.material-icons "settings"]])
-               [:div.build-settings
-                [:a.build-action
-                 {:href (routes/v1-project-settings-path (:navigation-data data))
-                  :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                  :properties {:project (:vcs_url project)
-                                                                               :user (:login user)}})}
-                 [:i.material-icons "settings"]
-                 "Project Settings"]]))])))))
+                  {:on-click #(om/set-state! owner :show-jira-modal? true)
+                   :title "Add ticket to JIRA"}
+                  [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]])
+               [:a.exception.btn-icon.build-settings-container {:class (when-not can-write-settings? "disabled")}
+                {:href (routes/v1-project-settings-path (:navigation-data data))
+                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                 :properties {:project (:vcs_url project)
+                                                                              :user (:login user)}})
+                 :title "Project settings"}
+                [:i.material-icons "settings"]])
+             [:div.build-settings {:class (when-not can-write-settings? "disabled")}
+              [:a.build-action
+               {:href (routes/v1-project-settings-path (:navigation-data data))
+                :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                :properties {:project (:vcs_url project)
+                                                                             :user (:login user)}})}
+               [:i.material-icons "settings"]
+               "Project Settings"]])])))))
 
 (defn page [app owner]
   (reify
