@@ -404,7 +404,7 @@
     [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
      "GitHub's application permissions"]
     ". "
-    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}]) ;; TODO: spinner while working?
+    [:a {:on-click #(raise! owner [:refreshed-user-orgs {}])
          :class "active"}
      "Refresh this list"]
     " after you have updated permissions."]))
