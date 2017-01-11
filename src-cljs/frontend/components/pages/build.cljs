@@ -29,6 +29,10 @@
     (init-state [_]
       {:rebuild-status "Rebuild"})
 
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip ".rebuild-container"))
+
     om/IWillReceiveProps
     (will-receive-props [_ {:keys [build]}]
       (when (build-model/running? build)
@@ -60,7 +64,13 @@
             can-trigger-builds? (project-model/can-trigger-builds? project)]
         (html
          [:div.rebuild-container
-          [:button.rebuild {:on-click (action-for :rebuild) :disabled (not can-trigger-builds?)}
+          (when-not can-trigger-builds?
+            {:data-original-title "You need write permissions to trigger builds."
+             :data-placement "left"})
+          [:button.rebuild 
+           {:on-click (action-for :rebuild) 
+            ;; using :disabled also disables tooltips when hovering over button
+            :class (when-not can-trigger-builds? "disabled")} 
            [:img.rebuild-icon {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
            rebuild-status]
           [:span.dropdown.rebuild
@@ -78,6 +88,10 @@
     (init-state [_]
       {:show-jira-modal? false
        :show-setup-docs-modal? false})
+
+    om/IDidMount
+    (did-mount [_]
+      (utils/tooltip ".build-settings"))
 
     om/IWillReceiveProps
     (will-receive-props [_ data]
@@ -136,14 +150,18 @@
                   {:on-click #(om/set-state! owner :show-jira-modal? true)
                    :title "Add ticket to JIRA"}
                   [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]])
-               [:a.exception.btn-icon.build-settings-container {:class (when-not can-write-settings? "disabled")}
+               [:a.exception.btn-icon.build-settings-container
                 {:href (routes/v1-project-settings-path (:navigation-data data))
                  :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
                                                                  :properties {:project (:vcs_url project)
                                                                               :user (:login user)}})
                  :title "Project settings"}
                 [:i.material-icons "settings"]])
-             [:div.build-settings {:class (when-not can-write-settings? "disabled")}
+             [:div.build-settings 
+              (when-not can-write-settings?
+                {:class "disabled"
+                 :data-original-title "You need to be an admin to change project settings." 
+                 :data-placement "left"})
               [:a.build-action
                {:href (routes/v1-project-settings-path (:navigation-data data))
                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked

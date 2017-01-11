@@ -112,11 +112,10 @@
     .button-look() {
       border: solid 1px rgba(0, 0, 0, 0.1);
       background-color: @grayLightest;
-
       
       cursor: pointer;
 
-      &:hover:not([disabled]) {
+      &:hover:not(.disabled) {
         background: @whiten;
       }
     }
@@ -144,12 +143,14 @@
         margin: 6px 10px;
       }
 
-      &[disabled] {
+      &.disabled {
+        pointer-events: none;
+        cursor: default;
+
         // can't style icon through color property, using opacity instead
         > span, .rebuild-icon {
           opacity: 0.5;
         }
-        cursor: not-allowed;
       }
     }
 
@@ -202,7 +203,7 @@
         }
 
         li.disabled {
-          cursor: not-allowed;
+          cursor: default;
           
           a {
             pointer-events: none;
@@ -228,7 +229,7 @@
   }
 
   &.disabled {
-    cursor: not-allowed;
+    cursor: default;
 
     a {
       pointer-events: none;
