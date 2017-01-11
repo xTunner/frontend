@@ -181,12 +181,12 @@
                      [:li (maybe-active nav-point :pricing)
                       [:a.menu-item {:href "/pricing/"} "Pricing"]]))
                  [:li (maybe-active nav-point :documentation)
-                  [:a.menu-item {:href "https://circleci.com/docs/"}
+                  [:a.menu-item {:href "/docs/"}
                    (if (config/enterprise?)
                     "CircleCI Documentation"
                     "Documentation")]]
                  (if (config/enterprise?)
-                   [:li [:a.menu-item {:href "https://enterprise-docs.circleci.com"} "Enterprise Documentation"]])
+                   [:li [:a.menu-item {:href "/docs/enterprise/"} "Enterprise Documentation"]])
                  [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
                  (when (config/show-marketing-pages?)
                    (list
