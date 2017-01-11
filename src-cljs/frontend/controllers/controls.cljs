@@ -20,6 +20,7 @@
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils.ajax :as ajax]
+            [frontend.utils.map :as map-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.launchdarkly :as launchdarkly]
@@ -1234,6 +1235,10 @@
   [target message {:keys [org-name vcs-type]} state]
   (update-in state [:organization/by-vcs-type-and-name [vcs-type org-name]] dissoc :users))
 
+(defmethod control-event :clear-build-data
+  [target message args state]
+  (dissoc state :current-build-data))
+
 (defmethod post-control-event! :org-settings-normalized
   [target message {:keys [org-name vcs-type]} previous-state current-state comms]
   (let [previous-users (:users (get-in previous-state [:organization/by-vcs-type-and-name [vcs-type org-name]]))]
@@ -1644,6 +1649,7 @@
   (let [api-ch (:api comms)
         selected-vcs-urls (fn [path]
                             (->> (get-in current-state path)
+                                 vals
                                  (filter :checked)
                                  (map :vcs_url)))
         building-vcs-urls (selected-vcs-urls (state/vcs-recent-active-projects-path true :github))
@@ -1656,4 +1662,6 @@
 
 (defmethod control-event :deselect-activity-repos
   [_ _ {:keys [path]} state]
-  (update-in state path (partial mapv #(assoc % :checked false))))
+  (update-in state path (fn [current-vals]
+                          (map-utils/map-vals #(assoc % :checked false)
+                                              current-vals))))

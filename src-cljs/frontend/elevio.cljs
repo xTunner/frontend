@@ -1,6 +1,7 @@
 (ns frontend.elevio
   (:require [frontend.utils :as utils]
             [frontend.models.user :as user]
+            [frontend.utils :as utils]
             [goog.dom :as gdom]
             [goog.dom.classlist :as class-list]))
 
@@ -33,14 +34,30 @@
     (gdom/removeNode el))
   (aset js/window "_elev" #js {}))
 
-(defn enable! []
+(defn set-elev! [k v]
+  (aset (aget js/window "_elev") k v))
+
+(defn add-user-props!
+  "Given a map of properties, add it to the list of user properties."
+  [new-props]
+  (let [current-props (-> js/window
+                          (aget "_elev")
+                          (aget "user")
+                          js->clj)]
+    (aset (aget js/window "_elev")
+          "user"
+          (-> (merge current-props new-props)
+              utils/clj-keys-with-dashes->js-keys-with-underscores
+              clj->js))))
+
+(defn enable! [initial-user-data]
   (class-list/add js/document.body "circle-elevio")
   (aset js/window "_elev" (or (aget js/window "_elev") #js {}))
-  (let [set-elev! (partial aset (aget js/window "_elev"))
-        user-info (-> js/window
-                      (aget "elevSettings")
-                      (aget "user"))
-        support-module-id "support"
+  ;; Some subset of the user data is currently set server side by adding
+  ;; a js/window.elevSettings.user in a script tag in the DOM. We should
+  ;; probably add all user traits client side, but as this is not broke I
+  ;; am not going to fix it.
+  (let [support-module-id "support"
         discuss-link-module-id 3003
         discuss-support-link-module-id 3762]
     (if user/support-eligible?
@@ -48,8 +65,12 @@
       (set-elev! "disabledModules" #js [discuss-support-link-module-id])
       ;; enable discuss support, disable zendesk support
       (set-elev! "disabledModules" #js [support-module-id discuss-link-module-id]))
+    (add-user-props! (-> js/window
+                         (aget "elevSettings")
+                         (aget "user")
+                         js->clj
+                         (merge initial-user-data)))
     (set-elev! "account_id" account-id)
-    (set-elev! "user" user-info)
     (set-elev! "pushin" "false")
     (set-elev! "translations"
           #js {"loading"

@@ -81,19 +81,15 @@
   (when (and (project-model/can-write-settings? project))
     (let [org-name (:username project)
           repo-name (:reponame project)
-          vcs-type (:vcs_type project)]
-      [:a {:class (cond-> "project-settings-icon"
-                          (= :project-settings-icon-hover-only
-                             (feature/ab-test-treatment :show-project-settings-on-branch-picker))
-                          (str " hover-only"))
-           :href (routes/v1-project-settings-path {:vcs_type vcs-type
-                                                   :org org-name
-                                                   :repo repo-name})
-           :title (str (project-model/project-name project)
-                       " settings")
-           :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                           :properties {:org org-name
-                                                                        :repo repo-name}})}
+          vcs-type (:vcs_type project)]   
+      [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type vcs-type
+                                                                         :org org-name
+                                                                         :repo repo-name})
+                                 :title (str (project-model/project-name project)
+                                             " settings")
+                                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                                 :properties {:org org-name
+                                                                                              :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
 (defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [identities show-project?]}]

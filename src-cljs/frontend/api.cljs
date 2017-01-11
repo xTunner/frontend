@@ -26,10 +26,10 @@
 (defn get-projects [api-ch & {:as context}]
   (ajax/ajax :get "/api/v1/projects?shallow=true" :projects api-ch :context context))
 
-(defn get-github-repos [api-ch & {:keys [page]
-                           :or {page 1}}]
+(defn get-github-repos [api-ch & {:keys [page message] :or {page 1
+                                                            message :github-repos}}]
   (ajax/ajax :get (str "/api/v1/user/repos?page=" page)
-             :github-repos
+             message
              api-ch
              :context {:page page}))
 

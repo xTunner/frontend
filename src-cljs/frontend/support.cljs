@@ -23,12 +23,12 @@
 
 (defn enable-one!
   "Enables zendesk widget, elevio, or Intercom, depending on LD flags"
-  []
+  [initial-user-data]
   (case (support-widget)
     :zd (elevio/disable!)
     :elevio (do
-      (intercom/enable!)
-      (elevio/enable!))
+              (intercom/enable!)
+              (elevio/enable! initial-user-data))
     ;; default
     :intercom (do
                 (elevio/disable!)

@@ -115,6 +115,7 @@
     :update-parallelism-clicked
     :update-plan-clicked
     :vcs-activity-fetched
+    :view-demo-clicked
     :web-notifications-permissions-banner-dismissed
     :web-notifications-permissions-banner-impression
     :web-notifications-permissions-set})
