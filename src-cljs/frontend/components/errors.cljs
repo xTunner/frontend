@@ -39,7 +39,7 @@
              [:h3 "You may have been logged out. "]
              [:p.error-message
               "Learn more about "
-              [:a {:href "/"} "CircleCI"]
+              [:a {:href "https://circleci.com/"} "CircleCI"]
               " , "
               [:a {:href "https://circleci.com/mobile/osx/"} "CircleCI for OS X"]
               ", or "
