@@ -72,9 +72,9 @@
             submit-form! #(raise! owner [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
             project-page? (:project-page? opts)]
         (html
-         [:div#settings-heroku.settings.account-settings-subpage
+         [:div.account-settings-subpage
           [:legend "Heroku Settings"]
-          [:div.heroku-item
+          [:div
            [:p
             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
             " to set up deployment with Heroku."
@@ -90,7 +90,7 @@
                  :type      "text",
                  :value heroku-api-key}]
                [:label {:placeholder "Current Heroku key"}]])
-            [:input#heroku-key
+            [:input
              {:required  true
               :auto-focus true
               :type      "text"
@@ -113,7 +113,7 @@
             create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
             new-user-token (get-in app state/new-user-token-path)]
         (html
-         [:div#settings-api.settings.account-settings-subpage
+         [:div.account-settings-subpage
           [:legend "API Tokens"]
           [:div.api-item
            [:p
