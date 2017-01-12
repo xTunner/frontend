@@ -46,6 +46,19 @@
       name
       (string/replace #"-" "_")))
 
+(defn clj-keys-with-dashes->clj-keys-with-underscores [clj-map]
+  "Recursively convert a map to replace all the dashes with underscores
+  in the keys only. This is mean for converting to a clojure object which
+  looks like a javscript object in form, so we can merge it with JS objects."
+  (->> (for [[kw value] clj-map]
+         [(-> kw
+              clj-key->js-key
+              keyword)
+          (if (map? value)
+            (clj-keys-with-dashes->clj-keys-with-underscores value)
+            value)])
+       (into {})))
+
 (defn clj-keys-with-dashes->js-keys-with-underscores [clj-map]
   "Same as clj->js but also converts dashes to underscores in key only.
   This leaves the key as a string so its only to be used immediately prior

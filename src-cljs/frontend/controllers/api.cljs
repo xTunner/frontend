@@ -338,10 +338,10 @@
                            :vcs-type vcs_type}))
     ;; Attach information about this build so support knows the last build a user
     ;; was viewing before the sent in a support ticket.
-    (elevio/add-user-props! {:last-build-viewed (merge (select-keys build [:vcs_url :build_url :build_num :branch])
-                                                       {:repo-name (:reponame build)
-                                                        :org-name (-> build :vcs_url vcs-url/org-name)
-                                                        :scopes scopes})})
+    (elevio/add-user-traits! {:last-build-viewed (merge (select-keys build [:vcs_url :build_url :build_num :branch])
+                                                        {:repo-name (:reponame build)
+                                                         :org-name (-> build :vcs_url vcs-url/org-name)
+                                                         :scopes scopes})})
     (when (build-model/finished? build)
       (api/get-build-tests build api-ch))
     (when (and (= build-num (get-in args [:resp :build_num]))
@@ -514,7 +514,6 @@
   (if-not (= (:project-name context) (str (get-in state [:navigation-data :org]) "/" (get-in state [:navigation-data :repo])))
     state
     (assoc-in state state/project-plan-path resp)))
-
 
 (defmethod api-event [:project-token :success]
   [target message status {:keys [resp context]} state]
