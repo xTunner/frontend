@@ -29,28 +29,28 @@
           [:div.col-md-2.col-md-offset-1
             [:h6 "CircleCI"]
             [:ul.list-unstyled
-             [:li [:a {:href "/about/"} "About Us"]]
-             [:li [:a {:href "/about/team/"} "Team"]]
-             [:li [:a {:href "/press/"} "Press"]]
-             [:li [:a {:href "/jobs/"} "Jobs"]]
+             [:li [:a {:href "https://circleci.com/about/"} "About Us"]]
+             [:li [:a {:href "https://circleci.com/about/team/"} "Team"]]
+             [:li [:a {:href "https://circleci.com/press/"} "Press"]]
+             [:li [:a {:href "https://circleci.com/jobs/"} "Jobs"]]
              [:li [:a {:href "http://blog.circleci.com"} "Blog"]]]]
           [:div.col-md-2
             [:h6 "Product"]
             [:ul.list-unstyled
-             [:li [:a {:href "/features/"} "Features"]]
-             [:li [:a {:href "/mobile/"} "Mobile"]]
-             [:li [:a {:href "/enterprise/"} "Enterprise"]]
-             [:li [:a {:href "/pricing/"} "Pricing"]]
-             [:li [:a {:href "/customers/"} "Customers"]]
-             [:li [:a {:href "/changelog"} "Changelog"]]]]
+             [:li [:a {:href "https://circleci.com/features/"} "Features"]]
+             [:li [:a {:href "https://circleci.com/mobile/"} "Mobile"]]
+             [:li [:a {:href "https://circleci.com/enterprise/"} "Enterprise"]]
+             [:li [:a {:href "https://circleci.com/pricing/"} "Pricing"]]
+             [:li [:a {:href "https://circleci.com/customers/"} "Customers"]]
+             [:li [:a {:href "https://circleci.com/changelog"} "Changelog"]]]]
           [:div.col-md-2
             [:h6 "Support"]
             [:ul.list-unstyled
-             [:li [:a {:href "/docs/"} "Documentation"]]
+             [:li [:a {:href "https://circleci.com/docs/"} "Documentation"]]
              [:li [:a {:href "https://discuss.circleci.com/"} "Discuss"]]
-             [:li [:a {:href "/security/"} "Security"]]
-             [:li [:a {:href "/privacy/"} "Privacy"]]
-             [:li [:a {:href "/contact/"} "Contact Us"]]]]]]
+             [:li [:a {:href "https://circleci.com/security/"} "Security"]]
+             [:li [:a {:href "https://circleci.com/privacy/"} "Privacy"]]
+             [:li [:a {:href "https://circleci.com/contact/"} "Contact Us"]]]]]]
       [:div.row
         [:div.col-md-5.additional-links
           [:span "Copyright © 2015 CircleCI"]]]]])
