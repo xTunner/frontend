@@ -153,7 +153,7 @@
                [:a.exception.btn-icon.build-settings-container
                 {:href (routes/v1-project-settings-path (:navigation-data data))
                  :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                 :properties {:project (:vcs_url project)
+                                                                 :properties {:project-vcs-url (:vcs_url project)
                                                                               :user (:login user)}})
                  :title "Project settings"}
                 [:i.material-icons "settings"]])
@@ -165,7 +165,7 @@
               [:a.build-action
                {:href (routes/v1-project-settings-path (:navigation-data data))
                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                :properties {:project (:vcs_url project)
+                                                                :properties {:project-vcs-url (:vcs_url project)
                                                                              :user (:login user)}})}
                [:i.material-icons "settings"]
                "Project Settings"]])])))))
