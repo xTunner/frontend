@@ -3,15 +3,13 @@
   is migrating to frontend.components.pages.user-settings. Components will
   migrate there as they conform to Component-Oriented Style."
   (:require [frontend.async :refer [raise!]]
-            [frontend.components.common :as common]
-            [frontend.components.forms :as forms]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.form :as form]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project]
-            [frontend.components.svg :refer [svg]]
             [frontend.datetime :as datetime]
             [frontend.models.organization :as org-model]
             [frontend.models.user :as user]
@@ -20,7 +18,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
   (:require-macros
    [frontend.utils :refer [component defrender element html]]))
@@ -74,36 +71,30 @@
         (html
          [:div.account-settings-subpage
           [:legend "Heroku Settings"]
-          [:div
-           [:p
-            "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
-            " to set up deployment with Heroku."
-            [:br]
-            ;; Don't tell them to go to the project page if they're already there
-            (when-not project-page?
-              "You'll also need to set yourself as the Heroku deploy user from your project's settings page.")]
-           [:form
-            (when heroku-api-key
-              [:div
-               [:input.disabled
-                {:required  true
-                 :type      "text",
-                 :value heroku-api-key}]
-               [:label {:placeholder "Current Heroku key"}]])
-            [:input
-             {:required  true
-              :auto-focus true
-              :type      "text"
-              :value     heroku-api-key-input
-              :on-change  #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)}]
-            [:label {:placeholder "Add new key"}]
-            (button/managed-button
-             {:loading-text "Saving..."
-              :failed-text "Failed to save key"
-              :success-text "Saved"
-              :kind :primary
-              :on-click submit-form!}
-             "Save Heroku Key")]]])))))
+          (card/titled
+           {:title "Heroku API Key"}
+           [:div
+            [:p
+             "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
+             " to set up deployment with Heroku."
+             [:br]
+             ;; Don't tell them to go to the project page if they're already there
+             (when-not project-page?
+               "You'll also need to set yourself as the Heroku deploy user from your project's settings page.")]
+            [:p
+             "Your Heroku Key is currently " heroku-api-key]
+            (form/form
+             {}
+             (om/build form/text-field {:label "Heroku Key"
+                                        :value heroku-api-key-input
+                                        :on-change #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)})
+             (button/managed-button
+              {:loading-text "Saving..."
+               :failed-text "Failed to save key"
+               :success-text "Saved"
+               :kind :primary
+               :on-click submit-form!}
+              "Save Heroku Key"))])])))))
 
 (defn api-tokens [app owner]
   (reify
