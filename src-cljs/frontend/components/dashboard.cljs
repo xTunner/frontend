@@ -17,6 +17,7 @@
     om/IRender
     (render [_]
       (let [builds (get-in data state/recent-builds-path)
+            workflow (get-in data state/workflow-path)
             projects (get-in data state/projects-path)
             current-project (get-in data state/project-data-path)
             plan (:plan current-project)
@@ -63,7 +64,8 @@
 
                 (om/build builds-table/builds-table
                           {:builds builds
-                           :projects projects}
+                           :projects projects
+                           :workflow workflow}
                           {:opts {:show-actions? true
                                   :show-branch? (not (:branch nav-data))
                                   :show-project? (not (:repo nav-data))}})

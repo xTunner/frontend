@@ -70,15 +70,24 @@
 (defn v1-build-path
   "Temporary helper method for v1-build until we figure out how to make
    secretary's render-route work for regexes"
-  ([vcs_type org repo build-num]
-   (v1-build-path vcs_type org repo build-num nil nil nil))
-  ([vcs_type org repo build-num tab]
-   (v1-build-path vcs_type org repo build-num tab nil nil))
-  ([vcs_type org repo build-num tab container-id]
-   (v1-build-path vcs_type org repo build-num tab container-id nil))
-  ([vcs_type org repo build-num tab container-id action-id]
+  ([vcs_type org repo workflow-id build-num]
+   (v1-build-path vcs_type org repo workflow-id build-num nil nil nil))
+  ([vcs_type org repo workflow-id build-num tab]
+   (v1-build-path vcs_type org repo workflow-id build-num tab nil nil))
+  ([vcs_type org repo workflow-id build-num tab container-id]
+   (v1-build-path vcs_type org repo workflow-id build-num tab container-id nil))
+  ([vcs_type org repo workflow-id build-num tab container-id action-id]
    (let [fragment (build-page-fragment tab container-id action-id)]
-     (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/" build-num (when fragment (str "#" fragment))))))
+     (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/"
+          (when workflow-id
+            (str "workflows/" workflow-id "/jobs/"))
+          build-num (when fragment (str "#" fragment))))))
+
+(defn v1-workflow-path
+  "Temporary helper method for v1-build until we figure out how to make
+   secretary's render-route work for regexes"
+  ([vcs_type org repo workflow-id]
+   (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows/" workflow-id)))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to
@@ -212,6 +221,14 @@
                                               :repo repo
                                               :branch branch})))
 
+  (defroute v1-workflow-dashboard #"/(gh|bb)/([^/]+)/([^/]+)/workflows/([^/]+)" ; workaround secretary's annoying auto-decode
+    [short-vcs-type org repo workflow-id params]
+    (open-to-inner! app nav-ch :dashboard (merge params
+                                                 {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+                                                  :org org
+                                                  :repo repo
+                                                  :workflow-id workflow-id})))
+
   (defroute v1-build #"/(gh|bb)/([^/]+)/([^/]+)/(\d+)"
     [short-vcs-type org repo build-num _ maybe-fragment]
     ;; normal destructuring for this broke the closure compiler
@@ -222,6 +239,21 @@
       (open-to-inner! app nav-ch :build (merge fragment-args
                                                {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                                 :project-name (str org "/" repo)
+                                                :build-num (js/parseInt build-num)
+                                                :org org
+                                                :repo repo}))))
+
+  (defroute v1-workflow-job #"/(gh|bb)/([^/]+)/([^/]+)/workflows/([^/]+)/jobs/(\d+)"
+    [short-vcs-type org repo workflow-id build-num _ maybe-fragment]
+    ;; normal destructuring for this broke the closure compiler
+    (let [fragment-args (-> maybe-fragment
+                            :_fragment
+                            parse-build-page-fragment
+                            (select-keys [:tab :action-id :container-id]))]
+      (open-to-inner! app nav-ch :build (merge fragment-args
+                                               {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
+                                                :project-name (str org "/" repo)
+                                                :workflow-id workflow-id
                                                 :build-num (js/parseInt build-num)
                                                 :org org
                                                 :repo repo}))))
