@@ -83,7 +83,8 @@
     (render [_]
       (let [project (:project data)
             org-name (project-model/org-name project)
-            repo-name (project-model/repo-name project)]
+            repo-name (project-model/repo-name project)
+            add-more-containers-text "adding containers"]
         (html
           (if-not project
             (spinner)
@@ -96,14 +97,15 @@
                                                         :_fragment "linux-pricing"})
                     :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
                                                                     :properties {:is-upsell-text false
-                                                                                 :button-text "adding containers"}})} "adding containers"]
+                                                                                 :button-text add-more-containers-text}})}
+                add-more-containers-text]
                ", skipping redundant builds (through "
                [:a {:href (routes/v1-project-settings-path {:org org-name
                                                             :repo repo-name})
                     :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
                                                                     :properties {:org org-name
-                                                                                 :repo repo-name}
-                                                                    :project (:vcs_url project)})}
+                                                                                 :repo repo-name
+                                                                                 :project-vcs-url (:vcs_url project)}})}
                 "project settings"]
                " or "
                [:a {:href "https://circleci.com/docs/skip-a-build/"
