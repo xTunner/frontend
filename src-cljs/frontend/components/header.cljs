@@ -323,7 +323,8 @@
                      (feature/enabled? :offer-linux-trial)
                      (not (get-in app state/dismissed-trial-offer-banner)))
             (om/build trial-offer-banner app))
-          (when (:build (get-in app state/build-data-path))
+          ; only show web notifications when the user is logged in.
+          (when (and user (:build (get-in app state/build-data-path)))
             (cond
               (and (= (n/notifications-permission) "default")
                    show-web-notif-banner?)
