@@ -100,7 +100,7 @@
     :setup-docs-clicked
     :setup-docs-impression
     :show-all-branches-toggled
-    :show-queue-builds-clicked
+    :show-queued-builds-clicked
     :signup-clicked
     :signup-impression
     :sort-branches-toggled

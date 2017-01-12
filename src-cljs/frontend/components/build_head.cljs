@@ -85,7 +85,8 @@
             org-name (project-model/org-name project)
             repo-name (project-model/repo-name project)]
         (html
-          (if project
+          (if-not project
+            (spinner)
             [:div.build-queue.active
              [:div.queue-message
               [:p
@@ -106,14 +107,14 @@
                 "project settings"]
                " or "
                [:a {:href "https://circleci.com/docs/skip-a-build/"
-                    :target "_blank"} "configuring your yml"]
+                    :target "_blank"}
+                "configuring your yml"]
                ")"]
               [:p "NOTE: Showing queued builds can slow down the page."]]
              (button/link {:kind :secondary
                            :href "#usage-queue"
-                           :on-click #((om/get-shared owner :track-event) {:event-type :show-queue-builds-clicked})}
-                          "Show Queued Builds")]
-            (spinner)))))))
+                           :on-click #((om/get-shared owner :track-event) {:event-type :show-queued-builds-clicked})}
+                          "Show Queued Builds")]))))))
 
 (defn build-queue [data owner]
   (reify
