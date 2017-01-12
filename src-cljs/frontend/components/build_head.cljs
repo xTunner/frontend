@@ -81,21 +81,38 @@
   (reify
     om/IRender
     (render [_]
-      (html
-        [:div.build-queue.active
-         [:div.queue-message
-          [:p
-           "Avoid queues by "
-           [:a {:href "/"} "adding containers"]
-           ", skipping redundant builds (through "
-           [:a {:href "/"} "project settings"]
-           " or "
-           [:a {:href "/"} "configuring your yml"]
-           ")"]
-          [:p "NOTE: Showing queued builds can cause page performance issues."]]
-         (button/link {:kind :secondary
-                       :href "#usage-queue"}
-                      "Show Queued Builds")]))))
+      (let [project (:project data)
+            org-name (project-model/org-name project)
+            repo-name (project-model/repo-name project)]
+        (html
+          (if project
+            [:div.build-queue.active
+             [:div.queue-message
+              [:p
+               "Avoid queues by "
+               [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                        :vcs_type (project-model/vcs-type project)
+                                                        :_fragment "linux-pricing"})
+                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                    :properties {:is-upsell-text false
+                                                                                 :button-text "adding containers"}})} "adding containers"]
+               ", skipping redundant builds (through "
+               [:a {:href (routes/v1-project-settings-path {:org org-name
+                                                            :repo repo-name})
+                    :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                    :properties {:org org-name
+                                                                                 :repo repo-name}
+                                                                    :project (:vcs_url project)})}
+                "project settings"]
+               " or "
+               [:a {:href "https://circleci.com/docs/skip-a-build/"
+                    :target "_blank"} "configuring your yml"]
+               ")"]
+              [:p "NOTE: Showing queued builds can slow down the page."]]
+             (button/link {:kind :secondary
+                           :href "#usage-queue"}
+                          "Show Queued Builds")]
+            (spinner)))))))
 
 (defn build-queue [data owner]
   (reify
@@ -812,7 +829,7 @@
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
 
-             :queue-placeholder (om/build build-queue-placeholder {})
+             :queue-placeholder (om/build build-queue-placeholder {:project project})
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
