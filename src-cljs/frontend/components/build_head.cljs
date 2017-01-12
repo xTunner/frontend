@@ -110,7 +110,8 @@
                ")"]
               [:p "NOTE: Showing queued builds can slow down the page."]]
              (button/link {:kind :secondary
-                           :href "#usage-queue"}
+                           :href "#usage-queue"
+                           :on-click #((om/get-shared owner :track-event) {:event-type :show-queue-builds-clicked})}
                           "Show Queued Builds")]
             (spinner)))))))
 
