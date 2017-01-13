@@ -130,7 +130,7 @@
       .button-look();
       .button-common();
 
-      width: @container-width - @container-height - @button-right-margin;
+      width: @container-width - @container-height - @button-right-margin * 10;
       &.rebuild {
         border-radius: 3px 0 0 3px;
       }
@@ -234,17 +234,6 @@
         color: @gray;
       }
     }
-  }
-
-  a i.material-icons {
-    // position: relative;
-    // bottom: 1px;
-    // margin-right: .5ex;
-    // text-decoration: none;
-  }
-
-  a:hover i.material-icons {
-    // text-decoration:none;
   }
 }
 // Build page V2 stuff
