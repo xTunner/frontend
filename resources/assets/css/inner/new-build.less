@@ -61,7 +61,11 @@
   font-size: 13px;
   color: @grayDark;
 
-  > * {
+  .mobile-separator {
+    display: flex;
+  }
+
+  .mobile-separator, .mobile-separator > * {
     margin-left: 1em;
 
     &:first-child {
@@ -74,6 +78,17 @@
       &:first-child {
         margin-left: 0;
       }
+    }
+  }
+
+
+  @media(max-width: 550px) {
+    .mobile-separator {
+      margin-bottom: 1em;
+    }
+
+    &:last-child.mobile-separator {
+      margin-bottom: 0;
     }
   }
 
