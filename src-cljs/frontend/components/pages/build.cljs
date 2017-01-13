@@ -1,5 +1,6 @@
 (ns frontend.components.pages.build
   (:require [frontend.async :refer [raise!]]
+            [frontend.components.pieces.button :as button]
             [frontend.experiments.no-test-intervention :as no-test-intervention]
             [frontend.components.build :as build-com]
             [frontend.components.build-head :as build-head]
@@ -67,18 +68,18 @@
           (when-not can-trigger-builds?
             {:data-original-title "You need write permissions to trigger builds."
              :data-placement "left"})
-          [:button.rebuild 
-           {:on-click (action-for :rebuild) 
+          [:button.rebuild
+           {:on-click (action-for :rebuild)
             ;; using :disabled also disables tooltips when hovering over button
-            :class (when-not can-trigger-builds? "disabled")} 
+            :class (when-not can-trigger-builds? "disabled")}
            [:img.rebuild-icon {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
            rebuild-status]
           [:span.dropdown.rebuild
            [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
            [:ul.dropdown-menu.pull-right
-            [:li {:class (when-not can-trigger-builds? "disabled")} 
+            [:li {:class (when-not can-trigger-builds? "disabled")}
              [:a {:on-click (action-for :without_cache)} (text-for :without_cache)]]
-            [:li {:class (when-not (and can-trigger-builds? (ssh-available? project build)) "disabled")} 
+            [:li {:class (when-not (and can-trigger-builds? (ssh-available? project build)) "disabled")}
              [:a {:on-click (action-for :with_ssh)} (text-for :with_ssh)]]]]])))))
 
 (defn- header-actions
@@ -98,7 +99,7 @@
       (let [build (get-in data state/build-path)
             show-setup-docs-modal? (no-test-intervention/show-setup-docs-modal? build)]
         (om/set-state! owner :show-setup-docs-modal? show-setup-docs-modal?)))
-          
+
     om/IRenderState
     (render-state [_ {:keys [show-jira-modal? show-setup-docs-modal?]}]
       (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
@@ -115,7 +116,7 @@
         (html
           [:div.build-actions-v2
            ;; Ensure we never have more than 1 modal showing
-           (cond 
+           (cond
              show-jira-modal?
              (om/build jira-modal/jira-modal {:project project
                                               :jira-data jira-data
@@ -123,7 +124,7 @@
              (and show-setup-docs-modal?
                   (= :setup-docs-modal (no-test-intervention/ab-test-treatment)))
              (om/build no-test-intervention/setup-docs-modal
-                       {:close-fn 
+                       {:close-fn
                         #(om/set-state! owner :show-setup-docs-modal? false)}))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
              (list
@@ -134,7 +135,7 @@
                   :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                  "cancel build"])
               (forms/managed-button
-                [:a.exception.btn-icon.cancel-build.hidden-md-up
+                [:a.btn-icon.cancel-build.hidden-md-up
                  {:data-loading-text "..."
                   :title             "cancel this build"
                   :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
@@ -143,32 +144,23 @@
                       (not-empty build))
              (om/build open-pull-request-action {:build build}))
            (om/build rebuild-actions {:build build :project project})
-           (if (and (feature/enabled? :jira-integration) jira-data)
-             (list
-               (when can-write-settings?
-                 [:button.btn-icon.jira-container
+           (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
+             [:button.btn-icon.jira-container
                   {:on-click #(om/set-state! owner :show-jira-modal? true)
                    :title "Add ticket to JIRA"}
                   [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]])
-               [:a.exception.btn-icon.build-settings-container
-                {:href (routes/v1-project-settings-path (:navigation-data data))
-                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                 :properties {:project (:vcs_url project)
-                                                                              :user (:login user)}})
-                 :title "Project settings"}
-                [:i.material-icons "settings"]])
-             [:div.build-settings 
-              (when-not can-write-settings?
-                {:class "disabled"
-                 :data-original-title "You need to be an admin to change project settings." 
-                 :data-placement "left"})
-              [:a.build-action
-               {:href (routes/v1-project-settings-path (:navigation-data data))
-                :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                :properties {:project (:vcs_url project)
-                                                                             :user (:login user)}})}
-               [:i.material-icons "settings"]
-               "Project Settings"]])])))))
+           [:div.build-settings
+            (when-not can-write-settings?
+              {:class "disabled"
+               :data-original-title "You need to be an admin to change project settings."
+               :data-placement "left"})
+
+            (button/link-icon {:href (build-model/new-pull-request-url build)
+                               :label "Project Settings"
+                               :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                              :properties {:project (:vcs_url project)
+                                                                           :user (:login user)}})}
+                              [:i.material-icons "settings"])]])))))
 
 (defn page [app owner]
   (reify

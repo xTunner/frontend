@@ -22,8 +22,8 @@
     cursor: pointer;
     white-space: nowrap;
 
-    color: @grayDark;
-    border: none;
+    color: @grayLighter;
+    border: 1px solid @grayLighter;
     border-radius: 3px;
     background-color: @grayLightest;
 
@@ -118,20 +118,14 @@
     }
   }
 
-  .ui("button", {
-    .button-styles();
-  });
-
-  .ui("icon", {
-    .button-styles();
-
+  .icon-button-styles() {
     width: 30px;
     height: 30px;
 
     // OVERRIDE--ICON-STYLE
     i {
       margin-left: 0;
-      color: inherit;
+      // color: inherit;
     }
 
     &:active {
@@ -145,6 +139,15 @@
         color: inherit;
       }
     }
+  }
+
+  .ui("button", {
+    .button-styles();
+  });
+
+  .ui("icon", {
+    .button-styles();
+    .icon-button-styles();
   });
 
   .ui("managed-button", {
@@ -161,5 +164,19 @@
       justify-content: center;
       align-items: center;
     }
+  });
+
+  .ui("link-icon", {
+    a& {
+      .button-styles();
+      width: 30px;
+      height: 30px;
+
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .icon-button-styles();
   });
 });
