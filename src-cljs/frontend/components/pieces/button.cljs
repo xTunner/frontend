@@ -276,15 +276,15 @@
               :href "#"
               :size :medium}
              "Medium Flat Link")]]))
+
   (defcard link-icon-button
     "A **link-icon-button** is a link-button whose with the styling  of an icon
     button.
 
     In addition to having the styling of an icon button, they accept a `:target`
     (to open in a new tab) and an `:on-click`."
-
     (button-display
       [;; Primary link buttons
-      [(link-icon {:href "#"
+       [(link-icon {:href "#"
                     :label "Labels are provided for accessibility"}
-                  [:i.octicon.octicon-heart])]])))
+                   [:i.octicon.octicon-heart])]])))

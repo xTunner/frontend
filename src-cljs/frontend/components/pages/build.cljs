@@ -127,34 +127,32 @@
                        {:close-fn
                         #(om/set-state! owner :show-setup-docs-modal? false)}))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
-           ;; (when-not (and (build-model/can-cancel? build) can-trigger-builds?)
              (button/managed-button
-                 {:loading-text "canceling"
-                  :failed-text  "couldn't cancel"
-                  :success-text "cancel this build"
-                  :kind :primary
-                  :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
-                 "Cancel Build"))
+               {:loading-text "canceling"
+                :failed-text  "couldn't cancel"
+                :success-text "cancel this build"
+                :kind :primary
+                :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
+               "Cancel Build"))
            (when (and (feature/enabled? :open-pull-request)
                       (not-empty build))
              (om/build open-pull-request-action {:build build}))
            (om/build rebuild-actions {:build build :project project})
            (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
              (button/icon {:label "Add ticket to JIRA"
-                    :on-click #(om/set-state! owner :show-jira-modal? true)}
-                   [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]))
+                           :on-click #(om/set-state! owner :show-jira-modal? true)}
+                          [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]))
            [:div.build-settings
-
             (when-not can-write-settings?
               {:class "disabled"
                :data-original-title "You need to be an admin to change project settings."
                :data-placement "left"})
-
             (button/link-icon {:href (routes/v1-project-settings-path (:navigation-data data))
                                :label "Project Settings"
-                               :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                :properties {:project-vcs-url (:vcs_url project)
-                                                                             :user (:login user)}})}
+                               :on-click #((om/get-shared owner :track-event)
+                                           {:event-type :project-settings-clicked
+                                            :properties {:project-vcs-url (:vcs_url project)
+                                                         :user (:login user)}})}
                               [:i.material-icons "settings"])]])))))
 
 (defn page [app owner]
