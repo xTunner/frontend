@@ -363,6 +363,7 @@
                      (or (-> (feature/ab-test-treatment :new-user-landing-page user)
                              (= :dashboard)
                              not)
+                         (= :build (get-in app state/current-view-path))
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
                                           :logged-out? (not (:name user))
