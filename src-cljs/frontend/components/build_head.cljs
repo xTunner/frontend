@@ -77,6 +77,47 @@
        [:span "Check " [:a {:href "/admin/fleet-state"} "Fleet State"] " for details and potentially start new builders"]
        "Ask a CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
 
+(defn build-queue-placeholder [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project data)
+            org-name (project-model/org-name project)
+            repo-name (project-model/repo-name project)
+            add-more-containers-text "adding containers"]
+        (html
+          (if-not project
+            (spinner)
+            [:div.build-queue.active
+             [:div.queue-message
+              [:p
+               "Avoid queues by "
+               [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                        :vcs_type (project-model/vcs-type project)
+                                                        :_fragment "linux-pricing"})
+                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                    :properties {:is-upsell-text false
+                                                                                 :button-text add-more-containers-text}})}
+                add-more-containers-text]
+               ", skipping redundant builds (through "
+               [:a {:href (routes/v1-project-settings-path {:org org-name
+                                                            :repo repo-name})
+                    :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                    :properties {:org org-name
+                                                                                 :repo repo-name
+                                                                                 :project-vcs-url (:vcs_url project)}})}
+                "project settings"]
+               " or "
+               [:a {:href "https://circleci.com/docs/skip-a-build/"
+                    :target "_blank"}
+                "configuring your yml"]
+               ")"]
+              [:p "NOTE: Showing queued builds can slow down the page."]]
+             (button/link {:kind :secondary
+                           :href "#usage-queue"
+                           :on-click #((om/get-shared owner :track-event) {:event-type :show-queued-builds-clicked})}
+                          "Show Queued Builds")]))))))
+
 (defn build-queue [data owner]
   (reify
     om/IWillMount
@@ -791,6 +832,8 @@
                                              :build-data build-data})
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
+
+             :queue-placeholder (om/build build-queue-placeholder {:project project})
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
