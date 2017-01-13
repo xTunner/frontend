@@ -145,21 +145,21 @@
              (om/build open-pull-request-action {:build build}))
            (om/build rebuild-actions {:build build :project project})
            (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
-             [:button.btn-icon.jira-container
-                  {:on-click #(om/set-state! owner :show-jira-modal? true)
-                   :title "Add ticket to JIRA"}
-                  [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]])
+             (button/icon {:label "Add ticket to JIRA"
+                    :on-click #(om/set-state! owner :show-jira-modal? true)}
+                   [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]))
            [:div.build-settings
+
             (when-not can-write-settings?
               {:class "disabled"
                :data-original-title "You need to be an admin to change project settings."
                :data-placement "left"})
 
-            (button/link-icon {:href (build-model/new-pull-request-url build)
+            (button/link-icon {:href (routes/v1-project-settings-path (:navigation-data data))
                                :label "Project Settings"
                                :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                              :properties {:project (:vcs_url project)
-                                                                           :user (:login user)}})}
+                                                                :properties {:project-vcs-url (:vcs_url project)
+                                                                             :user (:login user)}})}
                               [:i.material-icons "settings"])]])))))
 
 (defn page [app owner]
