@@ -127,19 +127,14 @@
                        {:close-fn
                         #(om/set-state! owner :show-setup-docs-modal? false)}))
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
-             (list
-              (forms/managed-button
-                [:a.cancel-build.hidden-sm-down
-                 {:data-loading-text "canceling"
-                  :title             "cancel this build"
+           ;; (when-not (and (build-model/can-cancel? build) can-trigger-builds?)
+             (button/managed-button
+                 {:loading-text "canceling"
+                  :failed-text  "couldn't cancel"
+                  :success-text "cancel this build"
+                  :kind :primary
                   :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
-                 "cancel build"])
-              (forms/managed-button
-                [:a.btn-icon.cancel-build.hidden-md-up
-                 {:data-loading-text "..."
-                  :title             "cancel this build"
-                  :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
-                 [:i.material-icons "cancel"]])))
+                 "Cancel Build"))
            (when (and (feature/enabled? :open-pull-request)
                       (not-empty build))
              (om/build open-pull-request-action {:build build}))
