@@ -60,36 +60,16 @@
   .flexy(center);
   font-size: 13px;
   color: @grayDark;
+  margin-top: 0.5em;
 
-  .mobile-separator {
-    display: flex;
+  @media (max-width: 500px) {
+    #cancel-button {
+      width: 100%;
+    }
   }
 
-  .mobile-separator, .mobile-separator > * {
+  > *:not(:first-child) {
     margin-left: 1em;
-
-    &:first-child {
-      margin-left: 0;
-    }
-
-    @media (min-width: 362px) and (max-width: 767px) {
-      margin-left: 0.5em;
-
-      &:first-child {
-        margin-left: 0;
-      }
-    }
-  }
-
-
-  @media(max-width: 550px) {
-    .mobile-separator {
-      margin-bottom: 1em;
-    }
-
-    &:last-child.mobile-separator {
-      margin-bottom: 0;
-    }
   }
 
   .build-action {
