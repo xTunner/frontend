@@ -175,10 +175,11 @@
 (def github-repos-loading-path (conj user-path :repos-loading :github))
 (def bitbucket-repos-loading-path (conj user-path :repos-loading :bitbucket))
 
-(defn vcs-recent-active-projects-path [building? vcs-type]
-  (assert (= :github vcs-type))
-  (conj user-path :vcs-activity vcs-type (-> building? str keyword)))
-(def vcs-activity-loaded-path (conj user-path :vcs-activity :loaded?))
+(defn all-repos-loaded-path [vcs-type]
+  (conj user-path vcs-type :repos-loaded))
+
+(defn repos-building-path [vcs-type building?]
+  (conj user-path vcs-type :repos (-> building? str keyword)))
 
 (def user-email-prefs-key :basic_email_prefs)
 (def user-email-prefs-path (conj user-path :basic_email_prefs))

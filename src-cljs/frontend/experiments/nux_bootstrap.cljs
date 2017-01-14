@@ -39,7 +39,7 @@
       om/IRender
       (render [_]
         (html
-          (let [project-checkboxes (fn [projects path]
+          (let [project-checkboxes (fn [projects building?]
                                      [:div.projects
                                       {:class (str (when (< 7 (count projects)) "eight-projects")
                                                    " "
@@ -52,15 +52,19 @@
                                                 [:input {:type "checkbox"
                                                          :checked (:checked project)
                                                          :name "follow checkbox"
-                                                         :on-click #(utils/toggle-input owner (conj path
+                                                         :on-click #(utils/toggle-input owner (conj (state/repos-building-path (-> project
+                                                                                                                                   :vcs_type
+                                                                                                                                   (keyword))
+                                                                                                                               building?)
                                                                                                     (:vcs_url project)
                                                                                                     :checked)
                                                                                         %)}]
                                                 (project-model/project-name project)]])))])
-                deselect-activity-repos (fn [path]
+                deselect-activity-repos (fn [building?]
                                           ((om/get-shared owner :track-event) {:event-type :deselect-all-projects-clicked
                                                                                :properties event-properties})
-                                          (raise! owner [:deselect-activity-repos {:path path}]))]
+                                          (raise! owner [:deselect-activity-repos {:path (state/repos-building-path :github building?)}])
+                                          (raise! owner [:deselect-activity-repos {:path (state/repos-building-path :bitbucket building?)}]))]
             (card/titled
               {:title "Getting Started"}
               (html
@@ -71,8 +75,8 @@
                      [:div
                       [:h2.no-top-padding "Follow projects"]
                       [:div "These projects are already building on CircleCI. Would you like to follow them?"]
-                      (project-checkboxes building-projects (state/vcs-recent-active-projects-path true :github))
-                      [:a {:on-click #(deselect-activity-repos (state/vcs-recent-active-projects-path true :github))}
+                      (project-checkboxes building-projects true)
+                      [:a {:on-click #(deselect-activity-repos true)}
                        "Deselect all projects"]
                       (when (not-empty not-building-projects)
                         [:hr])])
@@ -80,8 +84,8 @@
                      [:div
                       [:h2 "Build projects"]
                       [:div "These are your projects that are not building on CircleCI yet. Would you like to start building and following these?"]
-                      (project-checkboxes not-building-projects (state/vcs-recent-active-projects-path false :github))
-                      [:a {:on-click #(deselect-activity-repos (state/vcs-recent-active-projects-path false :github))}
+                      (project-checkboxes not-building-projects false)
+                      [:a {:on-click #(deselect-activity-repos false)}
                        "Deselect all projects"]])
 
                    (button/managed-button {:kind :primary
@@ -101,7 +105,7 @@
   (reify
     om/IDidMount
     (did-mount [_]
-      (api/get-vcs-activity (om/get-shared owner [:comms :api])))
+      (raise! owner [:nux-bootstrap]))
     om/IRender
     (render [_]
       (let [avatar-url (get-in data [:current-user :identities :github :avatar_url])]
