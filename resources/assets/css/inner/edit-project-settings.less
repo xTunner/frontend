@@ -842,3 +842,28 @@ input.radio[type="checkbox"] {
     }
   }
 }
+
+.ns("frontend.components.project-settings", {
+  .ui("jira-empty-state", {
+    .el("column-group", {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      > .column {
+        .flex(1, 1, 0);
+        margin-right: 29px;
+        border-top: 1px solid #ccc;
+
+        > .title {
+          padding: 15px 0;
+          font-size: 16px;
+          line-height: 1.5;
+        }
+        
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    });
+  });    
+});
