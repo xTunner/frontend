@@ -135,7 +135,7 @@
                       [:a {:href "/add-projects"} "Add Projects"]
                       " page to find it."]
                      [:div
-                      "Interested in a demo? "
-                      [:a {:href "/gh/facebook/fresco"
+                      "Interested in a tour? "
+                      [:a {:href "/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
                            :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
-                       "See how Facebook uses CircleCI"]]])))])])))))
+                       "See how Spotify uses CircleCI"]]])))])])))))
