@@ -34,12 +34,30 @@
     button {
       margin-top: 15px;
     }
+
+    .projects {
+      margin-bottom: 10px;
+
+      &.eight-projects, &.twelve-projects {
+        @media (min-width: @screen-sm-max) {
+          -moz-column-count: 2;
+          -moz-columns: 2;
+          -webkit-columns: 2;
+          columns: 2;
+        }
+
+        &.twelve-projects {
+          @media (min-width: @screen-md-max) {
+            -moz-column-count: 3;
+            -moz-columns: 3;
+            -webkit-columns: 3;
+            columns: 3;
+          }
+        }
+      }
+    }
   }
 
-  .spinner {
-    height: 27vh;
-  }
-  
   a {
     cursor: pointer;
   }
@@ -261,6 +279,10 @@
   height: @avatar-size;
 
   margin-right: 8px;
+
+  .material-icons {
+    margin-left: 0;
+  }
 
   .dashboard-icon {
     width: @avatar-size;

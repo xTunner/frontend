@@ -19,9 +19,17 @@
             [frontend.utils.vcs :as vcs]
             [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
             [frontend.routes :as routes]
+            [frontend.experiments.workflow-spike :as workflow]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+
+
+(defn- maybe-add-workflow-response-data [state]
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
+    (cond-> state
+      (= workflow-id "mock-workflow-id")
+      (assoc-in state/workflow-path workflow/fake-progress-response))))
 
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
@@ -83,7 +91,8 @@
              state/recent-builds nil)
       (state-utils/set-dashboard-crumbs args)
       state-utils/reset-current-build
-      state-utils/reset-current-project))
+      state-utils/reset-current-project
+      maybe-add-workflow-response-data))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state comms]
@@ -126,6 +135,28 @@
     (api/get-build-state api-ch))
   (set-page-title! "Build State"))
 
+(defn- add-crumbs [state {:keys [vcs_type project-name build-num org repo tab container-id action-id]}]
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)
+        crumbs (if workflow-id
+                 [{:type :workflows-dashboard}
+                  {:type :org :username org :vcs_type vcs_type}
+                  {:type :project :username org :project repo :vcs_type vcs_type}
+                  {:type :project-branch :username org :project repo :vcs_type vcs_type}
+                  {:type :workflow :username org :project repo
+                   :workflow-id workflow-id
+                   :vcs_type vcs_type}
+                  {:type :workflow-job :username org :project repo
+                   :build-num build-num
+                   :vcs_type vcs_type}]
+                 [{:type :dashboard}
+                  {:type :org :username org :vcs_type vcs_type}
+                  {:type :project :username org :project repo :vcs_type vcs_type}
+                  {:type :project-branch :username org :project repo :vcs_type vcs_type}
+                  {:type :build :username org :project repo
+                   :build-num build-num
+                   :vcs_type vcs_type}])]
+    (assoc-in state state/crumbs-path crumbs)))
+
 (defmethod navigated-to :build
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args}
    state]
@@ -143,18 +174,13 @@
         (assoc state/current-view navigation-point
                state/navigation-data (assoc args :show-settings-link? false)
                :project-settings-project-name project-name)
-        (assoc-in state/crumbs-path [{:type :dashboard}
-                                     {:type :org :username org :vcs_type vcs_type}
-                                     {:type :project :username org :project repo :vcs_type vcs_type}
-                                     {:type :project-branch :username org :project repo :vcs_type vcs_type}
-                                     {:type :build :username org :project repo
-                                      :build-num build-num
-                                      :vcs_type vcs_type}])
+        (add-crumbs args)
         state-utils/reset-current-build
         (#(if (state-utils/stale-current-project? % project-name)
             (state-utils/reset-current-project %)
             %))
-        state-utils/reset-dismissed-osx-usage-level)))
+        state-utils/reset-dismissed-osx-usage-level
+        maybe-add-workflow-response-data)))
 
 (defn initialize-pusher-subscriptions
   "Subscribe to pusher channels for initial messaging. This subscribes

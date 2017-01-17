@@ -212,7 +212,6 @@
       :else (recur (zip/next z)))))
 
 (defn ^:export setup! []
-  (support/enable-one!)
   (let [legacy-state (initial-state)
         comms {:controls (chan)
                :api (chan)
@@ -264,6 +263,7 @@
                                    ;; Make the legacy-state-atom available to the legacy inputs system.
                                    :_app-state-do-not-use legacy-state-atom}})})]
 
+    (support/enable-one! {:in-beta-program (get-in legacy-state state/user-in-beta-path)})
     (set! application a)
 
     (browser-settings/setup! legacy-state-atom)

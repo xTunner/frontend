@@ -233,7 +233,7 @@
              {:keys [vcs_type username reponame build_num]} build]
          [:a.container-selector.exception
           {:href (routes/v1-build-path vcs_type username
-                                       reponame build_num
+                                       reponame nil build_num
                                        (or current-tab (build-utils/default-tab build scopes))
                                        container-id)
            :on-click #(do
@@ -456,6 +456,7 @@
     (render [_]
       (let [build (get-in app state/build-path)
             build-data (get-in app state/build-data-path)
+            workflow-data (get-in app state/workflow-data-path)
             container-data (get-in app state/container-data-path)
             invite-data (get-in app state/build-invite-data-path)
             project-data (get-in app state/project-data-path)
@@ -469,6 +470,7 @@
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
+                                              :workflow-data workflow-data
                                               :current-tab (get-in app state/navigation-tab-path)
                                               :container-id (state/current-container-id app)
                                               :project-data project-data

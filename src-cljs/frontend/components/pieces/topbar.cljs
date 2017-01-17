@@ -49,7 +49,7 @@
                "Updates" [:i.material-icons "keyboard_arrow_down"]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                (when-not (config/enterprise?)
-                 [:li [:a {:href "/changelog/"
+                 [:li [:a {:href "https://circleci.com/changelog/"
                            :target "_blank"}
                        [:div.heading "Changelog"]
                        [:div.description "The latest CircleCI product updates."]]])
@@ -65,7 +65,7 @@
                "Support" [:i.material-icons "keyboard_arrow_down"]]
               [:ul.dropdown-menu.pull-right.animated.slideInDown
                [:li
-                [:a {:href "/docs/"
+                [:a {:href "https://circleci.com/docs/"
                      :target "_blank"}
                  [:div.heading "Docs"]
                  [:div.description "Read about building, testing, and deploying your software on CircleCI."]]]

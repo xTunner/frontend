@@ -43,7 +43,7 @@
 
 (defn sidebar-build [build {:keys [vcs_type org repo branch latest?]}]
   [:a.status {:class (when latest? "latest")
-              :href (routes/v1-build-path vcs_type org repo (:build_num build))
+              :href (routes/v1-build-path vcs_type org repo nil (:build_num build))
               :title (str (build-model/status-words build) ": " (:build_num build))}
    (common/ico (status-ico-name build))])
 
@@ -74,19 +74,15 @@
   (when (and (project-model/can-write-settings? project))
     (let [org-name (:username project)
           repo-name (:reponame project)
-          vcs-type (:vcs_type project)]
-      [:a {:class (cond-> "project-settings-icon"
-                          (= :project-settings-icon-hover-only
-                             (feature/ab-test-treatment :show-project-settings-on-branch-picker))
-                          (str " hover-only"))
-           :href (routes/v1-project-settings-path {:vcs_type vcs-type
-                                                   :org org-name
-                                                   :repo repo-name})
-           :title (str (project-model/project-name project)
-                       " settings")
-           :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                           :properties {:org org-name
-                                                                        :repo repo-name}})}
+          vcs-type (:vcs_type project)]   
+      [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type vcs-type
+                                                                         :org org-name
+                                                                         :repo repo-name})
+                                 :title (str (project-model/project-name project)
+                                             " settings")
+                                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                                 :properties {:org org-name
+                                                                                              :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
 (defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [identities show-project?]}]
@@ -508,7 +504,7 @@
                                :data-placement "right"
                                :data-trigger "hover"
                                :target "_blank"
-                               :href "/docs/"
+                               :href "https://circleci.com/docs/"
                                :on-click #(aside-nav-clicked owner :docs-icon-clicked)}
                 [:i.material-icons "description"]
                 [:div.nav-label "Docs"]])
@@ -532,7 +528,7 @@
                                  :data-trigger "hover"
                                  :title "Changelog"
                                  :target "_blank"
-                                 :href "/changelog/"
+                                 :href "https://circleci.com/changelog/"
                                  :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
                   [:i.material-icons "receipt"]
                   [:div.nav-label "Changelog"]]))

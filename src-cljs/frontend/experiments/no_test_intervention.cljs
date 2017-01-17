@@ -23,7 +23,7 @@
        (-> build :build_num (<= 3))))
 
 (defn- setup-docs-link-props [track-fn]
-  {:href "/docs/manually"
+  {:href "https://circleci.com/docs/manually"
    :target "_blank"
    :on-click #(track-setup-docs-clicked track-fn)})
 

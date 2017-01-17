@@ -17,7 +17,8 @@
             [frontend.utils :as utils]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true])
+            [goog.string :refer [format capitalize]]
+            [om.core :as om :include-macros true]) 
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn show-follow-project-button? [app]
@@ -46,7 +47,7 @@
           :success-text "Followed"
           :kind :primary
           :size :medium}
-          "Follow Project")))))
+         "Follow Project")))))
 
 (defn show-settings-link? [app]
   (and
@@ -97,27 +98,29 @@
       (let [flash (get-in app state/flash-path)
             logged-in? (get-in app state/user-path)
             nav-point (:navigation-point app)
-            hamburger-state (get-in app state/hamburger-menu-path)]
+            hamburger-state (get-in app state/hamburger-menu-path)
+            first-build (first (:recent-builds app))]
         (html
           [:div.outer-header
            [:div
             (when flash
               [:div#flash {:dangerouslySetInnerHTML {:__html flash}}])]
-           [:div.navbar.navbar-default.navbar-fixed-top {:class (case nav-point
-                                                                  :language-landing
-                                                                  (get-in app [:navigation-data :language])
-                                                                  :integrations
-                                                                  (name (get-in app [:navigation-data :integration]))
-                                                                  nil)
-                                                         :on-touch-end #(raise! owner [:change-hamburger-state])}
-            [:div.container-fluid
+           [:div.navbar.navbar-default {:class (case nav-point
+                                                 :language-landing
+                                                 (get-in app [:navigation-data :language])
+                                                 :integrations
+                                                 (name (get-in app [:navigation-data :integration]))
+                                                 nil)
+                                        :on-touch-end #(raise! owner [:change-hamburger-state])}
+            [:div.container
              [:div.hamburger-menu
               (condp = hamburger-state
                 "closed" [:i.fa.fa-bars.fa-2x]
                 "open" [:i.fa.fa-close.fa-2x])]
              [:div.navbar-header
               [:a#logo.navbar-brand
-               {:href "/"}
+               {:href "/"
+                :on-click #(raise! owner [:clear-build-data])}
                (common/circle-logo {:width nil
                                     :height 25})]
               (if logged-in?
@@ -128,70 +131,75 @@
                           "/signup/")}
                  "Sign up"])]
              [:div.navbar-container {:class hamburger-state}
-              [:ul.nav.navbar-nav
-               (when (config/show-marketing-pages?)
-                 (list
-                   [:li.dropdown {:class (when (contains? #{:features
-                                                            :mobile
-                                                            :ios
-                                                            :android
-                                                            :integrations
-                                                            :enterprise}
-                                                          nav-point)
-                                           "active")}
-                    [:a.menu-item {:href "/features/"}
-                     "Product "
-                     [:i.fa.fa-caret-down]]
-                    [:ul.dropdown-menu
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                         (maybe-active nav-point :features)
-                                         {:role "menuitem"
-                                          :tabIndex "-1"
-                                          :href "/features/"})
-                       "Features"]]
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                          (maybe-active nav-point :mobile)
-                                          {:role "menuitem"
-                                           :tabIndex "-1"
-                                           :href "/mobile/"})
-                       "Mobile"]]
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                          (maybe-active nav-point :integrations)
-                                          {:role "menuitem"
-                                           :tabIndex "-1"
-                                           :href "/integrations/docker/"})
-                       "Docker"]]
-                     [:li {:role "presentation"}
-                      [:a.sub.menu-item (merge
-                                          (maybe-active nav-point :enterprise)
-                                          {:role "menuitem"
-                                           :tabIndex "-1"
-                                           :href "/enterprise/"})
-                       "Enterprise"]]]]
-                   [:li (maybe-active nav-point :pricing)
-                    [:a.menu-item {:href "/pricing/"} "Pricing"]]))
-               [:li (maybe-active nav-point :documentation)
-                [:a.menu-item {:href "https://circleci.com/docs/"}
+              (if (and (:current-build-data app) (feature/enabled? "show-demo-label"))
+                [:ul.nav.navbar-nav
+                    [:li [:span.demo-label " "
+                          (when first-build (format "You are viewing the CircleCI open source dashboard with builds from %s's %s repo" (capitalize (:username first-build)) (capitalize (:reponame first-build))))]]]
+                [:ul.nav.navbar-nav
+                 (when (config/show-marketing-pages?)
+                   (list
+                     [:li.dropdown {:class (when (contains? #{:features
+                                                              :mobile
+                                                              :ios
+                                                              :android
+                                                              :integrations
+                                                              :enterprise}
+                                                            nav-point)
+                                             "active")}
+                      [:a.menu-item {:href "https://circleci.com/features/"}
+                       "Product "
+                       [:i.fa.fa-caret-down]]
+                      [:ul.dropdown-menu
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                           (maybe-active nav-point :features)
+                                           {:role "menuitem"
+                                            :tabIndex "-1"
+                                            :href "https://circleci.com/features/"})
+                         "Features"]]
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                            (maybe-active nav-point :mobile)
+                                            {:role "menuitem"
+                                             :tabIndex "-1"
+                                             :href "https://circleci.com/mobile/"})
+                         "Mobile"]]
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                            (maybe-active nav-point :integrations)
+                                            {:role "menuitem"
+                                             :tabIndex "-1"
+                                             :href "https://circleci.com/integrations/docker/"})
+                         "Docker"]]
+                       [:li {:role "presentation"}
+                        [:a.sub.menu-item (merge
+                                            (maybe-active nav-point :enterprise)
+                                            {:role "menuitem"
+                                             :tabIndex "-1"
+                                             :href "https://circleci.com/enterprise/"})
+                         "Enterprise"]]]]
+                     [:li (maybe-active nav-point :pricing)
+                      [:a.menu-item {:href "https://circleci.com/pricing/"} "Pricing"]]))
+                 [:li (maybe-active nav-point :documentation)
+                  [:a.menu-item {:href "https://circleci.com/docs/"}
+                   (if (config/enterprise?)
+                    "CircleCI Documentation"
+                    "Documentation")]]
                  (if (config/enterprise?)
-                  "CircleCI Documentation"
-                  "Documentation")]]
-               (if (config/enterprise?)
-                 [:li [:a.menu-item {:href "https://enterprise-docs.circleci.com"} "Enterprise Documentation"]])
-               [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
-               (when (config/show-marketing-pages?)
-                 (list
-                   [:li {:class (when (contains? #{:about
-                                                   :contact
-                                                   :team
-                                                   :jobs
-                                                   :press}
-                                                 nav-point)
-                                  "active")}
-                    [:a.menu-item {:href "/about/"} "About Us"]]
-                   [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))]
+                   [:li [:a.menu-item {:href "https://circleci.com/docs/enterprise/"} "Enterprise Documentation"]])
+                 [:li [:a.menu-item {:href "https://discuss.circleci.com" :target "_blank"} "Discuss"]]
+                 (when (config/show-marketing-pages?)
+                   (list
+                     [:li {:class (when (contains? #{:about
+                                                     :contact
+                                                     :team
+                                                     :jobs
+                                                     :press}
+                                                   nav-point)
+                                    "active")}
+                      [:a.menu-item {:href "https://circleci.com/about/"} "About Us"]]
+                     [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))])
+              
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right.back-to-app
                  [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]
@@ -315,7 +323,8 @@
                      (feature/enabled? :offer-linux-trial)
                      (not (get-in app state/dismissed-trial-offer-banner)))
             (om/build trial-offer-banner app))
-          (when (:build (get-in app state/build-data-path))
+          ; only show web notifications when the user is logged in.
+          (when (and user (:build (get-in app state/build-data-path)))
             (cond
               (and (= (n/notifications-permission) "default")
                    show-web-notif-banner?)
@@ -354,8 +363,10 @@
                      (or (-> (feature/ab-test-treatment :new-user-landing-page user)
                              (= :dashboard)
                              not)
+                         (= :build (get-in app state/current-view-path))
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
+                                          :logged-out? (not (:name user))
                                           :actions (cond-> []
                                                      (show-settings-link? app)
                                                      (conj (settings-link app owner))

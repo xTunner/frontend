@@ -100,6 +100,7 @@
     :setup-docs-clicked
     :setup-docs-impression
     :show-all-branches-toggled
+    :show-queued-builds-clicked
     :signup-clicked
     :signup-impression
     :sort-branches-toggled
@@ -114,7 +115,7 @@
     :trial-offer-banner-impression
     :update-parallelism-clicked
     :update-plan-clicked
-    :vcs-activity-fetched
+    :view-demo-clicked
     :web-notifications-permissions-banner-dismissed
     :web-notifications-permissions-banner-impression
     :web-notifications-permissions-set})

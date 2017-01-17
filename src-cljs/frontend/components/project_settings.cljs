@@ -141,7 +141,7 @@
                      [:b "Option 3"]
                      [:p
                       "Override all settings via a "
-                      [:a {:href "/docs/configuration/"} "circle.yml file"]
+                      [:a {:href "https://circleci.com/docs/configuration/"} "circle.yml file"]
                       " in your repo. Very powerful."]]))]
                (if (:following project)
                  [(card/titled
@@ -635,15 +635,17 @@
                                     " efficient.  It also adds the necessary flags for collecting this to automatically"
                                     " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
                                     " to add the necessary formatter gem - see "
-                                    [:a {:href "/docs/test-metadata/#metadata-collection-in-custom-test-steps"}
+                                    [:a {:href "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps"}
                                      "the docs"] " for more information."]})
 
-            (describe-flag {:flag :set-github-status
-                            :title "GitHub Status updates"
-                            :blurb [:p
-                                    "By default, we update the status of every pushed commit with "
-                                    "GitHub's status API. If you'd like to turn this off (if, for example, "
-                                    "this is conflicting with another service), you can do so below."]})
+            (let [pretty-vcs (utils/prettify-vcs_type (:vcs-type project))]
+              (describe-flag {:flag :set-github-status
+                              :title (gstring/format "%s Status updates" pretty-vcs)
+                              :blurb [:p
+                                      "By default, we update the status of every pushed commit with "
+                                      (gstring/format "%s's status API. If you'd like to turn this off (if, for example, "
+                                                      pretty-vcs)
+                                      "this is conflicting with another service), you can do so below."]}))
             (describe-flag {:flag :oss
                             :title "Free and Open Source"
                             :blurb [:p
@@ -665,7 +667,7 @@
                                      "Run builds for fork pull request changes with this project's configuration, environment variables, and secrets. "]
                                     [:p
                                      "There are serious security concerns with this setting (see "
-                                     [:a {:href "/docs/fork-pr-builds/"} "the documentation"] " for details.) "
+                                     [:a {:href "https://circleci.com/docs/fork-pr-builds/"} "the documentation"] " for details.) "
                                      "If you have SSH keys, sensitive env vars or AWS credentials stored in your project settings and "
                                      "untrusted forks can make pull requests against your repo, then this option "
                                      "isn't for you!"])})
@@ -700,7 +702,7 @@
            [:legend "Install dependencies for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your dependencies commands from your "
-            [:a {:href "/docs/configuration/#dependencies"} "circle.yml"] ". "
+            [:a {:href "https://circleci.com/docs/configuration/#dependencies"} "circle.yml"] ". "
             "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
             "Don't put any secrets here that you wouldn't check in! Use our "
             [:a {:href "#env-vars"} "environment variables settings page"]
@@ -751,7 +753,7 @@
            [:legend "Set up tests for " (vcs-url/project-name (:vcs_url project))]
            [:p
             "You can also set your test commands from your "
-            [:a {:href "/docs/configuration/#dependencies"} "circle.yml"] ". "
+            [:a {:href "https://circleci.com/docs/configuration/#dependencies"} "circle.yml"] ". "
             "Note that anyone who can see this project on GitHub will be able to see these in your build pages. "
             "Don't put any secrets here that you wouldn't check in! Use our "
             [:a {:href "#env-vars"} "environment variables settings page"]
@@ -850,7 +852,7 @@
       [:div.doc
        [:p
         "CircleCI also supports webhooks, which run at the end of a build. They can be configured in your "
-        [:a {:href "/docs/configuration#notify" :target "_blank"}
+        [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
          "circle.yml file"]
         "."]]]])))
 
@@ -877,7 +879,7 @@
           [:article
            [:legend "Chatroom Integrations"]
            [:p "If you want to control chat notifications on a per branch basis, "
-            [:a {:href "/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
+            [:a {:href "https://circleci.com/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
            [:div.chat-rooms
             (for [chat-spec [{:service "Slack"
                               :doc (list [:p "To get your Webhook URL, visit Slack's "
@@ -1309,7 +1311,7 @@
                 [:h2 "About checkout keys"]
                 [:h4 "What is a deploy key?"]
                 [:p "A deploy key is a repo-specific SSH key. " vcs-name " has the public key, and we store the private key. The deployment key gives CircleCI access to a single repository."]
-                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a {:href "/docs/adding-read-write-deployment-key/"} "read-write deployment key"]"."]
+                [:p "If you want to push to your repository from builds, please add a user key as described below or manually add " [:a {:href "https://circleci.com/docs/adding-read-write-deployment-key/"} "read-write deployment key"]"."]
                 [:h4 "What is a user key?"]
                 [:p "A user key is a user-specific SSH key. " vcs-name " has the public key, and we store the private key. Possession of the private key gives the ability to act as that user, for purposes of 'git' access to projects."]
                 [:h4 "How are these keys used?"]
@@ -1341,9 +1343,9 @@
     [:h5 "Status"]
     [:p
      "Allows read-only access to the build status (passing, failing, etc) of any branch of the project. Its intended use is "
-     [:a {:target "_blank" :href "/docs/status-badges/"} "sharing status badges"]
+     [:a {:target "_blank" :href "https://circleci.com/docs/status-badges/"} "sharing status badges"]
      " and "
-     [:a {:target "_blank", :href "/docs/polling-project-status/"} "status polling tools"]
+     [:a {:target "_blank", :href "https://circleci.com/docs/polling-project-status/"} "status polling tools"]
      " for private projects."]
 
     [:h5 "Build Artifacts"]
@@ -1483,7 +1485,7 @@
            [:div.heroku-step
             [:h4
              "Step 3: Add deployment settings to your "
-             [:a {:href "/docs/configuration/#deployment"} "circle.yml file"] " (example below)."]
+             [:a {:href "https://circleci.com/docs/configuration/#deployment"} "circle.yml file"] " (example below)."]
             [:pre
              [:code
               "deployment:\n"
@@ -1502,7 +1504,7 @@
       [:div.doc
        [:p "CircleCI supports deploying to any server, using custom commands. See "
         [:a {:target "_blank",
-             :href "/docs/configuration#deployment"}
+             :href "https://circleci.com/docs/configuration#deployment"}
          "our deployment documentation"]
         " to set it up."]]]])))
 
@@ -1777,7 +1779,7 @@
                        {:html true :delay 0 :animation false
                         :placement "right" :title "Revision Location: Key Pattern"
                         :content (hiccup->html-str [:p "A template used to construct S3 keys for storing application revisions."
-                                                    "You can use " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy/#key-patterns"} "substitution variables"]
+                                                    "You can use " [:a {:href "https://circleci.com/docs/continuous-deployment-with-aws-codedeploy/#key-patterns"} "substitution variables"]
                                                     " in the Key Pattern to generate a unique key for each build."])})))
     om/IRender
     (render [_]
@@ -1863,7 +1865,7 @@
           [:article
            [:legend "CodeDeploy application settings for " (vcs-url/project-name (:vcs_url project))]
            [:p "CodeDeploy is an AWS service for deploying to your EC2 instances. "
-            "Check out our " [:a {:href "/docs/continuous-deployment-with-aws-codedeploy/"} "getting started with CodeDeploy"]
+            "Check out our " [:a {:href "https://circleci.com/docs/continuous-deployment-with-aws-codedeploy/"} "getting started with CodeDeploy"]
             " guide for detailed information on getting set up."]
            [:div.aws-page-inner
             [:div.aws-codedeploy-step
@@ -1877,7 +1879,7 @@
               "(e.g. staging, production) depending on which branch was built. "
               "With application settings configured in the UI you only need to set the "
               "deployment group and, optionally, deployment configuration, in each deployment "
-              "block in your " [:a {:href "/docs/configuration/#deployment"} "circle.yml file"] ". "
+              "block in your " [:a {:href "https://circleci.com/docs/configuration/#deployment"} "circle.yml file"] ". "
               "If you skip this step you will need to add all deployment settings into your circle.yml file."]
              (if (not (seq applications))
                ;; No settings set, need to get the application name first
@@ -1887,7 +1889,7 @@
             [:div.aws-codedeploy-step
              [:h4 "Step 3"]
              [:p "Add deployment settings to your "
-              [:a {:href "/docs/configuration/#deployment"} "circle.yml file"]
+              [:a {:href "https://circleci.com/docs/configuration/#deployment"} "circle.yml file"]
               " (example below)."]
              [:pre
               [:code
@@ -2086,7 +2088,7 @@
                         begins, and will be available to sign iOS and OS X apps. For more information about code-signing
                         on CircleCI see our "
             [:a
-             {:href "/docs/ios-code-signing/"}
+             {:href "https://circleci.com/docs/ios-code-signing/"}
              "code-signing documentation."]]
            (if-not (empty? osx-keys)
              (om/build p12-key-table {:rows (->> osx-keys
@@ -2132,7 +2134,7 @@
                       usually be required for running tests, but will be required for ad-hoc, TestFlight, and
                       App Store builds. See our "
             [:a
-             {:href "/docs/ios-code-signing/"}
+             {:href "https://circleci.com/docs/ios-code-signing/"}
              "code-signing documentation"]
             " for more details."]
            (if-not (empty? osx-profiles)

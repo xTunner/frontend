@@ -61,3 +61,23 @@
     (testing "even split"
       (is (= [{:a [1 2 3]} {:b [4 5 6]}]
              (utils/split-map-values-at orig 3))))))
+
+(deftest clj-keys-with-dashes->clj-keys-with-underscores-works
+  (let [input-map {:foo-bar {:baz-foo "a"}
+                   :foo-baz_bar "b"}
+        expected-output {:foo_bar {:baz_foo "a"}
+                         :foo_baz_bar "b"}]
+    (is (= (utils/clj-keys-with-dashes->clj-keys-with-underscores input-map)
+           expected-output))))
+
+(deftest clj-keys-with-dashes->js-keys-with-underscores-works
+  (let [input-map {:foo-bar {:baz-foo "a"}
+                   :foo-baz_bar "b"}
+        expected-output (-> {:foo_bar {:baz_foo "a"}
+                             :foo_baz_bar "b"}
+                            clj->js)]
+    ;; Apparently you can't compared javascript objects, so convert them back
+    ;; to javascript.
+    (is (= (-> (utils/clj-keys-with-dashes->js-keys-with-underscores input-map)
+               js->clj)
+           (js->clj expected-output)))))

@@ -296,12 +296,28 @@
 }
 
 .outer-header {
+
+  .navbar {
+    margin-bottom: 0;
+  }
+
   .hamburger-menu {
     display: none;
   }
 
   .mobile-nav {
     display: none;
+  }
+
+  .demo-label {
+  
+  /* Matching format to header style in: */
+  /* resources/components/bootstrap/less/... nav.less, navbar.less */
+  /* Variables compiled from "../shared/variables.less" */
+
+    position: relative;
+    display: block;
+    padding: @navbar-padding-vertical @nav-link-padding;
   }
 
   @media (max-width: @screen-sm-min) {
