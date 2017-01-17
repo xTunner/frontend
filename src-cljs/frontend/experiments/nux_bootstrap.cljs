@@ -136,6 +136,6 @@
                       " page to find it."]
                      [:div
                       "Interested in a tour? "
-                      [:a {:href "/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
+                      [:a {:href "https://circleci.com/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
                            :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
                        "See how Spotify uses CircleCI"]]])))])])))))
