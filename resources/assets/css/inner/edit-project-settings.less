@@ -845,16 +845,22 @@ input.radio[type="checkbox"] {
 
 .ns("frontend.components.project-settings", {
   .ui("jira-empty-state", {
+    > p.intro {
+      margin-bottom: 0; // setting the margin at 0 until we harden the style
+      padding-bottom: 15px;
+      border-bottom: 1px solid @grayLightest;
+    }
+
     .el("column-group", {
       .flexy();
       > .column {
         .flex(1, 1, 0);
         margin-right: 29px;
-        
+
         &:last-child {
           margin-right: 0;
         }
-        
+
         > .title {
           margin: 15px 0;
           font-size: 16px;
@@ -866,5 +872,5 @@ input.radio[type="checkbox"] {
         }
       }
     });
-  });    
+  });
 });

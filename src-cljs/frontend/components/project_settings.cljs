@@ -1684,7 +1684,7 @@
            :connect (jira-connect-modal project owner)
            nil)
          (when (config/jira-connect-enabled?)
-           [:p "There are 2 options for setting up JIRA with CircleCI: Atlassian Connect or JIRA Basic Authentication. Choose one of the options below to continue."])
+           [:p.intro "There are 2 options for setting up JIRA with CircleCI: Atlassian Connect or JIRA Basic Authentication. Choose one of the options below to continue."])
          (letfn [(track-event [auth-type]
                    ((om/get-shared owner :track-event)
                     {:event-type :add-credentials-clicked
