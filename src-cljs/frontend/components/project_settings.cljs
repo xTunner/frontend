@@ -1685,33 +1685,42 @@
            nil)
          (when (config/jira-connect-enabled?)
            [:p "There are 2 options for setting up JIRA with CircleCI: Atlassian Connect or JIRA Basic Authentication. Choose one of the options below to continue."])
-         (element
-          :column-group
-          (html
-           [:div
-            (when (config/jira-connect-enabled?)
+         (letfn [(track-event [auth-type]
+                   ((om/get-shared owner :track-event)
+                    {:event-type :add-credentials-clicked
+                     :properties {:component "jira-integration"
+                                  :auth-type auth-type}}))]
+           (element
+            :column-group
+            (html
+             [:div
+              (when (config/jira-connect-enabled?)
+                [:div.column
+                 [:.title "Atlassian Connect for CircleCI"]
+                 [:p "If you are an Atlassian administrator you can get a token by following the instructions "
+                  [:a
+                   {:href "https://marketplace.atlassian.com/plugins/circleci.jira/cloud/overview"
+                    :target "_blank"}
+                   "here"]
+                  "."]
+                 (button/button {:kind :primary
+                                 :on-click (fn [_]
+                                             (om/set-state! owner :modal :connect)
+                                             (track-event "connect"))}
+                                "Add Token")])
               [:div.column
-               [:.title "Atlassian Connect for CircleCI"]
-               [:p "If you are an Atlassian administrator you can get a token by following the instructions "
-                [:a
-                 {:href "https://marketplace.atlassian.com/plugins/circleci.jira/cloud/overview"
-                  :target "_blank"}
-                 "here"]
-                "."]
+               (when (config/jira-connect-enabled?)
+                 [:.title "JIRA Basic Authentication"])
+               [:p (str
+                    (if (config/jira-connect-enabled?)
+                      "If you are not an Atlassian administrator you can s"
+                      "S")
+                    "tore your JIRA username, password, and JIRA base hostname to connect JIRA and CircleCI.")]
                (button/button {:kind :primary
-                               :on-click #(om/set-state! owner :modal :connect)}
-                              "Add Token")])
-            [:div.column
-             (when (config/jira-connect-enabled?)
-               [:.title "JIRA Basic Authentication"])
-             [:p (str
-                  (if (config/jira-connect-enabled?)
-                    "If you are not an Atlassian administrator you can s"
-                    "S")
-                  "tore your JIRA username, password, and JIRA base hostname to connect JIRA and CircleCI.")]
-             (button/button {:kind :primary
-                             :on-click #(om/set-state! owner :modal :basic)}
-                            "Add JIRA Credentials")]]))])))))
+                               :on-click (fn [_]
+                                           (om/set-state! owner :modal :basic)
+                                           (track-event "basic"))}
+                              "Add Credentials")]])))])))))
 
 (defmulti jira-installed
   "View to display when jira credentials are installed on the project."
