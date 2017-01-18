@@ -1598,13 +1598,20 @@
             token (or (get-in inputs [:jira :circle_token])
                       (get-in project [:jira :circle_token]))
             project-id (project-model/id project)
-            jira-input-path (conj state/inputs-path :jira :circle_token)]
+            jira-input-path (conj state/inputs-path :jira :circle_token)
+            track-event (fn [event-type component]
+                          ((om/get-shared owner :track-event)
+                           {:event-type event-type
+                            :properties {:component component
+                                         :auth-type "connect"}}))]
         (html
          [:section
           [:article
            (card/titled
             {:title (str "JIRA integration for " (vcs-url/project-name (:vcs_url project)))
-             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+             :action (button/button {:on-click (fn [_]
+                                                 (om/set-state! owner :show-modal? true)
+                                                 (track-event :add-credentials-clicked "jira-integration"))
                                      :kind :primary
                                      :size :medium}
                                     "Configure Token")}
@@ -1613,28 +1620,38 @@
               [:p
                "Install the CircleCI JIRA add-on from the Atlassian Marketplace and add the token here."]
               (when show-modal?
-                (let [close-fn #(om/set-state! owner :show-modal? false)]
-                  (modal/modal-dialog {:title "Add a JIRA token"
-                                       :body (html
-                                              [:div
-                                               [:p "Configure JIRA to create issues from CircleCI’s build page."]
-                                               (form/form {}
-                                                          (om/build form/text-field {:label "Token"
-                                                                                     :require true
-                                                                                     :value token
-                                                                                     :on-change #(utils/edit-input owner jira-input-path %)}))])
-                                       :actions [(button/button {:on-click close-fn} "Cancel")
-                                                 (button/managed-button
-                                                  {:failed-text "Failed"
-                                                   :success-text "Saved"
-                                                   :loading-text "Saving..."
-                                                   :kind :primary
-                                                   :on-click #(raise! owner
-                                                                      [:saved-project-settings {:project-id project-id
-                                                                                                :merge-paths [[:jira]]
-                                                                                                :on-success close-fn}])}
-                                                  "Save")]
-                                       :close-fn close-fn})))
+                (letfn [(close-modal! []
+                          (om/set-state! owner :show-modal? false))
+                        (close-fn [_]
+                          (close-modal!)
+                          (track-event :cancel-clicked "jira-credentials-modal"))]
+                  (modal/modal-dialog
+                   {:title "Add a JIRA token"
+                    :body (html
+                           [:div
+                            [:p "Configure JIRA to create issues from CircleCI’s build page."]
+                            (form/form {}
+                                       (om/build form/text-field
+                                                 {:label "Token"
+                                                  :require true
+                                                  :value token
+                                                  :on-change #(utils/edit-input owner
+                                                                                jira-input-path
+                                                                                %)}))])
+                    :actions [(button/button {:on-click close-fn} "Cancel")
+                              (button/managed-button
+                               {:failed-text "Failed"
+                                :success-text "Saved"
+                                :loading-text "Saving..."
+                                :kind :primary
+                                :on-click (fn [_]
+                                            (raise! owner
+                                                    [:saved-project-settings {:project-id project-id
+                                                                              :merge-paths [[:jira]]
+                                                                              :on-success close-modal!}])
+                                            (track-event :save-clicked "jira-credentials-modal"))}
+                               "Save")]
+                    :close-fn close-fn})))
               (when-let [credentials (:jira project)]
                 (letfn [(linkify [url]
                           (html
@@ -1673,13 +1690,20 @@
             credentials (or (:jira inputs)
                             (:jira project))
             project-id (project-model/id project)
-            jira-input-path (fn [& args] (apply conj state/inputs-path :jira args))]
+            jira-input-path (fn [& args] (apply conj state/inputs-path :jira args))
+            track-event (fn [event-type component]
+                          ((om/get-shared owner :track-event)
+                           {:event-type event-type
+                            :properties {:component component
+                                         :auth-type "basic"}}))]
         (html
          [:section
           [:article
            (card/titled
             {:title (str "JIRA integration for " (vcs-url/project-name (:vcs_url project)))
-             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+             :action (button/button {:on-click (fn [_]
+                                                 (om/set-state! owner :show-modal? true)
+                                                 (track-event :add-credentials-clicked "jira-integration"))
                                      :kind :primary
                                      :size :medium}
                                     "Configure Credentials")}
@@ -1688,34 +1712,41 @@
               [:p
                "Configure JIRA to create issues from CircleCI's build page."]
               (when show-modal?
-                (let [close-fn #(om/set-state! owner :show-modal? false)]
-                  (modal/modal-dialog {:title "Add a JIRA token"
-                                       :body (html
-                                              [:div
-                                               [:p "Configure JIRA to create issues from CircleCI’s build page."]
-                                               (form/form {}
-                                                          (om/build form/text-field {:label "JIRA username"
-                                                                                     :value (:username credentials)
-                                                                                     :on-change #(utils/edit-input owner (jira-input-path :username) %)})
-                                                          (om/build form/text-field {:label "JIRA password"
-                                                                                     :password? true
-                                                                                     :value (:password credentials)
-                                                                                     :on-change #(utils/edit-input owner (jira-input-path :password) %)})
-                                                          (om/build form/text-field {:label "JIRA base hostname"
-                                                                                     :value (:base_url credentials)
-                                                                                     :on-change #(utils/edit-input owner (jira-input-path :base_url) %)}))])
-                                       :actions [(button/button {:on-click close-fn} "Cancel")
-                                                 (button/managed-button
-                                                  {:failed-text "Failed"
-                                                   :success-text "Saved"
-                                                   :loading-text "Saving..."
-                                                   :kind :primary
-                                                   :on-click #(raise! owner
-                                                                      [:saved-project-settings {:project-id project-id
-                                                                                                :merge-paths [[:jira]]
-                                                                                                :on-success close-fn}])}
-                                                  "Save")]
-                                       :close-fn close-fn})))
+                (letfn [(close-modal! []
+                          (om/set-state! owner :show-modal? false))
+                        (close-fn [_]
+                          (close-modal!)
+                          (track-event :cancel-clicked "jira-credentials-modal"))]
+                  (modal/modal-dialog
+                   {:title "Add a JIRA token"
+                    :body (html
+                           [:div
+                            [:p "Configure JIRA to create issues from CircleCI’s build page."]
+                            (form/form {}
+                                       (om/build form/text-field {:label "JIRA username"
+                                                                  :value (:username credentials)
+                                                                  :on-change #(utils/edit-input owner (jira-input-path :username) %)})
+                                       (om/build form/text-field {:label "JIRA password"
+                                                                  :password? true
+                                                                  :value (:password credentials)
+                                                                  :on-change #(utils/edit-input owner (jira-input-path :password) %)})
+                                       (om/build form/text-field {:label "JIRA base hostname"
+                                                                  :value (:base_url credentials)
+                                                                  :on-change #(utils/edit-input owner (jira-input-path :base_url) %)}))])
+                    :actions [(button/button {:on-click close-fn} "Cancel")
+                              (button/managed-button
+                               {:failed-text "Failed"
+                                :success-text "Saved"
+                                :loading-text "Saving..."
+                                :kind :primary
+                                :on-click (fn [_]
+                                            (raise! owner
+                                                    [:saved-project-settings {:project-id project-id
+                                                                              :merge-paths [[:jira]]
+                                                                              :on-success close-modal!}])
+                                            (track-event :save-clicked "jira-credentials-modal"))}
+                               "Save")]
+                    :close-fn close-fn})))
               (when-let [credentials (:jira project)]
                 (letfn [(linkify [url]
                           (html

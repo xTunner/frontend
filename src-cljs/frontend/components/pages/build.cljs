@@ -98,7 +98,7 @@
       (let [build (get-in data state/build-path)
             show-setup-docs-modal? (no-test-intervention/show-setup-docs-modal? build)]
         (om/set-state! owner :show-setup-docs-modal? show-setup-docs-modal?)))
-          
+
     om/IRenderState
     (render-state [_ {:keys [show-jira-modal? show-setup-docs-modal?]}]
       (let [build-data (dissoc (get-in data state/build-data-path) :container-data)
@@ -111,7 +111,13 @@
             logged-in? (not (empty? user))
             jira-data (get-in data state/jira-data-path)
             can-trigger-builds? (project-model/can-trigger-builds? project)
-            can-write-settings? (project-model/can-write-settings? project)]
+            can-write-settings? (project-model/can-write-settings? project)
+            track-event (fn [event-type]
+                          ((om/get-shared owner :track-event)
+                           {:event-type event-type
+                            :properties {:project-vcs-url (:vcs_url project)
+                                         :user (:login user)
+                                         :component "header"}}))]
         (html
           [:div.build-actions-v2
            ;; Ensure we never have more than 1 modal showing
@@ -147,14 +153,14 @@
              (list
                (when can-write-settings?
                  [:button.btn-icon.jira-container
-                  {:on-click #(om/set-state! owner :show-jira-modal? true)
-                   :title "Add ticket to JIRA"}
+                  {:on-click (fn [_]
+                               (om/set-state! owner :show-jira-modal? true)
+                               (track-event :jira-icon-clicked))
+                   :title "Add issue to JIRA"}
                   [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]])
                [:a.exception.btn-icon.build-settings-container
                 {:href (routes/v1-project-settings-path (:navigation-data data))
-                 :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                 :properties {:project-vcs-url (:vcs_url project)
-                                                                              :user (:login user)}})
+                 :on-click #(track-event :project-settings-clicked)
                  :title "Project settings"}
                 [:i.material-icons "settings"]])
              [:div.build-settings 
@@ -164,9 +170,7 @@
                  :data-placement "left"})
               [:a.build-action
                {:href (routes/v1-project-settings-path (:navigation-data data))
-                :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
-                                                                :properties {:project-vcs-url (:vcs_url project)
-                                                                             :user (:login user)}})}
+                :on-click #(track-event :project-settings-clicked)}
                [:i.material-icons "settings"]
                "Project Settings"]])])))))
 
