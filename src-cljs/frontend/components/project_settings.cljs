@@ -1619,12 +1619,14 @@
                   :success-text "Saved"
                   :loading-text "Saving..."
                   :kind :primary
-                  :on-click (fn [_]
-                              (raise! owner
-                                      [:saved-project-settings {:project-id project-id
-                                                                :merge-paths [[:jira]]
-                                                                :on-success close-modal!}])
-                              (track-event! :save-clicked))}
+                  :on-click
+                  (fn [_]
+                    (raise! owner
+                            [:saved-project-settings {:project-id project-id
+                                                      :merge-paths [[:jira]]
+                                                      :on-success close-modal!
+                                                      :flash-context :jira-added}])
+                    (track-event! :save-clicked))}
                  "Save")]
       :close-fn close-fn})))
 
@@ -1660,12 +1662,14 @@
                   :success-text "Saved"
                   :loading-text "Saving..."
                   :kind :primary
-                  :on-click (fn [_]
-                              (raise! owner
-                                      [:saved-project-settings {:project-id (project-model/id project)
-                                                                :merge-paths [[:jira]]
-                                                                :on-success close-modal!}])
-                              (track-event :save-clicked))}
+                  :on-click
+                  (fn [_]
+                    (raise! owner
+                            [:saved-project-settings {:project-id (project-model/id project)
+                                                      :merge-paths [[:jira]]
+                                                      :on-success close-modal!
+                                                      :flash-context :jira-added}])
+                    (track-event :save-clicked))}
                  "Save")]
       :close-fn close-fn})))
 
@@ -1757,7 +1761,8 @@
                                                        (raise! owner [:edited-input {:path (jira-input-path)
                                                                                      :value nil}])
                                                        (raise! owner [:saved-project-settings {:project-id (project-model/id project)
-                                                                                               :merge-paths [[:jira]]}]))}))}]}))]))
+                                                                                               :merge-paths [[:jira]]
+                                                                                               :flash-context :jira-removed}]))}))}]}))]))
 
 (defmethod jira-installed :connect [project owner]
   (html
@@ -1793,7 +1798,8 @@
                                                        (raise! owner [:edited-input {:path input-path
                                                                                      :value nil}])
                                                        (raise! owner [:saved-project-settings {:project-id (project-model/id project)
-                                                                                               :merge-paths [input-path]}]))}))}]}))]))
+                                                                                               :merge-paths [input-path]
+                                                                                               :flash-context :jira-removed}]))}))}]}))]))
 
 (defn jira-integration [project-data owner]
   (reify
@@ -2247,7 +2253,7 @@
            [:div#project-settings
             ; Temporarly disable top level error messsage for the set of subpages while we
             ; transition them. Each subpage will eventually handle their own error messages.
-            (when-not (contains? #{:code-signing} subpage)
+            (when-not (contains? #{:code-signing :jira-integration} subpage)
               (om/build common/flashes error-message))
             [:div#subpage
              (case subpage
