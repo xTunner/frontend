@@ -1453,12 +1453,10 @@
             [:div (when (:heroku_api_key user)
                     [:p "Your Heroku key is entered. Great!"])
              [:p (:heroku_api_key user)]
-             [:div (when-not (:heroku_api_key user)
-                     (om/build heroku/subpage {:current-user user} {:opts {:project-page? true}}))]
-             [:div (when (:heroku_api_key user)
-                     [:p
-                      "You can edit your Heroku key from your "
-                      [:a {:href "/account/heroku"} "account page"] "."])]]]
+             [:div
+              [:p
+               "You can set your Heroku key in your "
+               [:a {:href "/account/heroku"} "account settings"] "."]]]]
            [:div.heroku-step
             [:h4 "Step 2: Associate a Heroku SSH key with your account"]
             [:span "Current deploy user: "
