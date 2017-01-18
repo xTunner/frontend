@@ -120,7 +120,7 @@
                    :subheading (html
                                  [:div
                                   [:div "Build and follow projects to populate your dashboard and receive build status emails."]
-                                  [:div "To get started, here are the projects that you’ve committed to recently."]])}))
+                                  [:div "To get started, here are the projects that you have access to."]])}))
 
               (if projects-loaded?
                 (om/build nux-bootstrap-content data)
