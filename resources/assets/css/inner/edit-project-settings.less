@@ -850,8 +850,11 @@ input.radio[type="checkbox"] {
       > .column {
         .flex(1, 1, 0);
         margin-right: 29px;
-        border-top: 1px solid #ccc;
-
+        
+        &:last-child {
+          margin-right: 0;
+        }
+        
         > .title {
           margin: 15px 0;
           font-size: 16px;
@@ -860,10 +863,6 @@ input.radio[type="checkbox"] {
 
         > p {
           margin-bottom: 15px;
-        }
-        
-        &:last-child {
-          margin-right: 0;
         }
       }
     });
