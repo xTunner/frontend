@@ -177,22 +177,22 @@
     (open-to-inner! app nav-ch :admin-settings {:admin true
                                                 :subpage :fleet-state
                                                 :tab (keyword _fragment)}))
-  (defroute v1-admin-users "/admin/users" []
-    (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage :users}))
-  (defroute v1-admin-config "/admin/system-settings" []
-    (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage :system-settings}))
-  (defroute v1-admin-system-management "/admin/management-console" []
-    (.replace js/location
-              ;; System management console is served at port 8800
-              ;; with replicated and it's always https
-              (str "https://" js/window.location.hostname ":8800/")))
+  (when (config/enterprise?)
+    (defroute v1-admin-users "/admin/users" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :users}))
+    (defroute v1-admin-config "/admin/system-settings" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :system-settings}))
+    (defroute v1-admin-system-management "/admin/management-console" []
+      (.replace js/location
+                ;; System management console is served at port 8800
+                ;; with replicated and it's always https
+                (str "https://" js/window.location.hostname ":8800/")))
 
-  (defroute v1-admin-license "/admin/license" []
-    (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage :license})))
-
+    (defroute v1-admin-license "/admin/license" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :license}))))
 
 (defn define-user-routes! [app nav-ch authenticated?]
   (defroute v1-org-settings #"/(gh|bb)/organizations/([^/]+)/settings"

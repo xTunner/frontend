@@ -74,7 +74,7 @@
   (when (and (project-model/can-write-settings? project))
     (let [org-name (:username project)
           repo-name (:reponame project)
-          vcs-type (:vcs_type project)]   
+          vcs-type (:vcs_type project)]
       [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type vcs-type
                                                                          :org org-name
                                                                          :repo repo-name})
@@ -270,19 +270,46 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
+(defn account-settings-nav-items []
+  (remove
+    nil?
+    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
+     (when-not (config/enterprise?)
+       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans})
+     (when-not (config/enterprise?)
+       {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
+
+(defn account-settings-menu [app owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [subpage (-> app :navigation-data :subpage)]
+        (html
+          [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
+           [:header
+            [:h4 "Account Settings"]
+            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+             (common/ico :fail-light)]]
+           [:div.aside-user-options
+            (expand-menu-items (account-settings-nav-items) subpage)]])))))
+
+(defn enterprise-admin-settings-nav-items []
+  ;; Should match the list of enterprise specific routes in
+  ;; routes/define-admin-routes!
+  [{:type :subpage :href "/admin/management-console" :title "Management Console"}
+   {:type :subpage :href "/admin/license" :title "License" :subpage :license}
+   {:type :subpage :href "/admin/users" :title "Users" :subpage :users}
+   {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings}])
+
 (defn admin-settings-nav-items []
-  (filter
-    identity
-    [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/management-console" :title "Management Console"})
-     {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/license" :title "License" :subpage :license})
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/users" :title "Users" :subpage :users})
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings})]))
+  (let [shared-admin-routes
+        [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
+         {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}]]
+    (if (config/enterprise?)
+      (concat shared-admin-routes (enterprise-admin-settings-nav-items))
+      shared-admin-routes)))
 
 (defn admin-settings-menu [app owner]
   (reify
