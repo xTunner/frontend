@@ -1,29 +1,22 @@
 (ns frontend.components.aside
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :refer [lower-case]]
+  (:require [clojure.string :refer [lower-case]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.license :as license]
-            [frontend.components.shared :as shared]
             [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
-            [frontend.models.project :as project-model]
             [frontend.models.plan :as pm]
+            [frontend.models.project :as project-model]
             [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.seq :refer [select-in]]
-            [goog.style]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [frontend.utils.launchdarkly :as ld])
-  (:require-macros [frontend.utils :refer [html inspect]]))
+            [frontend.utils.launchdarkly :as ld]
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn status-ico-name [build]
   (case (:status build)
@@ -252,7 +245,7 @@
     (render [_]
       (let [subpage (-> app :navigation-data :subpage)]
         (html
-         [:div.aside-user {:class (when (= :project-settings (:navigation-point app)) "open")}
+         [:div.aside-user
           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
            (common/ico :fail-light)]
           [:div.aside-user-options
@@ -277,31 +270,6 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
-(defn account-settings-nav-items []
-  (remove
-    nil?
-    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
-     (when-not (config/enterprise?)
-       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans})
-     (when-not (config/enterprise?)
-       {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
-
-(defn account-settings-menu [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [subpage (-> app :navigation-data :subpage)]
-        (html
-          [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
-           [:header
-            [:h4 "Account Settings"]
-            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-             (common/ico :fail-light)]]
-           [:div.aside-user-options
-            (expand-menu-items (account-settings-nav-items) subpage)]])))))
-
 (defn admin-settings-nav-items []
   (filter
     identity
@@ -322,13 +290,13 @@
     (render [_]
       (let [subpage (-> app :navigation-data :subpage)]
         (html
-          [:div.aside-user {:class (when (= :admin-settings (:navigation-point app)) "open")}
-           [:header
-            [:h4 "Admin Settings"]
-            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-             (common/ico :fail-light)]]
-           [:div.aside-user-options
-            (expand-menu-items (admin-settings-nav-items) subpage)]])))))
+         [:div.aside-user
+          [:header
+           [:h4 "Admin Settings"]
+           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
+            (common/ico :fail-light)]]
+          [:div.aside-user-options
+           (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
 (defn redirect-org-settings-subpage
   "Piggiebacked plans can't go to :containers, :organizations, :billing, or :cancel.
@@ -359,7 +327,7 @@
             subpage (redirect-org-settings-subpage (-> app :navigation-data :subpage) plan (:name org-data) (:vcs_type org-data))
             items (org-settings-nav-items plan org-data)]
         (html
-         [:div.aside-user {:class (when (= :org-settings (:navigation-point app)) "open")}
+         [:div.aside-user
           [:header.aside-item.aside-heading "Organization Settings"
            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
             (common/ico :fail-light)]]
@@ -374,7 +342,7 @@
         branch (:current-branch project)]
     (utils/md5 (str project-id branch))))
 
-(defn branch-activity-list [app owner opts]
+(defn branch-activity-list [app owner]
   (reify
     om/IRender
     (render [_]
@@ -383,12 +351,14 @@
             sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path false)
             projects (get-in app state/projects-path)
             settings (get-in app state/settings-path)
+            user (get-in app state/user-path)
+            identities (:identities user)
             recent-projects-filter (if (and sort-branches-by-recency?
                                             (not show-all-branches?))
-                                     (partial project-model/personal-recent-project? (:identities opts))
+                                     (partial project-model/personal-recent-project? identities)
                                      identity)]
         (html
-         [:div.aside-activity.open
+         [:div.aside-activity
           [:header
            [:select {:class "toggle-sorting"
                      :name "toggle-sorting"
@@ -426,7 +396,7 @@
                                       (take 100))
                        :show-all-branches? show-all-branches?
                        :navigation-data (:navigation-data app)}
-                      {:opts {:identities (:identities opts)
+                      {:opts {:identities identities
                               :show-project? true}})
             [:ul.projects
              (for [project (sort project-model/sidebar-sort projects)]
@@ -436,23 +406,7 @@
                           :expanded-repos expanded-repos
                           :navigation-data (:navigation-data app)}
                          {:react-key (project-model/id project)
-                          :opts {:identities (:identities opts)}}))])])))))
-
-(defn aside-menu [app owner opts]
-  (reify
-    om/IDisplayName (display-name [_] "Aside Menu")
-    om/IInitState (init-state [_] {:scrollbar-width 0})
-    om/IDidMount (did-mount [_] (om/set-state! owner :scrollbar-width (goog.style/getScrollbarWidth)))
-    om/IRender
-    (render [_]
-      (html
-       [:nav.aside-left-menu
-        (om/build project-settings-menu app)
-        (om/build org-settings-menu app)
-        (om/build admin-settings-menu app)
-        (om/build account-settings-menu app)
-        (om/build branch-activity-list app {:opts {:identities (:identities opts)
-                                                   :scrollbar-width (om/get-state owner :scrollbar-width)}})]))))
+                          :opts {:identities identities}}))])])))))
 
 (defn- aside-nav-clicked
   [owner event-name]
@@ -535,7 +489,7 @@
 
              (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
                         show-aside-icons?)
-               [:a.aside-item {:class (when (= :account current-route) "current")
+               [:a.aside-item {:class (when (= :route/account current-route) "current")
                                :data-placement "right"
                                :data-trigger "hover"
                                :title "Account Settings"
@@ -597,19 +551,3 @@
                                             :on-click #(aside-nav-clicked owner :logout-icon-clicked)}
               [:i.material-icons "power_settings_new"]
               [:div.nav-label "Log Out"]])])))))
-
-
-(defn aside [{:keys [app show-aside-menu?]} owner]
-  (reify
-    om/IDisplayName (display-name [_] "Aside")
-    om/IRender
-    (render [_]
-      (let [user (get-in app state/user-path)
-            identities (:identities user)
-            avatar-url (gh-utils/make-avatar-url user)
-            license (get-in app state/license-path)]
-        (html
-         [:aside.app-aside {:class (cond-> []
-                                     (not show-aside-menu?) (conj "menuless"))}
-          (when show-aside-menu?
-            (om/build aside-menu app {:opts {:identities identities}}))])))))

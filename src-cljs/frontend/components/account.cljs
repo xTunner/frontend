@@ -1,4 +1,7 @@
 (ns frontend.components.account
+  "This is the old-world namespace for the User (Account) Settings page, which
+  is migrating to frontend.components.pages.user-settings. Components will
+  migrate there as they conform to Component-Oriented Style."
   (:require [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
@@ -19,11 +22,8 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.seq :refer [select-in]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html component element]]))
-
-(defn active-class-if-active [current-subpage subpage-link]
-  (if (= current-subpage subpage-link)
-    {:class "active"}))
+  (:require-macros
+   [frontend.utils :refer [component defrender element html]]))
 
 (defn handle-email-notification-change [owner pref]
   (raise! owner [:preferences-updated {:basic_email_prefs pref}]))
@@ -35,7 +35,7 @@
       (let [user-and-orgs (sort-by (complement :org)
                                    (get-in app state/user-organizations-path))]
         (html
-         [:div#settings-plans
+         [:div#settings-plans.account-settings-subpage
           [:legend "Org Plan Settings"]
           [:div.plans-item
            [:h3 "Set up a plan for one of your Organizations:"]
@@ -72,7 +72,7 @@
             submit-form! #(raise! owner [:heroku-key-add-attempted {:heroku_api_key heroku-api-key-input}])
             project-page? (:project-page? opts)]
         (html
-         [:div#settings-heroku.settings
+         [:div#settings-heroku.settings.account-settings-subpage
           [:legend "Heroku Settings"]
           [:div.heroku-item
            [:p
@@ -113,7 +113,7 @@
             create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
             new-user-token (get-in app state/new-user-token-path)]
         (html
-         [:div#settings-api.settings
+         [:div#settings-api.settings.account-settings-subpage
           [:legend "API Tokens"]
           [:div.api-item
            [:p
@@ -221,7 +221,7 @@
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
       (html
-       [:div
+       [:div.account-settings-subpage
         [:legend "Beta Program"]
         (card/basic
          (html
@@ -245,7 +245,7 @@
     om/IRender
     (render [_]
       (html
-       [:div
+       [:div.account-settings-subpage
         [:legend "Beta Program"]
         (card/basic
          (html
@@ -441,26 +441,9 @@
             projects (get-in app state/projects-path)
             notifications-enabled? (get-in app state/web-notifications-enabled-path)]
         (html
-         [:div#settings-notification
+         [:div#settings-notification.account-settings-subpage
           [:legend "Notification Settings"]
           (preferred-email-address owner user)
           (default-email-pref owner (:basic_email_prefs user))
           (om/build granular-email-prefs {:projects projects :user user})
           (web-notifications owner notifications-enabled? (notifications/notifications-permission))])))))
-
-(defn account [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [subpage     (get-in app state/navigation-subpage-path)
-            coms        {:notifications notifications
-                         :heroku        heroku-key
-                         :api           api-tokens
-                         :plans         plans
-                         :beta          beta-program}
-            subpage-com (get coms subpage)]
-        (html
-         [:div#account-settings
-          [:div.row (om/build common/flashes (get-in app state/error-message-path))]
-          [:div#subpage
-           (om/build subpage-com (select-in app [state/general-message-path state/user-path state/projects-path state/web-notifications-enabled-path]))]])))))

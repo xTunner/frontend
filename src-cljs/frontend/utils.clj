@@ -150,8 +150,8 @@
       `(this-as this#
          (assert (goog.object/containsKey (.-constructor this#) "displayName")
                  (str
-                  "Couldn't find a name for this component. Make sure the"
-                  "component macro is at the top of the component's render"
+                  "Couldn't find a name for this component. Make sure the "
+                  "component macro is at the top of the component's render "
                   "method."))
          (let [~component-name-symbol (.-displayName (.-constructor this#))]
            ~call-component*)))))

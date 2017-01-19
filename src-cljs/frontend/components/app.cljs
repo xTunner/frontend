@@ -1,5 +1,6 @@
 (ns frontend.components.app
-  (:require [frontend.async :refer [raise!]]
+  (:require [compassus.core :as compassus]
+            [frontend.async :refer [raise!]]
             [frontend.components.app.legacy :as legacy]
             [frontend.components.aside :as aside]
             [frontend.components.common :as common]
@@ -7,6 +8,7 @@
             [frontend.components.inspector :as inspector]
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.pages.projects :as projects]
+            [frontend.components.pages.user-settings :as user-settings]
             [frontend.components.pieces.flash-notification :as flash]
             [frontend.components.pieces.topbar :as topbar]
             [frontend.components.statuspage :as statuspage]
@@ -18,8 +20,7 @@
             [frontend.utils.seq :refer [dissoc-in]]
             [goog.dom :as gdom]
             [om.core :as om :include-macros true]
-            [om.next :as om-next :refer-macros [defui]]
-            [compassus.core :as compassus])
+            [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defui ^:once Loading
@@ -29,7 +30,8 @@
 (def routes
   {:route/loading Loading
    :route/legacy-page legacy/LegacyPage
-   :route/projects projects/Page})
+   :route/projects projects/Page
+   :route/account user-settings/Page})
 
 (def index-route :route/loading)
 

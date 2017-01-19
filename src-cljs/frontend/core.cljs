@@ -227,7 +227,16 @@
                                                                    (aget "renderContext")
                                                                    (aget "current_user"))]
                                               {:user/login (aget rc-user "login")
-                                               :user/bitbucket-authorized? (aget rc-user "bitbucket_authorized")})
+                                               :user/bitbucket-authorized? (aget rc-user "bitbucket_authorized")
+                                               :user/identities (let [legacy-format-identites
+                                                                      (-> rc-user
+                                                                          (aget "identities")
+                                                                          (js->clj :keywordize-keys true)
+                                                                          vals)]
+                                                                  (mapv
+                                                                   #(hash-map :identity/type (:type %)
+                                                                              :identity/login (:login %))
+                                                                   legacy-format-identites))})
                           :organization/by-vcs-type-and-name {}})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a

@@ -178,10 +178,10 @@
   (reify
     om/IRender
     (render [_]
-      (om/build main-template/template
-                {:app app
-                 :main-content (om/build build-com/build
-                                         {:app app
-                                          :ssh-available? (ssh-available? (get-in app (get-in app state/project-path))
-                                                                          (get-in app (get-in app state/build-path)))})
-                 :header-actions (om/build header-actions app)}))))
+      (main-template/template
+       {:app app
+        :main-content (om/build build-com/build
+                                {:app app
+                                 :ssh-available? (ssh-available? (get-in app (get-in app state/project-path))
+                                                                 (get-in app (get-in app state/build-path)))})
+        :header-actions (om/build header-actions app)}))))
