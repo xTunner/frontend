@@ -246,8 +246,6 @@
       (let [subpage (-> app :navigation-data :subpage)]
         (html
          [:div.aside-user
-          [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-           (common/ico :fail-light)]
           [:div.aside-user-options
            (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
@@ -288,10 +286,7 @@
       (let [subpage (-> app :navigation-data :subpage)]
         (html
           [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
-           [:header
-            [:h4 "Account Settings"]
-            [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-             (common/ico :fail-light)]]
+           [:header [:h4 "Account Settings"]]
            [:div.aside-user-options
             (expand-menu-items (account-settings-nav-items) subpage)]])))))
 
@@ -318,10 +313,7 @@
       (let [subpage (-> app :navigation-data :subpage)]
         (html
          [:div.aside-user
-          [:header
-           [:h4 "Admin Settings"]
-           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-            (common/ico :fail-light)]]
+          [:header [:h4 "Admin Settings"]]
           [:div.aside-user-options
            (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
@@ -354,10 +346,7 @@
             subpage (redirect-org-settings-subpage (-> app :navigation-data :subpage) plan (:name org-data) (:vcs_type org-data))
             items (org-settings-nav-items plan org-data)]
         (html
-         [:div.aside-user
-          [:header.aside-item.aside-heading "Organization Settings"
-           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-            (common/ico :fail-light)]]
+         [:div.aside-user [:header.aside-item.aside-heading "Organization Settings"]
           [:div.aside-user-options
            (expand-menu-items items subpage)]])))))
 
