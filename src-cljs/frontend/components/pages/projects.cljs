@@ -1,7 +1,6 @@
 (ns frontend.components.pages.projects
   (:require [frontend.analytics :as analytics]
             [frontend.async :refer [navigate!]]
-            [frontend.components.app.legacy :as legacy]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
