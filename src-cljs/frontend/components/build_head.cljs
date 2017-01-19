@@ -26,6 +26,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.experiments.workflow-spike :as workflow]
             [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
@@ -75,6 +76,47 @@
      (if (:admin (utils/current-user))
        [:span "Check " [:a {:href "/admin/fleet-state"} "Fleet State"] " for details and potentially start new builders"]
        "Ask a CircleCI Enterprise administrator to check fleet state and launch new builder machines")]))
+
+(defn build-queue-placeholder [data owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [project (:project data)
+            org-name (project-model/org-name project)
+            repo-name (project-model/repo-name project)
+            add-more-containers-text "adding containers"]
+        (html
+          (if-not project
+            (spinner)
+            [:div.build-queue.active
+             [:div.queue-message
+              [:p
+               "Avoid queues by "
+               [:a {:href (routes/v1-org-settings-path {:org org-name
+                                                        :vcs_type (project-model/vcs-type project)
+                                                        :_fragment "linux-pricing"})
+                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                    :properties {:is-upsell-text false
+                                                                                 :button-text add-more-containers-text}})}
+                add-more-containers-text]
+               ", skipping redundant builds (through "
+               [:a {:href (routes/v1-project-settings-path {:org org-name
+                                                            :repo repo-name})
+                    :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                    :properties {:org org-name
+                                                                                 :repo repo-name
+                                                                                 :project-vcs-url (:vcs_url project)}})}
+                "project settings"]
+               " or "
+               [:a {:href "https://circleci.com/docs/skip-a-build/"
+                    :target "_blank"}
+                "configuring your yml"]
+               ")"]
+              [:p "NOTE: Showing queued builds can slow down the page."]]
+             (button/link {:kind :secondary
+                           :href "#usage-queue"
+                           :on-click #((om/get-shared owner :track-event) {:event-type :show-queued-builds-clicked})}
+                          "Show Queued Builds")]))))))
 
 (defn build-queue [data owner]
   (reify
@@ -212,7 +254,7 @@
    [:p
     "Often the best way to troubleshoot problems is to SSH into a running or finished build to look at log files, running processes, and so on.
        This will grant you ssh access to the build's containers, prevent the deploy step from starting, and keep the build up for 30 minutes after it finishes to give you time to investigate.
-       More information " [:a {:href "/docs/ssh-build/"} "in our docs"] "."
+       More information " [:a {:href "https://circleci.com/docs/ssh-build/"} "in our docs"] "."
     (om/build ssh-buttons build)]])
 
 (defn ssh-command [node]
@@ -243,7 +285,7 @@
                            (utils/prettify-vcs_type vcs_type))]
        [:div
         "This build takes up one of your concurrent builds, so cancel it when you are done. Browser based testing? Read "
-        [:a {:href "/docs/browser-debugging#interact-with-the-browser-over-vnc/"} "our docs"]
+        [:a {:href "https://circleci.com/docs/browser-debugging#interact-with-the-browser-over-vnc/"} "our docs"]
         " on how to use VNC with CircleCI."]]
 
       (om/build ssh-node-list nodes)])))
@@ -273,7 +315,7 @@
   [:div
    [:p "We didn't find any build artifacts for this build. You can upload build artifacts by moving files to the $CIRCLE_ARTIFACTS directory."]
    [:p "Use artifacts for screenshots, coverage reports, deployment tarballs, and more."]
-   [:p "More information " [:a {:href "/docs/build-artifacts/"} "in our docs"] "."]])
+   [:p "More information " [:a {:href "https://circleci.com/docs/build-artifacts/"} "in our docs"] "."]])
 
 (defn artifacts-tree [prefix artifacts]
   (->> (for [artifact artifacts
@@ -382,13 +424,13 @@
                       "Help us provide better insight around your tests and failures. "
                       [:a {:href junit-link
                            :class "junit-link"
-                           :on-mouse-up track-junit} 
-                       "Set up your test runner to output in JUnit-style XML"] 
+                           :on-mouse-up track-junit}
+                       "Set up your test runner to output in JUnit-style XML"]
                       ", so we can:"
                       [:ul
                        [:li "Show a summary of all test failures across all containers"]
                        [:li "Identify your slowest tests"]
-                       [:li [:a {:href "/docs/parallel-manual-setup/"}
+                       [:li [:a {:href "https://circleci.com/docs/parallel-manual-setup/"}
                              "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
@@ -549,7 +591,7 @@
 (defn circle-yml-ad []
   [:div
    [:p "We didn't find a circle.yml for this build. You can specify deployment or override our inferred test steps from a circle.yml checked in to your repo's root directory."]
-   [:p "More information " [:a {:href "/docs/configuration/"} "in our docs"] "."]])
+   [:p "More information " [:a {:href "https://circleci.com/docs/configuration/"} "in our docs"] "."]])
 
 (defn build-config [{:keys [config-string build build-data]} owner opts]
   (reify
@@ -597,6 +639,7 @@
                  (vcs-url/vcs-type (:vcs_url build))
                  (:username build)
                  (:reponame build)
+                 nil
                  retry-id)}
      retry-id]))
 
@@ -765,6 +808,7 @@
                                                        (vcs-url/vcs-type (:vcs_url build))
                                                        (:username build)
                                                        (:reponame build)
+                                                       nil
                                                        (:build_num build)
                                                        (name %)
                                                        container-id))})}
@@ -788,6 +832,8 @@
                                              :build-data build-data})
 
              :build-parameters (om/build build-parameters {:build-parameters build-params})
+
+             :queue-placeholder (om/build build-queue-placeholder {:project project})
 
              :usage-queue (om/build build-queue {:build build
                                                  :builds (:builds usage-queue-data)
@@ -871,7 +917,7 @@
     (html
      [:div.summary-item
       [:span.summary-label "Previous: "]
-      [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) build-number)}
+      [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) nil build-number)}
        build-number]])))
 
 (defn expected-duration
@@ -890,7 +936,7 @@
            [:span.summary-label "Estimated: "]
            [:span (formatter past-ms)]])))))
 
-(defn build-head [{:keys [container-id build-data project-data] :as data} owner]
+(defn build-head-content [{:keys [build-data project-data] :as data} owner]
   (reify
     om/IRender
     (render [_]
@@ -899,65 +945,175 @@
                     all_commit_details all_commit_details_truncated] :as build} (:build build-data)
             {:keys [project plan]} project-data]
         (html
-          [:div
-           [:div.summary-header
-            [:div.summary-items
-             [:div.summary-item
-              (builds-table/build-status-badge build)]
-             (if-not stop_time
-               (when start_time
-                 (build-running-status build))
-               (build-finished-status build))]
-            [:div.summary-items
-             (when (build-model/running? build)
-               (om/build expected-duration build))
-             (om/build previous-build-label build)
-             (when (project-model/parallel-available? project)
-               [:div.summary-item
-                [:span.summary-label "Parallelism: "]
-                [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
-                                                                                           :properties {:repo (project-model/repo-name project)
-                                                                                                        :org (project-model/org-name project)}})
-                                           :href (build-model/path-for-parallelism build)}
-                 (let [parallelism (str parallel "x")]
-                   (if (enterprise?)
-                     parallelism
-                     (str parallelism
-                          " out of "
-                          (min (+ (plan-model/linux-containers plan)
-                                  (if (project-model/oss? project)
-                                    plan-model/oss-containers
-                                    0))
-                               (plan-model/max-parallelism plan))
-                          "x")))]])]
-            (when usage_queued_at
-              [:div.summary-items
-               [:div.summary-item
-                [:span.summary-label "Queued: "]
-                [:span (queued-time build)]]])
+         [:div
+          [:div.summary-header
+           [:div.summary-items
+            [:div.summary-item
+             (builds-table/build-status-badge build)]
+            (if-not stop_time
+              (when start_time
+                (build-running-status build))
+              (build-finished-status build))]
+           [:div.summary-items
+            (when (build-model/running? build)
+              (om/build expected-duration build))
+            (om/build previous-build-label build)
+            (when (project-model/parallel-available? project)
+              [:div.summary-item
+               [:span.summary-label "Parallelism: "]
+               [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
+                                          :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                                                                          :properties {:repo (project-model/repo-name project)
+                                                                                                       :org (project-model/org-name project)}})
+                                          :href (build-model/path-for-parallelism build)}
+                (let [parallelism (str parallel "x")]
+                  (if (enterprise?)
+                    parallelism
+                    (str parallelism
+                         " out of "
+                         (min (+ (plan-model/linux-containers plan)
+                                 (if (project-model/oss? project)
+                                   plan-model/oss-containers
+                                   0))
+                              (plan-model/max-parallelism plan))
+                         "x")))]])]
+           (when usage_queued_at
+             [:div.summary-items
+              [:div.summary-item
+               [:span.summary-label "Queued: "]
+               [:span (queued-time build)]]])
 
-            [:div.summary-build-contents
-             [:div.summary-item
-              [:span.summary-label "Triggered by: "]
-              [:span (trigger-html build)]]
+           [:div.summary-build-contents
+            [:div.summary-item
+             [:span.summary-label "Triggered by: "]
+             [:span (trigger-html build)]]
 
-             (when-let [canceler (and (= status "canceled")
-                                      canceler)]
-               [:div.summary-item
-                [:span.summary-label "Canceled by: "]
-                [:span (build-canceler canceler)]])
+            (when-let [canceler (and (= status "canceled")
+                                     canceler)]
+              [:div.summary-item
+               [:span.summary-label "Canceled by: "]
+               [:span (build-canceler canceler)]])
 
-             (when (build-model/has-pull-requests? build)
-               (pull-requests {:urls (map :url pull_requests)} owner))]]
+            (when (build-model/has-pull-requests? build)
+              (pull-requests {:urls (map :url pull_requests)} owner))]]
 
-           [:div.card
-            [:div.small-emphasis
-             (let [n (count all_commit_details)]
-               (if all_commit_details_truncated
-                 (gstring/format "Last %d Commits" n)
-                 (gstring/format "Commits (%d)" n)))]
-            (om/build build-commits build-data)]
-           [:div.build-head-wrapper
-            [:div.build-head
-             (om/build build-sub-head data)]]])))))
+          [:div.card
+           [:div.small-emphasis
+            (let [n (count all_commit_details)]
+              (if all_commit_details_truncated
+                (gstring/format "Last %d Commits" n)
+                (gstring/format "Commits (%d)" n)))]
+           (om/build build-commits build-data)]])))))
+
+(defn workflow-status-badge [{:keys [workflow]}]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:div.recent-status-badge {:class (workflow/status-class workflow)}
+             (om/build svg {:class "badge-icon"
+                            :src (-> workflow workflow/status-icon common/icon-path)})
+             [:div {:class "badge-text"}
+              (:status workflow)]]))))
+
+(defrender build-link [{:keys [job workflow]} owner]
+  (html
+   (if (get-in job [:data :build :build_num])
+     (let [build (get-in job [:data :build])
+           {vcs-url :vcs_url
+            build-number :build_num} build
+           {workflow-id :id} workflow
+           url (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) workflow-id build-number)]
+       [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+            :href url
+            :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
+                                                            :properties {:org (vcs-url/org-name (:vcs_url build))
+                                                                         :repo (:reponame build)
+                                                                         :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
+        (:name job)
+        " #"
+        (:build_num build)])
+     [:div "not run yet"])))
+
+(defn build-head-content-workflow [{:keys [build-data project-data workflow-data] :as data} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (let [{:keys [project]} project-data
+            {:keys [build_num start_time
+
+                    stop_time  parallel usage_queued_at
+                    pull_requests status canceler
+                    all_commit_details all_commit_details_truncated] :as build} (:build build-data)
+            {:keys [jobs
+                    trigger-resource]
+             workflow-id :id
+             workflow-name :name
+             :as workflow} (:workflow workflow-data)
+            current-job-index (->> jobs
+                                   (keep-indexed #(when (= (-> %2 :data :build :build_num) build_num)
+                                                    %1))
+                                   first)
+            {job-name :name} (jobs current-job-index)
+            next-link
+            (if (< current-job-index (dec (count jobs)))
+              (om/build build-link  {:job (get jobs (inc current-job-index))
+                                     :workflow workflow})
+              "n/a")
+            [job-trigger previous-link]
+            (if (zero? current-job-index)
+              [(om/build builds-table/commits {:build (:data trigger-resource)}) "n/a"]
+              (repeat (om/build build-link  {:job (get jobs (dec current-job-index))
+                                             :workflow workflow})))]
+        (html
+         [:div.workflow-head
+          [:div.details.job
+           (card/titled {:title (str "Job: " job-name (gstring/unescapeEntities " ") build_num)
+                         :action (builds-table/build-status-badge build)}
+                        [:div
+                         [:div.line
+                          [:span.head "Trigger"]
+                          [:span.value job-trigger]]
+                         [:div.line
+                          [:span.head "Start Time"]
+                          [:span.value
+                           [:span.metadata-item.start-time
+                            {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
+                            [:i.material-icons "today"]
+                            (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
+                            " ago"]]]
+                         [:div.line
+                          [:span.head "Duration"]
+                          [:span.value
+                           [:span.metadata-item.duration
+                            {:title (str "Duration: " (build-model/duration build))}
+                            [:i.material-icons "timer"]
+                            (om/build common/updating-duration {:start (:start_time build)
+                                                                :stop (:stop_time build)})]]]])]
+          [:div.details.workflow
+           (card/titled {:title (str "Workflow: " workflow-name (gstring/unescapeEntities " ") workflow-id)
+                         :action (om/build workflow-status-badge {:workflow workflow})}
+                        [:div
+                         [:div.line
+                          [:span.head "Trigger"]
+                          [:span.value.metadata-row
+                           (om/build builds-table/pull-requests {:build (:data trigger-resource)})
+                           (om/build builds-table/commits {:build (:data trigger-resource)})]]
+                         [:div.line
+                          [:span.head "Previous Job"]
+                          [:span.value previous-link]]
+                         [:div.line
+                          [:span.head "Next Job"]
+                          [:span.value next-link]]])]])))))
+
+(defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+       [:div
+        (if workflow-data
+          (om/build build-head-content-workflow (select-keys data [:build-data :project-data :workflow-data]))
+          (om/build build-head-content (select-keys data [:build-data :project-data])))
+        [:div.build-head-wrapper
+         [:div.build-head
+          (om/build build-sub-head data)]]]))))

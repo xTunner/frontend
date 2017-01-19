@@ -31,13 +31,8 @@
   (ajax/ajax :get (str "/api/v1/user/repos?page=" page)
              message
              api-ch
-             :context {:page page}))
-
-(defn get-vcs-activity [api-ch]
-  (ajax/ajax :get (str "/api/v1.1/user/vcs-project-activity")
-             :vcs-activity
-             api-ch
-             :params {:vcs "github"}))
+             :context {:page page
+                       :vcs :github}))
 
 (defn follow-projects [vcs-urls api-ch uuid]
   (ajax/ajax :post (str "/api/v1.1/user/follow-projects")
@@ -46,12 +41,15 @@
              :params {:vcs-urls vcs-urls}
              :context {:uuid uuid}))
 
-(defn get-bitbucket-repos [api-ch & {:keys [page]
-                                  :or {page 1}}]
-  (ajax/ajax :get (str "/api/v1.1/user/repos/bitbucket?page=" page)
-             :bitbucket-repos
+(defn get-bitbucket-repos [api-ch & {:keys [message] :or {message :bitbucket-repos}}]
+  (ajax/ajax :get (str "/api/v1.1/user/repos/bitbucket")
+             message
              api-ch
-             :context {:page page}))
+             :context {:vcs :bitbucket}))
+
+(defn get-all-repos [api-ch]
+  (get-bitbucket-repos api-ch :message :all-repos)
+  (get-github-repos api-ch :message :all-repos))
 
 (defn get-orgs [api-ch & {:keys [include-user?]}]
   (ajax/ajax :get (str "/api/v1/user/organizations" (when include-user? "?include-user=true"))

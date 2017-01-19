@@ -70,10 +70,15 @@
 ;; nginx config if necessary.)
 (def new-urls #{})
 
+(defn- match? [regex-or-string target]
+  (condp instance? regex-or-string
+    java.util.regex.Pattern (re-find regex-or-string target)
+    String (= regex-or-string target)))
+
 (defn with-new-url-mapping [handler]
-  (fn [req]
+  (fn [{:keys [uri] :as req}]
     (handler (cond-> req
-               (contains? new-urls (:uri req))
+               (some #(match? % uri) new-urls)
                (assoc :uri "/dashboard")))))
 
 (defn with-proxy [handler options]

@@ -71,14 +71,14 @@
     :setup-docs-ab-test {true :setup-docs-modal
                          false :setup-docs-banner}
     :signup-cta-on-404 {true :signup-cta-on-404
-                        false :no-signup-cta-on-404}})
+                        false :no-signup-cta-on-404}
+    :new-user-landing-page {true :dashboard
+                            false :add-projects}})
 
   ([user]
    (merge (ab-test-treatment-map)
-          {:new-user-landing-page {true (if (:bitbucket_authorized user)
-                                          :add-projects
-                                          :dashboard)
-                                   false :add-projects}})))
+          {;;this is a holding place for test treatments that depend on user properties
+           })))
 
 (defn ab-test-treatments
   "Return a map of {:test :treatment}, where :test is the test we are running and

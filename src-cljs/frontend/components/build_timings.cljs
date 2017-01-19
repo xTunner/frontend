@@ -149,6 +149,7 @@
   (routes/v1-build-path (vcs-url/vcs-type vcs_url)
                         username
                         reponame
+                        nil
                         build_num
                         :build-timing
                         (aget step "index")

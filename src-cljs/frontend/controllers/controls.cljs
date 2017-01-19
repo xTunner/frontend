@@ -233,9 +233,24 @@
       (api/get-org-plan login vcs_type api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
+(defmethod control-event :refreshed-user-orgs
+  [target message args state]
+  (let [current-user (get-in state state/user-path)]
+    (-> state
+        (assoc-in state/user-organizations-path nil)
+        (assoc-in state/repos-path [])
+        (assoc-in state/github-repos-loading-path (user-model/github-authorized? current-user))
+        (assoc-in state/bitbucket-repos-loading-path (user-model/bitbucket-authorized? current-user)))))
+
 (defmethod post-control-event! :refreshed-user-orgs [target message args previous-state current-state comms]
-  (let [api-ch (:api comms)]
-    (api/get-orgs api-ch :include-user? true)))
+  (let [api-ch (:api comms)
+        load-gh-repos? (get-in current-state state/github-repos-loading-path)
+        load-bb-repos? (get-in current-state state/bitbucket-repos-loading-path)]
+    (api/get-orgs api-ch :include-user? true)
+    (when load-gh-repos?
+      (api/get-github-repos api-ch))
+    (when load-bb-repos?
+      (api/get-bitbucket-repos api-ch))))
 
 (defmethod post-control-event! :artifacts-showed
   [target message _ previous-state current-state comms]
@@ -1647,13 +1662,14 @@
 (defmethod post-control-event! :followed-projects
   [_ _ _ previous-state current-state comms]
   (let [api-ch (:api comms)
-        selected-vcs-urls (fn [path]
-                            (->> (get-in current-state path)
+        selected-vcs-urls (fn [building?]
+                            (->> (concat (get-in current-state (state/repos-building-path :github building?))
+                                         (get-in current-state (state/repos-building-path :bitbucket building?)))
                                  vals
                                  (filter :checked)
                                  (map :vcs_url)))
-        building-vcs-urls (selected-vcs-urls (state/vcs-recent-active-projects-path true :github))
-        not-building-vcs-urls (selected-vcs-urls (state/vcs-recent-active-projects-path false :github))
+        building-vcs-urls (selected-vcs-urls true)
+        not-building-vcs-urls (selected-vcs-urls false)
         uuid frontend.async/*uuid*]
     (button-ajax :post
                  (api/follow-projects (concat building-vcs-urls not-building-vcs-urls) api-ch uuid)
@@ -1665,3 +1681,18 @@
   (update-in state path (fn [current-vals]
                           (map-utils/map-vals #(assoc % :checked false)
                                               current-vals))))
+
+(defmethod control-event :nux-bootstrap
+  [target message args state]
+  (let [state (assoc-in state state/repos-path nil)]
+    (reduce (fn [state vcs]
+              (-> state
+                  (assoc-in (state/all-repos-loaded-path vcs) false)
+                  (assoc-in (state/repos-building-path vcs true) {})
+                  (assoc-in (state/repos-building-path vcs false) {})))
+            state
+            [:github :bitbucket])))
+
+(defmethod post-control-event! :nux-bootstrap
+  [target message args previous-state current-state comms]
+  (api/get-all-repos (:api comms)))

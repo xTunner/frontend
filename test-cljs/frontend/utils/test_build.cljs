@@ -17,21 +17,21 @@
       (with-redefs [build-model/ssh-enabled-now? (constantly true)]
         (is (= :ssh-info (build/default-tab {} {})))))
 
-    (testing "if the build is in-usage-queue with :read-settings, :usage-queue"
+    (testing "if the build is in-usage-queue with :read-settings, :queue-placeholder"
       (with-redefs [build-model/in-usage-queue? (constantly true)]
-        (is (= :usage-queue (build/default-tab {} {:read-settings true})))))
+        (is (= :queue-placeholder (build/default-tab {} {:read-settings true})))))
 
     (testing "if the build is in-usage-queue without :read-settings, :tests"
       (with-redefs [build-model/in-usage-queue? (constantly true)]
         (is (= :tests (build/default-tab {} {})))))
 
-    (testing "if the build is running? with :read-settings, :usage-queue"
+    (testing "if the build is running? with :read-settings, :queue-placeholder"
       (with-redefs [build-model/running? (constantly true)]
-        (is (= :usage-queue (build/default-tab {} {:read-settings true})))))
+        (is (= :queue-placeholder (build/default-tab {} {:read-settings true})))))
 
-    (testing "if the build is running? without :read-settings, :usage-queue"
+    (testing "if the build is running? without :read-settings, :queue-placeholder"
       (with-redefs [build-model/running? (constantly true)]
-        (is (= :usage-queue (build/default-tab {} {:read-settings true})))))
+        (is (= :queue-placeholder (build/default-tab {} {:read-settings true})))))
 
     (testing "default case is to return the :tests tab"
       (is (= :tests (build/default-tab {} {}))))))

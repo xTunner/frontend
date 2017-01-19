@@ -6,6 +6,7 @@
             [frontend.experiments.nux-bootstrap :as nux-bootstrap]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
+            [frontend.models.repo :as repo-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [om.core :as om :include-macros true])
@@ -17,6 +18,7 @@
     om/IRender
     (render [_]
       (let [builds (get-in data state/recent-builds-path)
+            workflow (get-in data state/workflow-path)
             projects (get-in data state/projects-path)
             current-project (get-in data state/project-data-path)
             plan (:plan current-project)
@@ -24,7 +26,8 @@
             nav-data (:navigation-data data)
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)
-            current-user (:current-user data)]
+            current-user (:current-user data)
+            vcs-types [:github :bitbucket]]
         (html
           ;; ensure the both projects and builds are loaded before rendering to prevent
           ;; the build list and branch picker from resizing.
@@ -39,12 +42,17 @@
                     (empty? projects))
                (case (feature/ab-test-treatment :new-user-landing-page current-user)
                  :dashboard (om/build nux-bootstrap/build-empty-state
-                                      {:building-projects (-> (get-in data (state/vcs-recent-active-projects-path true :github))
-                                                              vals)
-                                       :not-building-projects (-> (get-in data (state/vcs-recent-active-projects-path false :github))
-                                                                  vals)
-                                       :projects-loaded? (get-in data state/vcs-activity-loaded-path)
-                                       :current-user current-user})
+                                      (let [projects (fn [{:keys [building?]}]
+                                                       (->> (for [vcs-type vcs-types] (->> (get-in data (state/repos-building-path vcs-type building?))
+                                                                                      vals
+                                                                                      (remove nil?)
+                                                                                      (remove repo-model/requires-invite?)))
+                                                            flatten))]
+                                        {:building-projects (projects {:building? true})
+                                         :not-building-projects (projects {:building? false})
+                                         :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
+                                                                (get-in data (state/all-repos-loaded-path :bitbucket)))
+                                         :current-user current-user}))
                  :add-projects [:div
                                 [:h2 "You don't have any projects in CircleCI!"]
                                 [:p "Why don't you add a project or two on the "
@@ -63,7 +71,8 @@
 
                 (om/build builds-table/builds-table
                           {:builds builds
-                           :projects projects}
+                           :projects projects
+                           :workflow workflow}
                           {:opts {:show-actions? true
                                   :show-branch? (not (:branch nav-data))
                                   :show-project? (not (:repo nav-data))}})
