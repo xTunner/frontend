@@ -1,5 +1,6 @@
 (ns frontend.components.pages.user-settings.integrations
-  (:require [frontend.analytics :as analytics]
+  (:require [devcards.core :as dc :refer-macros [defcard]]
+            [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
@@ -57,3 +58,40 @@
                     :icon-path (common/icon-path "brand-bitbucket")
                     :auth-url (bitbucket/auth-url)
                     :identity bitbucket-identity})]))))
+
+(dc/do
+  (defcard github-card-disconnected
+    (card nil {:name "GitHub"
+               :type "github"
+               :icon-path (common/icon-path "brand-github")
+               :auth-url "#"
+               :identity nil})
+    {}
+    {:classname "background-gray"})
+
+  (defcard github-card-connected
+    (card nil {:name "GitHub"
+               :type "github"
+               :icon-path (common/icon-path "brand-github")
+               :auth-url (gh-utils/auth-url)
+               :identity {:identity/login "a-github-user"}})
+    {}
+    {:classname "background-gray"})
+
+  (defcard bitbucket-card-disconnected
+    (card nil {:name "Bitbucket"
+               :type "bitbucket"
+               :icon-path (common/icon-path "brand-bitbucket")
+               :auth-url (bitbucket/auth-url)
+               :identity nil})
+    {}
+    {:classname "background-gray"})
+
+  (defcard bitbucket-card-connected
+    (card nil {:name "Bitbucket"
+               :type "bitbucket"
+               :icon-path (common/icon-path "brand-bitbucket")
+               :auth-url (bitbucket/auth-url)
+               :identity {:identity/login "a-bitbucket-user"}})
+    {}
+    {:classname "background-gray"}))
