@@ -296,6 +296,7 @@
   [{:type :subpage :href "/admin/management-console" :title "Management Console"}
    {:type :subpage :href "/admin/license" :title "License" :subpage :license}
    {:type :subpage :href "/admin/users" :title "Users" :subpage :users}
+   {:type :subpage :href "/admin/projects" :title "Projects" :subpage :projects}
    {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings}])
 
 (defn admin-settings-nav-items []

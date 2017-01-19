@@ -314,6 +314,14 @@
            (when (not-empty inactive-users)
              (om/build user-table {:users inactive-users :current-user current-user}))]])))))
 
+(defn projects [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Projects Admin")
+
+    om/IRender
+    (render [_]
+      (html [:div "Projects"]))))
+
 (defn boolean-setting-entry [item owner]
   (reify
     om/IRender
@@ -407,5 +415,6 @@
               :fleet-state (om/build fleet-state app)
               :license (om/build license app)
               :users (om/build users app)
+              :projects (om/build projects app)
               :system-settings (om/build system-settings app)
               (om/build overview app))]]])))))

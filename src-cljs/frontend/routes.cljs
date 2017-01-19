@@ -181,6 +181,9 @@
     (defroute v1-admin-users "/admin/users" []
       (open-to-inner! app nav-ch :admin-settings {:admin true
                                                   :subpage :users}))
+    (defroute v1-all-projects "/admin/projects" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :projects}))
     (defroute v1-admin-config "/admin/system-settings" []
       (open-to-inner! app nav-ch :admin-settings {:admin true
                                                   :subpage :system-settings}))
