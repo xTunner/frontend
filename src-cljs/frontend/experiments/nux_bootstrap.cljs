@@ -120,7 +120,7 @@
                    :subheading (html
                                  [:div
                                   [:div "Build and follow projects to populate your dashboard and receive build status emails."]
-                                  [:div "To get started, here are the projects that you’ve committed to recently."]])}))
+                                  [:div "To get started, here is a list of projects you have access to."]])}))
 
               (if projects-loaded?
                 (om/build nux-bootstrap-content data)
@@ -135,7 +135,7 @@
                       [:a {:href "/add-projects"} "Add Projects"]
                       " page to find it."]
                      [:div
-                      "Interested in a demo? "
-                      [:a {:href "/gh/facebook/fresco"
+                      "Interested in a tour? "
+                      [:a {:href "https://circleci.com/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
                            :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
-                       "See how Facebook uses CircleCI"]]])))])])))))
+                       "See how Spotify uses CircleCI"]]])))])])))))

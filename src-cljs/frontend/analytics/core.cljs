@@ -29,6 +29,7 @@
   ;;    examples: project-followed or banner-dismissed
   #{:account-settings-clicked
     :account-settings-icon-clicked
+    :add-credentials-clicked
     :add-more-containers-clicked
     :add-project-clicked
     :add-project-icon-clicked
@@ -52,6 +53,7 @@
     :build-timing-upsell-clicked
     :build-timing-upsell-impression
     :builds-icon-clicked
+    :cancel-clicked
     :cancel-build-clicked
     :cancel-plan-clicked
     :change-image-clicked
@@ -74,6 +76,7 @@
     :invite-teammates-impression
     :invite-teammates-select-all-clicked
     :invite-teammates-select-none-clicked
+    :jira-icon-clicked
     :jira-modal-impression
     :login-clicked
     :logo-clicked
@@ -94,6 +97,7 @@
     :projects-icon-clicked
     :rebuild-clicked
     :revision-link-clicked
+    :save-clicked
     :select-plan-clicked
     :set-up-junit-clicked
     :set-up-junit-impression
