@@ -966,12 +966,14 @@
     (go (let [[message data] (<! stripe-ch)]
           (case message
             :stripe-checkout-closed
-            (do (analytics-track/stripe-checkout-closed :new-linux-plan-clicked)
+            (do (analytics-track/stripe-checkout-closed {:current-state current-state
+                                                         :action :new-linux-plan-clicked})
                 (release-button! uuid :idle))
 
             :stripe-checkout-succeeded
             (let [card-info (:card data)]
-              (analytics-track/stripe-checkout-succeeded :new-linux-plan-clicked)
+              (analytics-track/stripe-checkout-succeeded {:current-state current-state
+                                                          :action :new-linux-plan-clicked})
               (put! api-ch [:plan-card :success {:resp card-info
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
@@ -1005,12 +1007,14 @@
     (go (let [[message data] (<! stripe-ch)]
           (case message
             :stripe-checkout-closed
-            (do (analytics-track/stripe-checkout-closed :new-osx-plan-clicked)
+            (do (analytics-track/stripe-checkout-closed {:current-state current-state
+                                                         :action :new-osx-plan-clicked})
                 (release-button! uuid :idle))
 
             :stripe-checkout-succeeded
             (let [card-info (:card data)]
-              (analytics-track/stripe-checkout-succeeded :new-osx-plan-clicked)
+              (analytics-track/stripe-checkout-succeeded {:current-state current-state
+                                                          :action :new-osx-plan-clicked})
               (put! api-ch [:plan-card :success {:resp card-info
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
@@ -1309,12 +1313,14 @@
     (go (let [[message data] (<! stripe-ch)]
           (case message
             :stripe-checkout-closed
-            (do (analytics-track/stripe-checkout-closed :update-card-clicked)
+            (do (analytics-track/stripe-checkout-closed {:current-state current-state
+                                                         :action :update-card-clicked})
                 (release-button! uuid :idle))
 
             :stripe-checkout-succeeded
             (let [token-id (:id data)]
-              (analytics-track/stripe-checkout-succeeded :update-card-clicked)
+              (analytics-track/stripe-checkout-succeeded {:current-state current-state
+                                                          :action :update-card-clicked})
               (let [api-result (<! (ajax/managed-ajax
                                     :put
                                     (gstring/format "/api/v1.1/organization/%s/%s/card"
