@@ -16,9 +16,8 @@
     om/IRender
     (render [_]
       (html
-        (button/link-icon {:href (build-model/new-pull-request-url build)
+        (button/icon-link {:href (build-model/new-pull-request-url build)
                            :label "Open a Pull Request"
-                           :data-external true
                            :target "_blank"
                            :on-click #((om/get-shared owner :track-event) {:event-type :open-pull-request-clicked
                                                                            :properties {:branch (:branch build)

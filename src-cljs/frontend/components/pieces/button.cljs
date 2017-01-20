@@ -45,7 +45,7 @@
 (defn link
   "A link styled as a button.
 
-  :href          - The link target.
+  :href          - The link href
   :on-click      - A function called when the link is clicked.
   :kind          - The kind of button. One of #{:primary :secondary :danger :flat}.
                    (default: :secondary)
@@ -67,10 +67,10 @@
        :on-click on-click}
       content])))
 
-(defn link-icon
+(defn icon-link
   "A link styled as an icon button.
 
-  :href          - The link target.
+  :href          - The link href
   :label         - An imperative verb which describes the button. This will be used
                    as the ARIA label text and as tooltip text.
   :on-click      - A function called when the link is clicked.
@@ -80,7 +80,7 @@
   (assert label "For usability, an icon button must provide a textual label (as :label).")
   (component
     (html
-      [:a.btn-icon.exception.secondary
+      [:a.exception
        {:title label
         :aria-label label
         :href href
@@ -277,14 +277,10 @@
               :size :medium}
              "Medium Flat Link")]]))
 
-  (defcard link-icon-button
-    "A **link-icon-button** is a link-button whose with the styling  of an icon
-    button.
-
-    In addition to having the styling of an icon button, they accept a `:target`
-    (to open in a new tab) and an `:on-click`."
+  (defcard icon-link-button
+    "A **icon-link-button** is a link-button which displays a single icon, like an
+    icon button."
     (button-display
-      [;; Primary link buttons
-       [(link-icon {:href "#"
+      [[(icon-link {:href "#"
                     :label "Labels are provided for accessibility"}
                    [:i.octicon.octicon-heart])]])))

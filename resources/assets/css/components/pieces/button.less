@@ -141,6 +141,12 @@
     }
   }
 
+  .link-button-styles() {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .ui("button", {
     .button-styles();
   });
@@ -159,24 +165,20 @@
     // a.exception rules to work correctly.
     a& {
       .button-styles();
-
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
+      .link-button-styles();
     }
   });
 
-  .ui("link-icon", {
+  .ui("icon-link", {
     a& {
       .button-styles();
-      width: 30px;
-      height: 30px;
-
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
+      .link-button-styles();
+      .icon-button-styles();
     }
-
-    .icon-button-styles();
   });
+
+  &.with-border {
+    border: 1px solid @grayLighter;
+    border-radius: 0 3px 3px 0;
+  }
 });

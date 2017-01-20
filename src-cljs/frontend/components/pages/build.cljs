@@ -1,10 +1,10 @@
 (ns frontend.components.pages.build
   (:require [frontend.async :refer [raise!]]
-            [frontend.components.pieces.button :as button]
             [frontend.experiments.no-test-intervention :as no-test-intervention]
             [frontend.components.build :as build-com]
             [frontend.components.build-head :as build-head]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.jira-modal :as jira-modal]
             [frontend.components.templates.main :as main-template]
@@ -130,9 +130,9 @@
            ;; Cancel button
            (when (and (build-model/can-cancel? build) can-trigger-builds?)
              (button/managed-button
-               {:loading-text "canceling"
-                :failed-text  "couldn't cancel"
-                :success-text "cancel this build"
+               {:loading-text "Canceling"
+                :failed-text  "Couldn't Cancel"
+                :success-text "Canceled"
                 :kind :primary
                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                "Cancel Build"))
@@ -141,20 +141,21 @@
            ;; PR button
            (when (and (feature/enabled? :open-pull-request)
                       (not-empty build))
-             (om/build open-pull-request-action {:build build}))
+             [:div.with-border
+              (om/build open-pull-request-action {:build build})])
            ;; JIRA button
            (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
-             (button/icon {:label "Add ticket to JIRA"
-                           :on-click #(om/set-state! owner :show-jira-modal? true)}
-                          ;; TODO -ac Fix thissss
-                          (icon/add-jira-ticket)))
+             [:div.with-border
+              (button/icon {:label "Add ticket to JIRA"
+                            :on-click #(om/set-state! owner :show-jira-modal? true)}
+                           (icon/add-jira-ticket))])
            ;; Settings button
-           [:div.build-settings
+           [:div.build-settings.with-border
             (when-not can-write-settings?
               {:class "disabled"
                :data-original-title "You need to be an admin to change project settings."
                :data-placement "left"})
-            (button/link-icon {:href (routes/v1-project-settings-path (:navigation-data data))
+            (button/icon-link {:href (routes/v1-project-settings-path (:navigation-data data))
                                :label "Project Settings"
                                :on-click #((om/get-shared owner :track-event)
                                            {:event-type :project-settings-clicked

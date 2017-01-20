@@ -60,15 +60,9 @@
   .flexy(center);
   font-size: 13px;
   color: @grayDark;
-  margin-top: 0.5em;
+  // margin-top: 0.5em;
 
-  @media (max-width: 500px) {
-    #cancel-button {
-      width: 100%;
-    }
-  }
-
-  > *:not(:first-child) {
+  > :not(:first-child) {
     margin-left: 1em;
   }
 
@@ -103,7 +97,6 @@
     .button-look() {
       border: solid 1px rgba(0, 0, 0, 0.1);
       background-color: @grayLightest;
-      
       cursor: pointer;
 
       &:hover:not(.disabled) {
@@ -125,7 +118,7 @@
       .button-look();
       .button-common();
 
-      width: @container-width - @container-height - @button-right-margin * 10;
+      width: @container-width - @container-height - @button-right-margin;
       &.rebuild {
         border-radius: 3px 0 0 3px;
       }
@@ -341,6 +334,17 @@
           }
         }
       }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .build-actions-v2 {
+    width: 100%;
+    justify-content: space-between;
+
+    > * {
+      margin-left: 5px;
     }
   }
 }
