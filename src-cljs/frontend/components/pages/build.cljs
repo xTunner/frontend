@@ -113,7 +113,13 @@
             logged-in? (not (empty? user))
             jira-data (get-in data state/jira-data-path)
             can-trigger-builds? (project-model/can-trigger-builds? project)
-            can-write-settings? (project-model/can-write-settings? project)]
+            can-write-settings? (project-model/can-write-settings? project)
+            track-event (fn [event-type]
+                          ((om/get-shared owner :track-event)
+                           {:event-type event-type
+                            :properties {:project-vcs-url (:vcs_url project)
+                                         :user (:login user)
+                                         :component "header"}}))]
         (html
           [:div.build-actions-v2
            ;; Ensure we never have more than 1 modal showing
@@ -167,10 +173,10 @@
   (reify
     om/IRender
     (render [_]
-      (om/build main-template/template
-                {:app app
-                 :main-content (om/build build-com/build
-                                         {:app app
-                                          :ssh-available? (ssh-available? (get-in app (get-in app state/project-path))
-                                                                          (get-in app (get-in app state/build-path)))})
-                 :header-actions (om/build header-actions app)}))))
+      (main-template/template
+       {:app app
+        :main-content (om/build build-com/build
+                                {:app app
+                                 :ssh-available? (ssh-available? (get-in app (get-in app state/project-path))
+                                                                 (get-in app (get-in app state/build-path)))})
+        :header-actions (om/build header-actions app)}))))

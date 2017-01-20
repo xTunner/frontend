@@ -333,6 +333,6 @@
   (reify
     om/IRender
     (render [_]
-      (om/build main-template/template
-                {:app app
-                 :main-content (om/build main-content app)}))))
+      (main-template/template
+       {:app app
+        :main-content (om/build main-content app)}))))
