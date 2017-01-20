@@ -3,19 +3,19 @@
             [cljs-time.format :as time-format]
             [clojure.string :as string]
             [frontend.async :refer [raise!]]
-            [frontend.components.account :as account]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
+            [frontend.components.pages.user-settings.heroku :as heroku]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.form :as form]
-            [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
-            [frontend.components.pieces.table :as table]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.pieces.table :as table]
             [frontend.components.project.common :as project-common]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -1453,12 +1453,10 @@
             [:div (when (:heroku_api_key user)
                     [:p "Your Heroku key is entered. Great!"])
              [:p (:heroku_api_key user)]
-             [:div (when-not (:heroku_api_key user)
-                     (om/build account/heroku-key {:current-user user} {:opts {:project-page? true}}))]
-             [:div (when (:heroku_api_key user)
-                     [:p
-                      "You can edit your Heroku key from your "
-                      [:a {:href "/account/heroku"} "account page"] "."])]]]
+             [:div
+              [:p
+               "You can set your Heroku key in your "
+               [:a {:href "/account/heroku"} "account settings"] "."]]]]
            [:div.heroku-step
             [:h4 "Step 2: Associate a Heroku SSH key with your account"]
             [:span "Current deploy user: "
