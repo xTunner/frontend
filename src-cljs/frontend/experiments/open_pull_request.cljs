@@ -22,4 +22,4 @@
                            :on-click #((om/get-shared owner :track-event) {:event-type :open-pull-request-clicked
                                                                            :properties {:branch (:branch build)
                                                                                         :build-outcome (:outcome build)}})}
-                          (icon/gh-pull-request))))))
+                          (icon/git-pull-request))))))

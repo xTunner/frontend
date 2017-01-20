@@ -62,7 +62,7 @@
   (html
    (when-let [urls (seq (map :url (:pull_requests build)))]
      [:span.metadata-item.pull-requests {:title "Pull Requests"}
-      (icon/gh-pull-request)
+      (icon/git-pull-request)
       (interpose
        ", "
        (for [url urls]

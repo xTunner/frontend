@@ -278,7 +278,7 @@
              "Medium Flat Link")]]))
 
   (defcard icon-link-button
-    "A **icon-link-button** is a link-button which displays a single icon, like an
+    "A **icon link-button** is a link-button which displays a single icon, like an
     icon button."
     (button-display
       [[(icon-link {:href "#"

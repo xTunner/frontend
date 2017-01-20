@@ -154,7 +154,7 @@
              [:div.with-border
               (button/icon {:label "Add ticket to JIRA"
                             :on-click #(om/set-state! owner :show-jira-modal? true)}
-                           (icon/add-jira-ticket))])
+                           (icon/add-jira-issue))])
            ;; Settings button
            [:div.build-settings.with-border
             (when-not can-write-settings?
