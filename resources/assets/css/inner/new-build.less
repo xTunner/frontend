@@ -341,10 +341,15 @@
 @media (max-width: 600px) {
   .build-actions-v2 {
     width: 100%;
+    flex-wrap: wrap;
     justify-content: space-between;
 
     > * {
-      margin-left: 5px;
+      margin-top: 5px;
+    }
+
+    :not(:first-child) {
+      margin-left: 0;
     }
   }
 }
