@@ -1,5 +1,6 @@
 (ns frontend.experiments.open-pull-request
   (:require [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.icon :as icon]
             [frontend.models.build :as build-model]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
@@ -22,4 +23,4 @@
                            :on-click #((om/get-shared owner :track-event) {:event-type :open-pull-request-clicked
                                                                            :properties {:branch (:branch build)
                                                                                         :build-outcome (:outcome build)}})}
-                          [:i.octicon.octicon-git-pull-request])))))
+                          (icon/gh-pull-request))))))

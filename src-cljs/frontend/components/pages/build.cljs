@@ -5,6 +5,7 @@
             [frontend.components.build :as build-com]
             [frontend.components.build-head :as build-head]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.jira-modal :as jira-modal]
             [frontend.components.templates.main :as main-template]
             [frontend.experiments.open-pull-request :refer [open-pull-request-action]]
@@ -137,6 +138,16 @@
                "Cancel Build"))
            ;; Rebuild button
            (om/build rebuild-actions {:build build :project project})
+           ;; PR button
+           (when (and (feature/enabled? :open-pull-request)
+                      (not-empty build))
+             (om/build open-pull-request-action {:build build}))
+           ;; JIRA button
+           (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
+             (button/icon {:label "Add ticket to JIRA"
+                           :on-click #(om/set-state! owner :show-jira-modal? true)}
+                          ;; TODO -ac Fix thissss
+                          (icon/add-jira-ticket)))
            ;; Settings button
            [:div.build-settings
             (when-not can-write-settings?
@@ -149,16 +160,7 @@
                                            {:event-type :project-settings-clicked
                                             :properties {:project-vcs-url (:vcs_url project)
                                                          :user (:login user)}})}
-                              [:i.material-icons "settings"])]
-           ;; PR button
-           (when (and (feature/enabled? :open-pull-request)
-                      (not-empty build))
-             (om/build open-pull-request-action {:build build}))
-           ;; JIRA button
-           (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
-             (button/icon {:label "Add ticket to JIRA"
-                           :on-click #(om/set-state! owner :show-jira-modal? true)}
-                          [:img.add-jira-ticket-icon {:src (utils/cdn-path (str "/img/inner/icons/create-jira-issue.svg"))}]))])))))
+                              (icon/settings))]])))))
 
 (defn page [app owner]
   (reify
