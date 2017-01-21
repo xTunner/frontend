@@ -147,21 +147,21 @@
            ;; PR button
            (when (and (feature/enabled? :open-pull-request)
                       (not-empty build))
-             [:div.with-border
-              (om/build open-pull-request-action {:build build})])
+             (om/build open-pull-request-action {:build build}))
            ;; JIRA button
            (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
-             [:div.with-border
-              (button/icon {:label "Add ticket to JIRA"
-                            :on-click #(om/set-state! owner :show-jira-modal? true)}
-                           (icon/add-jira-issue))])
+             (button/icon {:label "Add ticket to JIRA"
+                           :bordered? true
+                           :on-click #(om/set-state! owner :show-jira-modal? true)}
+                          (icon/add-jira-issue)))
            ;; Settings button
-           [:div.build-settings.with-border
+           [:div.build-settings
             (when-not can-write-settings?
               {:class "disabled"
                :data-original-title "You need to be an admin to change project settings."
                :data-placement "left"})
             (button/icon-link {:href (routes/v1-project-settings-path (:navigation-data data))
+                               :bordered? true
                                :label "Project Settings"
                                :on-click #((om/get-shared owner :track-event)
                                            {:event-type :project-settings-clicked

@@ -21,5 +21,6 @@
                            :target "_blank"
                            :on-click #((om/get-shared owner :track-event) {:event-type :open-pull-request-clicked
                                                                            :properties {:branch (:branch build)
-                                                                                        :build-outcome (:outcome build)}})}
+                                                                                        :build-outcome (:outcome build)}})
+                           :bordered? true}
                           (icon/git-pull-request))))))
