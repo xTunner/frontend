@@ -344,7 +344,7 @@
         (html
          [:div.card
           [:div.header
-           [:h2 "Email preferences"]
+           [:h2 "Email Preferences by Organization"]
            [:div
             [:label "Choose an organization"]
             [:select.form-control
