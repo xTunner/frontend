@@ -42,20 +42,26 @@
                  [:br]
                  "You have admin permissions for the following organizations:"]
                 [:div.plans-accounts
-                 (om/build table/table {:key-fn :org-name
+                 (om/build table/table {:key-fn :org-html
                                         :rows (map
                                                 (fn [org]
                                                   (let [;; TODO: this link is sometimes dead. We should not link, or make
                                                         ;; the org settings page do something sane if there's not a plan.
+                                                        vcs-type (:vcs_type org)
                                                         org-url (routes/v1-org-settings-path {:org (:login org)
-                                                                :vcs_type (:vcs_type org)})]
-                                                    ;; FIXME: Add VCS icon in front of org name
-                                                    {:org-name [:a
+                                                                :vcs_type vcs-type})]
+                                                    {:org-html [:span
+                                                                [:span.table-row-icon
+                                                                 (case vcs-type
+                                                                  "github" (icon/github)
+                                                                  "bitbucket" (icon/bitbucket)
+                                                                  nil)]
+                                                                [:a
                                                                 {:href org-url}
-                                                                [:span (:login org)]]}))
+                                                                [:span (:login org)]]]}))
                                                 user-and-orgs)
                                         :columns [{:header "Organization Name"
-                                                   :cell-fn :org-name}]})]]]))])))))
+                                                   :cell-fn :org-html}]})]]]))])))))
 
 (defn api-tokens [app owner]
   (reify

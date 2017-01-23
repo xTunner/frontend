@@ -1,4 +1,12 @@
 .ns("frontend.components.pieces.table", {
+
+  .action-button-styles() {
+    display: block;
+    width: 18px;
+    margin: 0 auto;
+    color: @grayLight;
+  }
+
   .ui("table", {
     width: 100%;
 
@@ -17,6 +25,13 @@
       > tr {
         border-bottom: 1px solid @grayLighter;
         min-height: 30px;
+
+        .table-row-icon {
+          .action-button-styles ();
+          display: inline-block;
+          vertical-align: middle;
+          margin-right: 10px;
+        }
 
         > th, > td {
           padding-top: 5px;
@@ -61,13 +76,6 @@
       background-color: rgba(80, 198, 221, 0.04);
     }
   });
-
-  .action-button-styles() {
-    display: block;
-    width: 18px;
-    margin: 0 auto;
-    color: @grayLight;
-  }
 
   .ui("action-button", {
     .action-button-styles;
