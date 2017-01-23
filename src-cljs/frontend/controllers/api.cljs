@@ -1003,6 +1003,10 @@
   [_ _ _ {:keys [resp]} state]
   (assoc-in state state/all-users-path resp))
 
+(defmethod api-event [:all-projects :success]
+  [_ _ _ {:keys [resp]} state]
+  (assoc-in state state/all-projects-path resp))
+
 (defmethod api-event [:set-user-admin-state :success]
   [_ _ _ {user :resp} state]
   (assoc-in state

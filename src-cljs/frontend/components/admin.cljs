@@ -5,7 +5,9 @@
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
+            [frontend.components.pages.projects :as projects]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
@@ -17,7 +19,7 @@
             [frontend.utils :as utils :include-macros true]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn build-state [app owner]
   (reify
@@ -218,7 +220,7 @@
                       "read-settings" "Read-only Admin"
                       "none" "Normal"}]
     (reify
-      om/IDisplayName (display-name [_] "License Info")
+      om/IDisplayName (display-name [_] "User Admin Table")
       om/IRender
       (render [_]
         (html
@@ -314,13 +316,37 @@
            (when (not-empty inactive-users)
              (om/build user-table {:users inactive-users :current-user current-user}))]])))))
 
-(defn projects [app owner]
+(defn projects-table [projects owner]
   (reify
-    om/IDisplayName (display-name [_] "Projects Admin")
+    om/IDisplayName (display-name [_] "Project Admin Table")
 
     om/IRender
     (render [_]
-      (html [:div "Projects"]))))
+      (component
+        (card/basic
+          (om/build table/table
+                    {:rows projects
+                     :key-fn :vcs_url
+                     :columns [{:header "Project"
+                                :cell-fn (projects/name-cell-fn {:vcs-url-fn :vcs_url})}
+
+                               {:header "Followers"
+                                :type #{:right :shrink}
+                                :cell-fn #(count (:followers %))}
+
+                               {:header "Settings"
+                                :type :shrink
+                                :cell-fn (projects/settings-cell-fn {:vcs-url-fn :vcs_url})}]}))))))
+
+(defn projects [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Project Admin")
+
+    om/IRender
+    (render [_]
+      (if-let [all-projects (:all-projects app)]
+        (om/build projects-table all-projects)
+        (spinner)))))
 
 (defn boolean-setting-entry [item owner]
   (reify

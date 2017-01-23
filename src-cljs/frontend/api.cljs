@@ -230,6 +230,9 @@
 (defn get-all-users [api-ch]
   (ajax/ajax :get "/api/v1/admin/users" :all-users api-ch))
 
+(defn get-all-projects [api-ch]
+  (ajax/ajax :get "/api/v1/admin/projects" :all-projects api-ch))
+
 (defn get-all-system-settings [api-ch]
   (ajax/ajax :get "/api/v1/admin/settings" :get-all-system-settings api-ch))
 

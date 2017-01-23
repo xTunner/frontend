@@ -498,6 +498,9 @@
       :users (do
                (api/get-all-users api-ch)
                (set-page-title! "Users"))
+      :projects (do
+                  (api/get-all-projects api-ch)
+                  (set-page-title! "Projects"))
       :system-settings (do
                          (api/get-all-system-settings api-ch)
                          (set-page-title! "System Settings")))))
