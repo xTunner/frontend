@@ -161,7 +161,7 @@
   (analytics-event-schema {:build {s/Keyword s/Any}}))
 
 (defn- ab-test-treatments [current-state]
-  "Return ab-test-treatments supplied in current app state."
+  "Return ab-test-treatments for the current-user in the current-state."
   (-> (get-in current-state state/user-path)
       feature/ab-test-treatment-map
       feature/ab-test-treatments))
