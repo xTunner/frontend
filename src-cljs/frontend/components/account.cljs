@@ -136,7 +136,6 @@
     (render [_]
       (html
        [:div
-        [:h3.subheading "Current Beta Features"]
         (card/collection
          (for [{:keys [name description]} available-betas]
           (card/titled {:title name} description)))]))))
@@ -206,6 +205,7 @@
                 We'll let you know when we release updates
                 so you'll be the first to see new
                 features!"]
+           [:p "You can see a list of the beta features that you have access to below."]
            [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
            (button/button
             {:on-click #(do
