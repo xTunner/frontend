@@ -10,4 +10,5 @@
    :login s/Str
    :name s/Str
    :selected_email s/Str
-   :sign_in_count s/Int})
+   :sign_in_count s/Int
+   :ab-test-treatments {s/Keyword s/Keyword}})
