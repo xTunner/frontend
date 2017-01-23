@@ -32,32 +32,29 @@
                                    (get-in app state/user-organizations-path))]
         (html
          [:div#settings-plans.account-settings-subpage
-          [:legend "Org Plan Settings"]
-          [:div.plans-item
-           [:h3 "Set up a plan for one of your Organizations:"]
-           [:p "You can set up plans for any organization that you admin."]
-           [:div.plans-accounts
-            (map
-             (fn [org]
-               (let [;; TODO: this link is sometimes dead. We should not link, or make
-                     ;; the org settings page do something sane if there's not a plan.
-                     org-url (routes/v1-org-settings-path {:org (:login org)
-                                                           :vcs_type (:vcs_type org)})
-                     avatar-url (gh-utils/make-avatar-url org :size 25)]
-                 [:div
-                  [:a
-                   {:href org-url}
-                   [:img
-                    {:src    avatar-url
-                     :height 25
-                     :width  25}]]
-                  " "
-                  [:a.account-plan-pricing-org-link
-                   {:href org-url}
-                   [:span (:login org)]]
-                  [:br]
-                  [:br]]))
-             user-and-orgs)]]])))))
+          [:legend "Organization Plans"]
+          (card/basic
+            (html
+              [:div
+               [:div.plans-item
+                [:p "You can manage the CircleCI plan for any organization that you admin."
+                 [:br]
+                 "You have admin permissions for the following organizations:"]
+                [:div.plans-accounts
+                 (om/build table/table {:key-fn :org-name
+                                        :rows (map
+                                                (fn [org]
+                                                  (let [;; TODO: this link is sometimes dead. We should not link, or make
+                                                        ;; the org settings page do something sane if there's not a plan.
+                                                        org-url (routes/v1-org-settings-path {:org (:login org)
+                                                                :vcs_type (:vcs_type org)})]
+                                                    ;; FIXME: Add VCS icon in front of org name
+                                                    {:org-name [:a
+                                                                {:href org-url}
+                                                                [:span (:login org)]]}))
+                                                user-and-orgs)
+                                        :columns [{:header "Organization Name"
+                                                   :cell-fn :org-name}]})]]]))])))))
 
 (defn api-tokens [app owner]
   (reify
