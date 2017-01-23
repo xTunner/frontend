@@ -5,6 +5,7 @@
   (:require [frontend.async :refer [raise!]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.form :as form]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
@@ -65,52 +66,52 @@
             new-user-token (get-in app state/new-user-token-path)]
         (html
          [:div.account-settings-subpage
-          [:legend "API Tokens"]
-          [:div.api-item
-           [:p
-            "Create and revoke API tokens to access this account's details using our API."
-            [:br]
-            "Apps using these tokens can act as you, and have full read- and write-permissions!"]
+          [:legend "Personal API Tokens"]
+          (card/titled {:title "API Tokens"
+                        :action (button/managed-button
+                                  {:loading-text "Creating..."
+                                   :failed-text "Failed to add token"
+                                   :success-text "Created"
+                                   :kind :primary
+                                   :size :medium
+                                   :on-click #(create-token! new-user-token)}
+                                  "Create New Token")}
+            (html
+              [:div
+               [:div.api-item
+                [:p
+                 "Tokens you have generated that can be used to access the CircleCI API."
+                 [:br]
+                 "Apps using these tokens can act as you and have full read- and write-permissions!"]
 
-           [:form
-            [:input#api-token
-             {:required  true
-              :name      "label",
-              :type      "text",
-              :value     (str new-user-token)
-              :on-change #(utils/edit-input owner state/new-user-token-path %)}]
-            [:label {:placeholder "Token name"}]
-            (button/managed-button
-             {:loading-text "Creating..."
-              :failed-text "Failed to add token"
-              :success-text "Created"
-              :on-click #(create-token! new-user-token)}
-             "Create New Token")]
+                 ;; FIXME: Use modal pattern like SSH keys to add and remove tokens
+                 (om/build form/text-field {:label "Token name"
+                                            :value (str new-user-token)
+                                            :on-change #(utils/edit-input owner state/new-user-token-path %)})
+                [:div.api-item
+                 (when (seq tokens)
+                   (om/build table/table
+                             {:rows tokens
+                              :key-fn :token
+                              :columns [{:header "Label"
+                                         :cell-fn :label}
 
-           [:div.api-item
-            (when (seq tokens)
-              (om/build table/table
-                        {:rows tokens
-                         :key-fn :token
-                         :columns [{:header "Label"
-                                    :cell-fn :label}
+                                        {:header "Token"
+                                         :type :shrink
+                                         :cell-fn :token}
 
-                                   {:header "Token"
-                                    :type :shrink
-                                    :cell-fn :token}
+                                        {:header "Created"
+                                         :type :shrink
+                                         :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
 
-                                   {:header "Created"
-                                    :type :shrink
-                                    :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
-
-                                   {:header "Remove"
-                                    :type :shrink
-                                    :cell-fn
-                                    (fn [token]
-                                      (table/action-button
-                                       "Remove"
-                                       (icon/cancel-circle)
-                                       #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
+                                        {:header "Remove"
+                                         :type :shrink
+                                         :cell-fn
+                                         (fn [token]
+                                           (table/action-button
+                                            "Remove"
+                                            (icon/cancel-circle)
+                                            #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]]))])))))
 
 
 (def available-betas
