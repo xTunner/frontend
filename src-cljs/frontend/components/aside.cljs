@@ -290,15 +290,6 @@
            [:div.aside-user-options
             (expand-menu-items (account-settings-nav-items) subpage)]])))))
 
-(defn enterprise-admin-settings-nav-items []
-  ;; Should match the list of enterprise specific routes in
-  ;; routes/define-admin-routes!
-  [{:type :subpage :href "/admin/management-console" :title "Management Console"}
-   {:type :subpage :href "/admin/license" :title "License" :subpage :license}
-   {:type :subpage :href "/admin/users" :title "Users" :subpage :users}
-   {:type :subpage :href "/admin/projects" :title "Projects" :subpage :projects}
-   {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings}])
-
 (defn admin-settings-nav-items []
   (concat
     [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
@@ -306,7 +297,11 @@
     (when-not (config/enterprise?)
       [{:type :subpage :href "/admin/switch" :title "Switch User" :subpage :switch}])
     (when (config/enterprise?)
-      (enterprise-admin-settings-nav-items))))
+      [{:type :subpage :href "/admin/management-console" :title "Management Console"}
+       {:type :subpage :href "/admin/license" :title "License" :subpage :license}
+       {:type :subpage :href "/admin/users" :title "Users" :subpage :users}
+       {:type :subpage :href "/admin/projects" :title "Projects" :subpage :projects}
+       {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings}])))
 
 (defn admin-settings-menu [app owner]
   (reify
