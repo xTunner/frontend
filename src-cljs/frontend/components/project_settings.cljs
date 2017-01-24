@@ -1580,8 +1580,8 @@
            [:legend "AWS keys for " (vcs-url/project-name (:vcs_url project))]
            (om/build aws-keys-form project-data)]])))))
 
-(defn- jira-input-path [& args]
-  (apply conj state/inputs-path :jira args))
+(defn- jira-input-path [& segments]
+  (into state/inputs-path (cons :jira segments)))
 
 (defn jira-basic-modal
   [project owner]
