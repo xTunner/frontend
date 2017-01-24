@@ -141,7 +141,7 @@
   [params]
   (generate-url-str "/:vcs_type/:org/:repo/edit" params))
 
-(defn v1-insights-project-path
+(defn v1-project-insights-path
   "Generate URL string from params."
   [params]
   (generate-url-str "/build-insights/:vcs_type/:org/:repo/:branch" params))
