@@ -290,9 +290,13 @@
                                     :vcs_type vcs_type}])))
 
 (defmethod post-navigated-to! :project-insights
-  [history-imp navigation-point args previous-state current-state comms]
+  [history-imp navigation-point {:keys [org repo vcs_type] :as args} previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (api/get-projects api-ch))
+    (ajax/ajax :get
+               (api-path/project-settings vcs_type org repo)
+               :project-settings
+               api-ch
+               :context {:project-name (str org "/" repo)}))
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :team

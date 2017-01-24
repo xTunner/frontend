@@ -137,33 +137,40 @@
 ;; This is defined in the API.
 (def max-allowed-page-size 100)
 
-(defn get-projects-builds [build-keys build-count api-ch]
+(defn- get-insights-recent-build* [build-key build-count api-ch]
+  ;; Assemble a list of pages descriptions and result atoms to deliver them to.
+  (let [page-starts (range 0 build-count max-allowed-page-size)
+        page-ends (concat (rest page-starts) [build-count])
+        pages (for [[start end] (map vector page-starts page-ends)]
+                {:offset start
+                 :limit (- end start)
+                 :page-result (atom nil)})
+        page-results (map :page-result pages)]
+    (doseq [{:keys [offset limit page-result]} pages]
+      (let [url (dashboard-builds-url (assoc build-key :offset offset :limit limit))]
+        ;; Fire off an ajax call for the page. The API controllers will
+        ;; deliver the response to page-result, and put the full data in the
+        ;; state once all of the page-results are delivered.
+        (ajax/ajax :get url :insights-recent-builds api-ch
+                   :context {:project-id build-key
+                             :page-result page-result
+                             :all-page-results page-results}
+                   :params {:filter "build-insights"})))))
+
+(defn get-build-insights-data [build-keys api-ch]
   (doseq [build-key build-keys]
-    ;; Assemble a list of pages descriptions and result atoms to deliver them to.
-    (let [page-starts (range 0 build-count max-allowed-page-size)
-          page-ends (concat (rest page-starts) [build-count])
-          pages (for [[start end] (map vector page-starts page-ends)]
-                  {:offset start
-                   :limit (- end start)
-                   :page-result (atom nil)})
-          page-results (map :page-result pages)]
-      (doseq [{:keys [offset limit page-result]} pages]
-        (let [url (dashboard-builds-url (assoc build-key :offset offset :limit limit))]
-          ;; Fire off an ajax call for the page. The API controllers will
-          ;; deliver the response to page-result, and put the full data in the
-          ;; state once all of the page-results are delivered.
-          (ajax/ajax :get url :recent-project-builds api-ch
-                     :context {:project-id build-key
-                               :page-result page-result
-                               :all-page-results page-results}
-                     :params {:filter "build-insights"}))))))
+    (get-insights-recent-build* build-key 60 api-ch)))
 
 (defn branch-build-times-url [target-key]
   (sec/render-route "/api/v1/project/:vcs_type/:org/:repo/build-timing/:branch" target-key))
 
-(defn get-branch-build-times [{:keys [org repo branch] :as target-key} api-ch]
+(defn- get-branch-build-times [{:keys [org repo branch] :as target-key} api-ch]
   (let [url (branch-build-times-url target-key)]
     (ajax/ajax :get url :branch-build-times api-ch :context {:target-key target-key} :params {:days 90})))
+
+(defn get-project-insights-data [build-key api-ch]
+  (get-insights-recent-build* build-key 100 api-ch)
+  (get-branch-build-times build-key api-ch))
 
 (defn get-action-output [{:keys [vcs-url build-num step index]
                           :as args} api-ch]
