@@ -836,11 +836,12 @@
   (om/component
    (html
     [:div.organizations
+     [:legend "Share & Transfer"]
      (card/collection
-       [(card/titled {:title "Extra Organizations"}
+       [(card/titled {:title "Share Plan"}
                      (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
                                                          :user-orgs (get-in app state/user-organizations-path)}))
-        (card/titled {:title "Transfer plan to a different organization"}
+        (card/titled {:title "Transfer Ownership"}
                      (om/build transfer-organizations {:current-org (get-in app state/org-data-path)
                                                        :user-orgs (get-in app state/user-organizations-path)}))])])))
 
@@ -1044,11 +1045,14 @@
   (reify
     om/IRender
     (render [_]
-      (card/collection
-        [(om/build billing-card app)
-         (om/build billing-invoice-data app)
-         (om/build billing-discounts app)
-         (om/build billing-invoices app)]))))
+      (html
+        [:div
+         [:legend "Billing & Statements"]
+         (card/collection
+           [(om/build billing-card app)
+            (om/build billing-invoice-data app)
+            (om/build billing-discounts app)
+            (om/build billing-invoices app)])]))))
 
 (defn cancel [app owner]
   (reify
@@ -1431,6 +1435,7 @@
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name vcs_type)]
       [:div.overview-cards-container
+       [:legend "Plan Overview"]
        (when piggiebacked?
           [:div.alert.alert-warning
            [:div.usage-message
