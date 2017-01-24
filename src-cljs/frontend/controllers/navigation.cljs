@@ -481,6 +481,7 @@
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (-> state
       state-utils/clear-page-state
+      (assoc-in state/crumbs-path [{:type :admin}])
       (assoc state/current-view navigation-point
              state/navigation-data args
              :admin-settings-subpage subpage
