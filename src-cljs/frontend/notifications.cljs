@@ -20,7 +20,7 @@
 ;;   only 22 chars are visible on hover (because of resulting UI), so keep
 ;;   critical information 22 chars
 ;; - The body property should be a MAX of 42 characters (this is assuming a
-;;   default text size with San Francisco, the default system font on macOS)
+;;   default text size with San Francisco, the default system font on OS X)
 (defn notify [title properties]
   (when (notifications-granted?)
     (let [new-notification (js/Notification.

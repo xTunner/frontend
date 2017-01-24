@@ -135,18 +135,21 @@
 (deftest track-init-user-works
   (testing "track :init-user adds the correct properties and calls segment/identify"
     (let [user-email "hi-im-a-users-email@foobarbaz.com"
+          ab-treatments {:foo :bar}
           stub-identify (fn [properties]
                           (let [calls (atom [])]
                             (with-redefs [segment/identify (fn [event-data]
                                                              (swap! calls conj {:args (list event-data)}))
-                                          user/primary-email (constantly user-email)]
+                                          user/primary-email (constantly user-email)
+                                          analytics/ab-test-treatments (constantly ab-treatments)]
                               (analytics/track {:event-type :init-user
                                                 :current-state current-state}))
                             @calls))]
        (let [calls (stub-identify {})
              expected-data {:id (get-in current-state state/user-analytics-id-path)
                             :user-properties (merge
-                                               {:primary-email user-email}
+                                               {:primary-email user-email
+                                                :ab-test-treatments ab-treatments}
                                                (select-keys
                                                  (get-in current-state state/user-path)
                                                  (keys common-analytics/UserProperties)))}]

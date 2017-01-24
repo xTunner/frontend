@@ -40,7 +40,16 @@
   }
 }
 
+.plan-header {
+  h1 {
+    margin-top: 4px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+}
+
 .osx-plans {
+  margin-bottom: 2em;
 
   .plan-selection {
     .flexy(flex-start space-between);
@@ -55,6 +64,24 @@
 
     .unselected {
       border: 1px solid @grayLighter;
+    }
+  }
+}
+
+@media (min-width: 1250px) {
+  .plan-header {
+    .flexy(flex-start space-between);
+  }
+
+  .split-plan-block {
+    .flex(1, 0, 0);
+
+    &:last-child {
+      margin-left: 15px;
+    }
+
+    &:first-child {
+      margin-left: 0;
     }
   }
 }

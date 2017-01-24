@@ -53,6 +53,17 @@
         text-overflow: ellipsis;
       }
 
+      .overview-cards {
+        h1 {
+          margin-top: 4px;
+          font-weight: 500;
+        }
+      }
+
+      .title-icon {
+        margin-right: 1ex;
+      }
+
       .explanation {
         > div {
           margin-bottom: 2em;
@@ -60,6 +71,12 @@
       }
 
       .organizations {
+
+        .org-lists {
+          .flexy(flex-start);
+          margin-bottom: 1em;
+        }
+
         .controls {
           width: 20%;
 
@@ -129,6 +146,14 @@
       .space-below {
         margin-bottom: 21px;
       }
+
+      .heart-emoji {
+        color: @redDarkest;
+      }
+
+      .mb-0 {
+        margin-bottom: 0;
+      }
     }
 
     #edit-plan {
@@ -175,6 +200,15 @@
         }
       }
 
+      legend.update-plan {
+        margin-top: 1em;
+      }
+
+      .hint {
+        margin-top: 1em;
+        color: @gray;
+      }
+
       .container-picker {
         .container-slider {
           display: flex;
@@ -186,14 +220,21 @@
       }
 
       .container-input {
-        display: inline-flex;
-        margin-right: 4px;
-
+        .flexy(center);
         input {
-          width: 50px;
+          width: 60px;
           text-align: center;
-          padding: 4px 10px;
+          padding: 4px 2px;
           .center;
+
+          height: 26px;
+          margin: 0 8px;
+          font-weight: 600;
+          font-size: @fontSizeMedium;
+
+          border: none;
+          border-radius: 0;
+          border-bottom: 1px dashed #555;
         }
       }
 
@@ -468,10 +509,20 @@
   });
 
   .ui("faq", {
+    .columns {
+      .flexy();
+      justify-content: space-between;
+    }
+
     .column {
-      float: left;
       width: 50%;
-      padding: 10px;
+
+      &:first-of-type {
+        margin-right: 15px;
+      }
+      &:last-of-type {
+        margin-left: 15px;
+      }
     }
 
     .faq-item {
@@ -480,8 +531,9 @@
 
     .question {
       font-size: @fontSizeLarge;
-      font-weight: 600;
+      font-weight: 500;
       color: @gray;
+      margin-top: 4px;
     }
 
     .answer-line {
