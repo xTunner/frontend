@@ -74,7 +74,11 @@
          [:div.account-settings-subpage
           [:legend "Personal API Tokens"]
           (card/titled {:title "API Tokens"
-                        :action (button/managed-button
+                        :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                                :kind :primary
+                                                :size :medium}
+                                               "Create New Token")
+                        #_(button/managed-button
                                   {:loading-text "Creating..."
                                    :failed-text "Failed to add token"
                                    :success-text "Created"
