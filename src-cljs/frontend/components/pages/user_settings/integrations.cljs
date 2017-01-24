@@ -47,17 +47,20 @@
            [bitbucket-identity] "bitbucket"}
           (group-by :identity/type
                     (-> (om-next/props this) :app/current-user :user/identities))]
-      (card/collection
-       [(card this {:name "GitHub"
-                    :type "github"
-                    :icon-path (common/icon-path "brand-github")
-                    :auth-url (gh-utils/auth-url)
-                    :identity github-identity})
-        (card this {:name "Bitbucket"
-                    :type "bitbucket"
-                    :icon-path (common/icon-path "brand-bitbucket")
-                    :auth-url (bitbucket/auth-url)
-                    :identity bitbucket-identity})]))))
+      (html
+        [:div
+         [:legend "Account Integrations"]
+         (card/collection
+           [(card this {:name "GitHub"
+                        :type "github"
+                        :icon-path (common/icon-path "brand-github")
+                        :auth-url (gh-utils/auth-url)
+                        :identity github-identity})
+            (card this {:name "Bitbucket"
+                        :type "bitbucket"
+                        :icon-path (common/icon-path "brand-bitbucket")
+                        :auth-url (bitbucket/auth-url)
+                        :identity bitbucket-identity})])]))))
 
 (dc/do
   (defcard github-card-disconnected
