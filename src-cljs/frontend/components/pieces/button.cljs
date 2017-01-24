@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.button
   (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.forms :as forms])
+            [frontend.components.forms :as forms]
+            [frontend.components.pieces.icon :as icon])
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn button
@@ -287,4 +288,13 @@
     (button-display
       [[(icon-link {:href "#"
                     :label "Labels are provided for accessibility"}
-                   [:i.octicon.octicon-heart])]])))
+                   (icon/settings))]]))
+  (defcard bordered-buttons
+    "Buttons with borders are used in the header. This is design debt."
+    (button-display
+      [[(icon {:label "Bordered GitHub icon button"
+               :bordered? true}
+              (icon/github))]
+       [(icon-link {:label "Bordered Bitbucket icon link-button"
+                    :bordered? true}
+                   (icon/bitbucket))]])))
