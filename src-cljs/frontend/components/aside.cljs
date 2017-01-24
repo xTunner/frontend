@@ -300,12 +300,13 @@
    {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings}])
 
 (defn admin-settings-nav-items []
-  (let [shared-admin-routes
-        [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
-         {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}]]
-    (if (config/enterprise?)
-      (concat shared-admin-routes (enterprise-admin-settings-nav-items))
-      shared-admin-routes)))
+  (concat
+    [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
+     {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}]
+    (when-not (config/enterprise?)
+      [{:type :subpage :href "/admin/switch" :title "Switch User" :subpage :switch}])
+    (when (config/enterprise?)
+      (enterprise-admin-settings-nav-items))))
 
 (defn admin-settings-menu [app owner]
   (reify

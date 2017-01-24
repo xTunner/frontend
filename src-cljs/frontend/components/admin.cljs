@@ -21,49 +21,35 @@
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn build-state [app owner]
-  (reify
-    om/IDisplayName (display-name [_] "Admin Build State")
-    om/IRender
-    (render [_]
-      (let [build-state (get-in app state/build-state-path)]
-        (html
-         [:section {:style {:padding-left "10px"}}
-          [:a {:href "/api/v1/admin/build-state" :target "_blank"} "View raw"]
-          " / "
-          [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-build-state-clicked])} "Refresh"]
-          (if-not build-state
-            (spinner)
-            [:code (om/build ankha/inspector build-state)])])))))
-
 (defn switch [app owner]
   (reify
     om/IRender
     (render [_]
-      (html
-       [:div.container-fluid
-        [:div.row-fluid
-         [:div.span9
-          [:p "Switch user"]
-          [:form.form-inline {:method "post", :action "/admin/switch-user"}
-           [:input.input-medium {:name "login", :type "text"}]
-           (when-not (config/enterprise?)
-             [:div.col-lg-3
-              [:label
-               [:input {:type "checkbox"
-                        :name "bitbucket"}]
-               "Bitbucket"]])
-           [:input {:value (utils/csrf-token)
-                    :name "CSRFToken",
-                    :type "hidden"}]
-           [:div.col-lg-9
-            (button/button {:on-click (fn [event]
-                                        ;; a higher level handler will stop all form submissions
-                                        ;;
-                                        ;; see frontend.components.app/app*
-                                        (.stopPropagation event))
-                            :kind :primary}
-                           "Switch User")]]]]]))))
+      (component
+        (card/basic
+          [:div.container-fluid
+           [:div.row-fluid
+            [:div.span9
+             [:p "Switch user"]
+             [:form.form-inline {:method "post", :action "/admin/switch-user"}
+              [:input.input-medium {:name "login", :type "text"}]
+              (when-not (config/enterprise?)
+                [:div.col-lg-3
+                 [:label
+                  [:input {:type "checkbox"
+                           :name "bitbucket"}]
+                  "Bitbucket"]])
+              [:input {:value (utils/csrf-token)
+                       :name "CSRFToken",
+                       :type "hidden"}]
+              [:div.col-lg-9
+               (button/button {:on-click (fn [event]
+                                           ;; a higher level handler will stop all form submissions
+                                           ;;
+                                           ;; see frontend.components.app/app*
+                                           (.stopPropagation event))
+                               :kind :primary}
+                              "Switch User")]]]]])))))
 
 (defn current-seat-usage [active-users total-seats]
   [:span
@@ -443,4 +429,5 @@
               :users (om/build users app)
               :projects (om/build projects app)
               :system-settings (om/build system-settings app)
+              :switch (om/build switch app)
               (om/build overview app))]]])))))
