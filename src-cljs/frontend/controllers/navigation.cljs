@@ -292,8 +292,7 @@
 (defmethod post-navigated-to! :project-insights
   [history-imp navigation-point args previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (api/get-projects api-ch)
-    (api/get-user-plans api-ch))
+    (api/get-projects api-ch))
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :team

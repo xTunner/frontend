@@ -137,7 +137,6 @@
 
 (defrender project-insights [state owner]
   (let [projects (get-in state state/projects-path)
-        plans (get-in state state/user-plans-path)
         {:keys [branch] :as navigation-data} (:navigation-data state)
         {:keys [branches parallel] :as project} (some->> projects
                                                          (filter #(= (dissoc (api/project-build-key %) :branch)
