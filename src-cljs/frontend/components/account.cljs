@@ -42,26 +42,22 @@
                  [:br]
                  "You have admin permissions for the following organizations:"]
                 [:div.plans-accounts
-                 (om/build table/table {:key-fn :org-html
-                                        :rows (map
-                                                (fn [org]
-                                                  (let [;; TODO: this link is sometimes dead. We should not link, or make
-                                                        ;; the org settings page do something sane if there's not a plan.
-                                                        vcs-type (:vcs_type org)
-                                                        org-url (routes/v1-org-settings-path {:org (:login org)
-                                                                :vcs_type vcs-type})]
-                                                    {:org-html [:span
-                                                                [:span.table-row-icon
-                                                                 (case vcs-type
-                                                                  "github" (icon/github)
-                                                                  "bitbucket" (icon/bitbucket)
-                                                                  nil)]
-                                                                [:a
-                                                                {:href org-url}
-                                                                [:span (:login org)]]]}))
-                                                user-and-orgs)
+                 (om/build table/table {:key-fn (juxt :vcs_type :login)
+                                        :rows user-and-orgs
                                         :columns [{:header "Organization Name"
-                                                   :cell-fn :org-html}]})]]]))])))))
+                                                   :cell-fn (fn [org]
+                                                              (let [vcs-type (:vcs_type org)
+                                                                    org-url (routes/v1-org-settings-path {:org (:login org)
+                                                                                                          :vcs_type vcs-type})]
+                                                                (html [:span
+                                                                       [:span.table-row-icon
+                                                                        (case vcs-type
+                                                                          "github" (icon/github)
+                                                                          "bitbucket" (icon/bitbucket)
+                                                                          nil)]
+                                                                       [:a
+                                                                        {:href org-url}
+                                                                        [:span (:login org)]]])))}]})]]]))])))))
 
 (defn api-tokens [app owner]
   (reify
@@ -72,7 +68,8 @@
     (render-state [_ {:keys [show-modal?]}]
       (let [close-fn #(om/set-state! owner :show-modal? false)
             tokens        (get-in app state/user-tokens-path)
-            create-token! #(raise! owner [:api-token-creation-attempted {:label %}] close-fn)
+            create-token! #(raise! owner [:api-token-creation-attempted {:label %
+                                                                         :on-success close-fn}])
             new-user-token (get-in app state/new-user-token-path)]
         (html
          [:div.account-settings-subpage

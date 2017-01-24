@@ -1292,7 +1292,7 @@
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :api-token-creation-attempted
-  [target message {:keys [label]} previous-state current-state comms]
+  [target message {:keys [label on-success]} previous-state current-state comms]
   (let [uuid frontend.async/*uuid*
         api-ch (:api comms)]
     (go
@@ -1300,7 +1300,8 @@
                            :post
                            "/api/v1/user/token"
                            :params {:label label}))]
-       (put! api-ch [:create-api-token (:status api-result) (assoc api-result :context {:label label})])
+       (put! api-ch [:create-api-token (:status api-result) (assoc api-result :context {:label label
+                                                                                        :on-success on-success})])
        (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :update-card-clicked
