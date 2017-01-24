@@ -65,14 +65,34 @@
 
 (defn api-tokens [app owner]
   (reify
-    om/IRender
-    (render [_]
-      (let [tokens        (get-in app state/user-tokens-path)
-            create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (let [close-fn #(om/set-state! owner :show-modal? false)
+            tokens        (get-in app state/user-tokens-path)
+            create-token! #(raise! owner [:api-token-creation-attempted {:label %}] close-fn)
             new-user-token (get-in app state/new-user-token-path)]
         (html
          [:div.account-settings-subpage
           [:legend "Personal API Tokens"]
+          (when show-modal?
+            (modal/modal-dialog {:title "Add an API token"
+                                 :body (html
+                                         (form/form {}
+                                                    (om/build form/text-field {:label "Token name"
+                                                                               :value (str new-user-token)
+                                                                               :on-change #(utils/edit-input owner state/new-user-token-path %)})))
+                                 :close-fn close-fn
+                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                           (button/managed-button
+                                             {:failed-text  "Failed"
+                                              :success-text "Added"
+                                              :loading-text "Adding..."
+                                              :on-click #(create-token! new-user-token)
+                                              :kind :primary}
+                                             "Add API Token")]}))
           (card/titled {:title "API Tokens"
                         :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                                 :kind :primary
@@ -84,7 +104,7 @@
                                    :success-text "Created"
                                    :kind :primary
                                    :size :medium
-                                   :on-click #(create-token! new-user-token)}
+                                   :on-click #(om/set-state! owner :show-modal? true)}
                                   "Create New Token")}
             (html
               [:div
@@ -93,11 +113,6 @@
                  "Tokens you have generated that can be used to access the CircleCI API."
                  [:br]
                  "Apps using these tokens can act as you and have full read- and write-permissions!"]
-
-                 ;; FIXME: Use modal pattern like SSH keys to add and remove tokens
-                 (om/build form/text-field {:label "Token name"
-                                            :value (str new-user-token)
-                                            :on-change #(utils/edit-input owner state/new-user-token-path %)})
                 [:div.api-item
                  (when (seq tokens)
                    (om/build table/table
