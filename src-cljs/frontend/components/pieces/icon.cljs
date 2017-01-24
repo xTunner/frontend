@@ -54,6 +54,14 @@
      (html
       [:path {:d "M18,2 L6,2 C4.9,2 4,2.9 4,4 L4,20 C4,21.1 4.9,22 6,22 L18,22 C19.1,22 20,21.1 20,20 L20,4 C20,2.9 19.1,2 18,2 L18,2 Z M6,4 L11,4 L11,12 L8.5,10.5 L6,12 L6,4 L6,4 Z"}]))))
 
+(defn insights
+  "Repesents Insights"
+  []
+  (component
+    (icon
+     (html
+      [:path {:d "M19,3 L5,3 C3.9,3 3,3.9 3,5 L3,19 C3,20.1 3.9,21 5,21 L19,21 C20.1,21 21,20.1 21,19 L21,5 C21,3.9 20.1,3 19,3 L19,3 Z M9,17 L7,17 L7,10 L9,10 L9,17 L9,17 Z M13,17 L11,17 L11,7 L13,7 L13,17 L13,17 Z M17,17 L15,17 L15,13 L17,13 L17,17 L17,17 Z"}]))))
+
 (defn team
   "Represents the notion of a team or org in the CircleCI domain."
   []

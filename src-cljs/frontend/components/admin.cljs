@@ -320,6 +320,10 @@
                                 :type #{:right :shrink}
                                 :cell-fn #(count (:followers %))}
 
+                               {:header "Insights"
+                                :type :shrink
+                                :cell-fn (projects/insights-cell-fn {:vcs-url-fn :vcs_url})}
+
                                {:header "Settings"
                                 :type :shrink
                                 :cell-fn (projects/settings-cell-fn {:vcs-url-fn :vcs_url})}]}))))))

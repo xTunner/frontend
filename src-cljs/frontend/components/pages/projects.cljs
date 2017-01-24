@@ -60,6 +60,17 @@
                                           :org (vcs-url/org-name vcs-url)
                                           :repo (vcs-url/repo-name vcs-url)})))))
 
+(defn insights-cell-fn [{:keys [vcs-url-fn]}]
+  (fn [project]
+    (table/action-link
+      "Insights"
+      (icon/insights)
+      (let [vcs-url (vcs-url-fn project)]
+        (routes/v1-project-insights-path {:vcs_type (vcs-url/vcs-type vcs-url)
+                                          :org (vcs-url/org-name vcs-url)
+                                          :repo (vcs-url/repo-name vcs-url)
+                                          :branch (:default_branch project)})))))
+
 (defn- table
   {::fq/queries {:projects (fq/merge [:project/vcs-url
                                       :project/name]
