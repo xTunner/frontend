@@ -737,7 +737,7 @@
             "Your plan covers all projects (including forked repos) in the "
             [:strong org-name]
             " organization by default."]
-           [:p "You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
+           [:p "You can let any GitHub or Bitbucket organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
            [:p "Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
            (if-not (or gh-users-and-orgs bb-users-and-orgs)
              [:div "Loading organization list..."]
