@@ -1,5 +1,6 @@
 (ns frontend.analytics.core
-  (:require [frontend.analytics.segment :as segment]
+  (:require [frontend.analytics.amplitude :as amplitude]
+            [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
@@ -212,28 +213,32 @@
                                  (.getTime (js/Date. (:stop_time build))))
                               1000 60 60)})))
 
-(defmulti track (fn [data]
+(defmulti track* (fn [data]
                   (when (frontend.config/analytics-enabled?)
                     (:event-type data))))
 
-(s/defmethod track :default [event-data :- AnalyticsEvent]
+(defn track [data]
+  (track* data)
+  (amplitude/set-session-id-cookie!))
+
+(s/defmethod track* :default [event-data :- AnalyticsEvent]
   (let [{:keys [event-type properties current-state]} event-data]
     (segment/track-event event-type (supplement-tracking-properties {:properties properties
                                                                      :current-state current-state}))))
 
-(s/defmethod track :external-click [event-data :- ExternalClickEvent]
+(s/defmethod track* :external-click [event-data :- ExternalClickEvent]
   (let [{:keys [event properties current-state]} event-data]
     (segment/track-external-click event (supplement-tracking-properties {:properties properties
                                                                          :current-state current-state}))))
 
-(s/defmethod track :pageview [event-data :- PageviewEvent]
+(s/defmethod track* :pageview [event-data :- PageviewEvent]
   (let [{:keys [navigation-point subpage properties current-state]} event-data]
     (segment/track-pageview navigation-point
                             (or subpage (current-subpage current-state))
                             (supplement-tracking-properties {:properties properties
                                                              :current-state current-state}))))
 
-(s/defmethod track :view-build [event-data :- BuildEvent]
+(s/defmethod track* :view-build [event-data :- BuildEvent]
   (let [{:keys [build properties current-state]} event-data
         props (merge (build-properties build current-state) properties)]
     (segment/track-event :view-build (supplement-tracking-properties {:properties props
@@ -249,5 +254,13 @@
                          :num-projects-followed (user/num-projects-followed user-data)}
                         (select-keys user-data (keys common-analytics/UserProperties)))}))
 
-(s/defmethod track :init-user [event-data :- CoreAnalyticsEvent]
-  (segment/identify (get-user-properties-from-state (:current-state event-data))))
+(s/defmethod track* :init-user [event-data :- CoreAnalyticsEvent]
+  (when (-> (:current-state event-data)
+            (get-in state/user-path))
+    (segment/identify (get-user-properties-from-state (:current-state event-data)))))
+
+(defn init
+  "Initialize our analytics."
+  [state]
+  (track {:event-type :init-user
+          :current-state state}))
