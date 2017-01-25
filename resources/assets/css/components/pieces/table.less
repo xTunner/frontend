@@ -1,12 +1,5 @@
 .ns("frontend.components.pieces.table", {
 
-  .action-button-styles() {
-    display: block;
-    width: 18px;
-    margin: 0 auto;
-    color: @grayLight;
-  }
-
   .ui("table", {
     width: 100%;
 
@@ -69,6 +62,13 @@
       background-color: rgba(80, 198, 221, 0.04);
     }
   });
+
+  .action-button-styles() {
+    display: block;
+    width: 18px;
+    margin: 0 auto;
+    color: @grayLight;
+  }
 
   .ui("action-button", {
     .action-button-styles;
