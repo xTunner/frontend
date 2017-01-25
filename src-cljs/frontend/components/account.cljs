@@ -67,7 +67,7 @@
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
       (let [close-fn #(om/set-state! owner :show-modal? false)
-            tokens        (get-in app state/user-tokens-path)
+            tokens (get-in app state/user-tokens-path)
             create-token! #(raise! owner [:api-token-creation-attempted {:label %
                                                                          :on-success close-fn}])
             new-user-token (get-in app state/new-user-token-path)]
