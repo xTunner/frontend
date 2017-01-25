@@ -261,7 +261,7 @@
      (if (pm/piggieback? plan org-name org-vcs-type)
        [{:type :subpage :href "#containers" :title "Add Containers" :subpage :containers}]
        (concat
-         [{:type :subpage :title "Plan" :href "#containers" :subpage :containers}]
+         [{:type :subpage :title "Plan Settings" :href "#containers" :subpage :containers}]
          (when (pm/stripe-customer? plan)
            [{:type :subpage :title "Billing & Statements" :href "#billing" :subpage :billing}])
          (when (pm/transferrable-or-piggiebackable-plan? plan)

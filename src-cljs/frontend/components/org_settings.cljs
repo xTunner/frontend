@@ -461,8 +461,8 @@
         (html
           [:div.osx-plans {:data-component `osx-plans-list}
            (if (pm/osx? plan)
-             [:legend.update-plan "Update OS X plan"]
-             [:legend.update-plan "Choose OS X plan"]
+             [:legend.update-plan "Update OS X Plan"]
+             [:legend.update-plan "Choose OS X Plan"]
              )
            [:p [:em "Your selection below only applies to OS X service and will not affect Linux containers."]]
            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
@@ -518,8 +518,8 @@
               (when-not (config/enterprise?)
                 [:div.container-picker
                  (if (pm/linux? plan)
-                   [:legend.update-plan "Update Linux plan"]
-                   [:legend.update-plan "Choose Linux plan"])
+                   [:legend.update-plan "Update Linux Plan"]
+                   [:legend.update-plan "Choose Linux Plan"])
                  [:h1.container-input
                   [:span "Use "]
                   [:input.form-control
@@ -677,6 +677,7 @@
             (if (pm/piggieback? plan org-name org-vcs-type)
               (plans-piggieback-plan-notification plan org-name)
               [:div
+               [:legend "Plan Settings"]
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
                                        :selected-tab-name (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
