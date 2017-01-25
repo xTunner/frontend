@@ -38,9 +38,7 @@
             (html
               [:div
                [:div.plans-item
-                [:p "You can manage the CircleCI plan for any organization that you admin."
-                 [:br]
-                 "You have admin permissions for the following organizations:"]
+                [:p "You can manage the CircleCI plan for any organization that you admin. You have admin permissions for the following organizations:"]
                 [:div.plans-accounts
                  (om/build table/table {:key-fn (juxt :vcs_type :login)
                                         :rows user-and-orgs
