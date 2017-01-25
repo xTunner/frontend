@@ -5,10 +5,14 @@
       padding-top: 15px;
 
       .table-row-icon {
-        .action-button-styles ();
+        // We should be using the .action-button-styles mixin in pieces/table.less
+        // Need to discuss how to include a mixin in multiple components
+        width: 18px;
+        margin: 0 auto;
+        margin-right: 10px;
         display: inline-block;
         vertical-align: middle;
-        margin-right: 10px;
+        color: @grayLight;
       }
     });
   });
