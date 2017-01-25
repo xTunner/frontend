@@ -95,32 +95,31 @@
                                                 :kind :primary
                                                 :size :medium}
                                                "Create New Token")}
-            (html
-              [:div
-               [:div.api-item
-                [:p
-                 "Tokens you have generated that can be used to access the CircleCI API. Apps using these tokens can act as you and have full read- and write-permissions!"]
-                [:div.api-item
-                 (when (seq tokens)
-                   (om/build table/table
-                             {:rows tokens
-                              :key-fn :token
-                              :columns [{:header "Label"
-                                         :cell-fn :label}
-                                        {:header "Token"
-                                         :type :shrink
-                                         :cell-fn :token}
-                                        {:header "Created"
-                                         :type :shrink
-                                         :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
-                                        {:header "Remove"
-                                         :type :shrink
-                                         :cell-fn
-                                         (fn [token]
-                                           (table/action-button
-                                            "Remove"
-                                            (icon/cancel-circle)
-                                            #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]]))])))))
+                       [:div
+                        [:div.api-item
+                         [:p
+                          "Tokens you have generated that can be used to access the CircleCI API. Apps using these tokens can act as you and have full read- and write-permissions!"]
+                         [:div.api-item
+                          (when (seq tokens)
+                            (om/build table/table
+                                      {:rows tokens
+                                       :key-fn :token
+                                       :columns [{:header "Label"
+                                                  :cell-fn :label}
+                                                 {:header "Token"
+                                                  :type :shrink
+                                                  :cell-fn :token}
+                                                 {:header "Created"
+                                                  :type :shrink
+                                                  :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
+                                                 {:header "Remove"
+                                                  :type :shrink
+                                                  :cell-fn
+                                                  (fn [token]
+                                                    (table/action-button
+                                                     "Remove"
+                                                     (icon/cancel-circle)
+                                                     #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])])))))
 
 (def available-betas
   [{:id "project-cache-clear-buttons"
