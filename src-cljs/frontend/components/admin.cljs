@@ -19,6 +19,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
+            [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [component element html]]))
@@ -330,23 +331,11 @@
                                 :type :shrink
                                 :cell-fn (projects/settings-cell-fn {:vcs-url-fn :vcs_url})}]}))))))
 
-(defn- noncontinuos-substring-match [to-match s]
-  "Returns a regexp that will match any string that has the characters of in the
-   input string in order. i.e. 'asd' would match 'asdf' or 'acghgsghghcdcggthtf'"
-  (let [to-escape #{\\ \^ \$ \* \+ \? \.  \( \) \|  \{ \}  \[ \]}
-        cmap (into {} (for [c to-escape] [c (str \\ c)]))
-        pattern (->> (str/escape to-match cmap)
-                     (interpose ".*")
-                     (apply str)
-                     re-pattern)]
-    (re-find pattern s)))
-
 (defn- filter-projects [projects filter-str]
-  (js/console.log filter-str)
   (if (seq filter-str)
-    (filter #(noncontinuos-substring-match
-               filter-str
-               (-> % :vcs_url (vcs-url/project-name)))
+    (filter #(gstring/caseInsensitiveContains
+               (-> % :vcs_url (vcs-url/project-name))
+               filter-str)
             projects)
     projects))
 
