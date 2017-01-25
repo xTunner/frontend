@@ -94,15 +94,7 @@
                         :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                                 :kind :primary
                                                 :size :medium}
-                                               "Create New Token")
-                        #_(button/managed-button
-                                  {:loading-text "Creating..."
-                                   :failed-text "Failed to add token"
-                                   :success-text "Created"
-                                   :kind :primary
-                                   :size :medium
-                                   :on-click #(om/set-state! owner :show-modal? true)}
-                                  "Create New Token")}
+                                               "Create New Token")}
             (html
               [:div
                [:div.api-item
