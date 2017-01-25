@@ -105,3 +105,6 @@
   []
   (or (aget js/window "renderContext" "support_email")
       "sayhi@circleci.com"))
+
+(defn jira-connect-enabled? []
+  (not (enterprise?)))
