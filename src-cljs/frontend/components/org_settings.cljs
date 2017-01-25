@@ -565,7 +565,7 @@
                         :kind :primary}
                        (if (config/enterprise?)
                          enterprise-text
-                         "Update plan"))))
+                         "Update Plan"))))
                  (if-not checkout-loaded?
                    (spinner)
                    (button/managed-button
