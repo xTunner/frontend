@@ -5,6 +5,7 @@
             [frontend.datetime :as datetime]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.svg :refer [svg]]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
@@ -61,7 +62,7 @@
   (html
    (when-let [urls (seq (map :url (:pull_requests build)))]
      [:span.metadata-item.pull-requests {:title "Pull Requests"}
-      [:i.octicon.octicon-git-pull-request]
+      (icon/git-pull-request)
       (interpose
        ", "
        (for [url urls]
