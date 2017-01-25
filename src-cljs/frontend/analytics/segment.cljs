@@ -12,7 +12,7 @@
    :view s/Keyword
    :org  (s/maybe s/Str)
    :repo (s/maybe s/Str)
-   :ab-test-treatments {s/Keyword s/Keyword}
+   :ab-test-treatments {s/Keyword s/Keyword} ; Different from current user ab-test-treatment on identify
    s/Keyword s/Any})
 
 (def LoggedOutEvent
@@ -28,7 +28,12 @@
   (merge-with merge
               UserEvent
               {:user-properties {:primary-email (s/maybe s/Str)
-                                 :ab-test-treatments {s/Keyword s/Keyword}}}))
+                                 :ab-test-treatments {s/Keyword s/Keyword}
+                                 ; Only updated on identify call - not follow / unfollow events
+                                 ;   there will be a lag to update the correct number of projects
+                                 ;   that a user follows, but after conversations with our
+                                 ;   data analyst (Kyle) this was considered acceptable
+                                 :num-projects-followed s/Int}}))
 
 (s/defn track-pageview [navigation-point :- s/Keyword subpage :- s/Keyword & [properties :- SegmentProperties]]
   (utils/swallow-errors

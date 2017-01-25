@@ -9,6 +9,7 @@
             [frontend.analytics.core :as analytics]
             [frontend.analytics.common :as common-analytics]
             [frontend.analytics.segment :as segment]))
+  (:require-macros [frontend.utils :refer [inspect]])
 
 (use-fixtures :once schema.test/validate-schemas)
 
@@ -136,11 +137,13 @@
   (testing "track :init-user adds the correct properties and calls segment/identify"
     (let [user-email "hi-im-a-users-email@foobarbaz.com"
           ab-treatments {:foo :bar}
+          num-projects 12
           stub-identify (fn [properties]
                           (let [calls (atom [])]
                             (with-redefs [segment/identify (fn [event-data]
                                                              (swap! calls conj {:args (list event-data)}))
                                           user/primary-email (constantly user-email)
+                                          user/num-projects-followed (constantly num-projects)
                                           analytics/ab-test-treatments (constantly ab-treatments)]
                               (analytics/track {:event-type :init-user
                                                 :current-state current-state}))
@@ -149,7 +152,8 @@
              expected-data {:id (get-in current-state state/user-analytics-id-path)
                             :user-properties (merge
                                                {:primary-email user-email
-                                                :ab-test-treatments ab-treatments}
+                                                :ab-test-treatments ab-treatments
+                                                :num-projects-followed num-projects}
                                                (select-keys
                                                  (get-in current-state state/user-path)
                                                  (keys common-analytics/UserProperties)))}]

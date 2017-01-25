@@ -65,3 +65,6 @@
   ;; Encapsulating this logic in case we ever want to make the :selected_email on
   ;; the FE == the :selected-email on the BE.
   (:selected_email user))
+
+(defn num-projects-followed [user-data]
+  (:num_projects_followed user-data))
