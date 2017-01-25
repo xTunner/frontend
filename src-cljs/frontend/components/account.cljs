@@ -46,16 +46,17 @@
                                                    :cell-fn (fn [org]
                                                               (let [vcs-type (:vcs_type org)
                                                                     org-url (routes/v1-org-settings-path {:org (:login org)
-                                                                                                          :vcs_type vcs-type})]
-                                                                (html [:span
-                                                                       [:span.table-row-icon
-                                                                        (case vcs-type
-                                                                          "github" (icon/github)
-                                                                          "bitbucket" (icon/bitbucket)
-                                                                          nil)]
-                                                                       [:a
-                                                                        {:href org-url}
-                                                                        [:span (:login org)]]])))}]})]]]))])))))
+                                                                                                          :vcs_type vcs-type})
+                                                                    vcs-icon (case vcs-type
+                                                                               "github" (icon/github)
+                                                                               "bitbucket" (icon/bitbucket)
+                                                                               nil)]
+                                                                (html
+                                                                  [:div.org-flex-container
+                                                                   [:.vcs-icon vcs-icon]
+                                                                   [:a
+                                                                    {:href org-url}
+                                                                    [:span (:login org)]]])))}]})]]]))])))))
 
 (defn api-tokens [app owner]
   (reify
