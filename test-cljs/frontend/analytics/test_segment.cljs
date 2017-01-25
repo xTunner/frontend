@@ -20,7 +20,7 @@
   (aset js/analytics "track" (fn [nav-point props]
                               (stub-fn "track" nav-point props)))
   (aset js/analytics "identify" (fn [nav-point props]
-                              (stub-fn "identify" nav-point props))))
+                                  (stub-fn "identify" nav-point props))))
 
 (def mock-user-properties
   {:all_emails ["email"]
@@ -32,7 +32,8 @@
    :name "User"
    :selected_email "email"
    :sign_in_count 42
-   :ab-test-treatments {:foo :bar}})
+   :ab-test-treatments {:foo :bar}
+   :num-projects-followed 12}) 
 
 (def outbound-user-props
   (clj-keys-with-dashes->js-keys-with-underscores mock-user-properties))
@@ -59,7 +60,7 @@
           calls (segment/track-pageview nav-point subpage mock-segment-props)]
       (is (= 1 (count calls)))
       (is (= "page" (-> calls first :fn)))
-      (is (= (name nav-point) (-> calls first :args first)))
+      (is (= (name nav-point) (-> calls first :args first)))  
       (is (= (name subpage) (-> calls first :args second)))
       (is (= (js->clj outbound-segment-props) (-> calls first :args (#(nth % 2)) js->clj))))))
 

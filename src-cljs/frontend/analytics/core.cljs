@@ -179,7 +179,8 @@
   "Fill in any unsuppplied property values with those supplied
   in the current app state."
   (merge (properties-to-track-from-state current-state)
-         {:ab-test-treatments (ab-test-treatments current-state)}
+         {:ab-test-treatments (ab-test-treatments current-state)
+          :num-projects-followed (-> current-state (get-in state/user-path) user/num-projects-followed)}
          properties))
 
 (defn- current-subpage
@@ -240,12 +241,12 @@
 
 (defn- get-user-properties-from-state [current-state]
   (let [analytics-id (get-in current-state state/user-analytics-id-path)
-        user-data (get-in current-state state/user-path)
-        ab-test-treatments (ab-test-treatments current-state)]
+        user-data (get-in current-state state/user-path)]
     {:id analytics-id
      :user-properties (merge
                         {:primary-email (user/primary-email user-data)
-                         :ab-test-treatments ab-test-treatments}
+                         :ab-test-treatments (ab-test-treatments current-state)
+                         :num-projects-followed (user/num-projects-followed user-data)}
                         (select-keys user-data (keys common-analytics/UserProperties)))}))
 
 (s/defmethod track :init-user [event-data :- CoreAnalyticsEvent]
