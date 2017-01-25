@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.button
   (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.forms :as forms])
+            [frontend.components.forms :as forms]
+            [frontend.components.pieces.icon :as icon])
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn button
@@ -31,21 +32,23 @@
   :label     - An imperative verb which describes the button. This will be used
                as the ARIA label text and as tooltip text.
   :on-click  - A function called when the button is clicked.
-  :disabled? - If true, the button is disabled. (default: false)"
-  [{:keys [label on-click disabled?]} content]
+  :disabled? - If true, the button is disabled. (default: false)
+  :bordered? - (optional) Adds a border to the button."
+  [{:keys [label on-click disabled? bordered?]} content]
   (assert label "For usability, an icon button must provide a textual label (as :label).")
   (component
     (html
-     [:button {:title label
-               :aria-label label
-               :disabled disabled?
-               :on-click on-click}
-      content])))
+      [:button {:title label
+                :aria-label label
+                :class (when bordered? "with-border")
+                :disabled disabled?
+                :on-click on-click}
+       content])))
 
 (defn link
   "A link styled as a button.
 
-  :href          - The link target.
+  :href          - The link href
   :on-click      - A function called when the link is clicked.
   :kind          - The kind of button. One of #{:primary :secondary :danger :flat}.
                    (default: :secondary)
@@ -66,6 +69,29 @@
        :target target
        :on-click on-click}
       content])))
+
+(defn icon-link
+  "A link styled as an icon button.
+
+  :href          - The link href
+  :label         - An imperative verb which describes the button. This will be used
+                   as the ARIA label text and as tooltip text.
+  :on-click      - A function called when the link is clicked.
+  :target        - Specifies where to display the linked URL.
+  :bordered?      - (optional) Adds a border to the button."
+  [{:keys [href label on-click target bordered?]}
+   content]
+  (assert label "For usability, an icon button must provide a textual label (as :label).")
+  (component
+    (html
+      [:a.exception
+       {:title label
+        :aria-label label
+        :href href
+        :class (when bordered? "with-border")
+        :target target
+        :on-click on-click}
+       content])))
 
 (defn managed-button
   "A managed button.
@@ -254,4 +280,21 @@
        (link {:kind :flat
               :href "#"
               :size :medium}
-             "Medium Flat Link")]])))
+             "Medium Flat Link")]]))
+
+  (defcard icon-link-button
+    "A **icon link-button** is a link-button which displays a single icon, like an
+    icon button."
+    (button-display
+      [[(icon-link {:href "#"
+                    :label "Labels are provided for accessibility"}
+                   (icon/settings))]]))
+  (defcard bordered-buttons
+    "Buttons with borders are used in the header. This is design debt."
+    (button-display
+      [[(icon {:label "Bordered GitHub icon button"
+               :bordered? true}
+              (icon/github))]
+       [(icon-link {:label "Bordered Bitbucket icon link-button"
+                    :bordered? true}
+                   (icon/bitbucket))]])))
