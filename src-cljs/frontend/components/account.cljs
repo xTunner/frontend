@@ -107,9 +107,7 @@
               [:div
                [:div.api-item
                 [:p
-                 "Tokens you have generated that can be used to access the CircleCI API."
-                 [:br]
-                 "Apps using these tokens can act as you and have full read- and write-permissions!"]
+                 "Tokens you have generated that can be used to access the CircleCI API. Apps using these tokens can act as you and have full read- and write-permissions!"]
                 [:div.api-item
                  (when (seq tokens)
                    (om/build table/table
