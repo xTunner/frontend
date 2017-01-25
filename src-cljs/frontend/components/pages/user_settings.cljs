@@ -4,6 +4,7 @@
             [frontend.components.account :as old-components]
             [frontend.components.aside :as aside]
             [frontend.components.common :as common]
+            [frontend.components.pages.user-settings.heroku :as heroku]
             [frontend.components.pages.user-settings.integrations :as integrations]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
@@ -60,7 +61,7 @@
 (def subpage-routes
   {:integrations integrations/Subpage
    :notifications (component-class-for-old-subpage old-components/notifications)
-   :heroku (component-class-for-old-subpage old-components/heroku-key)
+   :heroku (component-class-for-old-subpage heroku/subpage)
    :api (component-class-for-old-subpage old-components/api-tokens)
    :plans (component-class-for-old-subpage old-components/plans)
    :beta (component-class-for-old-subpage old-components/beta-program)})

@@ -51,10 +51,12 @@
                                  :is-ssh-build (:ssh? args)
                                  :is-build-without-cache (:no-cache? args)}}))
 
-(defn stripe-checkout-closed [action]
+(defn stripe-checkout-closed [args]
   (analytics/track {:event-type :stripe-checkout-closed
-                    :properties {:action action}}))
+                    :current-state (:current-state args)
+                    :properties {:action (:action args)}}))
 
-(defn stripe-checkout-succeeded [action]
+(defn stripe-checkout-succeeded [args]
   (analytics/track {:event-type :stripe-checkout-succeeded
-                    :properties {:action action}}))
+                    :current-state (:current-state args)
+                    :properties {:action (:action args)}}))

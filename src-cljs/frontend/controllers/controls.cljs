@@ -726,22 +726,38 @@
   The settings posted to the settings API will be:
     {:aws {:keypair {:access_key_id \"new key id\"
                      :secret_access_key \"secret key\"}}}"
-  [project-id merge-paths current-state comms]
+  [project-id merge-paths current-state comms & {:keys [flash-context]}]
   (let [project-name (vcs-url/project-name project-id)
         inputs (get-in current-state state/inputs-path)
         project (get-in current-state state/project-path)
         settings (merge-settings merge-paths project inputs)
         org-name (vcs-url/org-name project-id)
         repo-name (vcs-url/repo-name project-id)
-        vcs-type (vcs-url/vcs-type project-id)]
+        vcs-type (vcs-url/vcs-type project-id)
+        put-in-api-chan! (fn [api-result]
+                           (put! (:api comms)
+                                 [:project-settings
+                                  (:status api-result)
+                                  (assoc api-result
+                                         :context
+                                         {:project-name project-name
+                                          ;; supplied to API
+                                          ;; controller to indicate
+                                          ;; which project setting was
+                                          ;; updated, and what message
+                                          ;; to show in flash
+                                          ;; notification
+                                          :flash flash-context})]))]
     (go
-      (let [api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org-name repo-name) :params settings))]
-        (if (= :success (:status api-result))
-          (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/project-settings vcs-type org-name repo-name)))]
-            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
+      (let [put-api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org-name repo-name) :params settings))]
+        (if (= :success (:status put-api-result))
+          (let [get-api-result (<! (ajax/managed-ajax :get (api-path/project-settings vcs-type org-name repo-name)))]
+            (put-in-api-chan! get-api-result)
             (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}]))
-          (put! (:errors comms) [:api-error api-result]))
-        api-result))))
+          (do
+            (put-in-api-chan! put-api-result)
+            (put! (:errors comms) [:api-error put-api-result])))
+        put-api-result))))
 
 (defmethod control-event :selected-piggieback-orgs-updated
   [_ _ {:keys [org selected?]} state]
@@ -763,14 +779,17 @@
             scope))
 
 (defmethod post-control-event! :saved-project-settings
-  [target message {:keys [project-id merge-paths on-success]} previous-state current-state comms]
+  [target message {:keys [project-id merge-paths on-success flash-context]} previous-state current-state comms]
   (let [uuid frontend.async/*uuid*]
     (go
-      (let [api-result (<! (save-project-settings project-id merge-paths current-state comms))]
+      (let [api-result (<! (save-project-settings project-id
+                                                  merge-paths
+                                                  current-state
+                                                  comms
+                                                  :flash-context flash-context))]
         (release-button! uuid (:status api-result))
         (when (fn? on-success)
           (on-success))))))
-
 
 (defmethod control-event :new-codedeploy-app-name-entered
   [target message _ state]
@@ -966,12 +985,14 @@
     (go (let [[message data] (<! stripe-ch)]
           (case message
             :stripe-checkout-closed
-            (do (analytics-track/stripe-checkout-closed :new-linux-plan-clicked)
+            (do (analytics-track/stripe-checkout-closed {:current-state current-state
+                                                         :action :new-linux-plan-clicked})
                 (release-button! uuid :idle))
 
             :stripe-checkout-succeeded
             (let [card-info (:card data)]
-              (analytics-track/stripe-checkout-succeeded :new-linux-plan-clicked)
+              (analytics-track/stripe-checkout-succeeded {:current-state current-state
+                                                          :action :new-linux-plan-clicked})
               (put! api-ch [:plan-card :success {:resp card-info
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
@@ -1005,12 +1026,14 @@
     (go (let [[message data] (<! stripe-ch)]
           (case message
             :stripe-checkout-closed
-            (do (analytics-track/stripe-checkout-closed :new-osx-plan-clicked)
+            (do (analytics-track/stripe-checkout-closed {:current-state current-state
+                                                         :action :new-osx-plan-clicked})
                 (release-button! uuid :idle))
 
             :stripe-checkout-succeeded
             (let [card-info (:card data)]
-              (analytics-track/stripe-checkout-succeeded :new-osx-plan-clicked)
+              (analytics-track/stripe-checkout-succeeded {:current-state current-state
+                                                          :action :new-osx-plan-clicked})
               (put! api-ch [:plan-card :success {:resp card-info
                                                  :context {:org-name org-name}}])
               (let [api-result (<! (ajax/managed-ajax
@@ -1309,12 +1332,14 @@
     (go (let [[message data] (<! stripe-ch)]
           (case message
             :stripe-checkout-closed
-            (do (analytics-track/stripe-checkout-closed :update-card-clicked)
+            (do (analytics-track/stripe-checkout-closed {:current-state current-state
+                                                         :action :update-card-clicked})
                 (release-button! uuid :idle))
 
             :stripe-checkout-succeeded
             (let [token-id (:id data)]
-              (analytics-track/stripe-checkout-succeeded :update-card-clicked)
+              (analytics-track/stripe-checkout-succeeded {:current-state current-state
+                                                          :action :update-card-clicked})
               (let [api-result (<! (ajax/managed-ajax
                                     :put
                                     (gstring/format "/api/v1.1/organization/%s/%s/card"

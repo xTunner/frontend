@@ -501,13 +501,43 @@
                    container-index))
         (update-in (state/action-path container-index action-index) action-model/format-all-output))))
 
+(def ^:private project-settings-flash-message
+  {[:jira-added :success] "JIRA integration added successfully."
+   [:jira-added :failed] "We encountered an error adding the JIRA integration."
+   [:jira-removed :success] "JIRA integration removed successfully."
+   [:jira-removed :failed] "We encountered an error removing the JIRA integration."})
+
+(defn- add-project-settings-flash
+  "Mechanism for showing flash notifications on `:project-settings`
+  api response. Takes state, `flash-context` (supplied to api
+  controller as part of context map), and `response-status` (api
+  response status). Only shows a flash notification if there is one
+  defined in `project-settings-flash-message`."
+  [state flash-context response-status]
+  (let [flash-message (project-settings-flash-message [flash-context response-status])]
+    (cond-> state
+      flash-message (state/add-flash-notification flash-message))))
 
 (defmethod api-event [:project-settings :success]
   [target message status {:keys [resp context]} state]
   (if-not (= (:project-name context) (str (get-in state [:navigation-data :org]) "/" (get-in state [:navigation-data :repo])))
     state
-    (update-in state state/project-path merge resp)))
+    (-> state
+        (update-in state/project-path merge resp)
+        (add-project-settings-flash (:flash context) status))))
 
+(defmethod api-event [:project-settings :failed]
+  [target message status {:keys [resp context]} state]
+  (cond-> state
+    (= (:project-name context)
+             (str (get-in state [:navigation-data :org])
+                  "/"
+                  (get-in state [:navigation-data :repo])))
+    (add-project-settings-flash (:flash context) status)))
+
+;; TODO: add project settings API failed handler here. Also, make sure
+;; to do this without interfering with the old school flash
+;; notifications.
 
 (defmethod api-event [:project-plan :success]
   [target message status {:keys [resp context]} state]

@@ -265,7 +265,7 @@
          (when (pm/stripe-customer? plan)
            [{:type :subpage :title "Billing & Statements" :href "#billing" :subpage :billing}])
          (when (pm/transferrable-or-piggiebackable-plan? plan)
-           [{:type :subpage :title "Organizations" :href "#organizations" :subpage :organizations}]))))
+           [{:type :subpage :title "Extra Organizations" :href "#organizations" :subpage :organizations}]))))
    [{:type :heading :title "Organization"}
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))

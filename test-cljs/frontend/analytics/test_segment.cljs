@@ -31,7 +31,8 @@
    :login "user"
    :name "User"
    :selected_email "email"
-   :sign_in_count 42})
+   :sign_in_count 42
+   :ab-test-treatments {:foo :bar}})
 
 (def outbound-user-props
   (clj-keys-with-dashes->js-keys-with-underscores mock-user-properties))
@@ -41,8 +42,7 @@
    :view :test-view
    :org  "test-org"
    :repo "test-repo"
-   :ab-test-treatments {:foo :bar}
-   :ab-test-buckets {:foo true}})
+   :ab-test-treatments {:foo :bar}})
 
 (def outbound-segment-props
   (clj-keys-with-dashes->js-keys-with-underscores mock-segment-props))
@@ -93,14 +93,3 @@
         (is (= "identify" (-> calls first :fn)))
         (is (= id (-> calls first :args first)))
         (is (= (js->clj outbound-user-props) (-> calls first :args second js->clj)))))))
-
-(deftest track-external-click-works
-  (let [logged-out-data (merge {:user nil}
-                               mock-segment-props)]
-    (testing "track-external-click requires a keyword and a LoggedOutEvent"
-    (test-utils/fails-schema-validation #(segment/track-external-click :event {}))
-    (test-utils/fails-schema-validation #(segment/track-external-click "event" logged-out-data)))
-  (testing "track-external-click returns a channel"
-
-    (let [ch (segment/track-external-click :event logged-out-data)]
-      (is (= cljs.core.async.impl.channels/ManyToManyChannel (type ch)))))))

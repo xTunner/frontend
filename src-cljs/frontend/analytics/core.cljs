@@ -160,6 +160,12 @@
 (def BuildEvent
   (analytics-event-schema {:build {s/Keyword s/Any}}))
 
+(defn- ab-test-treatments [current-state]
+  "Return ab-test-treatments for the current-user in the current-state."
+  (-> (get-in current-state state/user-path)
+      feature/ab-test-treatment-map
+      feature/ab-test-treatments))
+
 (defn- properties-to-track-from-state [current-state]
   "Get a map of the mutable properties we want to track out of the
   state. Also add a timestamp."
@@ -173,9 +179,7 @@
   "Fill in any unsuppplied property values with those supplied
   in the current app state."
   (merge (properties-to-track-from-state current-state)
-         {:ab-test-treatments (-> (get-in current-state state/user-path)
-                                  feature/ab-test-treatment-map
-                                  feature/ab-test-treatments)}
+         {:ab-test-treatments (ab-test-treatments current-state)}
          properties))
 
 (defn- current-subpage
@@ -236,10 +240,12 @@
 
 (defn- get-user-properties-from-state [current-state]
   (let [analytics-id (get-in current-state state/user-analytics-id-path)
-        user-data (get-in current-state state/user-path)]
+        user-data (get-in current-state state/user-path)
+        ab-test-treatments (ab-test-treatments current-state)]
     {:id analytics-id
      :user-properties (merge
-                        {:primary-email (user/primary-email user-data)}
+                        {:primary-email (user/primary-email user-data)
+                         :ab-test-treatments ab-test-treatments}
                         (select-keys user-data (keys common-analytics/UserProperties)))}))
 
 (s/defmethod track :init-user [event-data :- CoreAnalyticsEvent]
