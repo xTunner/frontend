@@ -118,13 +118,7 @@
     }
   }
 
-  .ui("button", {
-    .button-styles();
-  });
-
-  .ui("icon", {
-    .button-styles();
-
+  .icon-button-styles() {
     width: 30px;
     height: 30px;
 
@@ -145,6 +139,30 @@
         color: inherit;
       }
     }
+  }
+
+  .link-button-styles() {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .border-styles() {
+    border: 1px solid @grayLighter;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .ui("button", {
+    .button-styles();
+  });
+
+  .ui("icon", {
+    .button-styles();
+    .icon-button-styles();
+
+    &.with-border {
+      .border-styles();
+    }
   });
 
   .ui("managed-button", {
@@ -156,10 +174,19 @@
     // a.exception rules to work correctly.
     a& {
       .button-styles();
+      .link-button-styles();
+    }
+  });
 
-      display: inline-flex;
-      justify-content: center;
-      align-items: center;
+  .ui("icon-link", {
+    a& {
+      .button-styles();
+      .link-button-styles();
+      .icon-button-styles();
+    }
+
+    &.with-border {
+      .border-styles();
     }
   });
 });

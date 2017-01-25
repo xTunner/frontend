@@ -61,20 +61,8 @@
   font-size: 13px;
   color: @grayDark;
 
-  > * {
+  > :not(:first-child) {
     margin-left: 1em;
-
-    &:first-child {
-      margin-left: 0;
-    }
-
-    @media (max-width: 767px) {
-      margin-left: 1em;
-
-      &:first-child {
-        margin-left: 0;
-      }
-    }
   }
 
   .build-action {
@@ -98,10 +86,6 @@
     }
   }
 
-  .jira-container:hover {
-    cursor: pointer;
-  }
-
   .rebuild-container, .open-pull-request-container {
     @container-height: 30px;
     @container-width: 160px;
@@ -112,7 +96,6 @@
     .button-look() {
       border: solid 1px rgba(0, 0, 0, 0.1);
       background-color: @grayLightest;
-      
       cursor: pointer;
 
       &:hover:not(.disabled) {
@@ -239,17 +222,6 @@
       }
     }
   }
-
-  a i.material-icons {
-    position: relative;
-    bottom: 1px;
-    margin-right: .5ex;
-    text-decoration: none;
-  }
-
-  a:hover i.material-icons {
-    text-decoration:none;
-  }
 }
 // Build page V2 stuff
 
@@ -361,6 +333,22 @@
           }
         }
       }
+    }
+  }
+}
+
+@media (max-width: 600px) {
+  .build-actions-v2 {
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    > * {
+      margin-top: 5px;
+    }
+
+    :not(:first-child) {
+      margin-left: 0;
     }
   }
 }
