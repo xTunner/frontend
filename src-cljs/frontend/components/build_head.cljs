@@ -110,7 +110,7 @@
                " or "
                [:a {:href "https://circleci.com/docs/skip-a-build/"
                     :target "_blank"}
-                "configuring your yml"]
+                "configuring your circle.yml"]
                ")"]
               [:p "NOTE: Showing queued builds can slow down the page."]]
              (button/link {:kind :secondary
