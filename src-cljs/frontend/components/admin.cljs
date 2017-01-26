@@ -319,10 +319,6 @@
                      :columns [{:header "Project"
                                 :cell-fn (projects/name-cell-fn {:vcs-url-fn :vcs_url})}
 
-                               {:header "Followers"
-                                :type #{:right :shrink}
-                                :cell-fn #(count (:followers %))}
-
                                {:header "Insights"
                                 :type :shrink
                                 :cell-fn (projects/insights-cell-fn {:vcs-url-fn :vcs_url})}
