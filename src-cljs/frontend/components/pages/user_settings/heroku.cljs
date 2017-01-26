@@ -11,14 +11,11 @@
 
 (defn- api-key-card
   [{:keys [heroku-api-key heroku-api-key-input on-change-key-input submit-form!]}]
-  (card/titled
-   {:title "Heroku API Key"}
+  (card/basic
    [:div
     [:p
      "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
-     " to set up deployment with Heroku."
-     [:br]
-     "You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
+     " to set up deployment with Heroku. You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
     (when heroku-api-key
       [:p "Your Heroku Key is currently " heroku-api-key])
     (form/form
@@ -45,7 +42,7 @@
          ;; TODO: Dismantle this class and use Component-Oriented Style instead.
          ;; This class is used by each subpage, so that'll take a bit of work.
          [:div.account-settings-subpage
-          [:legend "Heroku Settings"]
+          [:legend "Heroku API Key"]
           (api-key-card {:heroku-api-key heroku-api-key
                          :heroku-api-key-input heroku-api-key-input
                          :on-change-key-input #(utils/edit-input owner (conj state/user-path :heroku-api-key-input) %)

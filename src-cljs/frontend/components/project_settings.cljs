@@ -1447,7 +1447,7 @@
         (html
          [:section.heroku-api
           [:article
-           [:legend "Heroku API key"]
+           [:legend "Heroku API Key"]
            [:div.heroku-step
             [:h4 "Step 1: Heroku API key"]
             [:div (when (:heroku_api_key user)

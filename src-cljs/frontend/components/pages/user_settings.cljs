@@ -22,11 +22,11 @@
   (remove
     nil?
     [{:type :subpage :href (routes/v1-account) :title "Account Integrations" :subpage :integrations}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notifications" :subpage :notifications}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notification Settings" :subpage :notifications}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "Personal API Tokens" :subpage :api}
+     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku API Key" :subpage :heroku}
      (when-not (config/enterprise?)
-       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans})
+       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Organization Plans" :subpage :plans})
      (when-not (config/enterprise?)
        {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
 
