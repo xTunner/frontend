@@ -107,8 +107,9 @@
   :success-text - Text to display indicating that the button action was
                   successful. (default: \"Saved\")
   :failed-text  - Text to display indicating that the button action failed.
-                  (default: \"Failed\")"
-  [{:keys [kind disabled? size failed-text success-text loading-text on-click]
+                  (default: \"Failed\")
+  :bordered?    - (optional) Adds a border to the button."
+  [{:keys [kind disabled? size failed-text success-text loading-text on-click bordered?]
     :or {kind :secondary size :full disabled? false}}
    content]
   (forms/managed-button
@@ -124,9 +125,9 @@
              :class (remove nil? [(name kind)
                                   (case size
                                     :full nil
-                                    :medium "medium")])}
+                                    :medium "medium")
+                                  (when bordered? "with-border")])}
     content]))
-
 
 (dc/do
   (defn button-display [columns]
