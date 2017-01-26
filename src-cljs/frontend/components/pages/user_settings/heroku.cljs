@@ -15,9 +15,7 @@
    [:div
     [:p
      "Add your " [:a {:href "https://dashboard.heroku.com/account"} "Heroku API Key"]
-     " to set up deployment with Heroku."
-     [:br]
-     "You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
+     " to set up deployment with Heroku. You'll also need to set yourself as the Heroku deploy user from your project's settings page."]
     (when heroku-api-key
       [:p "Your Heroku Key is currently " heroku-api-key])
     (form/form
