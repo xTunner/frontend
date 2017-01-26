@@ -5,6 +5,7 @@
   (:require [frontend.async :refer [raise!]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.form :as form]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
@@ -32,89 +33,92 @@
                                    (get-in app state/user-organizations-path))]
         (html
          [:div#settings-plans.account-settings-subpage
-          [:legend "Org Plan Settings"]
-          [:div.plans-item
-           [:h3 "Set up a plan for one of your Organizations:"]
-           [:p "You can set up plans for any organization that you admin."]
-           [:div.plans-accounts
-            (map
-             (fn [org]
-               (let [;; TODO: this link is sometimes dead. We should not link, or make
-                     ;; the org settings page do something sane if there's not a plan.
-                     org-url (routes/v1-org-settings-path {:org (:login org)
-                                                           :vcs_type (:vcs_type org)})
-                     avatar-url (gh-utils/make-avatar-url org :size 25)]
-                 [:div
-                  [:a
-                   {:href org-url}
-                   [:img
-                    {:src    avatar-url
-                     :height 25
-                     :width  25}]]
-                  " "
-                  [:a.account-plan-pricing-org-link
-                   {:href org-url}
-                   [:span (:login org)]]
-                  [:br]
-                  [:br]]))
-             user-and-orgs)]]])))))
+          [:legend "Organization Plans"]
+          (card/basic
+            (html
+              [:div
+               [:div.plans-item
+                [:p "You can manage the CircleCI plan for any organization that you admin. You have admin permissions for the following organizations:"]
+                [:div.plans-accounts
+                 (om/build table/table {:key-fn (juxt :vcs_type :login)
+                                        :rows user-and-orgs
+                                        :columns [{:header "Organization Name"
+                                                   :cell-fn (fn [org]
+                                                              (let [vcs-type (:vcs_type org)
+                                                                    org-url (routes/v1-org-settings-path {:org (:login org)
+                                                                                                          :vcs_type vcs-type})
+                                                                    vcs-icon (case vcs-type
+                                                                               "github" (icon/github)
+                                                                               "bitbucket" (icon/bitbucket)
+                                                                               nil)]
+                                                                (html
+                                                                  [:div.organization
+                                                                   [:.vcs-icon vcs-icon]
+                                                                   [:a
+                                                                    {:href org-url}
+                                                                    [:span (:login org)]]])))}]})]]]))])))))
 
 (defn api-tokens [app owner]
   (reify
-    om/IRender
-    (render [_]
-      (let [tokens        (get-in app state/user-tokens-path)
-            create-token! #(raise! owner [:api-token-creation-attempted {:label %}])
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (let [close-fn #(om/set-state! owner :show-modal? false)
+            tokens (get-in app state/user-tokens-path)
+            create-token! #(raise! owner [:api-token-creation-attempted {:label %
+                                                                         :on-success close-fn}])
             new-user-token (get-in app state/new-user-token-path)]
         (html
          [:div.account-settings-subpage
-          [:legend "API Tokens"]
-          [:div.api-item
-           [:p
-            "Create and revoke API tokens to access this account's details using our API."
-            [:br]
-            "Apps using these tokens can act as you, and have full read- and write-permissions!"]
-
-           [:form
-            [:input#api-token
-             {:required  true
-              :name      "label",
-              :type      "text",
-              :value     (str new-user-token)
-              :on-change #(utils/edit-input owner state/new-user-token-path %)}]
-            [:label {:placeholder "Token name"}]
-            (button/managed-button
-             {:loading-text "Creating..."
-              :failed-text "Failed to add token"
-              :success-text "Created"
-              :on-click #(create-token! new-user-token)}
-             "Create New Token")]
-
-           [:div.api-item
-            (when (seq tokens)
-              (om/build table/table
-                        {:rows tokens
-                         :key-fn :token
-                         :columns [{:header "Label"
-                                    :cell-fn :label}
-
-                                   {:header "Token"
-                                    :type :shrink
-                                    :cell-fn :token}
-
-                                   {:header "Created"
-                                    :type :shrink
-                                    :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
-
-                                   {:header "Remove"
-                                    :type :shrink
-                                    :cell-fn
-                                    (fn [token]
-                                      (table/action-button
-                                       "Remove"
-                                       (icon/cancel-circle)
-                                       #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])))))
-
+          [:legend "Personal API Tokens"]
+          (when show-modal?
+            (modal/modal-dialog {:title "Add an API token"
+                                 :body (html
+                                         (form/form {}
+                                                    (om/build form/text-field {:label "Token name"
+                                                                               :value (str new-user-token)
+                                                                               :on-change #(utils/edit-input owner state/new-user-token-path %)})))
+                                 :close-fn close-fn
+                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                           (button/managed-button
+                                             {:failed-text  "Failed"
+                                              :success-text "Added"
+                                              :loading-text "Adding..."
+                                              :on-click #(create-token! new-user-token)
+                                              :kind :primary}
+                                             "Add API Token")]}))
+          (card/titled {:title "API Tokens"
+                        :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
+                                                :kind :primary
+                                                :size :medium}
+                                               "Create New Token")}
+                       [:div
+                        [:div.api-item
+                         [:p
+                          "Tokens you have generated that can be used to access the CircleCI API. Apps using these tokens can act as you and have full read- and write-permissions!"]
+                         [:div.api-item
+                          (when (seq tokens)
+                            (om/build table/table
+                                      {:rows tokens
+                                       :key-fn :token
+                                       :columns [{:header "Label"
+                                                  :cell-fn :label}
+                                                 {:header "Token"
+                                                  :type :shrink
+                                                  :cell-fn :token}
+                                                 {:header "Created"
+                                                  :type :shrink
+                                                  :cell-fn (comp datetime/medium-datetime js/Date.parse :time)}
+                                                 {:header "Remove"
+                                                  :type :shrink
+                                                  :cell-fn
+                                                  (fn [token]
+                                                    (table/action-button
+                                                     "Remove"
+                                                     (icon/cancel-circle)
+                                                     #(raise! owner [:api-token-revocation-attempted {:token token}])))}]}))]]])])))))
 
 (def available-betas
   [{:id "project-cache-clear-buttons"
@@ -138,7 +142,6 @@
     (render [_]
       (html
        [:div
-        [:h3.subheading "Current Beta Features"]
         (card/collection
          (for [{:keys [name description]} available-betas]
           (card/titled {:title name} description)))]))))
@@ -208,6 +211,7 @@
                 We'll let you know when we release updates
                 so you'll be the first to see new
                 features!"]
+           [:p "You can see a list of the beta features that you have access to below."]
            [:p "We'd love to know what you think - " [:a {:href "mailto:beta@circleci.com"} "send us your feedback"] "!"]
            (button/button
             {:on-click #(do
@@ -346,7 +350,7 @@
         (html
          [:div.card
           [:div.header
-           [:h2 "Email preferences"]
+           [:h2 "Email Preferences by Organization"]
            [:div
             [:label "Choose an organization"]
             [:select.form-control

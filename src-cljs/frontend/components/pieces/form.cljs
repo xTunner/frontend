@@ -172,6 +172,18 @@
     (component
       (html
        [:form
+        ;; WORKAROUND: When a form contains exactly one field, pressing
+        ;; Return/Enter in that field submits the form. This is an old and
+        ;; quirky browser behavior designed to support things like search boxes
+        ;; without submit buttons. For us, it just makes it hard to handle
+        ;; things, since we take a more hands-on approach to submission. An
+        ;; actual form submission simply reloads the page, discarding the user's
+        ;; input. It's never something we want to happen.
+        ;;
+        ;; This hidden text field ensures that there's always an additional
+        ;; field in the form, disabling this behavior. It should have no other
+        ;; effect.
+        [:input.prevent-enter-from-submitting {:type "text"}]
         (js/React.Children.map (om-next/children this)
                                #(html [:.field %]))]))))
 

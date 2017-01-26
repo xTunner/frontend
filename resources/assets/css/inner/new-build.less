@@ -94,7 +94,7 @@
     .flexy;
 
     .button-look() {
-      border: solid 1px rgba(0, 0, 0, 0.1);
+      border: 1px solid @grayLighter;
       background-color: @grayLightest;
       cursor: pointer;
 
@@ -110,7 +110,24 @@
       margin: 0 @button-right-margin 0 0;
       padding: 0;
       text-align: inherit;
-      font-size: 14px;
+      font-size: @fontSizeSmaller;
+
+      &:focus:not(.disabled) {
+        border-color: @blueLight;
+        outline: none;
+        box-shadow: 0 0 4px 0 rgba(29, 132, 148, 0.8);
+      }
+
+      &:focus:not(.disabled),
+      &:hover:not(.disabled) {
+        background-color: @grayLighter;
+      }
+
+      &:active:not(.disabled) {
+        background-color: @grayLight;
+        outline: none;
+        color: @whiten;
+      }
     }
 
     button {
@@ -118,12 +135,16 @@
       .button-common();
 
       width: @container-width - @container-height - @button-right-margin;
+
       &.rebuild {
         border-radius: 3px 0 0 3px;
       }
 
       > .rebuild-icon {
-        margin: 6px 10px;
+        display: inline-block;
+        width: @fontSizeLarge;
+        margin: 0 10px;
+        vertical-align: bottom;
       }
 
       &.disabled {
@@ -152,6 +173,7 @@
 
     .dropdown {
       .button-look();
+      .button-common();
 
       display: inline-block;
       width: @container-height;
@@ -187,7 +209,7 @@
 
         li.disabled {
           cursor: default;
-          
+
           a {
             pointer-events: none;
             color: @grayLight;

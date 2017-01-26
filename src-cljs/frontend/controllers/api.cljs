@@ -958,6 +958,11 @@
         (state/add-flash-notification (gstring/format "API token %s added successfully."
                                                       label)))))
 
+(defmethod post-api-event! [:create-api-token :success]
+  [target message status {:keys [context]} previous-state current-state comms]
+  ((:on-success context))
+  (forms/release-button! (:uuid context) status))
+
 (defmethod api-event [:delete-api-token :success]
   [target message status {:keys [resp context]} state]
   (let [deleted-token (:token context)

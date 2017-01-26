@@ -73,7 +73,7 @@
            {:on-click (action-for :rebuild)
             ;; using :disabled also disables tooltips when hovering over button
             :class (when-not can-trigger-builds? "disabled")}
-           [:img.rebuild-icon {:src (utils/cdn-path (str "/img/inner/icons/Rebuild.svg"))}]
+           [:div.rebuild-icon (icon/rebuild)]
            rebuild-status]
           [:span.dropdown.rebuild
            [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
@@ -139,7 +139,9 @@
                {:loading-text "Canceling"
                 :failed-text  "Couldn't Cancel"
                 :success-text "Canceled"
-                :kind :primary
+                :kind :secondary
+                :size :medium
+                :bordered? true
                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                "Cancel Build"))
            ;; Rebuild button

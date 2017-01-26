@@ -6,17 +6,6 @@
     color: @grayLight;
   }
 
-  legend {
-    padding: .5em 0 1em;
-    line-height: 21px;
-  }
-
-  form {
-    margin-top: 2em;
-    margin-bottom: 2em;
-    width: @standardBlockSize * 2;
-  }
-
   input[type="submit"] {
     .circleButton(@grayLighter);
   }
@@ -129,19 +118,13 @@
       margin-left: @emailPrefPadding;
     }
   }
-}
 
-.settings-item {
-  padding: 2em 1.4em;
+  .organization {
+    .flexy(center);
 
-  label {
-    padding-left: 6px;
-  }
-
-  .plans-accounts {
-    margin-top: 2em;
-    > div .account-plan-pricing-org-link {
-      padding-left: 4px;
+    > .vcs-icon {
+      width: @fontSizeLarge;
+      margin-right: 10px;
     }
   }
 }
