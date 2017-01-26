@@ -52,7 +52,7 @@
                                                                                "bitbucket" (icon/bitbucket)
                                                                                nil)]
                                                                 (html
-                                                                  [:div.org-flex-container
+                                                                  [:div.organization
                                                                    [:.vcs-icon vcs-icon]
                                                                    [:a
                                                                     {:href org-url}
