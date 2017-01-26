@@ -110,7 +110,24 @@
       margin: 0 @button-right-margin 0 0;
       padding: 0;
       text-align: inherit;
-      font-size: 14px;
+      font-size: @fontSizeSmaller;
+
+      &:focus:not(.disabled) {
+        border-color: @blueLight;
+        outline: none;
+        box-shadow: 0 0 4px 0 rgba(29, 132, 148, 0.8);
+      }
+
+      &:focus:not(.disabled),
+      &:hover:not(.disabled) {
+        background-color: @grayLighter;
+      }
+
+      &:active:not(.disabled) {
+        background-color: @grayLight;
+        outline: none;
+        color: @whiten;
+      }
     }
 
     button {
