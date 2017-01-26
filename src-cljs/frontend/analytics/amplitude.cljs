@@ -1,11 +1,11 @@
 (ns frontend.analytics.amplitude
-  (:require [goog.net.cookies :as cookies])
-  (:require-macros [frontend.utils :refer [swallow-errors]]))
+  (:require [goog.net.cookies :as cookies]
+            [frontend.utils :as utils :include-macros]))
 
 (def session-cookie-name "amplitude-session-id")
 
 (defn session-id []
-  (swallow-errors
+  (utils/swallow-errors
     (js/amplitude.getSessionId)))
 
 (defn set-session-id-cookie!
