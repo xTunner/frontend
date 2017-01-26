@@ -415,6 +415,7 @@
     (case (feature/ab-test-treatment :junit-ab-test)
       :junit-button (button/link {:href junit-link
                                   :kind :primary
+                                  :target "_blank"
                                   :on-click track-junit}
                                  "Set Up Test Summary")
       :junit-banner [:div.alert.iconified {:class "alert-info"}
@@ -424,13 +425,15 @@
                       "Help us provide better insight around your tests and failures. "
                       [:a {:href junit-link
                            :class "junit-link"
+                           :target "_blank"
                            :on-mouse-up track-junit}
                        "Set up your test runner to output in JUnit-style XML"]
                       ", so we can:"
                       [:ul
                        [:li "Show a summary of all test failures across all containers"]
                        [:li "Identify your slowest tests"]
-                       [:li [:a {:href "https://circleci.com/docs/parallel-manual-setup/"}
+                       [:li [:a {:href "https://circleci.com/docs/parallel-manual-setup/"
+                                 :target "_blank"}
                              "Balance tests between containers when using properly configured parallelization"]]]]])))
 
 (defrender parse-errors [exceptions owner]
