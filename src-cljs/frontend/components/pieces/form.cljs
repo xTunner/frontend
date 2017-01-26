@@ -183,7 +183,7 @@
         ;; This hidden text field ensures that there's always an additional
         ;; field in the form, disabling this behavior. It should have no other
         ;; effect.
-        [:input {:type "text" :style {:display "none"}}]
+        [:input.prevent-enter-from-submitting {:type "text"}]
         (js/React.Children.map (om-next/children this)
                                #(html [:.field %]))]))))
 
