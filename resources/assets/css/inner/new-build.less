@@ -135,12 +135,16 @@
       .button-common();
 
       width: @container-width - @container-height - @button-right-margin;
+
       &.rebuild {
         border-radius: 3px 0 0 3px;
       }
 
       > .rebuild-icon {
-        margin: 6px 10px;
+        display: inline-block;
+        width: @fontSizeLarge;
+        margin: 0 10px;
+        vertical-align: bottom;
       }
 
       &.disabled {
