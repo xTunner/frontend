@@ -41,7 +41,6 @@
   (require-devtools!)
   (s/set-fn-validation! true))
 
-
 (defn initial-state
   "Builds the initial app state, including data that comes from the
   renderContext."
@@ -295,9 +294,8 @@
       (routes/open-to-inner! application (:nav comms) :error {:status error-status})
       (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user legacy-state)]
-      (analytics/track {:event-type :init-user
-                        :current-state legacy-state})
-      (subscribe-to-user-channel user (:ws comms)))))
+      (subscribe-to-user-channel user (:ws comms)))
+    (analytics/init legacy-state)))
 
 
 (defn ^:export toggle-admin []

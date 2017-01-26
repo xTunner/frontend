@@ -6,12 +6,18 @@
             [frontend.utils.build :as build-util]
             [frontend.test-utils :as test-utils]
             [frontend.models.user :as user]
+            [frontend.analytics.amplitude :as amplitude]
             [frontend.analytics.core :as analytics]
             [frontend.analytics.common :as common-analytics]
             [frontend.analytics.segment :as segment]))
   (:require-macros [frontend.utils :refer [inspect]])
 
-(use-fixtures :once schema.test/validate-schemas)
+(defn- stub-set-amplitude-session-cookie [test]
+  (with-redefs [amplitude/set-session-id-cookie! (constantly nil)]
+    (test)))
+
+(use-fixtures :once schema.test/validate-schemas
+                    stub-set-amplitude-session-cookie)
 
 (defn stub-segment-track-event
   "Given a function, call it and return the args segment/track-event
