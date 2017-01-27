@@ -1,5 +1,5 @@
 (ns frontend.components.pages.build
-  (:require [devcards.core :as dc :refer-macros [defcard]]
+  (:require [devcards.core :as dc :refer-macros [defcard-om]]
             [frontend.async :refer [raise!]]
             [frontend.components.build :as build-com]
             [frontend.components.jira-modal :as jira-modal]
@@ -120,7 +120,7 @@
                                          :component "header"}}))]
         (component
           (html
-           [:div.build-actions-v2
+           [:div
             ;; Ensure we never have more than 1 modal showing
             (cond
               show-jira-modal?
@@ -187,26 +187,35 @@
   ;; to get rid of jQuery tooltips anyhow.
   (aset js/window "$" (constantly #js {:tooltip (constantly nil)}))
 
-  ;; Stub out feature/enabled? to turn :jira-integration on. Note that this is
+  ;; Stub out feature/enabled? to turn features on. Note that this is
   ;; global (to the devcards app), and therefore not sustainable. The next
   ;; namespace that needs to add feature flags like this will overwrite this
   ;; one. We'll need a better way to handle these.
-  (set! feature/enabled? #{:jira-integration})
+  (set! feature/enabled? #{:jira-integration :open-pull-request})
 
-  (defcard header-actions
-    (om/build header-actions {}))
+  ;; Note: The following devcards use defcard-om so they can supply a
+  ;; stub :track-event in :shared.
 
-  (defcard header-actions-cancelable
-    (om/build header-actions (-> {}
-                                 ;; To be canceled, a build must have the lifecycle and status of "running"...
-                                 (assoc-in state/build-path {:lifecycle "running"
-                                                             :status "running"})
-                                 ;; ...*and* the user must have the "trigger-builds" scope on the project.
-                                 (assoc-in (conj state/project-path :scopes) #{"trigger-builds"}))))
+  (defcard-om header-actions
+    header-actions
+    {}
+    {:shared {:track-event (constantly nil)}})
 
-  (defcard header-actions-with-jira
-    (om/build header-actions (-> {}
-                                 ;; To be canceled, a build must have JIRA data...
-                                 (assoc-in state/jira-data-path {})
-                                 ;; ...*and* the user must have the "write-settings" scope on the project.
-                                 (assoc-in (conj state/project-path :scopes) #{"write-settings"})))))
+  (defcard-om header-actions-cancelable
+    header-actions
+    (-> {}
+        ;; To be canceled, a build must have the lifecycle and status of "running"...
+        (assoc-in state/build-path {:lifecycle "running"
+                                    :status "running"})
+        ;; ...*and* the user must have the "trigger-builds" scope on the project.
+        (assoc-in (conj state/project-path :scopes) #{"trigger-builds"}))
+    {:shared {:track-event (constantly nil)}})
+
+  (defcard-om header-actions-with-jira
+    header-actions
+    (-> {}
+        ;; To be canceled, a build must have JIRA data...
+        (assoc-in state/jira-data-path {:foo "bar"})
+        ;; ...*and* the user must have the "write-settings" scope on the project.
+        (assoc-in (conj state/project-path :scopes) #{"write-settings"}))
+    {:shared {:track-event (constantly nil)}}))
