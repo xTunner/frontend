@@ -18,3 +18,6 @@ var analytics;
 analytics.page;
 analytics.track;
 analytics.identify;
+
+var amplitude;
+amplitude.getSessionId;
