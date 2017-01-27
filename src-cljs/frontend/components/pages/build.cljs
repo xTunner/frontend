@@ -183,6 +183,16 @@
         :header-actions (om/build header-actions app)}))))
 
 (dc/do
+  ;; Stub out jQuery tooltip functionality. Not the best solution, but we need
+  ;; to get rid of jQuery tooltips anyhow.
+  (aset js/window "$" (constantly #js {:tooltip (constantly nil)}))
+
+  ;; Stub out feature/enabled? to turn :jira-integration on. Note that this is
+  ;; global (to the devcards app), and therefore not sustainable. The next
+  ;; namespace that needs to add feature flags like this will overwrite this
+  ;; one. We'll need a better way to handle these.
+  (set! feature/enabled? #{:jira-integration})
+
   (defcard header-actions
     (om/build header-actions {}))
 
@@ -192,4 +202,11 @@
                                  (assoc-in state/build-path {:lifecycle "running"
                                                              :status "running"})
                                  ;; ...*and* the user must have the "trigger-builds" scope on the project.
-                                 (assoc-in state/project-path {:scopes #{"trigger-builds"}})))))
+                                 (assoc-in (conj state/project-path :scopes) #{"trigger-builds"}))))
+
+  (defcard header-actions-with-jira
+    (om/build header-actions (-> {}
+                                 ;; To be canceled, a build must have JIRA data...
+                                 (assoc-in state/jira-data-path {})
+                                 ;; ...*and* the user must have the "write-settings" scope on the project.
+                                 (assoc-in (conj state/project-path :scopes) #{"write-settings"})))))
