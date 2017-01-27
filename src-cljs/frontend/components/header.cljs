@@ -34,8 +34,7 @@
     om/IRender
     (render [_]
       (let [project-id (project-model/id project)
-            vcs-url (:vcs_url project)
-            repo-name (vcs-url/repo-name vcs-url)]
+            vcs-url (:vcs_url project)]
         (button/managed-button
          {:on-click #(do
                       (raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
