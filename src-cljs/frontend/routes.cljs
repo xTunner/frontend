@@ -292,7 +292,8 @@
 
   (defroute v1-root "/" {:as params}
     (cond
-      (not (config/enterprise?))
+      (and (not (config/enterprise?))
+           (not (= (config/env) "test")))
       (set! js/window.location "https://circleci.com/")
 
       authenticated?
