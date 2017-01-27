@@ -184,4 +184,12 @@
 
 (dc/do
   (defcard header-actions
-    (om/build header-actions {})))
+    (om/build header-actions {}))
+
+  (defcard header-actions-cancelable
+    (om/build header-actions (-> {}
+                                 ;; To be canceled, a build must have the lifecycle and status of "running"...
+                                 (assoc-in state/build-path {:lifecycle "running"
+                                                             :status "running"})
+                                 ;; ...*and* the user must have the "trigger-builds" scope on the project.
+                                 (assoc-in state/project-path {:scopes #{"trigger-builds"}})))))
