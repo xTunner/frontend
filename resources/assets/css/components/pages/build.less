@@ -22,7 +22,7 @@
       }
     }
 
-    .rebuild-container, .open-pull-request-container {
+    > .rebuild-container {
       @container-height: 30px;
       @container-width: 160px;
       @button-right-margin: 2px;
@@ -66,15 +66,12 @@
         }
       }
 
-      button {
+      > button {
         .button-look();
         .button-common();
 
         width: @container-width - @container-height - @button-right-margin;
-
-        &.rebuild {
-          border-radius: 3px 0 0 3px;
-        }
+        border-radius: 3px 0 0 3px;
 
         > .rebuild-icon {
           display: inline-block;
@@ -86,28 +83,11 @@
         &.disabled {
           pointer-events: none;
           cursor: default;
-
-          // can\'t style icon through color property, using opacity instead
-          > span, .rebuild-icon {
-            opacity: 0.5;
-          }
+          color: @grayLight;
         }
       }
 
-      a.btn {
-        .button-look();
-        .button-common();
-
-        > .open-pull-request-icon {
-          margin: 6px 10px;
-        }
-
-        > .open-pull-request-text {
-          margin-right: 10px;
-        }
-      }
-
-      .dropdown {
+      > .dropdown {
         .button-look();
         .button-common();
 
@@ -119,12 +99,12 @@
         vertical-align: top;
         text-align: center;
 
-        i {
+        > i {
           line-height: @container-height;
           width: 100%;            // make click area full-width
         }
 
-        .dropdown-menu {
+        > .dropdown-menu {
           .button-look();
 
           margin-top: 3px;
@@ -132,23 +112,25 @@
 
           background-color: @whiten;
 
-          a {
-            padding: 3px 10px;
-            color: inherit;
-            background-color: inherit;
-            font-size: @fontSizeSmaller;
-          }
+          > li {
+            > a {
+              padding: 3px 10px;
+              color: inherit;
+              background-color: inherit;
+              font-size: @fontSizeSmaller;
+            }
 
-          li:hover:not(.disabled) {
-            background: rgba(0, 0, 0, 0.05);
-          }
+            &:hover:not(.disabled) {
+              background: rgba(0, 0, 0, 0.05);
+            }
 
-          li.disabled {
-            cursor: default;
+            &.disabled {
+              cursor: default;
 
-            a {
-              pointer-events: none;
-              color: @grayLight;
+              > a {
+                pointer-events: none;
+                color: @grayLight;
+              }
             }
           }
         }
