@@ -461,8 +461,8 @@
         (html
           [:div.osx-plans {:data-component `osx-plans-list}
            (if (pm/osx? plan)
-             [:legend.update-plan "Update OS X plan"]
-             [:legend.update-plan "Choose OS X plan"]
+             [:legend.update-plan "Update OS X Plan"]
+             [:legend.update-plan "Choose OS X Plan"]
              )
            [:p [:em "Your selection below only applies to OS X service and will not affect Linux containers."]]
            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
@@ -518,8 +518,8 @@
               (when-not (config/enterprise?)
                 [:div.container-picker
                  (if (pm/linux? plan)
-                   [:legend.update-plan "Update Linux plan"]
-                   [:legend.update-plan "Choose Linux plan"])
+                   [:legend.update-plan "Update Linux Plan"]
+                   [:legend.update-plan "Choose Linux Plan"])
                  [:h1.container-input
                   [:span "Use "]
                   [:input.form-control
@@ -565,7 +565,7 @@
                         :kind :primary}
                        (if (config/enterprise?)
                          enterprise-text
-                         "Update plan"))))
+                         "Update Plan"))))
                  (if-not checkout-loaded?
                    (spinner)
                    (button/managed-button
@@ -677,6 +677,7 @@
             (if (pm/piggieback? plan org-name org-vcs-type)
               (plans-piggieback-plan-notification plan org-name)
               [:div
+               [:legend "Plan Settings"]
                (om/build pricing-tabs {:app app :plan plan :checkout-loaded? checkout-loaded?
                                        :selected-tab-name (pricing-starting-tab (get-in app state/org-settings-subpage-path))})])))))))
 
@@ -737,7 +738,7 @@
             "Your plan covers all projects (including forked repos) in the "
             [:strong org-name]
             " organization by default."]
-           [:p "You can let any GitHub organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
+           [:p "You can let any GitHub or Bitbucket organization you belong to, including personal accounts, piggieback on your plan. Projects in your piggieback organizations will be able to run builds on your plan."]
            [:p "Members of the piggieback organizations will be able to see that you're paying for them, the name of your plan, and the number of containers you've paid for. They won't be able to edit the plan unless they are also admins on the " org-name " org."]
            (if-not (or gh-users-and-orgs bb-users-and-orgs)
              [:div "Loading organization list..."]
@@ -756,7 +757,7 @@
                                                                           :vcs-type org-vcs_type
                                                                           :selected-piggieback-orgs selected-piggieback-orgs}])
                  :kind :primary}
-                "Pay for organizations")]])]])))))
+                "Save")]])]])))))
 
 (defn transfer-organizations-list [[{:keys [vcs_type]} :as users-and-orgs] selected-transfer-org owner]
   ;; split user-orgs from orgs and grab the first (and only) user-org
@@ -836,11 +837,12 @@
   (om/component
    (html
     [:div.organizations
+     [:legend "Share & Transfer"]
      (card/collection
-       [(card/titled {:title "Extra Organizations"}
+       [(card/titled {:title "Share Plan"}
                      (om/build piggieback-organizations {:current-org (get-in app state/org-data-path)
                                                          :user-orgs (get-in app state/user-organizations-path)}))
-        (card/titled {:title "Transfer plan to a different organization"}
+        (card/titled {:title "Transfer Ownership"}
                      (om/build transfer-organizations {:current-org (get-in app state/org-data-path)
                                                        :user-orgs (get-in app state/user-organizations-path)}))])])))
 
@@ -1044,11 +1046,14 @@
   (reify
     om/IRender
     (render [_]
-      (card/collection
-        [(om/build billing-card app)
-         (om/build billing-invoice-data app)
-         (om/build billing-discounts app)
-         (om/build billing-invoices app)]))))
+      (html
+        [:div
+         [:legend "Billing & Statements"]
+         (card/collection
+           [(om/build billing-card app)
+            (om/build billing-invoice-data app)
+            (om/build billing-discounts app)
+            (om/build billing-invoices app)])]))))
 
 (defn cancel [app owner]
   (reify
@@ -1431,6 +1436,7 @@
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name vcs_type)]
       [:div.overview-cards-container
+       [:legend "Plan Overview"]
        (when piggiebacked?
           [:div.alert.alert-warning
            [:div.usage-message

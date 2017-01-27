@@ -74,7 +74,7 @@
   (when (and (project-model/can-write-settings? project))
     (let [org-name (:username project)
           repo-name (:reponame project)
-          vcs-type (:vcs_type project)]   
+          vcs-type (:vcs_type project)]
       [:a.project-settings-icon {:href (routes/v1-project-settings-path {:vcs_type vcs-type
                                                                          :org org-name
                                                                          :repo repo-name})
@@ -261,11 +261,11 @@
      (if (pm/piggieback? plan org-name org-vcs-type)
        [{:type :subpage :href "#containers" :title "Add Containers" :subpage :containers}]
        (concat
-         [{:type :subpage :title "Update Plan" :href "#containers" :subpage :containers}]
+         [{:type :subpage :title "Plan Settings" :href "#containers" :subpage :containers}]
          (when (pm/stripe-customer? plan)
            [{:type :subpage :title "Billing & Statements" :href "#billing" :subpage :billing}])
          (when (pm/transferrable-or-piggiebackable-plan? plan)
-           [{:type :subpage :title "Extra Organizations" :href "#organizations" :subpage :organizations}]))))
+           [{:type :subpage :title "Share & Transfer" :href "#organizations" :subpage :organizations}]))))
    [{:type :heading :title "Organization"}
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
