@@ -4,6 +4,8 @@
 
 (def session-cookie-name "amplitude-session-id")
 
+(def session-expiry-delay (* 30 60))
+
 (defn session-id []
   (swallow-errors
     (or (js/amplitude.getSessionId) -1)))
@@ -12,13 +14,7 @@
   "Cookies the user with their amplitude session-id. Set the cookie
   path to be root so that it is available anywhere under the circleci domain.
 
-  Set the opt_maxAge to -1 as it is a session cookie:
-    https://google.github.io/closure-library/api/goog.net.Cookies.html"
+  Using an expiry delay of 30 minutes to mimic Amplitude's default session length:
+  https://amplitude.zendesk.com/hc/en-us/articles/231275508-Amplitude-2-0-User-Sessions"
   []
-  (let [sid (session-id)]
-    (println "setting cookie with sid" sid)
-    (cookies/set session-cookie-name sid -1 "/")
-    (println "set" (cookies/get session-cookie-name))
-    (when (not (cookies/get session-cookie-name))
-      (println js/amplitude)
-      (println js/window.amplitude))))
+  (cookies/set session-cookie-name (session-id) session-expiry-delay "/"))
