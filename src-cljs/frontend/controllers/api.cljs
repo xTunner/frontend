@@ -1177,18 +1177,21 @@
                       (empty? resp))
                 ;; this is the last api request, update the loading flag.
                 (assoc-in state (state/all-repos-loaded-path vcs) true)
-                state)
-        process-resp (fn [action current-val]
-                       (->> resp
-                            (remove repo-model/requires-invite?)
-                            (action repo-model/building-on-circle?)
-                            (map #(assoc % :checked true))
-                            (map-utils/coll-to-map :vcs_url)
-                            (merge current-val)))]
+                state)]
     ;; Add the items on this page of results to the state.
     (-> state
-        (update-in (state/repos-building-path vcs true) #(process-resp filter %))
-        (update-in (state/repos-building-path vcs false) #(process-resp remove %)))))
+        (update-in (state/repos-building-path vcs true) (fn [current-val]
+                                                          (->> resp
+                                                               (filter repo-model/building-on-circle?)
+                                                               (map #(assoc % :checked true))
+                                                               (map-utils/coll-to-map :vcs_url)
+                                                               (merge current-val))))
+        (update-in (state/repos-building-path vcs false) (fn [current-val]
+                                                           (->> resp
+                                                                (remove repo-model/building-on-circle?)
+                                                                (map #(assoc % :checked true))
+                                                                (map-utils/coll-to-map :vcs_url)
+                                                                (merge current-val)))))))
 
 (defmethod api-event [:all-repos :failed]
   [target message status {:keys [context]} state]

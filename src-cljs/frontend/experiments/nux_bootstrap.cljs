@@ -1,6 +1,6 @@
-(ns frontend.components.nux-bootstrap
-  (:require [clojure.string :as string]
-            [frontend.async :refer [raise!]]
+(ns frontend.experiments.nux-bootstrap
+  (:require [frontend.async :refer [raise!]]
+            [frontend.api :as api]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
@@ -45,24 +45,21 @@
                                                    " "
                                                    (when (< 11 (count projects)) "twelve-projects"))}
                                       (->> projects
-                                           (sort-by #(-> %
-                                                         (project-model/project-name)
-                                                         (string/lower-case)))
-                                           (map
-                                             (fn [project]
-                                               [:div.checkbox
-                                                [:label
-                                                 [:input {:type "checkbox"
-                                                          :checked (:checked project)
-                                                          :name "follow checkbox"
-                                                          :on-click #(utils/toggle-input owner (conj (state/repos-building-path (-> project
-                                                                                                                                    :vcs_type
-                                                                                                                                    (keyword))
-                                                                                                                                building?)
-                                                                                                     (:vcs_url project)
-                                                                                                     :checked)
-                                                                                         %)}]
-                                                 (project-model/project-name project)]])))])
+                                          (map
+                                            (fn [project]
+                                              [:div.checkbox
+                                               [:label
+                                                [:input {:type "checkbox"
+                                                         :checked (:checked project)
+                                                         :name "follow checkbox"
+                                                         :on-click #(utils/toggle-input owner (conj (state/repos-building-path (-> project
+                                                                                                                                   :vcs_type
+                                                                                                                                   (keyword))
+                                                                                                                               building?)
+                                                                                                    (:vcs_url project)
+                                                                                                    :checked)
+                                                                                        %)}]
+                                                (project-model/project-name project)]])))])
                 deselect-activity-repos (fn [building?]
                                           ((om/get-shared owner :track-event) {:event-type :deselect-all-projects-clicked
                                                                                :properties event-properties})
