@@ -3,10 +3,8 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
-            [frontend.experiments.nux-bootstrap :as nux-bootstrap]
-            [frontend.models.feature :as feature]
+            [frontend.components.nux-bootstrap :as nux-bootstrap]
             [frontend.models.plan :as plan-model]
-            [frontend.models.repo :as repo-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [om.core :as om :include-macros true])
@@ -37,26 +35,22 @@
                     (and current-user (nil? projects)))
                 [:div.empty-placeholder (spinner)]
 
-               (and (empty? builds)
-                    projects
-                    (empty? projects))
-               (case (feature/ab-test-treatment :new-user-landing-page current-user)
-                 :dashboard (om/build nux-bootstrap/build-empty-state
-                                      (let [projects (fn [{:keys [building?]}]
-                                                       (->> (for [vcs-type vcs-types] (->> (get-in data (state/repos-building-path vcs-type building?))
-                                                                                      vals
-                                                                                      (remove nil?)
-                                                                                      (remove repo-model/requires-invite?)))
-                                                            flatten))]
-                                        {:building-projects (projects {:building? true})
-                                         :not-building-projects (projects {:building? false})
-                                         :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
-                                                                (get-in data (state/all-repos-loaded-path :bitbucket)))
-                                         :current-user current-user}))
-                 :add-projects [:div
-                                [:h2 "You don't have any projects in CircleCI!"]
-                                [:p "Why don't you add a project or two on the "
-                                 [:a {:href (routes/v1-add-projects-path {})} "Manage Projects page"] "?"]])
+                (and (empty? builds)
+                     projects
+                     (empty? projects))
+                (om/build nux-bootstrap/build-empty-state
+                  (let [projects (fn [{:keys [building?]}]
+                                   (->> (for [vcs-type vcs-types]
+                                          (-> (get-in data (state/repos-building-path vcs-type building?))
+                                              vals
+                                              (remove nil?)))
+                                        flatten))]
+                    {:building-projects (projects {:building? true})
+                     :not-building-projects (projects {:building? false})
+                     :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
+                                            (get-in data (state/all-repos-loaded-path :bitbucket)))
+                     :current-user current-user}))
+
                :else
                [:div.dashboard
                 (when (project-common/show-trial-notice? project plan (get-in data state/dismissed-trial-update-banner))

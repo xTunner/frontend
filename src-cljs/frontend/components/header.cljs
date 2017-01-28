@@ -359,10 +359,7 @@
                                       "Account Notifications"]]
                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
           (when (and (seq crumbs)
-                     (or (-> (feature/ab-test-treatment :new-user-landing-page user)
-                             (= :dashboard)
-                             not)
-                         (= :build (get-in app state/current-view-path))
+                     (or (= :build (get-in app state/current-view-path))
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
                                           :logged-out? (not (:name user))
