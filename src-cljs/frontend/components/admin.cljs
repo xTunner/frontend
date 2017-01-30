@@ -10,11 +10,12 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.form :as form]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
-            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.project :as project]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
@@ -327,10 +328,10 @@
                                 :type :shrink
                                 :cell-fn (projects/settings-cell-fn {:vcs-url-fn :vcs_url})}]}))))))
 
-(defn- filter-projects [projects filter-str]
+(defn- filter-projects [filter-str projects]
   (if (seq filter-str)
     (filter #(gstring/caseInsensitiveContains
-               (-> % :vcs_url (vcs-url/project-name))
+               (project/project-name %)
                filter-str)
             projects)
     projects))
@@ -355,9 +356,11 @@
                                          :label "Filter projects"
                                          :on-change #(om/set-state! owner {:filter-str (-> % .-target .-value)})}))
             (om/build projects-table
-                      (filter-projects
-                        all-projects
-                        filter-str))]
+                      (->> all-projects
+                           (sort-by (comp
+                                      str/lower-case
+                                      project/project-name))
+                           (filter-projects filter-str)))]
            (spinner))]))))
 
 (defn boolean-setting-entry [item owner]
