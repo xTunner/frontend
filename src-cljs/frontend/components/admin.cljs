@@ -23,37 +23,38 @@
             [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component element html]]))
+  (:require-macros [frontend.utils :refer [html]]))
 
 (defn switch [app owner]
   (reify
     om/IRender
     (render [_]
-      (component
-        (card/basic
-          [:div.container-fluid
-           [:div.row-fluid
-            [:div.span9
-             [:p "Switch user"]
-             [:form.form-inline {:method "post", :action "/admin/switch-user"}
-              [:input.input-medium {:name "login", :type "text"}]
-              (when-not (config/enterprise?)
-                [:div.col-lg-3
-                 [:label
-                  [:input {:type "checkbox"
-                           :name "bitbucket"}]
-                  "Bitbucket"]])
-              [:input {:value (utils/csrf-token)
-                       :name "CSRFToken",
-                       :type "hidden"}]
-              [:div.col-lg-9
-               (button/button {:on-click (fn [event]
-                                           ;; a higher level handler will stop all form submissions
-                                           ;;
-                                           ;; see frontend.components.app/app*
-                                           (.stopPropagation event))
-                               :kind :primary}
-                              "Switch User")]]]]])))))
+      (html
+        [:div
+         [:legend "Switch User"]
+         (card/basic
+           [:div.container-fluid
+            [:div.row-fluid
+             [:div.span9
+              [:form.form-inline {:method "post", :action "/admin/switch-user"}
+               [:input.input-medium {:name "login", :type "text"}]
+               (when-not (config/enterprise?)
+                 [:div.col-lg-3
+                  [:label
+                   [:input {:type "checkbox"
+                            :name "bitbucket"}]
+                   "Bitbucket"]])
+               [:input {:value (utils/csrf-token)
+                        :name "CSRFToken",
+                        :type "hidden"}]
+               [:div.col-lg-9
+                (button/button {:on-click (fn [event]
+                                            ;; a higher level handler will stop all form submissions
+                                            ;;
+                                            ;; see frontend.components.app/app*
+                                            (.stopPropagation event))
+                                :kind :primary}
+                               "Switch User")]]]]])]))))
 
 (defn current-seat-usage [active-users total-seats]
   [:span
@@ -312,21 +313,20 @@
 
     om/IRender
     (render [_]
-      (component
-        (card/basic
-          (om/build table/table
-                    {:rows projects
-                     :key-fn :vcs_url
-                     :columns [{:header "Project"
-                                :cell-fn (projects/name-cell-fn {:vcs-url-fn :vcs_url})}
+      (card/basic
+        (om/build table/table
+                  {:rows projects
+                   :key-fn :vcs_url
+                   :columns [{:header "Project"
+                              :cell-fn (projects/name-cell-fn {:vcs-url-fn :vcs_url})}
 
-                               {:header "Insights"
-                                :type :shrink
-                                :cell-fn (projects/insights-cell-fn {:vcs-url-fn :vcs_url})}
+                             {:header "Insights"
+                              :type :shrink
+                              :cell-fn (projects/insights-cell-fn {:vcs-url-fn :vcs_url})}
 
-                               {:header "Settings"
-                                :type :shrink
-                                :cell-fn (projects/settings-cell-fn {:vcs-url-fn :vcs_url})}]}))))))
+                             {:header "Settings"
+                              :type :shrink
+                              :cell-fn (projects/settings-cell-fn {:vcs-url-fn :vcs_url})}]})))))
 
 (defn- filter-projects [filter-str projects]
   (if (seq filter-str)
