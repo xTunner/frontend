@@ -278,7 +278,7 @@
             num-active-users (get-in app (conj state/license-path :seat_usage))]
         (html
          [:div.users
-          [:legend "Users"]
+          [:legend "User Administration"]
 
           [:div.card.detailed
            [:h3 "Active"]
@@ -345,19 +345,20 @@
 
     om/IRenderState
     (render-state [this {:keys [filter-str] :as state}]
-      (js/console.log (clj->js state))
       (html
-        (if-let [all-projects (:all-projects app)]
-          [:div
-           (card/basic
-             (om/build form/text-field {:value filter-str
-                                        :label "Filter projects"
-                                        :on-change #(om/set-state! owner {:filter-str (-> % .-target .-value)})}))
-           (om/build projects-table
-                     (filter-projects
-                       all-projects
-                       filter-str))]
-          (spinner))))))
+        [:div
+         [:legend "Project Administration"]
+         (if-let [all-projects (:all-projects app)]
+           [:div
+            (card/basic
+              (om/build form/text-field {:value filter-str
+                                         :label "Filter projects"
+                                         :on-change #(om/set-state! owner {:filter-str (-> % .-target .-value)})}))
+            (om/build projects-table
+                      (filter-projects
+                        all-projects
+                        filter-str))]
+           (spinner))]))))
 
 (defn boolean-setting-entry [item owner]
   (reify
