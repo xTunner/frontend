@@ -141,4 +141,5 @@
     (icon-card [#'git-pull-request]))
 
   (defcard navigation
-    (icon-card [#'settings])))
+    (icon-card [#'settings
+                #'insights])))
