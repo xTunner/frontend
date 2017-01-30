@@ -68,8 +68,8 @@
     om/IRender
     (render [_]
       (html
-        [:section {:style {:padding-left "10px"}}
-         [:h1 "Active Users"]
+        [:section
+         [:legend "Active Users"]
          [:p (current-seat-usage (get-in app (conj state/license-path :seat_usage))
                                  (get-in app (conj state/license-path :seats)))
           " You can deactivate users in "
@@ -81,8 +81,8 @@
     om/IRender
     (render [_]
       (html
-        [:section {:style {:padding-left "0"}}
-         [:header {:style {:padding-top "10px"}}
+        [:section
+         [:header
           [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
           " / "
           [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
@@ -115,7 +115,7 @@
     (render [_]
       (html
         [:div
-         [:header {:style {:padding-top "10px" :padding-bottom "10px"}}
+         [:header
           [:a
            {:href (case tab
                     :running-builds "/admin/running-builds"
@@ -142,8 +142,8 @@
             summary-counts (get-in app state/build-system-summary-path)
             current-tab (or (get-in app [:navigation-data :tab]) :builders)]
         (html
-          [:div {:style {:padding-left "10px"}}
-           [:h1 "Fleet State"]
+          [:div
+           [:legend "Fleet State"]
            [:div
             (if-not summary-counts
               (spinner)
@@ -186,8 +186,8 @@
     om/IRender
     (render [_]
       (html
-        [:section {:style {:padding-left "10px"}}
-         [:h1 "License Info"]
+        [:section
+         [:legend "License Info"]
          (let [license (get-in app state/license-path)]
            (if-not license
              (spinner)
@@ -277,8 +277,8 @@
             num-licensed-users (get-in app (conj state/license-path :seats))
             num-active-users (get-in app (conj state/license-path :seat_usage))]
         (html
-         [:div.users {:style {:padding-left "10px"}}
-          [:h1 "Users"]
+         [:div.users
+          [:legend "Users"]
 
           [:div.card.detailed
            [:h3 "Active"]
@@ -434,7 +434,7 @@
     om/IRender
     (render [_]
       (html [:div
-             [:h1 "System Settings"]
+             [:legend "System Settings"]
              [:p "Low level settings for tweaking the behavior of the system."]
              [:div (om/build-all system-setting
                                  (get-in app state/system-settings-path))]]))))
@@ -445,14 +445,12 @@
     (render [_]
       (let [subpage (:admin-settings-subpage app)]
         (html
-         [:div#admin-settings
-          [:div.admin-settings-inner
-           [:div#subpage
-            (case subpage
-              :fleet-state (om/build fleet-state app)
-              :license (om/build license app)
-              :users (om/build users app)
-              :projects (om/build projects app)
-              :system-settings (om/build system-settings app)
-              :switch (om/build switch app)
-              (om/build overview app))]]])))))
+          [:div.admin-settings-subpage
+           (case subpage
+             :fleet-state (om/build fleet-state app)
+             :license (om/build license app)
+             :users (om/build users app)
+             :projects (om/build projects app)
+             :system-settings (om/build system-settings app)
+             :switch (om/build switch app)
+             (om/build overview app))])))))
