@@ -5,11 +5,11 @@
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
-            [frontend.components.pages.projects :as projects]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.form :as form]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
@@ -318,15 +318,36 @@
                   {:rows projects
                    :key-fn :vcs_url
                    :columns [{:header "Project"
-                              :cell-fn (projects/name-cell-fn {:vcs-url-fn :vcs_url})}
+                              :cell-fn #(let [vcs-url (:vcs_url %)]
+                                          [:a
+                                           {:href (routes/v1-project-dashboard-path
+                                                    {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                     :org (vcs-url/org-name vcs-url)
+                                                     :repo (vcs-url/repo-name vcs-url)})}
+                                           (project/project-name %)])}
 
                              {:header "Insights"
                               :type :shrink
-                              :cell-fn (projects/insights-cell-fn {:vcs-url-fn :vcs_url})}
+                              :cell-fn #(table/action-link
+                                          "Insights"
+                                          (icon/insights)
+                                          (let [vcs-url (:vcs_url %)]
+                                            (routes/v1-project-insights-path
+                                              {:vcs_type (vcs-url/vcs-type vcs-url)
+                                               :org (vcs-url/org-name vcs-url)
+                                               :repo (vcs-url/repo-name vcs-url)
+                                               :branch (:default_branch %)})))}
 
                              {:header "Settings"
                               :type :shrink
-                              :cell-fn (projects/settings-cell-fn {:vcs-url-fn :vcs_url})}]})))))
+                              :cell-fn #(table/action-link
+                                          "Settings"
+                                          (icon/settings)
+                                          (let [vcs-url (:vcs_url %)]
+                                            (routes/v1-project-settings-path
+                                              {:vcs_type (vcs-url/vcs-type vcs-url)
+                                               :org (vcs-url/org-name vcs-url)
+                                               :repo (vcs-url/repo-name vcs-url)})))}]})))))
 
 (defn- filter-projects [filter-str projects]
   (if (seq filter-str)
@@ -357,9 +378,7 @@
                                          :on-change #(om/set-state! owner {:filter-str (-> % .-target .-value)})}))
             (om/build projects-table
                       (->> all-projects
-                           (sort-by (comp
-                                      str/lower-case
-                                      project/project-name))
+                           (sort-by (comp str/lower-case project/project-name))
                            (filter-projects filter-str)))]
            (spinner))]))))
 

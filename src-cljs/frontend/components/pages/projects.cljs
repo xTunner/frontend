@@ -24,53 +24,6 @@
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
 
-(defn name-cell-fn [{:keys [vcs-url-fn on-click org-subpage?]}]
-  (fn [project]
-    (html
-      (let [vcs-url (vcs-url-fn project)]
-        [:a
-         {:href (routes/v1-project-dashboard-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                                   :org (vcs-url/org-name vcs-url)
-                                                   :repo (vcs-url/repo-name vcs-url)})
-          :on-click (when on-click #(on-click project))}
-         (if org-subpage?
-           (vcs-url/repo-name vcs-url)
-           (vcs-url/project-name vcs-url))]))))
-
-(defn parallelsim-cell-fn [{:keys [vcs-url-fn plan]}]
-  (fn [project]
-    (html
-      (let [parallelism (project-model/parallelism project)
-            buildable-parallelism (when plan (project-model/buildable-parallelism plan project))
-            vcs-url (vcs-url-fn project)]
-        [:a {:href (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
-                                                     :org (vcs-url/org-name vcs-url)
-                                                     :repo (vcs-url/repo-name vcs-url)
-                                                     :_fragment "parallel-builds"})}
-         parallelism "x"
-         (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))))
-
-(defn settings-cell-fn [{:keys [vcs-url-fn]}]
-  (fn [project]
-    (table/action-link
-      "Settings"
-      (icon/settings)
-      (let [vcs-url (vcs-url-fn project)]
-        (routes/v1-project-settings-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                          :org (vcs-url/org-name vcs-url)
-                                          :repo (vcs-url/repo-name vcs-url)})))))
-
-(defn insights-cell-fn [{:keys [vcs-url-fn]}]
-  (fn [project]
-    (table/action-link
-      "Insights"
-      (icon/insights)
-      (let [vcs-url (vcs-url-fn project)]
-        (routes/v1-project-insights-path {:vcs_type (vcs-url/vcs-type vcs-url)
-                                          :org (vcs-url/org-name vcs-url)
-                                          :repo (vcs-url/repo-name vcs-url)
-                                          :branch (:default_branch project)})))))
-
 (defn- table
   {::fq/queries {:projects (fq/merge [:project/vcs-url
                                       :project/name]
@@ -83,27 +36,45 @@
                   {:rows projects
                    :key-fn :project/vcs-url
                    :columns [{:header "Project"
-                              :cell-fn (name-cell-fn
-                                         {:vcs-url-fn :project/vcs-url
-                                          :org-subpage? true
-                                          :on-click
-                                          (fn [project]
-                                            (analytics/track! c {:event-type :project-clicked
-                                                                 :properties (analytics-utils/project-properties project)}))})}
+                              :cell-fn (fn [project]
+                                         (let [vcs-url (:project/vcs-url project)]
+                                           [:a
+                                            {:href (routes/v1-project-dashboard-path
+                                                     {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                      :org (vcs-url/org-name vcs-url)
+                                                      :repo (vcs-url/repo-name vcs-url)})
+                                             :on-click #(analytics/track! c {:event-type :project-clicked
+                                                                             :properties (analytics-utils/project-properties project)})}
+                                            (vcs-url/repo-name vcs-url)]))}
 
                              {:header "Parallelism"
                               :type #{:right :shrink}
-                              :cell-fn (parallelsim-cell-fn
-                                         {:vcs-url-fn :project/vcs-url
-                                          :plan plan})}
+                              :cell-fn (fn [project]
+                                         (let [parallelism (project-model/parallelism project)
+                                               buildable-parallelism (when plan (project-model/buildable-parallelism plan project))
+                                               vcs-url (:project/vcs-url project)]
+                                           [:a {:href (routes/v1-project-settings-path
+                                                        {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
+                                                         :org (vcs-url/org-name vcs-url)
+                                                         :repo (vcs-url/repo-name vcs-url)
+                                                         :_fragment "parallel-builds"})}
+                                            parallelism "x"
+                                            (when buildable-parallelism (str " out of " buildable-parallelism "x"))]))}
 
                              {:header "Team"
                               :type #{:right :shrink}
-                              :cell-fn #(count (:project/followers %))}
+                              :cell-fn (comp count :project/followers)}
 
                              {:header "Settings"
                               :type :shrink
-                              :cell-fn (settings-cell-fn {:vcs-url-fn :project/vcs-url})}]})))
+                              :cell-fn #(table/action-link
+                                          "Settings"
+                                          (icon/settings)
+                                          (let [vcs-url (:project/vcs-url %)]
+                                            (routes/v1-project-settings-path
+                                              {:vcs_type (vcs-url/vcs-type vcs-url)
+                                               :org (vcs-url/org-name vcs-url)
+                                               :repo (vcs-url/repo-name vcs-url)})))}]})))
 
 (defn- no-org-selected [available-orgs bitbucket-enabled?]
   (component
