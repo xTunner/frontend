@@ -86,7 +86,7 @@
          [:ul.nav.navbar-nav
           (for [[point {:keys [path title]}] %]
             [:li.list-item (maybe-active nav-point point)
-             [:a.menu-item {:href path} title]])]]])
+             [:a.menu-item {:href (str "https://circleci.com/" path)} title]])]]])
     nav-maps))
 
 (defn outer-header [app owner]

@@ -87,8 +87,7 @@
   "Handle SVG element properly."
   (let [dom-helper (goog.dom.DomHelper.)
         upper-query (string/upper-case query-tag)
-        lower-query (string/lower-case query-tag)
-        ]
+        lower-query (string/lower-case query-tag)]
     (or (when (= (.-tagName element) upper-query) element)
         (.getAncestorByTagNameAndClass dom-helper element upper-query)
         (when (instance? js/SVGElement element)
@@ -99,51 +98,31 @@
                 "svg" nil
                 (recur (.-parentElement e)))))))))
 
-(defn closest-a-tag [target]
-   (closest-tag target "A"))
+(defn dispatch-link [e]
+  (let [a (closest-tag (.-target e) "A")
+        attributes (.-attributes a)
+        href (some-> attributes .-href .-value)
+        target (some-> attributes .-target .-value)
+        uri (Uri/parse href)
+        new-token (subs (.getPath uri) 1)]
+    (when (and (not (.hasHost uri))
+               (not (or (new-window-click? e)
+                        (= target "_blank"))))
+      (.preventDefault e)
+      (if (and (route-fragment href)
+               (path-matches? (.getToken history-imp) new-token))
 
-(defn closest-a-tag-and-populate-properties [target]
-  "Find closest <a> ancestor of target and add some properties to it."
-  (let [a (closest-a-tag target)]
-    (cond (instance? js/SVGElement a)   ; SVG
-          (let [attributes (.-attributes a)
-                href (some-> attributes .-href .-value)
-                target (some-> attributes .-target .-value)]
-            {:attr-href href
-             :attr-target target
-             :host-name (let [uri-info (goog.Uri.parse href)
-                              domain (.getDomain uri-info)]
-                          (if (empty? domain)
-                            (-> js/window .-location .-hostname)
-                            domain))})
-          (instance? js/HTMLElement a)  ; HTML
-          (let [href (let [path (str (.-pathname a) (.-search a) (.-hash a))]
-                       (when-not (empty? path)
-                         path))]
-            {:attr-href href
-             :attr-target (-> a .-target)
-             :host-name (-> a .-hostname)}))))
+        (do (utils/mlog "scrolling to hash for" href)
+            ;; don't break the back button
+            (.replaceToken history-imp new-token))
+
+        (do (utils/mlog "navigating to" href)
+            (.setToken history-imp new-token))))))
 
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (events/listen
    top-level-node "click"
-   #(let [{:keys [attr-href attr-target host-name]} (closest-a-tag-and-populate-properties (.-target %))
-          new-token (when (seq attr-href) (subs attr-href 1))]
-      (when (and (= (-> js/window .-location .-hostname)
-                    host-name)
-                 (sec/locate-route attr-href) ; Returns nil when no route is found in the app.
-                 (not (or (new-window-click? %)
-                          (= attr-target "_blank"))))
-        (.preventDefault %)
-        (if (and (route-fragment attr-href)
-                 (path-matches? (.getToken history-imp) new-token))
-
-          (do (utils/mlog "scrolling to hash for" attr-href)
-              ;; don't break the back button
-              (.replaceToken history-imp new-token))
-
-          (do (utils/mlog "navigating to" attr-href)
-              (.setToken history-imp new-token)))))))
+   dispatch-link))
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
