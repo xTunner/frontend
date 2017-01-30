@@ -268,28 +268,6 @@
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
-(defn account-settings-nav-items []
-  (remove
-    nil?
-    [{:type :subpage :href (routes/v1-account) :title "Notifications" :subpage :notifications}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "API Tokens" :subpage :api}
-     {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku" :subpage :heroku}
-     (when-not (config/enterprise?)
-       {:type :subpage :href (routes/v1-account-subpage {:subpage "plans"}) :title "Plan Pricing" :subpage :plans})
-     (when-not (config/enterprise?)
-       {:type :subpage :href (routes/v1-account-subpage {:subpage "beta"}) :title "Beta Program" :subpage :beta})]))
-
-(defn account-settings-menu [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [subpage (-> app :navigation-data :subpage)]
-        (html
-          [:div.aside-user {:class (when (= :account (:navigation-point app)) "open")}
-           [:header [:h4 "Account Settings"]]
-           [:div.aside-user-options
-            (expand-menu-items (account-settings-nav-items) subpage)]])))))
-
 (defn admin-settings-nav-items []
   (concat
     [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
