@@ -105,8 +105,7 @@
                                    :cell-fn (comp datetime/long-datetime :boot_time)}
 
                                   {:header "Busy Containers"
-                                   :cell-fn (fn [m]
-                                              (str (:busy m) " / " (:total m)))}
+                                   :cell-fn #(str (:busy %) " / " (:total %))}
 
                                   {:header "State"
                                    :cell-fn :state}]})))]))))

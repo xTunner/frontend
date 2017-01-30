@@ -171,13 +171,10 @@
                                 (cond-> project
                                   (= (dissoc project-key :branch) (dissoc target-key :branch))
                                   (assoc-in (state/recent-builds-branch-path branch)
-                                            all-recent-builds))))
-          add-recent-builds (fn [projects]
-                              (for [project projects]
-                                (add-recent-build project)))]
+                                            all-recent-builds))))]
       (if (= (:navigation-point state) :project-insights)
         (update-in state state/project-path add-recent-build)
-        (update-in state state/projects-path add-recent-builds)))))
+        (update-in state state/projects-path (partial map map add-recent-build))))))
 
 (defmethod api-event [:branch-build-times :success]
   [target message status {timing-data :resp, {:keys [target-key]} :context} state]
