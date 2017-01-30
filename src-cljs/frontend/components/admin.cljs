@@ -6,62 +6,55 @@
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.dropdown :as dropdown]
+            [frontend.components.pieces.form :as form]
+            [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
-            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.project :as project]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.vcs-url :as vcs-url]
+            [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
-
-(defn build-state [app owner]
-  (reify
-    om/IDisplayName (display-name [_] "Admin Build State")
-    om/IRender
-    (render [_]
-      (let [build-state (get-in app state/build-state-path)]
-        (html
-         [:section {:style {:padding-left "10px"}}
-          [:a {:href "/api/v1/admin/build-state" :target "_blank"} "View raw"]
-          " / "
-          [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-build-state-clicked])} "Refresh"]
-          (if-not build-state
-            (spinner)
-            [:code (om/build ankha/inspector build-state)])])))))
 
 (defn switch [app owner]
   (reify
     om/IRender
     (render [_]
       (html
-       [:div.container-fluid
-        [:div.row-fluid
-         [:div.span9
-          [:p "Switch user"]
-          [:form.form-inline {:method "post", :action "/admin/switch-user"}
-           [:input.input-medium {:name "login", :type "text"}]
-           (when-not (config/enterprise?)
-             [:div.col-lg-3
-              [:label
-               [:input {:type "checkbox"
-                        :name "bitbucket"}]
-               "Bitbucket"]])
-           [:input {:value (utils/csrf-token)
-                    :name "CSRFToken",
-                    :type "hidden"}]
-           [:div.col-lg-9
-            (button/button {:on-click (fn [event]
-                                        ;; a higher level handler will stop all form submissions
-                                        ;;
-                                        ;; see frontend.components.app/app*
-                                        (.stopPropagation event))
-                            :kind :primary}
-                           "Switch User")]]]]]))))
+        [:div
+         [:legend "Switch User"]
+         (card/basic
+           [:div.container-fluid
+            [:div.row-fluid
+             [:div.span9
+              [:form.form-inline {:method "post", :action "/admin/switch-user"}
+               [:input.input-medium {:name "login", :type "text"}]
+               (when-not (config/enterprise?)
+                 [:div.col-lg-3
+                  [:label
+                   [:input {:type "checkbox"
+                            :name "bitbucket"}]
+                   "Bitbucket"]])
+               [:input {:value (utils/csrf-token)
+                        :name "CSRFToken",
+                        :type "hidden"}]
+               [:div.col-lg-9
+                (button/button {:on-click (fn [event]
+                                            ;; a higher level handler will stop all form submissions
+                                            ;;
+                                            ;; see frontend.components.app/app*
+                                            (.stopPropagation event))
+                                :kind :primary}
+                               "Switch User")]]]]])]))))
 
 (defn current-seat-usage [active-users total-seats]
   [:span
@@ -77,8 +70,8 @@
     om/IRender
     (render [_]
       (html
-        [:section {:style {:padding-left "10px"}}
-         [:h1 "Active Users"]
+        [:section
+         [:legend "Active Users"]
          [:p (current-seat-usage (get-in app (conj state/license-path :seat_usage))
                                  (get-in app (conj state/license-path :seats)))
           " You can deactivate users in "
@@ -90,8 +83,8 @@
     om/IRender
     (render [_]
       (html
-        [:section {:style {:padding-left "0"}}
-         [:header {:style {:padding-top "10px"}}
+        [:section
+         [:header
           [:a {:href "/api/v1/admin/build-state-summary" :target "_blank"} "View raw"]
           " / "
           [:a {:href "javascript:void(0)" :on-click #(raise! owner [:refresh-admin-fleet-state-clicked])} "Refresh"]]
@@ -112,7 +105,7 @@
                                    :cell-fn (comp datetime/long-datetime :boot_time)}
 
                                   {:header "Busy Containers"
-                                   :cell-fn :busy}
+                                   :cell-fn #(str (:busy %) " / " (:total %))}
 
                                   {:header "State"
                                    :cell-fn :state}]})))]))))
@@ -123,7 +116,7 @@
     (render [_]
       (html
         [:div
-         [:header {:style {:padding-top "10px" :padding-bottom "10px"}}
+         [:header
           [:a
            {:href (case tab
                     :running-builds "/admin/running-builds"
@@ -150,8 +143,8 @@
             summary-counts (get-in app state/build-system-summary-path)
             current-tab (or (get-in app [:navigation-data :tab]) :builders)]
         (html
-          [:div {:style {:padding-left "10px"}}
-           [:h1 "Fleet State"]
+          [:div
+           [:legend "Fleet State"]
            [:div
             (if-not summary-counts
               (spinner)
@@ -194,8 +187,8 @@
     om/IRender
     (render [_]
       (html
-        [:section {:style {:padding-left "10px"}}
-         [:h1 "License Info"]
+        [:section
+         [:legend "License Info"]
          (let [license (get-in app state/license-path)]
            (if-not license
              (spinner)
@@ -217,7 +210,7 @@
                       "read-settings" "Read-only Admin"
                       "none" "Normal"}]
     (reify
-      om/IDisplayName (display-name [_] "License Info")
+      om/IDisplayName (display-name [_] "User Admin Table")
       om/IRender
       (render [_]
         (html
@@ -285,8 +278,8 @@
             num-licensed-users (get-in app (conj state/license-path :seats))
             num-active-users (get-in app (conj state/license-path :seat_usage))]
         (html
-         [:div.users {:style {:padding-left "10px"}}
-          [:h1 "Users"]
+         [:div.users
+          [:legend "User Administration"]
 
           [:div.card.detailed
            [:h3 "Active"]
@@ -312,6 +305,81 @@
            [:div.details "Inactive users have never logged on and also do not count towards your license limits."]
            (when (not-empty inactive-users)
              (om/build user-table {:users inactive-users :current-user current-user}))]])))))
+
+(defn projects-table [projects owner]
+  (reify
+    om/IDisplayName (display-name [_] "Project Admin Table")
+
+    om/IRender
+    (render [_]
+      (card/basic
+        (om/build table/table
+                  {:rows projects
+                   :key-fn :vcs_url
+                   :columns [{:header "Project"
+                              :cell-fn #(let [vcs-url (:vcs_url %)]
+                                          [:a
+                                           {:href (routes/v1-project-dashboard-path
+                                                    {:vcs_type (vcs-url/vcs-type vcs-url)
+                                                     :org (vcs-url/org-name vcs-url)
+                                                     :repo (vcs-url/repo-name vcs-url)})}
+                                           (project/project-name %)])}
+
+                             {:header "Insights"
+                              :type :shrink
+                              :cell-fn #(table/action-link
+                                          "Insights"
+                                          (icon/insights)
+                                          (let [vcs-url (:vcs_url %)]
+                                            (routes/v1-project-insights-path
+                                              {:vcs_type (vcs-url/vcs-type vcs-url)
+                                               :org (vcs-url/org-name vcs-url)
+                                               :repo (vcs-url/repo-name vcs-url)
+                                               :branch (:default_branch %)})))}
+
+                             {:header "Settings"
+                              :type :shrink
+                              :cell-fn #(table/action-link
+                                          "Settings"
+                                          (icon/settings)
+                                          (let [vcs-url (:vcs_url %)]
+                                            (routes/v1-project-settings-path
+                                              {:vcs_type (vcs-url/vcs-type vcs-url)
+                                               :org (vcs-url/org-name vcs-url)
+                                               :repo (vcs-url/repo-name vcs-url)})))}]})))))
+
+(defn- filter-projects [filter-str projects]
+  (if (seq filter-str)
+    (filter #(gstring/caseInsensitiveContains
+               (project/project-name %)
+               filter-str)
+            projects)
+    projects))
+
+(defn projects [app owner]
+  (reify
+    om/IDisplayName (display-name [_] "Project Admin")
+
+    om/IInitState
+    (init-state [_]
+      {:filter-str ""})
+
+    om/IRenderState
+    (render-state [this {:keys [filter-str] :as state}]
+      (html
+        [:div
+         [:legend "Project Administration"]
+         (if-let [all-projects (:all-projects app)]
+           [:div
+            (card/basic
+              (om/build form/text-field {:value filter-str
+                                         :label "Filter projects"
+                                         :on-change #(om/set-state! owner {:filter-str (-> % .-target .-value)})}))
+            (om/build projects-table
+                      (->> all-projects
+                           (sort-by (comp str/lower-case project/project-name))
+                           (filter-projects filter-str)))]
+           (spinner))]))))
 
 (defn boolean-setting-entry [item owner]
   (reify
@@ -388,7 +456,7 @@
     om/IRender
     (render [_]
       (html [:div
-             [:h1 "System Settings"]
+             [:legend "System Settings"]
              [:p "Low level settings for tweaking the behavior of the system."]
              [:div (om/build-all system-setting
                                  (get-in app state/system-settings-path))]]))))
@@ -399,12 +467,12 @@
     (render [_]
       (let [subpage (:admin-settings-subpage app)]
         (html
-         [:div#admin-settings
-          [:div.admin-settings-inner
-           [:div#subpage
-            (case subpage
-              :fleet-state (om/build fleet-state app)
-              :license (om/build license app)
-              :users (om/build users app)
-              :system-settings (om/build system-settings app)
-              (om/build overview app))]]])))))
+          [:div.admin-settings-subpage
+           (case subpage
+             :fleet-state (om/build fleet-state app)
+             :license (om/build license app)
+             :users (om/build users app)
+             :projects (om/build projects app)
+             :system-settings (om/build system-settings app)
+             :switch (om/build switch app)
+             (om/build overview app))])))))

@@ -1605,7 +1605,7 @@
 (defmethod post-control-event! :project-insights-branch-changed
   [target message {:keys [new-branch]} _ current-state comms]
   (let [nav-data (get-in current-state [:navigation-data])]
-    (put! (:nav comms) [:navigate! {:path (routes/v1-insights-project-path (assoc nav-data :branch new-branch))}])
+    (put! (:nav comms) [:navigate! {:path (routes/v1-project-insights-path (assoc nav-data :branch new-branch))}])
     (analytics/track {:event-type :project-branch-changed
                       :current-state current-state
                       :properties {:new-branch new-branch}})))

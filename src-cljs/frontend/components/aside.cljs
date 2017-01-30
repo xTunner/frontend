@@ -246,8 +246,6 @@
       (let [subpage (-> app :navigation-data :subpage)]
         (html
          [:div.aside-user
-          [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-           (common/ico :fail-light)]
           [:div.aside-user-options
            (expand-menu-items (project-settings-nav-items app owner) subpage)]])))))
 
@@ -271,18 +269,17 @@
     {:type :subpage :href "#users" :title "Users" :subpage :users}]))
 
 (defn admin-settings-nav-items []
-  (filter
-    identity
+  (concat
     [{:type :subpage :href "/admin" :title "Overview" :subpage :overview}
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/management-console" :title "Management Console"})
-     {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/license" :title "License" :subpage :license})
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/users" :title "Users" :subpage :users})
-     (when (config/enterprise?)
-       {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings})]))
+     {:type :subpage :href "/admin/fleet-state" :title "Fleet State" :subpage :fleet-state}]
+    (when-not (config/enterprise?)
+      [{:type :subpage :href "/admin/switch" :title "Switch User" :subpage :switch}])
+    (when (config/enterprise?)
+      [{:type :subpage :href "/admin/management-console" :title "Management Console"}
+       {:type :subpage :href "/admin/license" :title "License" :subpage :license}
+       {:type :subpage :href "/admin/users" :title "Users" :subpage :users}
+       {:type :subpage :href "/admin/projects" :title "Projects" :subpage :projects}
+       {:type :subpage :href "/admin/system-settings" :title "System Settings" :subpage :system-settings}])))
 
 (defn admin-settings-menu [app owner]
   (reify
@@ -291,10 +288,7 @@
       (let [subpage (-> app :navigation-data :subpage)]
         (html
          [:div.aside-user
-          [:header
-           [:h4 "Admin Settings"]
-           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-            (common/ico :fail-light)]]
+          [:header [:h4 "Admin Settings"]]
           [:div.aside-user-options
            (expand-menu-items (admin-settings-nav-items) subpage)]])))))
 
@@ -327,10 +321,7 @@
             subpage (redirect-org-settings-subpage (-> app :navigation-data :subpage) plan (:name org-data) (:vcs_type org-data))
             items (org-settings-nav-items plan org-data)]
         (html
-         [:div.aside-user
-          [:header.aside-item.aside-heading "Organization Settings"
-           [:a.close-menu {:href "./"} ; This may need to change if we drop hashtags from url structure
-            (common/ico :fail-light)]]
+         [:div.aside-user [:header.aside-item.aside-heading "Organization Settings"]
           [:div.aside-user-options
            (expand-menu-items items subpage)]])))))
 

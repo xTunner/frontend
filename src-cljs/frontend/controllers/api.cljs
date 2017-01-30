@@ -124,22 +124,13 @@
                  (select-keys matching-project [:recent-builds :build-timing])))]
     (assoc-in current-state state/projects-path processed-new-projects)))
 
-(def projects-success-thens
-  {:build-insights (fn [state comms]
-                     (let [projects (get-in state state/projects-path)
-                           build-keys (map api/project-build-key projects)
-                           api-ch (:api comms)]
-                         (api/get-projects-builds build-keys 60 api-ch)))
-   :project-insights (fn [{:keys [navigation-data] :as state} comms]
-                       (let [build-key (api/project-build-key navigation-data)
-                             api-ch (:api comms)]
-                         (api/get-projects-builds [build-key] 100 api-ch)
-                         (api/get-branch-build-times build-key api-ch)))})
-
 (defmethod post-api-event! [:projects :success]
   [target message status args previous-state {:keys [navigation-point] :as current-state} comms]
-  (when-let [then (projects-success-thens navigation-point)]
-    (then current-state comms)))
+  (when (= navigation-point :build-insights)
+    (let [projects (get-in current-state state/projects-path)
+          build-keys (map api/project-build-key projects)
+          api-ch (:api comms)]
+      (api/get-build-insights-data build-keys api-ch))))
 
 (defmethod api-event [:me :success]
   [target message status args state]
@@ -162,7 +153,7 @@
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
-(defmethod api-event [:recent-project-builds :success]
+(defmethod api-event [:insights-recent-builds :success]
   [target message status {page-of-recent-builds :resp, {target-key :project-id
                                                         page-result :page-result
                                                         all-page-results :all-page-results} :context} state]
@@ -171,29 +162,29 @@
   (reset! page-result page-of-recent-builds)
 
   ;; If all page-results have been delivered, we're ready to update the state.
-  (if (every? deref all-page-results)
+  (if-not (every? deref all-page-results)
+    state
     (let [all-recent-builds (apply concat (map deref all-page-results))
-          add-recent-builds (fn [projects]
-                              (for [project projects
-                                    :let [{:keys [branch]} target-key
-                                          project-key (api/project-build-key project)]]
+          add-recent-build (fn [project]
+                              (let [{:keys [branch]} target-key
+                                    project-key (api/project-build-key project)]
                                 (cond-> project
                                   (= (dissoc project-key :branch) (dissoc target-key :branch))
                                   (assoc-in (state/recent-builds-branch-path branch)
                                             all-recent-builds))))]
-      (update-in state state/projects-path add-recent-builds))
-    state))
+      (if (= (:navigation-point state) :project-insights)
+        (update-in state state/project-path add-recent-build)
+        (update-in state state/projects-path (partial map map add-recent-build))))))
 
 (defmethod api-event [:branch-build-times :success]
   [target message status {timing-data :resp, {:keys [target-key]} :context} state]
-  (let [add-timing-data (fn [projects]
-                          (doall (for [project projects
-                                       :let [{:keys [branch]} target-key
-                                             project-key (api/project-build-key project)]]
-                                   (cond-> project
-                                     (= (dissoc project-key :branch) (dissoc target-key :branch))
-                                     (assoc-in [:build-timing branch] timing-data)))))]
-    (update-in state state/projects-path add-timing-data)))
+  (let [add-timing-data (fn [project]
+                          (let [{:keys [branch]} target-key
+                                project-key (api/project-build-key project)]
+                            (cond-> project
+                              (= (dissoc project-key :branch) (dissoc target-key :branch))
+                              (assoc-in [:build-timing branch] timing-data))))]
+    (update-in state state/project-path add-timing-data)))
 
 (defmethod api-event [:build-observables :success]
   [target message status {:keys [context resp]} state]
@@ -538,6 +529,13 @@
 ;; TODO: add project settings API failed handler here. Also, make sure
 ;; to do this without interfering with the old school flash
 ;; notifications.
+
+(defmethod post-api-event! [:project-settings :success]
+  [target message status args previous-state {:keys [navigation-data navigation-point] :as state} comms]
+  (when (= navigation-point :project-insights)
+    (let [build-key (api/project-build-key navigation-data)
+          api-ch (:api comms)]
+      (api/get-project-insights-data build-key api-ch))))
 
 (defmethod api-event [:project-plan :success]
   [target message status {:keys [resp context]} state]
@@ -1007,6 +1005,10 @@
 (defmethod api-event [:all-users :success]
   [_ _ _ {:keys [resp]} state]
   (assoc-in state state/all-users-path resp))
+
+(defmethod api-event [:all-projects :success]
+  [_ _ _ {:keys [resp]} state]
+  (assoc-in state state/all-projects-path resp))
 
 (defmethod api-event [:set-user-admin-state :success]
   [_ _ _ {user :resp} state]

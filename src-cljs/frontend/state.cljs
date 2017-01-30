@@ -258,6 +258,7 @@
 (def license-path [:render-context :enterprise_license])
 
 (def all-users-path [:all-users])
+(def all-projects-path [:all-projects])
 
 (def error-message-path [:error-message])
 (def general-message-path [:general-message])

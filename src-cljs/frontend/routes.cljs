@@ -141,7 +141,7 @@
   [params]
   (generate-url-str "/:vcs_type/:org/:repo/edit" params))
 
-(defn v1-insights-project-path
+(defn v1-project-insights-path
   "Generate URL string from params."
   [params]
   (generate-url-str "/build-insights/:vcs_type/:org/:repo/:branch" params))
@@ -155,21 +155,6 @@
   (generate-url-str "/admin/fleet-state" params))
 
 (defn define-admin-routes! [app nav-ch]
-  (defroute v1-admin-switch "/admin/switch" []
-    (open-to-inner! app nav-ch :switch {:admin true}))
-  (defroute v1-admin-recent-builds "/admin/recent-builds" []
-    (open-to-inner! app nav-ch :dashboard {:admin true}))
-  (defroute v1-admin-current-builds "/admin/running-builds" []
-    (open-to-inner! app nav-ch :dashboard {:admin true
-                                       :query-params {:status "running"}}))
-  (defroute v1-admin-queued-builds "/admin/queued-builds" []
-    (open-to-inner! app nav-ch :dashboard {:admin true
-                                       :query-params {:status "scheduled,queued"}}))
-  (defroute v1-admin-deployments "/admin/deployments" []
-    (open-to-inner! app nav-ch :dashboard {:deployments true}))
-  (defroute v1-admin-build-state "/admin/build-state" []
-    (open-to-inner! app nav-ch :build-state {:admin true}))
-
   (defroute v1-admin "/admin" []
     (open-to-inner! app nav-ch :admin-settings {:admin true
                                                 :subpage :overview}))
@@ -177,22 +162,29 @@
     (open-to-inner! app nav-ch :admin-settings {:admin true
                                                 :subpage :fleet-state
                                                 :tab (keyword _fragment)}))
-  (defroute v1-admin-users "/admin/users" []
-    (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage :users}))
-  (defroute v1-admin-config "/admin/system-settings" []
-    (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage :system-settings}))
-  (defroute v1-admin-system-management "/admin/management-console" []
-    (.replace js/location
-              ;; System management console is served at port 8800
-              ;; with replicated and it's always https
-              (str "https://" js/window.location.hostname ":8800/")))
+  (when-not (config/enterprise?)
+    (defroute v1-admin-switch "/admin/switch" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :switch})))
+  (when (config/enterprise?)
+    (defroute v1-admin-users "/admin/users" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :users}))
+    (defroute v1-all-projects "/admin/projects" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :projects}))
+    (defroute v1-admin-config "/admin/system-settings" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :system-settings}))
+    (defroute v1-admin-system-management "/admin/management-console" []
+      (.replace js/location
+                ;; System management console is served at port 8800
+                ;; with replicated and it's always https
+                (str "https://" js/window.location.hostname ":8800/")))
 
-  (defroute v1-admin-license "/admin/license" []
-    (open-to-inner! app nav-ch :admin-settings {:admin true
-                                            :subpage :license})))
-
+    (defroute v1-admin-license "/admin/license" []
+      (open-to-inner! app nav-ch :admin-settings {:admin true
+                                                  :subpage :license}))))
 
 (defn define-user-routes! [app nav-ch authenticated?]
   (defroute v1-org-settings #"/(gh|bb)/organizations/([^/]+)/settings"

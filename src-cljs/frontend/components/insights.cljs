@@ -413,7 +413,7 @@
                             :src (-> latest-build build/status-icon common/icon-path)})]
             [:span.project-name
              (if show-insights?
-               [:a {:href (routes/v1-insights-project-path {:org org-name
+               [:a {:href (routes/v1-project-insights-path {:org org-name
                                                             :repo repo-name
                                                             :branch (:default_branch project)
                                                             :vcs_type (:vcs_type project)})}
