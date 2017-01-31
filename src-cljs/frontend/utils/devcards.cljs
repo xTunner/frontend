@@ -4,15 +4,12 @@
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [html]]))
 
-(defui
-  ^{:doc
-    "Renders its children in an iframe. Perfect for demonstrating a component on
-    a devcard at various viewport widths.
+(defui IFrame
+  "Renders its children in an iframe. Perfect for demonstrating a component on a
+  devcard at various viewport widths.
 
-    :width  - (default: \"100%\") The CSS width of the iframe.
-    :height - The CSS height of the iframe."}
-
-  IFrame
+  :width  - (default: \"100%\") The CSS width of the iframe.
+  :height - The CSS height of the iframe."
 
   Object
   (componentDidMount [this]
