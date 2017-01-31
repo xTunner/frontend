@@ -36,6 +36,8 @@
 (declare osx-plan-overview)
 (declare linux-plan-overview)
 
+(def stripe-email-key :name)
+
 (defn non-admin-plan [{:keys [org-name login vcs_type]} owner]
   (reify
     om/IRender
@@ -884,7 +886,7 @@
                                  {:rows [card]
                                   :key-fn (constantly "card")
                                   :columns [{:header "Card holder email"
-                                             :cell-fn #(:name % "N/A")}
+                                             :cell-fn #(stripe-email-key % "N/A")}
                                             {:header "Card type"
                                              :cell-fn #(:type % "N/A")}
                                             {:header "Card number"
