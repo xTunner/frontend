@@ -98,29 +98,31 @@
                 "svg" nil
                 (recur (.-parentElement e)))))))))
 
+(defn dispatch-link [e]
+  (let [a (closest-tag (.-target e) "A")
+        attributes (.-attributes a)
+        href (some-> attributes .-href .-value)
+        target (some-> attributes .-target .-value)
+        uri (Uri/parse href)
+        new-token (subs (.getPath uri) 1)]
+    (when (and (not (.hasHost uri))
+               (not (or (new-window-click? e)
+                        (= target "_blank"))))
+      (.preventDefault e)
+      (if (and (route-fragment href)
+               (path-matches? (.getToken history-imp) new-token))
+
+        (do (utils/mlog "scrolling to hash for" href)
+            ;; don't break the back button
+            (.replaceToken history-imp new-token))
+
+        (do (utils/mlog "navigating to" href)
+            (.setToken history-imp new-token))))))
+
 (defn setup-link-dispatcher! [history-imp top-level-node]
   (events/listen
    top-level-node "click"
-   (fn [e]
-     (let [a (closest-tag (.-target e) "A")
-           attributes (.-attributes a)
-           href (some-> attributes .-href .-value)
-           target (some-> attributes .-target .-value)
-           uri (Uri. href)
-           new-token (subs (.getPath uri) 1)]
-       (when (and (not (.hasDomain uri))
-                  (not (or (new-window-click? e)
-                           (= target "_blank"))))
-         (.preventDefault e)
-         (if (and (route-fragment href)
-                  (path-matches? (.getToken history-imp) new-token))
-
-           (do (utils/mlog "scrolling to hash for" href)
-               ;; don't break the back button
-               (.replaceToken history-imp new-token))
-
-           (do (utils/mlog "navigating to" href)
-               (.setToken history-imp new-token))))))))
+   dispatch-link))
 
 (defn new-history-imp [top-level-node]
   ;; need a history element, or goog will overwrite the entire dom
