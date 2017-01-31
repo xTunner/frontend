@@ -413,8 +413,7 @@
     om/IRender
     (render [_]
       (let [avatar-url (gh-utils/make-avatar-url user)
-            show-aside-icons? (not (and (= :dashboard (feature/ab-test-treatment :new-user-landing-page user))
-                                        (-> user :projects empty?)))]
+            show-aside-icons? (-> user :projects empty? not)]
         (html
           [:nav.aside-left-nav
            (when (not (ld/feature-on? "top-bar-ui-v-1"))
