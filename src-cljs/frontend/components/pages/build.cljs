@@ -89,10 +89,6 @@
       {:show-jira-modal? false
        :show-setup-docs-modal? false})
 
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip ".build-settings"))
-
     om/IWillReceiveProps
     (will-receive-props [_ data]
       (let [build (get-in data state/build-path)
@@ -156,19 +152,15 @@
                             :on-click #(om/set-state! owner :show-jira-modal? true)}
                            (icon/add-jira-issue)))
             ;; Settings button
-            [:div.build-settings
-             (when-not can-write-settings?
-               {:class "disabled"
-                :data-original-title "You need to be an admin to change project settings."
-                :data-placement "left"})
-             (button/icon-link {:href (routes/v1-project-settings-path (:navigation-data data))
-                                :bordered? true
-                                :label "Project Settings"
-                                :on-click #((om/get-shared owner :track-event)
-                                            {:event-type :project-settings-clicked
-                                             :properties {:project-vcs-url (:vcs_url project)
-                                                          :user (:login user)}})}
-                               (icon/settings))]]))))))
+            (when can-write-settings?
+              (button/icon-link {:href (routes/v1-project-settings-path (:navigation-data data))
+                                 :bordered? true
+                                 :label "Project Settings"
+                                 :on-click #((om/get-shared owner :track-event)
+                                             {:event-type :project-settings-clicked
+                                              :properties {:project-vcs-url (:vcs_url project)
+                                                           :user (:login user)}})}
+                                (icon/settings)))]))))))
 
 (defn page [app owner]
   (reify

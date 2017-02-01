@@ -136,31 +136,5 @@
         }
       }
     }
-
-    .build-settings {
-      white-space: nowrap;
-
-      &:not(.disabled) {
-        a:hover {
-          text-decoration: none !important;
-        }
-
-        a:hover span {
-          text-decoration: underline;
-        }
-      }
-
-      &.disabled {
-        cursor: default;
-
-        a {
-          pointer-events: none;
-          opacity: 0.5;
-          > span {
-            color: @gray;
-          }
-        }
-      }
-    }
   });
 });
