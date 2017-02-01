@@ -214,7 +214,7 @@
   (defcard-om header-actions-with-jira
     header-actions
     (-> {}
-        ;; To be canceled, a build must have JIRA data...
+        ;; To have the JIRA action, a build must have JIRA data...
         (assoc-in state/jira-data-path {:foo "bar"})
         ;; ...*and* the user must have the "write-settings" scope on the project.
         (assoc-in (conj state/project-path :scopes) #{"write-settings"}))
