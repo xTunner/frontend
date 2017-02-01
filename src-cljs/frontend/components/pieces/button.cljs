@@ -222,7 +222,8 @@
     tooltip text and given to screen readers as the ARIA label.
 
     Icon buttons are only styled as secondary buttons, and should only be used
-    where a secondary button would be appropriate."
+    where a secondary button would be appropriate. They come in a single size,
+    which matches the Medium size of text buttons."
 
     (button-display
      [[(icon {:label "Icon"
@@ -287,15 +288,19 @@
     "A **icon link-button** is a link-button which displays a single icon, like an
     icon button."
     (button-display
-      [[(icon-link {:href "#"
-                    :label "Labels are provided for accessibility"}
-                   (icon/settings))]]))
+     [[(icon-link {:href "#"
+                   :label "Labels are provided for accessibility"}
+                  (icon/settings))]]))
+
   (defcard bordered-buttons
     "Buttons with borders are used in the header. This is design debt."
     (button-display
-      [[(icon {:label "Bordered GitHub icon button"
-               :bordered? true}
-              (icon/github))]
-       [(icon-link {:label "Bordered Bitbucket icon link-button"
-                    :bordered? true}
-                   (icon/bitbucket))]])))
+     [[(managed-button {:bordered? true
+                        :size :medium}
+                       "Bordered Button")]
+      [(icon {:label "Bordered GitHub icon button"
+              :bordered? true}
+             (icon/github))]
+      [(icon-link {:label "Bordered Bitbucket icon link-button"
+                   :bordered? true}
+                  (icon/bitbucket))]])))
