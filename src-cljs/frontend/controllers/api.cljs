@@ -1139,11 +1139,6 @@
     (update-in [:organization/by-vcs-type-and-name [(:vcs_type context) (:org_name context)]] assoc :users (:users context))
     (state/add-flash-notification "An error has occurred. Please try again in a few moments.")))
 
-(defmethod api-event [:org-plan-normalized :success]
-  [target message status {:keys [resp]} state]
-  (let [org (:org resp)]
-    (update-in state [:organization/by-vcs-type-and-name [(:vcs_type org) (:name org)]] merge {:plan resp})))
-
 (defmethod api-event [:enterprise-site-status :success]
   [target message status {:keys [resp]} state]
   (assoc-in state [:enterprise :site-status] resp))
