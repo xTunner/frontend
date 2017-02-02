@@ -1183,14 +1183,12 @@
         process-resp (fn [action current-val]
                        (->> resp
                             (remove repo-model/requires-invite?)
-                            (action repo-model/building-on-circle?)
                             (map #(assoc % :checked true))
                             (map-utils/coll-to-map :vcs_url)
                             (merge current-val)))]
     ;; Add the items on this page of results to the state.
     (-> state
-        (update-in (state/repos-building-path vcs true) #(process-resp filter %))
-        (update-in (state/repos-building-path vcs false) #(process-resp remove %)))))
+        (update-in state/repos-building-path #(process-resp filter %)))))
 
 (defmethod api-event [:all-repos :failed]
   [target message status {:keys [context]} state]

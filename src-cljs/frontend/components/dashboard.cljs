@@ -39,17 +39,11 @@
                      projects
                      (empty? projects))
                 (om/build nux-bootstrap/build-empty-state
-                  (let [projects (fn [{:keys [building?]}]
-                                   (->> (for [vcs-type vcs-types]
-                                          (->> (get-in data (state/repos-building-path vcs-type building?))
-                                               vals
-                                               (remove nil?)))
-                                        flatten))]
-                    {:building-projects (projects {:building? true})
-                     :not-building-projects (projects {:building? false})
-                     :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
-                                            (get-in data (state/all-repos-loaded-path :bitbucket)))
-                     :current-user current-user}))
+                          {:projects (get-in data state/repos-building-path)
+                           :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
+                                                  (get-in data (state/all-repos-loaded-path :bitbucket)))
+                           :current-user current-user
+                           :organizations (get-in data state/user-organizations-path)})
 
                :else
                [:div.dashboard

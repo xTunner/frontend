@@ -1688,25 +1688,24 @@
 (defmethod post-control-event! :followed-projects
   [_ _ _ previous-state current-state comms]
   (let [api-ch (:api comms)
-        selected-vcs-urls (fn [building?]
-                            (->> (concat (get-in current-state (state/repos-building-path :github building?))
-                                         (get-in current-state (state/repos-building-path :bitbucket building?)))
-                                 vals
-                                 (filter :checked)
-                                 (map :vcs_url)))
-        building-vcs-urls (selected-vcs-urls true)
-        not-building-vcs-urls (selected-vcs-urls false)
+        vcs-urls (->> (concat (get-in current-state state/repos-building-path))
+                      vals
+                      (filter :checked)
+                      (map :vcs_url))
         uuid frontend.async/*uuid*]
     (button-ajax :post
-                 (api/follow-projects (concat building-vcs-urls not-building-vcs-urls) api-ch uuid)
+                 (api/follow-projects vcs-urls api-ch uuid)
                  :follow-projects
                  api-ch)))
 
-(defmethod control-event :deselect-activity-repos
-  [_ _ {:keys [path]} state]
-  (update-in state path (fn [current-vals]
-                          (map-utils/map-vals #(assoc % :checked false)
-                                              current-vals))))
+(defmethod control-event :check-all-activity-repos
+  [_ _ {:keys [org-name checked]} state]
+  (update-in state state/repos-building-path (fn [current-vals]
+                                               (map-utils/map-vals (fn [project]
+                                                                     (if (= org-name (project-model/org-name project))
+                                                                       (assoc project :checked checked)
+                                                                       project))
+                                                                   current-vals))))
 
 (defmethod control-event :nux-bootstrap
   [target message args state]
@@ -1714,11 +1713,11 @@
     (reduce (fn [state vcs]
               (-> state
                   (assoc-in (state/all-repos-loaded-path vcs) false)
-                  (assoc-in (state/repos-building-path vcs true) {})
-                  (assoc-in (state/repos-building-path vcs false) {})))
+                  (assoc-in state/repos-building-path {})))
             state
             [:github :bitbucket])))
 
 (defmethod post-control-event! :nux-bootstrap
   [target message args previous-state current-state comms]
+  (api/get-orgs (:api comms) :include-user? true)
   (api/get-all-repos (:api comms)))
