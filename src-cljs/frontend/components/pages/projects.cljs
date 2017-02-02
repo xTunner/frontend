@@ -1,6 +1,5 @@
 (ns frontend.components.pages.projects
   (:require [frontend.analytics :as analytics]
-            [frontend.analytics.utils :as analytics-utils]
             [frontend.async :refer [navigate!]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
@@ -44,7 +43,9 @@
                                                       :org (vcs-url/org-name vcs-url)
                                                       :repo (vcs-url/repo-name vcs-url)})
                                              :on-click #(analytics/track! c {:event-type :project-clicked
-                                                                             :properties (analytics-utils/project-properties project)})}
+                                                                             :properties {:vcs-type (vcs-url/vcs-type vcs-url)
+                                                                                          :org (vcs-url/org-name vcs-url)
+                                                                                          :repo (vcs-url/repo-name vcs-url)}})}
                                             (vcs-url/repo-name vcs-url)]))}
 
                              {:header "Parallelism"
