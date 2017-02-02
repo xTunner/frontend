@@ -264,6 +264,13 @@
              api-ch
              :params value))
 
+(defn get-project-settings [vcs-type org repo api-ch]
+  (ajax/ajax :get
+             (api-path/project-settings vcs-type org repo)
+             :project-settings
+             api-ch
+             :context {:project-name (str org "/" repo)}))
+
 (defn get-project-code-signing-keys [project-name vcs-type api-ch]
   (ajax/ajax :get
              (gstring/format "%s/%s/code-signing/osx-keys" (path/base-project-url-path vcs-type) project-name)
