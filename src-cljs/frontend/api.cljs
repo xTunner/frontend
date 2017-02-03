@@ -266,7 +266,7 @@
 
 (defn get-project-settings [vcs-type org repo api-ch]
   (ajax/ajax :get
-             (api-path/project-settings vcs-type org repo)
+             (path/project-settings vcs-type org repo)
              :project-settings
              api-ch
              :context {:project-name (str org "/" repo)}))
