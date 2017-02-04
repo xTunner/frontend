@@ -1,22 +1,17 @@
 (ns frontend.components.pieces.status-badge
   (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.common :as common]
-            [frontend.components.svg :as svg]
-            [frontend.utils.devcards :as devcard-utils]
-            [om.core :as om])
+            [frontend.components.pieces.icon :as icon]
+            [frontend.utils.devcards :as devcard-utils])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn not-run-words [build]
+(defn- not-run-words [build]
   (case (:dont_build build)
-    "ci-skip"            "skipped"
-    "branch-blacklisted" "skipped"
-    "branch-not-whitelisted" "skipped"
-    "org-not-paid"       "not paid"
-    "user-not-paid"      "not paid"
+    ("ci-skip" "branch-blacklisted" "branch-not-whitelisted") "skipped"
+    ("org-not-paid" "user-not-paid") "not paid"
     "not run"))
 
-(defn status-words [build]
-  (condp = (:status build)
+(defn- status-words [build]
+  (case (:status build)
     "infrastructure_fail" "circle bug"
     "timedout" "timed out"
     "no_tests" "no tests"
@@ -24,15 +19,7 @@
     "not_running" "not running"
     (:status build)))
 
-(defn build-status-badge-wording [build]
-  (let [wording       (status-words build)
-        too-long?     (> (count wording) 10)]
-    [:div {:class (if too-long?
-                    "badge-text small-text"
-                    "badge-text")}
-     wording]))
-
-(defn status-class [build]
+(defn- status-class [build]
   (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
         (= "success" (:outcome build)) "pass"
         (= "running" (:status build)) "busy"
@@ -46,22 +33,20 @@
 
         :else nil))
 
-(defn status-icon [build]
+(defn- status-icon [build]
   (case (status-class build)
-    "fail" "Status-Failed"
-    "stop" "Status-Canceled"
-    "pass" "Status-Passed"
-    "busy" "Status-Running"
-    "queued" "Status-Queued"
-    nil))
+    "fail" (icon/status-failed)
+    "stop" (icon/status-canceled)
+    "pass" (icon/status-passed)
+    "busy" (icon/status-running)
+    "queued" (icon/status-queued)))
 
 (defn status-badge [build]
   (component
     (html
-     [:div.recent-status-badge {:class (status-class build)}
-      (om/build svg/svg {:class "badge-icon"
-                         :src (-> build status-icon common/icon-path)})
-      (build-status-badge-wording build)])))
+     [:div {:class (status-class build)}
+      [:.status-icon (status-icon build)]
+      [:.badge-text (status-words build)]])))
 
 (dc/do
   (defcard status-badge
