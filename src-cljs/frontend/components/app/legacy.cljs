@@ -64,7 +64,6 @@
           :org-settings org-settings/org-settings
 
           :admin-settings admin/admin-settings
-          :build-state admin/build-state
 
           :landing (fn [app owner]
                      (reify
