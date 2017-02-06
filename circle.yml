@@ -62,7 +62,6 @@ experimental:
             command: |
               source ~/.bashrc
               set -exu
-              git grep --color TODO | cat
               lein test
               lein doo chrome test once
 
