@@ -89,9 +89,11 @@
                (gstring/format "%s out of %s projects selected" selected-projects-count projects-count)
                "Counting projects...")]]
            (when expanded?
-             [:div.projects-container.maybe-border-bottom
-              (check-all-activity-repos)
-              (project-items projects)])])))))
+             (if projects-loaded?
+               [:div.projects-container.maybe-border-bottom
+                (check-all-activity-repos)
+                (project-items projects)]
+               (spinner)))])))))
 
 (defn nux-bootstrap-content [data owner]
   (let [projects (->> (:projects data)
