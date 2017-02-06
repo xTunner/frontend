@@ -10,7 +10,6 @@
             [frontend.analytics.core :as analytics]
             [frontend.analytics.common :as common-analytics]
             [frontend.analytics.segment :as segment]))
-  (:require-macros [frontend.utils :refer [inspect]])
 
 (defn- stub-set-amplitude-session-cookie [test]
   (with-redefs [amplitude/set-session-id-cookie! (constantly nil)]
