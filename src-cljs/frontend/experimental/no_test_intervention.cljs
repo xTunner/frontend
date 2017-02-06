@@ -1,4 +1,4 @@
-(ns frontend.experiments.no-test-intervention
+(ns frontend.experimental.no-test-intervention
   (:require [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.modal :as modal]

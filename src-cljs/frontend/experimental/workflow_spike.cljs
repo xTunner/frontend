@@ -1,4 +1,4 @@
-(ns frontend.experiments.workflow-spike)
+(ns frontend.experimental.workflow-spike)
 
 (defn status-class [{:keys [status] :as workflow}]
   (case status

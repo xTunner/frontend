@@ -13,7 +13,7 @@
             [frontend.utils.vcs :as vcs]
             [frontend.utils :as utils :include-macros true]
             [frontend.routes :as routes]
-            [frontend.experiments.workflow-spike :as workflow]
+            [frontend.experimental.workflow-spike :as workflow]
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [frontend.utils.github :as gh-utils])

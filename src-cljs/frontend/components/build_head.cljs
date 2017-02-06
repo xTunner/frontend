@@ -26,7 +26,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.experiments.workflow-spike :as workflow]
+            [frontend.experimental.workflow-spike :as workflow]
             [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])

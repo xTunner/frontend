@@ -19,7 +19,7 @@
             [frontend.utils.vcs :as vcs]
             [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
             [frontend.routes :as routes]
-            [frontend.experiments.workflow-spike :as workflow]
+            [frontend.experimental.workflow-spike :as workflow]
             [goog.dom]
             [goog.string :as gstring])
   (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))

@@ -1,4 +1,4 @@
-(ns frontend.experiments.open-pull-request
+(ns frontend.experimental.open-pull-request
   (:require [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [frontend.models.build :as build-model]

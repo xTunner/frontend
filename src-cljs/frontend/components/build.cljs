@@ -1,6 +1,6 @@
 (ns frontend.components.build
   (:require [frontend.async :refer [raise!]]
-            [frontend.experiments.no-test-intervention :as no-test-intervention]
+            [frontend.experimental.no-test-intervention :as no-test-intervention]
             [frontend.routes :as routes]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
