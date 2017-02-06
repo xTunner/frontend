@@ -176,10 +176,9 @@
 (def bitbucket-repos-loading-path (conj user-path :repos-loading :bitbucket))
 
 (defn all-repos-loaded-path [vcs-type]
-  (conj user-path vcs-type :repos-loaded))
+  (conj user-path :nux vcs-type :repos-loaded))
 
-(defn repos-building-path [vcs-type building?]
-  (conj user-path vcs-type :repos (-> building? str keyword)))
+(def repos-building-path (conj user-path :nux :repos))
 
 (def user-email-prefs-key :basic_email_prefs)
 (def user-email-prefs-path (conj user-path :basic_email_prefs))
@@ -258,6 +257,7 @@
 (def license-path [:render-context :enterprise_license])
 
 (def all-users-path [:all-users])
+(def all-projects-path [:all-projects])
 
 (def error-message-path [:error-message])
 (def general-message-path [:general-message])

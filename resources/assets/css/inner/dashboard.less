@@ -35,23 +35,77 @@
       margin-top: 15px;
     }
 
-    .projects {
-      margin-bottom: 10px;
+    .new-badge::after {
+      background-color: @blueLightest;
+      color: @blueDark;
+      margin-right: 5px;
+      padding: 5px;
+      border-radius: 8px;
+      content: 'NEW';
+      font-size: 9px;
+      font-weight: bold;
+    }
 
-      &.eight-projects, &.twelve-projects {
-        @media (min-width: @screen-sm-max) {
-          -moz-column-count: 2;
-          -moz-columns: 2;
-          -webkit-columns: 2;
-          columns: 2;
+    .org-projects-container {
+      margin: 20px 0 10px;
+      border: 1px solid @grayLighter;
+      border-bottom: none;
+
+      .org-projects {
+
+        h2 {
+          margin-bottom: 0;
+          cursor: pointer;
+
+          > img {
+            width: 30px;
+            height: 30px;
+            border-radius: 30px;
+            margin: 0 10px;
+          }
+
+          > .selected-explaination {
+            font-size: 14px;
+            color: #999;
+            margin-left: 10px;
+          }
         }
 
-        &.twelve-projects {
-          @media (min-width: @screen-md-max) {
-            -moz-column-count: 3;
-            -moz-columns: 3;
-            -webkit-columns: 3;
-            columns: 3;
+        .maybe-border-bottom {
+          padding: 10px 15px;
+          border-bottom: 1px solid @grayLighter;
+        }
+
+        .projects-container {
+          padding: 20px 40px;
+
+          .checkbox:not(:first-child) {
+            margin: 0 0 10px;
+          }
+
+          i {
+            margin: 0 5px 0 0;
+          }
+
+          .projects {
+
+            &.eight-projects, &.twelve-projects {
+              @media (min-width: @screen-sm-max) {
+                -moz-column-count: 2;
+                -moz-columns: 2;
+                -webkit-columns: 2;
+                columns: 2;
+              }
+
+              &.twelve-projects {
+                @media (min-width: @screen-md-max) {
+                  -moz-column-count: 3;
+                  -moz-columns: 3;
+                  -webkit-columns: 3;
+                  columns: 3;
+                }
+              }
+            }
           }
         }
       }

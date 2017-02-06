@@ -133,6 +133,11 @@
   (om/build crumb-node {:name "Projects"
                         :path (routes/v1-projects)}))
 
+(defmethod crumb :admin
+  [attrs]
+  (om/build crumb-node {:name "Admin"
+                        :path (routes/v1-admin)}))
+
 (defmethod crumb :team
   [attrs]
   (om/build crumb-node {:name "Team"

@@ -115,11 +115,7 @@
             (put! (:errors comms) [:api-error api-resp]))
           (when (:repo args)
             (when (:read-settings scopes)
-              (ajax/ajax :get
-                         (api-path/project-info (:vcs_type args) (:org args) (:repo args))
-                         :project-settings
-                         api-ch
-                         :context {:project-name (str (:org args) "/" (:repo args))})
+              (api/get-project-settings (:vcs_type args) (:org args) (:repo args) api-ch)
               (ajax/ajax :get
                          (api-path/project-plan (:vcs_type args) (:org args) (:repo args))
                          :project-plan
@@ -290,10 +286,8 @@
                                     :vcs_type vcs_type}])))
 
 (defmethod post-navigated-to! :project-insights
-  [history-imp navigation-point args previous-state current-state comms]
-  (let [api-ch (:api comms)]
-    (api/get-projects api-ch)
-    (api/get-user-plans api-ch))
+  [history-imp navigation-point {:keys [org repo vcs_type] :as args} previous-state current-state comms]
+  (api/get-project-settings vcs_type org repo (:api comms))
   (set-page-title! "Insights"))
 
 (defmethod navigated-to :team
@@ -344,11 +338,7 @@
         repo (:repo navigation-data)]
     (when-not (seq (get-in current-state state/projects-path))
       (api/get-projects api-ch))
-    (ajax/ajax :get
-               (api-path/project-settings vcs-type org repo)
-               :project-settings
-               api-ch
-               :context {:project-name project-name})
+    (api/get-project-settings vcs-type org repo api-ch)
 
     (cond (and (or (= subpage :parallel-builds) (= subpage :build-environment))
                (not (get-in current-state state/project-plan-path)))
@@ -481,6 +471,7 @@
   [history-imp navigation-point {:keys [subpage] :as args} state]
   (-> state
       state-utils/clear-page-state
+      (assoc-in state/crumbs-path [{:type :admin}])
       (assoc state/current-view navigation-point
              state/navigation-data args
              :admin-settings-subpage subpage
@@ -498,6 +489,9 @@
       :users (do
                (api/get-all-users api-ch)
                (set-page-title! "Users"))
+      :projects (do
+                  (api/get-all-projects api-ch)
+                  (set-page-title! "Projects"))
       :system-settings (do
                          (api/get-all-system-settings api-ch)
                          (set-page-title! "System Settings")))))

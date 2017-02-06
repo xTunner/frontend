@@ -17,7 +17,7 @@
             [frontend.utils :as utils]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.string :refer [format capitalize]]
+            [goog.string :refer [format]]
             [om.core :as om :include-macros true]) 
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -133,7 +133,9 @@
               (if (and (:current-build-data app) (feature/enabled? "show-demo-label"))
                 [:ul.nav.navbar-nav
                     [:li [:span.demo-label " "
-                          (when first-build (format "You are viewing the CircleCI open source dashboard with builds from %s's %s repo" (capitalize (:username first-build)) (capitalize (:reponame first-build))))]]]
+                          (when first-build (format "You are viewing the CircleCI open source dashboard with builds from %s's %s repo"
+                                                    (:username first-build)
+                                                    (:reponame first-build)))]]]
                 [:ul.nav.navbar-nav
                  (when (config/show-marketing-pages?)
                    (list
@@ -359,10 +361,7 @@
                                       "Account Notifications"]]
                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
           (when (and (seq crumbs)
-                     (or (-> (feature/ab-test-treatment :new-user-landing-page user)
-                             (= :dashboard)
-                             not)
-                         (= :build (get-in app state/current-view-path))
+                     (or (= :build (get-in app state/current-view-path))
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
                                           :logged-out? (not (:name user))
@@ -374,7 +373,7 @@
                                                      (conj actions)
 
                                                      (show-follow-project-button? app)
-                                                     (conj (om/build follow-project-button project)))}))])))))
+                                                     (conj (html [:.follow-project (om/build follow-project-button project)])))}))])))))
 
 (defn header [{:keys [app crumbs actions] :as props} owner]
   (reify

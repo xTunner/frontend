@@ -64,7 +64,7 @@
     :create-jira-issue-clicked
     :create-jira-issue-failed
     :create-jira-issue-success
-    :deselect-all-projects-clicked
+    :checked-all-projects-clicked
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
     :expand-repo-toggled

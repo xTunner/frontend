@@ -65,7 +65,6 @@
 
           :admin-settings admin/admin-settings
           :build-state admin/build-state
-          :switch admin/switch
 
           :landing (fn [app owner]
                      (reify

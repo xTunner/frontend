@@ -71,9 +71,7 @@
     :setup-docs-ab-test {true :setup-docs-modal
                          false :setup-docs-banner}
     :signup-cta-on-404 {true :signup-cta-on-404
-                        false :no-signup-cta-on-404}
-    :new-user-landing-page {true :dashboard
-                            false :add-projects}})
+                        false :no-signup-cta-on-404}})
 
   ([user]
    (merge (ab-test-treatment-map)
