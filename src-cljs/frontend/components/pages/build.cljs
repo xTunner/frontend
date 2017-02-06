@@ -1,13 +1,12 @@
 (ns frontend.components.pages.build
-  (:require [frontend.async :refer [raise!]]
-            [frontend.experiments.no-test-intervention :as no-test-intervention]
+  (:require [devcards.core :as dc :refer-macros [defcard-om]]
+            [frontend.async :refer [raise!]]
             [frontend.components.build :as build-com]
-            [frontend.components.build-head :as build-head]
-            [frontend.components.forms :as forms]
+            [frontend.components.jira-modal :as jira-modal]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
-            [frontend.components.jira-modal :as jira-modal]
             [frontend.components.templates.main :as main-template]
+            [frontend.experiments.no-test-intervention :as no-test-intervention]
             [frontend.experiments.open-pull-request :refer [open-pull-request-action]]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
@@ -15,9 +14,8 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
-            [frontend.stefon :refer [asset-path]]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component html]]))
 
 (defn- ssh-available?
   "Show the SSH button unless it's disabled"
@@ -91,10 +89,6 @@
       {:show-jira-modal? false
        :show-setup-docs-modal? false})
 
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip ".build-settings"))
-
     om/IWillReceiveProps
     (will-receive-props [_ data]
       (let [build (get-in data state/build-path)
@@ -120,22 +114,23 @@
                             :properties {:project-vcs-url (:vcs_url project)
                                          :user (:login user)
                                          :component "header"}}))]
-        (html
-          [:div.build-actions-v2
-           ;; Ensure we never have more than 1 modal showing
-           (cond
-             show-jira-modal?
-             (om/build jira-modal/jira-modal {:project project
-                                              :jira-data jira-data
-                                              :close-fn #(om/set-state! owner :show-jira-modal? false)})
-             (and show-setup-docs-modal?
-                  (= :setup-docs-modal (no-test-intervention/ab-test-treatment)))
-             (om/build no-test-intervention/setup-docs-modal
-                       {:close-fn
-                        #(om/set-state! owner :show-setup-docs-modal? false)}))
-           ;; Cancel button
-           (when (and (build-model/can-cancel? build) can-trigger-builds?)
-             (button/managed-button
+        (component
+          (html
+           [:div
+            ;; Ensure we never have more than 1 modal showing
+            (cond
+              show-jira-modal?
+              (om/build jira-modal/jira-modal {:project project
+                                               :jira-data jira-data
+                                               :close-fn #(om/set-state! owner :show-jira-modal? false)})
+              (and show-setup-docs-modal?
+                   (= :setup-docs-modal (no-test-intervention/ab-test-treatment)))
+              (om/build no-test-intervention/setup-docs-modal
+                        {:close-fn
+                         #(om/set-state! owner :show-setup-docs-modal? false)}))
+            ;; Cancel button
+            (when (and (build-model/can-cancel? build) can-trigger-builds?)
+              (button/managed-button
                {:loading-text "Canceling"
                 :failed-text  "Couldn't Cancel"
                 :success-text "Canceled"
@@ -144,32 +139,28 @@
                 :bordered? true
                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                "Cancel Build"))
-           ;; Rebuild button
-           (om/build rebuild-actions {:build build :project project})
-           ;; PR button
-           (when (and (feature/enabled? :open-pull-request)
-                      (not-empty build))
-             (om/build open-pull-request-action {:build build}))
-           ;; JIRA button
-           (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
-             (button/icon {:label "Add ticket to JIRA"
-                           :bordered? true
-                           :on-click #(om/set-state! owner :show-jira-modal? true)}
-                          (icon/add-jira-issue)))
-           ;; Settings button
-           [:div.build-settings
-            (when-not can-write-settings?
-              {:class "disabled"
-               :data-original-title "You need to be an admin to change project settings."
-               :data-placement "left"})
-            (button/icon-link {:href (routes/v1-project-settings-path (:navigation-data data))
-                               :bordered? true
-                               :label "Project Settings"
-                               :on-click #((om/get-shared owner :track-event)
-                                           {:event-type :project-settings-clicked
-                                            :properties {:project-vcs-url (:vcs_url project)
-                                                         :user (:login user)}})}
-                              (icon/settings))]])))))
+            ;; Rebuild button
+            (om/build rebuild-actions {:build build :project project})
+            ;; PR button
+            (when (and (feature/enabled? :open-pull-request)
+                       (not-empty build))
+              (om/build open-pull-request-action {:build build}))
+            ;; JIRA button
+            (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
+              (button/icon {:label "Add ticket to JIRA"
+                            :bordered? true
+                            :on-click #(om/set-state! owner :show-jira-modal? true)}
+                           (icon/add-jira-issue)))
+            ;; Settings button
+            (when can-write-settings?
+              (button/icon-link {:href (routes/v1-project-settings-path (:navigation-data data))
+                                 :bordered? true
+                                 :label "Project Settings"
+                                 :on-click #((om/get-shared owner :track-event)
+                                             {:event-type :project-settings-clicked
+                                              :properties {:project-vcs-url (:vcs_url project)
+                                                           :user (:login user)}})}
+                                (icon/settings)))]))))))
 
 (defn page [app owner]
   (reify
@@ -182,3 +173,41 @@
                                  :ssh-available? (ssh-available? (get-in app (get-in app state/project-path))
                                                                  (get-in app (get-in app state/build-path)))})
         :header-actions (om/build header-actions app)}))))
+
+(dc/do
+  ;; Stub out jQuery tooltip functionality. Not the best solution, but we need
+  ;; to get rid of jQuery tooltips anyhow.
+  (aset js/window "$" (constantly #js {:tooltip (constantly nil)}))
+
+  ;; Stub out feature/enabled? to turn features on. Note that this is
+  ;; global (to the devcards app), and therefore not sustainable. The next
+  ;; namespace that needs to add feature flags like this will overwrite this
+  ;; one. We'll need a better way to handle these.
+  (set! feature/enabled? #{:jira-integration :open-pull-request})
+
+  ;; Note: The following devcards use defcard-om so they can supply a
+  ;; stub :track-event in :shared.
+
+  (defcard-om header-actions
+    header-actions
+    {}
+    {:shared {:track-event (constantly nil)}})
+
+  (defcard-om header-actions-cancelable
+    header-actions
+    (-> {}
+        ;; To be canceled, a build must have the lifecycle and status of "running"...
+        (assoc-in state/build-path {:lifecycle "running"
+                                    :status "running"})
+        ;; ...*and* the user must have the "trigger-builds" scope on the project.
+        (assoc-in (conj state/project-path :scopes) #{"trigger-builds"}))
+    {:shared {:track-event (constantly nil)}})
+
+  (defcard-om header-actions-with-jira
+    header-actions
+    (-> {}
+        ;; To have the JIRA action, a build must have JIRA data...
+        (assoc-in state/jira-data-path {:foo "bar"})
+        ;; ...*and* the user must have the "write-settings" scope on the project.
+        (assoc-in (conj state/project-path :scopes) #{"write-settings"}))
+    {:shared {:track-event (constantly nil)}}))
