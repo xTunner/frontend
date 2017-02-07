@@ -11,7 +11,8 @@
             [frontend.utils :as utils]
             [frontend.utils.github :as gh-utils]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
+            [om.core :as om :include-macros true]
+            [frontend.models.feature :as feature])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn count-projects [{:keys [building? projects]}]
@@ -34,7 +35,7 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:expanded? false})
+      {:expanded? (feature/ab-test-treatment :expand-nux-project-list)})
 
     om/IRenderState
     (render-state [_ {:keys [expanded?]}]
@@ -93,7 +94,8 @@
                [:div.projects-container.maybe-border-bottom
                 (check-all-activity-repos)
                 (project-items projects)]
-               (spinner)))])))))
+               [:div.projects-container.maybe-border-bottom
+                (spinner)]))])))))
 
 (defn nux-bootstrap-content [data owner]
   (let [projects (->> (:projects data)
