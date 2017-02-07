@@ -66,9 +66,7 @@
 
 (defn ab-test-treatment-map
   ([]
-   {:expand-nux-project-list {true true
-                              false false}
-    :junit-ab-test {true :junit-button
+   {:junit-ab-test {true :junit-button
                     false :junit-banner}
     :setup-docs-ab-test {true :setup-docs-modal
                          false :setup-docs-banner}

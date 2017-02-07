@@ -11,8 +11,7 @@
             [frontend.utils :as utils]
             [frontend.utils.github :as gh-utils]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true]
-            [frontend.models.feature :as feature])
+            [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
 (defn count-projects [{:keys [building? projects]}]
@@ -35,7 +34,7 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:expanded? (feature/ab-test-treatment :expand-nux-project-list)})
+      {:expanded? true})
 
     om/IRenderState
     (render-state [_ {:keys [expanded?]}]
