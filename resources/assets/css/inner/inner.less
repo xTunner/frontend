@@ -84,6 +84,33 @@
   @import "icons.less";
   @import "alerts.less";
 
+  &.modal-contents {
+    // This hack formats the cancel-plan-modal until we switch to Component-Oriented Style (COS)
+    // Instead of applying the cancel-reason formatting on modal.less (COS), the class .inner
+    //   in the cancel-plan-modal function forces the formatting to compile here, on inner.less,
+    //   as opposed to within org.less
+
+    background-color: initial;
+    display: initial;
+    height: initial;
+    position: initial;
+    z-index: initial;
+
+    .cancel-reason {
+      display: block;
+
+      span, input {
+        height: 1em;
+        margin: 0 0;
+        line-height: 1em;
+      }
+
+      span {
+        padding-left: 4px;
+      }
+    }
+  }
+
   .recent-status-badge {
     @badge-height: 25px;
 

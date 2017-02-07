@@ -156,7 +156,7 @@
       }
     }
 
-    #edit-plan {
+    .edit-plan {
 
       .plan {
         margin-bottom: 40px;
@@ -252,46 +252,6 @@
       .cancel {
         background-color: @red;
         border-color: @red;
-      }
-    }
-  }
-
-  .org-cancel {
-    .value-prop {
-      margin-bottom: 5px;
-      font-size: 18px;
-    }
-
-    .bottom-value {
-      margin: 30px 0;
-    }
-
-    .hint {
-      margin: 0;
-      line-height: 1em;
-      color: @redLight;
-      transition: all 200ms ease-in-out, opacity 400ms ease-in-out;
-      overflow: hidden;
-      height: 0;
-      opacity: 0;
-      &.show {
-        height: 1em;
-        opacity: 1;
-      }
-    }
-    form > *:not(label) {
-      margin: 1em 0;
-      max-width: ((2 / 3) * @minimumContentWidth);
-    }
-    label.cancel-reason {
-      display: block;
-      span, input {
-        height: 1em;
-        margin: 0 0;
-        line-height: 1em;
-      }
-      span {
-        padding-left: 4px;
       }
     }
   }

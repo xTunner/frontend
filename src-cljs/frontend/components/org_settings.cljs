@@ -11,6 +11,7 @@
             [frontend.components.forms :as forms]
             [frontend.components.pieces.form :as form]
             [frontend.components.inputs :as inputs]
+            [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.project.common :as project-common]
@@ -233,8 +234,8 @@
                   "If you're an admin in the " [:strong [:em parent-name]]
                   " organization, then you can change plan settings from the "
                   [:strong [:a {:href (routes/v1-org-settings-path {:org parent-name
-                                                           :vcs_type parent-vcs-type})}
-                   parent-name " plan page"]] "."]
+                                                                    :vcs_type parent-vcs-type})}]
+                   parent-name " plan page"]] "."
                  [:p.mb-0
                   "You can create a separate plan for " [:strong [:em current-org-name]] " when you're no longer covered by " [:strong [:em parent-name]] "."]]))])
 
@@ -337,14 +338,14 @@
     om/IRender
     (render [_]
       (let [[first-half second-half] (split-at (quot (count items) 2) items)]
-      (html
-        [:fieldset.faq {:data-component `faq}
-         [:legend "FAQs"]
-         [:div.columns
-          [:div.column
-          (om/build-all faq-item first-half)]
-         [:div.column
-          (om/build-all faq-item second-half)]]])))))
+       (html
+         [:fieldset.faq {:data-component `faq}
+          [:legend "FAQs"]
+          [:div.columns
+           [:div.column
+            (om/build-all faq-item first-half)]
+           [:div.column
+            (om/build-all faq-item second-half)]]])))))
 
 (defn plan-payment-button [{:keys [text loading-text disabled? on-click-fn]} owner]
   (reify
@@ -464,8 +465,8 @@
           [:div.osx-plans {:data-component `osx-plans-list}
            (if (pm/osx? plan)
              [:legend.update-plan "Update OS X Plan"]
-             [:legend.update-plan "Choose OS X Plan"]
-             )
+             [:legend.update-plan "Choose OS X Plan"])
+             
            [:p [:em "Your selection below only applies to OS X service and will not affect Linux containers."]]
            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
              [:p "The OS X trial you've selected has expired, please choose a plan below."])
@@ -481,10 +482,86 @@
        [:div.text
         [:span "We "[:span.heart-emoji "❤"]" OSS. Projects that are public will build with " pm/oss-containers " extra containers - our gift to free and open source software."]]])))
 
-(defn linux-plan [{:keys [app checkout-loaded?]} owner]
+(defn cancel-plan-modal
+  [{:keys [app close-fn]} owner]
   (reify
     om/IRender
-    (render [_]
+     (render [_]
+      (let [org-name (get-in app state/org-name-path)
+            vcs_type (get-in app state/org-vcs_type-path)
+            plan (get-in app state/org-plan-path)
+            cancel-clickable false]            
+        (modal/modal-dialog
+          {:title "Are you sure?"
+           :body
+           (html
+             [:.inner.modal-contents
+               [:div.org-cancel
+                [:div.top-value
+                 [:p.value-prop "If you cancel your plan, you will no longer have access to speed enabled by parallelism and concurrency."]
+                 [:p.value-prop "You will also lose access to engineer support, insights, and more premium features."]]
+                [:div.bottom-value
+                 [:p.value-prop "Your cancelation will be effective immediately"]]
+                [:div.row-fluid
+                 [:h1
+                  {:data-bind "attr: {alt: cancelFormErrorText}"}
+                  "Please tell us why you're canceling. This helps us make CircleCI better!"]
+
+                 [:form
+                  (for [reason [{:value "project-ended", :text "Project Ended"},
+                                {:value "slow-performance", :text "Slow Performance"},
+                                {:value "unreliable-performance", :text "Unreliable Performance"},
+                                {:value "too-expensive", :text "Too Expensive"},
+                                {:value "didnt-work", :text "Couldn't Make it Work"},
+                                {:value "missing-feature", :text "Missing Feature"},
+                                {:value "poor-support", :text "Poor Support"},
+                                {:value "other", :text "Other"}]]
+                    [:label.cancel-reason
+                     [:input
+                      {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
+                       :on-change #(utils/toggle-input owner (state/selected-cancel-reason-path (:value reason)) %)
+                       :type "checkbox"}]
+                     (:text reason)])
+                  [:textarea
+                   {:required true
+                    :value (get-in app state/cancel-notes-path)
+                    :on-change #(utils/edit-input owner state/cancel-notes-path %)}]
+                  [:label
+                   {:placeholder "Thanks for the feedback!",
+                    :alt (if (get app (state/selected-cancel-reason-path "other"))
+                           "Would you mind elaborating more?"
+                           "Have any other thoughts?")}]]]]])
+           :close-fn close-fn
+           :actions [(button/button {:on-click close-fn} "Close")
+                     (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
+                                        (filter second)
+                                        keys
+                                        set)
+                           notes (get-in app state/cancel-notes-path)
+                           needs-other-notes? (and (contains? reasons "other") (string/blank? notes))
+                           errors (cond (empty? reasons) "Please select at least one reason."
+                                        needs-other-notes? "Please specify above."
+                                        :else nil)
+                           enable-button? (or (empty? reasons) needs-other-notes?)]
+                       (button/managed-button
+                         {:kind :danger
+                          :disabled? enable-button?
+                          :success-text "Canceled"
+                          :loading-text "Canceling..."
+                          :on-click #(do (raise! owner [:cancel-plan-clicked {:org-name org-name
+                                                                              :vcs_type vcs_type
+                                                                              :cancel-reasons reasons
+                                                                              :cancel-notes notes}])
+                                         (close-fn))}
+                         "Cancel Plan"))]})))))
+
+(defn linux-plan [{:keys [app checkout-loaded?]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [org-name (get-in app state/org-name-path)
             vcs-type (get-in app state/org-vcs_type-path)
             plan (get-in app state/org-plan-path)
@@ -502,9 +579,10 @@
             piggiebacked? (pm/piggieback? plan org-name vcs-type)
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)
-            containers-str (pluralize-no-val selected-containers "container")]
+            containers-str (pluralize-no-val selected-containers "container")
+            close-fn #(om/set-state! owner :show-modal? false)]
         (html
-         [:div#edit-plan {:class "pricing.page" :data-component `linux-plan}
+         [:div.edit-plan {:class "pricing.page" :data-component `linux-plan}
           [:div.main-content
            [:div.plan-header
             (om/build linux-plan-overview app)
@@ -514,92 +592,98 @@
              (when-not (config/enterprise?)
                [:div
                 (om/build linux-oss-alert app)])]]
-
-             [:div
-              [:form
+           (when show-modal?
+            (om/build cancel-plan-modal {:app app
+                                         :close-fn close-fn
+                                         :show-modal? show-modal?}))
+           [:div
+            [:form
+             (when-not (config/enterprise?)
+               [:div.container-picker
+                (if (pm/linux? plan)
+                  [:legend.update-plan "Update Linux Plan"]
+                  [:legend.update-plan "Choose Linux Plan"])
+                [:h1.container-input
+                 [:span "Use "]
+                 [:input.form-control
+                  {:type "text" :value selected-containers
+                   :on-change #(utils/edit-input owner state/selected-containers-path %
+                                :value (int (.. % -target -value)))}]
+                 [:span.new-plan-total (if (config/enterprise?)
+                                        containers-str
+                                        (str "paid " containers-str
+                                             (str (when-not (zero? new-total) (str " at $" new-total "/month")))
+                                             " + 1 free container"))]]
+                [:p
+                 (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")
+                 [:br]
+                 [:em "Changes to your Linux plan will not affect your OS X plan."]]])
+             [:fieldset
+              (if (and (not piggiebacked?)
+                       (or (config/enterprise?)
+                           (pm/stripe-customer? plan)))
+                (let [enterprise-text "Save changes"]
+                  (if (and (zero? new-total)
+                           (not (config/enterprise?))
+                           (not (zero? (pm/paid-linux-containers plan))))
+                    (button/managed-button
+                      {:success-text "Canceled"
+                       :loading-text "Canceling..."
+                       :disabled? (not button-clickable?)
+                       :kind :danger
+                       :on-click #(do (om/set-state! owner :show-modal? true)
+                                      (om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
+                                                                          :properties {:repo nil}})}
+                      "Cancel Plan")
+                    (button/managed-button
+                      {:success-text "Saved"
+                       :loading-text "Saving..."
+                       :disabled? (not button-clickable?)
+                       :on-click (when button-clickable?
+                                   #(do
+                                      (raise! owner [:update-containers-clicked
+                                                     {:containers selected-paid-containers}])
+                                      (analytics-track/update-plan-clicked {:owner owner
+                                                                            :new-plan selected-paid-containers
+                                                                            :previous-plan (pm/paid-linux-containers plan)
+                                                                            :plan-type pm/linux-plan-type
+                                                                            :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                       :kind :primary}
+                      (if (config/enterprise?)
+                        enterprise-text
+                        "Update Plan"))))
+                (if-not checkout-loaded?
+                  (spinner)
+                  (button/managed-button
+                    {:success-text "Paid!"
+                     :loading-text "Paying..."
+                     :failed-text "Failed!"
+                     :disabled? (not button-clickable?)
+                     :on-click (when button-clickable?
+                                 #(raise! owner [:new-plan-clicked
+                                                 {:containers selected-paid-containers
+                                                  :linux {:template (:id pm/default-template-properties)}
+                                                  :price new-total
+                                                  :description (str "$" new-total "/month, includes "
+                                                                    (pluralize selected-containers "container"))}]))
+                     :kind :primary}
+                    "Pay Now")))
               (when-not (config/enterprise?)
-                [:div.container-picker
-                 (if (pm/linux? plan)
-                   [:legend.update-plan "Update Linux Plan"]
-                   [:legend.update-plan "Choose Linux Plan"])
-                 [:h1.container-input
-                  [:span "Use "]
-                  [:input.form-control
-                   {:type "text" :value selected-containers
-                    :on-change #(utils/edit-input owner state/selected-containers-path %
-                    :value (int (.. % -target -value)))}]
-                  [:span.new-plan-total (if (config/enterprise?)
-                                         containers-str
-                                         (str "paid " containers-str
-                                              (str (when-not (zero? new-total) (str " at $" new-total "/month")))
-                                              " + 1 free container"))]]
-                 [:p (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")
-                  [:br]
-                  [:em "Changes to your Linux plan will not affect your OS X plan."]]])
-              [:fieldset
-               (if (and (not piggiebacked?)
-                        (or (config/enterprise?)
-                            (pm/stripe-customer? plan)))
-                 (let [enterprise-text "Save changes"]
-                   (if (and (zero? new-total)
-                            (not (config/enterprise?))
-                            (not (zero? (pm/paid-linux-containers plan))))
-                     (button/link
-                       {:href "#cancel"
-                        :disabled? (not button-clickable?)
-                        :kind :danger
-                        :on-click #((om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
-                                                                        :properties {:repo nil}})}
-                       "Cancel Plan")
-                     (button/managed-button
-                       {:success-text "Saved"
-                        :loading-text "Saving..."
-                        :disabled? (not button-clickable?)
-                        :on-click (when button-clickable?
-                                    #(do
-                                       (raise! owner [:update-containers-clicked
-                                                      {:containers selected-paid-containers}])
-                                       (analytics-track/update-plan-clicked {:owner owner
-                                                                             :new-plan selected-paid-containers
-                                                                             :previous-plan (pm/paid-linux-containers plan)
-                                                                             :plan-type pm/linux-plan-type
-                                                                             :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
-                        :kind :primary}
-                       (if (config/enterprise?)
-                         enterprise-text
-                         "Update Plan"))))
-                 (if-not checkout-loaded?
-                   (spinner)
-                   (button/managed-button
-                     {:success-text "Paid!"
-                      :loading-text "Paying..."
-                      :failed-text "Failed!"
-                      :disabled? (not button-clickable?)
-                      :on-click (when button-clickable?
-                                  #(raise! owner [:new-plan-clicked
-                                                  {:containers selected-paid-containers
-                                                   :linux {:template (:id pm/default-template-properties)}
-                                                   :price new-total
-                                                   :description (str "$" new-total "/month, includes "
-                                                                     (pluralize selected-containers "container"))}]))
-                      :kind :primary}
-                     "Pay Now")))
-               (when-not (config/enterprise?)
                  ;; TODO: Clean up conditional here - super nested and many interactions
                  ;; FIXME CIRCLE-1833 ON CURRENT PLAN, ADD MESSAGE 'CHANGE CONTAINERS TO UPDATE PLAN'
-                 (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
-                   [:div
-                    [:p.hint
-                     [:em (cond
-                      (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
-                      (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]]]
-                   (if (pm/in-trial? plan)
-                     [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                      "."]
+                (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                  [:div
+                   [:p.hint
+                    [:em (cond
+                          (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
+                          (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]]]
+                  (if (pm/in-trial? plan)
+                    [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                     "."]
                      ;; TODO: Only show for trial-plans?
-                     [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
-                      " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                      " ago. Pay now to enable builds of private projects."])))]]]]])))))
+                    [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                     " ago. Pay now to enable builds of private projects."])))]]]]])))))
 
 (defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
   (reify
@@ -1057,75 +1141,6 @@
             (om/build billing-discounts app)
             (om/build billing-invoices app)])]))))
 
-(defn cancel [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (let [org-name (get-in app state/org-name-path)
-            vcs_type (get-in app state/org-vcs_type-path)
-            plan (get-in app state/org-plan-path)]
-        (html
-          [:div.org-cancel
-           [:div.row-fluid [:fieldset [:legend "Is this goodbye? Are you sure you don't want to reconsider?"]]]
-           [:div.top-value
-            [:p.value-prop "If you cancel your plan, you will no longer have access to speed enabled by parallelism and concurrency."]
-            [:p.value-prop "You will also lose access to engineer support, insights, and more premium features."]]
-           [:div.bottom-value
-            [:p.value-prop "Your cancelation will be effective immediately"]]
-           [:div.row-fluid
-            [:h1
-             {:data-bind "attr: {alt: cancelFormErrorText}"}
-             "Please tell us why you're canceling. This helps us make CircleCI better!"]
-            [:form
-             (for [reason [{:value "project-ended", :text "Project Ended"},
-                           {:value "slow-performance", :text "Slow Performance"},
-                           {:value "unreliable-performance", :text "Unreliable Performance"},
-                           {:value "too-expensive", :text "Too Expensive"},
-                           {:value "didnt-work", :text "Couldn't Make it Work"},
-                           {:value "missing-feature", :text "Missing Feature"},
-                           {:value "poor-support", :text "Poor Support"},
-                           {:value "other", :text "Other"}]]
-               [:label.cancel-reason
-                [:input
-                 {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
-                  :on-change #(utils/toggle-input owner (state/selected-cancel-reason-path (:value reason)) %)
-                  :type "checkbox"}]
-                (:text reason)])
-             [:textarea
-              {:required true
-               :value (get-in app state/cancel-notes-path)
-               :on-change #(utils/edit-input owner state/cancel-notes-path %)}]
-             [:label
-              {:placeholder "Thanks for the feedback!",
-               :alt (if (get app (state/selected-cancel-reason-path "other"))
-                      "Would you mind elaborating more?"
-                      "Have any other thoughts?")}]
-             (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
-                                (filter second)
-                                keys
-                                                     set)
-                   notes (get-in app state/cancel-notes-path)
-                   errors (cond (empty? reasons) "Please select at least one reason."
-                                (and (contains? reasons "other") (string/blank? notes)) "Please specify above."
-                                :else nil)]
-              ;; This is a bit of a hack -- it could be much nicer if managed button exposed more of its interface
-              ;; or accepted hooks
-               (if errors
-                 (list
-                  (when (om/get-state owner [:show-errors?])
-                    [:div.hint {:class "show"} [:i.fa.fa-exclamation-circle] " " errors])
-                  (button/button
-                   {:on-click #(om/set-state! owner [:show-errors?] true)
-                    :kind :danger}
-                   "Cancel Plan"))
-                 (button/managed-button
-                  {:kind :danger
-                   :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                   :vcs_type vcs_type
-                                                                   :cancel-reasons reasons
-                                                                   :cancel-notes notes}])}
-                  "Cancel Plan")))]]])))))
-
 (defn progress-bar [{:keys [max value]} owner]
   (reify
     om/IRender
@@ -1340,12 +1355,12 @@
                 [:p
                  (if (pm/osx? plan)
                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                         :vcs_type plan-vcs-type
-                                                         :_fragment "osx-pricing"})} "Update OS X plan"]]
+                                                                    :vcs_type plan-vcs-type
+                                                                    :_fragment "osx-pricing"})} "Update OS X plan"]]
                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                           :vcs_type plan-vcs-type
-                                                           :_fragment "osx-pricing"})} "Choose OS X plan"]]
-                  )
+                                                                    :vcs_type plan-vcs-type
+                                                                    :_fragment "osx-pricing"})} "Choose OS X plan"]])
+                  
                  "."]
                 [:fieldset
                  (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
@@ -1388,32 +1403,32 @@
                 [:div
                  [:h1 (str "Current Linux plan: " containers " containers - $" (pm/current-linux-cost plan) "/month.")]
                  (when (and (not (config/enterprise?))
-                                    (pm/linux? plan))
-                           [:p
-                            (str (pm/paid-linux-containers plan) " containers are paid")
-                            (if piggiebacked? ". "
-                                (list ", at $" (pm/current-linux-cost plan) "/month. "))
-                            (if (pm/grandfathered? plan)
-                              (list "We've changed our pricing model since this plan began, so its current price "
-                                    "is grandfathered in. "
-                                    "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
-                                    "We'll switch it to the new model if you upgrade or downgrade. ")
-                              (list
-                                (when (and (pm/freemium? plan) (> containers 1))
-                                  [:span (str (pm/freemium-containers plan) " container is free.")])
-                                [:br ]
+                            (pm/linux? plan))
+                       [:p
+                        (str (pm/paid-linux-containers plan) " containers are paid")
+                        (if piggiebacked? ". "
+                            (list ", at $" (pm/current-linux-cost plan) "/month. "))
+                        (if (pm/grandfathered? plan)
+                          (list "We've changed our pricing model since this plan began, so its current price "
+                                "is grandfathered in. "
+                                "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
+                                "We'll switch it to the new model if you upgrade or downgrade. ")
+                          (list
+                            (when (and (pm/freemium? plan) (> containers 1))
+                              [:span (str (pm/freemium-containers plan) " container is free.")])
+                            [:br]
                                ;; make sure to link to the add-containers page of the plan's org,
                                ;; in case of piggiebacking.
-                               (when-not piggiebacked?)
-                                [:p "You can update your Linux plan below."]))
-                            [:p "Questions? Check out the FAQs below."]])]
+                           (when-not piggiebacked?)
+                           [:p "You can update your Linux plan below."]))
+                        [:p "Questions? Check out the FAQs below."]])]
                 (= containers 1)
                 [:div
                  [:h1 "Current Linux plan: Hobbyist (1 container) - $0/month"]
                  [:p "0 containers are paid. 1 container is free."]
                  [:p
-                  [:strong "Add more containers to update your plan below"
-                   ]
+                  [:strong "Add more containers to update your plan below"]
+                   
                   " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]
                  [:p "Questions? Check out the FAQs below."]]
                 :else nil))
@@ -1484,7 +1499,7 @@
 
                            (when (and (pm/freemium? plan) (> containers 1))
                              [:span (str (pm/freemium-containers plan) " container is free.")])
-                           [:br ]
+                           [:br]
                            (if (pm/grandfathered? plan)
                              (list "We've changed our pricing model since this plan began, so its current price "
                                    "is grandfathered in. "
@@ -1495,24 +1510,23 @@
                               ;; in case of piggiebacking.
                               [:p
                                 [:strong
-                                [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                                       :vcs_type (:vcs_type plan-org)
-                                                                       :_fragment "linux-pricing"})}
-                                "Add more containers to update your plan"]]
+                                 [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                          :vcs_type (:vcs_type plan-org)
+                                                                          :_fragment "linux-pricing"})}
+                                  "Add more containers to update your plan"]]
                                 " for more parallelism and shorter queue times."]))])
                         (when (config/enterprise?)
                           (om/build linux-plan {:app app}))]))
-        (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "OS X Plan Overview"])}
-                     (html
-                       [:div.plan-overview.macos-plan-overview
-                        (om/build osx-overview {:plan plan})]))])]]))))
+           (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "OS X Plan Overview"])}
+                        (html
+                          [:div.plan-overview.macos-plan-overview
+                           (om/build osx-overview {:plan plan})]))])]]))))
 
 (defn main-component []
   (merge
     {:overview overview
      :users users
-     :projects projects
-     :cancel cancel}
+     :projects projects}
     (if (config/enterprise?)
       {:containers overview}
       {:containers cloud-pricing
