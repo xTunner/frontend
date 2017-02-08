@@ -1,40 +1,23 @@
 (ns frontend.components.builds-table
   (:require [cemerick.url :as url]
-            [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [frontend.async :refer [raise!]]
-            [frontend.datetime :as datetime]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.pieces.icon :as icon]
-            [frontend.components.svg :refer [svg]]
+            [frontend.components.pieces.status-badge :as status-badge]
+            [frontend.datetime :as datetime]
+            [frontend.experimental.workflow-spike :as workflow]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
-            [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.vcs :as vcs]
-            [frontend.utils :as utils :include-macros true]
             [frontend.routes :as routes]
-            [frontend.experimental.workflow-spike :as workflow]
-            [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [frontend.utils.github :as gh-utils])
-  (:require-macros [frontend.utils :refer [html defrender]]))
+            [frontend.utils :as utils :include-macros true]
+            [frontend.utils.github :as gh-utils]
+            [frontend.utils.vcs-url :as vcs-url]
+            [om.core :as om :include-macros true])
+  (:require-macros [frontend.utils :refer [defrender html]]))
 
 (defn dashboard-icon [name]
   [:img.dashboard-icon {:src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])
-
-(defn build-status-badge-wording [build]
-  (let [wording       (build-model/status-words build)
-        too-long?     (> (count wording) 10)]
-    [:div {:class (if too-long?
-                    "badge-text small-text"
-                    "badge-text")}
-     wording]))
-
-(defn build-status-badge [build]
-  [:div.recent-status-badge {:class (build-model/status-class build)}
-   (om/build svg {:class "badge-icon"
-                  :src (-> build build-model/status-icon common/icon-path)})
-   (build-status-badge-wording build)])
 
 (defn avatar [user & {:keys [size trigger] :or {size 40} :as opts}]
   (if-let [avatar-url (-> user :avatar_url)]
@@ -104,7 +87,7 @@
            :title status-words
            :on-click #((om/get-shared owner :track-event) {:event-type :build-status-clicked
                                                            :properties {:status-words status-words}})}
-       (build-status-badge build)]
+       (status-badge/status-badge build)]
 
       ;; Actions should be mutually exclusive. Just in case they
       ;; aren't, use a cond so it doesn't try to render both in the
@@ -190,10 +173,7 @@
 (defn job-waiting-badge
   "badge for waiting job."
   [job]
-  [:div.recent-status-badge {:class "queued"}
-   (om/build svg {:class "badge-icon"
-                  :src (common/icon-path "Status-Queued")})
-   (:status job)])
+  (status-badge/status-badge {:status "not_running", :outcome nil, :lifecycle "not_running"}))
 
 (defn build-job-row-status [job build url project owner]
   (let [build-args (merge (build-model/build-args build) {:component "build-row" :no-cache? false})
@@ -207,7 +187,7 @@
             :title status-words
             :on-click #((om/get-shared owner :track-event) {:event-type :build-status-clicked
                                                             :properties {:status-words status-words}})}
-        (build-status-badge build)]
+        (status-badge/status-badge build)]
 
        ;; Actions should be mutually exclusive. Just in case they
        ;; aren't, use a cond so it doesn't try to render both in the

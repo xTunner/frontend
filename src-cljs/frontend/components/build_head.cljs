@@ -8,11 +8,13 @@
             [frontend.components.forms :as forms]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
-            [frontend.components.pieces.tabs :as tabs]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.pieces.status-badge :as status-badge]
+            [frontend.components.pieces.tabs :as tabs]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
+            [frontend.experimental.workflow-spike :as workflow]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
@@ -21,12 +23,10 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true]
+            [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.build :as build-util]
-            [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.experimental.workflow-spike :as workflow]
             [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
             [om.core :as om :include-macros true])
@@ -952,7 +952,7 @@
           [:div.summary-header
            [:div.summary-items
             [:div.summary-item
-             (builds-table/build-status-badge build)]
+             (status-badge/status-badge build)]
             (if-not stop_time
               (when start_time
                 (build-running-status build))
@@ -1008,16 +1008,6 @@
                 (gstring/format "Commits (%d)" n)))]
            (om/build build-commits build-data)]])))))
 
-(defn workflow-status-badge [{:keys [workflow]}]
-  (reify
-    om/IRender
-    (render [_]
-      (html [:div.recent-status-badge {:class (workflow/status-class workflow)}
-             (om/build svg {:class "badge-icon"
-                            :src (-> workflow workflow/status-icon common/icon-path)})
-             [:div {:class "badge-text"}
-              (:status workflow)]]))))
-
 (defrender build-link [{:keys [job workflow]} owner]
   (html
    (if (get-in job [:data :build :build_num])
@@ -1071,7 +1061,7 @@
          [:div.workflow-head
           [:div.details.job
            (card/titled {:title (str "Job: " job-name (gstring/unescapeEntities " ") build_num)
-                         :action (builds-table/build-status-badge build)}
+                         :action (status-badge/status-badge build)}
                         [:div
                          [:div.line
                           [:span.head "Trigger"]
@@ -1094,7 +1084,7 @@
                                                                 :stop (:stop_time build)})]]]])]
           [:div.details.workflow
            (card/titled {:title (str "Workflow: " workflow-name (gstring/unescapeEntities " ") workflow-id)
-                         :action (om/build workflow-status-badge {:workflow workflow})}
+                         :action (status-badge/status-badge (workflow/workflow->buildlike-status-map workflow))}
                         [:div
                          [:div.line
                           [:span.head "Trigger"]
