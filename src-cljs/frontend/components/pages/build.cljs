@@ -146,7 +146,7 @@
                        (not-empty build))
               (om/build open-pull-request-action {:build build}))
             ;; JIRA button
-            (when (and (feature/enabled? :jira-integration) jira-data can-write-settings?)
+            (when (and jira-data can-write-settings?)
               (button/icon {:label "Add ticket to JIRA"
                             :bordered? true
                             :on-click #(om/set-state! owner :show-jira-modal? true)}
