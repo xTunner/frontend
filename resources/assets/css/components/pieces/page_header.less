@@ -44,12 +44,55 @@
     padding: 20px;
     border-bottom: solid 1px @grayLighter;
 
+    > .engine {
+      position: relative;
+      -webkit-transform: translateX(-50%);
+      -ms-transform: translateX(-50%);
+      transform: translateX(-50%);
+      top: -10px;
+      height: 20px;
+      border-radius: 3px;
+      min-width: 20px;
+      background: @grayLight;
+      font-family: @monoFontFamily;
+      letter-spacing: -2px;
+      text-align: center;
+      color: @white;
+      line-height: 20px;
+      padding: 0 6px 0 5px;
+      font-size: 14px;
+      white-space: nowrap;
+      -webkit-transform-origin: -10% center;
+      -ms-transform-origin: -10% center;
+      transform-origin: -10% center;
+      left: -358px;
+    }
+
     > .breadcrumbs {
+      .flexy(center);
       .text-overflow;
 
       margin: 0;
       padding: 0;
       font-size: @fontSizeLarger;
+      position: relative;
+
+      .engine-icon {
+        display: inline-block;
+        margin-left: 12px;
+        svg {
+          width: 20px;
+          margin-left: 0;
+          font-size: @fontSizeLarger;
+          fill: @gray;
+        }
+      }
+    }
+
+    .engine-announce {
+      a {
+        cursor: pointer;
+      }
     }
 
     > .actions {

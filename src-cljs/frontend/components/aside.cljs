@@ -2,6 +2,7 @@
   (:require [clojure.string :refer [lower-case]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.svg :refer [svg]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -532,6 +533,15 @@
                                :on-click #(aside-nav-clicked owner :admin-icon-clicked)}
                 [:i.material-icons "build"]
                 [:div.nav-label "Admin"]])
+
+            [:a.aside-item {:data-placement "right"
+                                            :data-trigger "hover"
+                                            :title "What's New"
+                                            :target "_blank"
+                                            :href "https://circleci.com/beta-access/"
+                                            :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
+                              (icon/engine-2)
+                              [:div.nav-label "What's New"]]
 
            (when-not (ld/feature-on? "top-bar-ui-v-1")
              [:a.aside-item.push-to-bottom {:data-placement "right"
