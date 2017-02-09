@@ -2,10 +2,9 @@
   (:require [clojure.string :refer [lower-case]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.svg :refer [svg]]
+            [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
-            [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as pm]
             [frontend.models.project :as project-model]
@@ -68,8 +67,7 @@
                                                                                    :branch (name branch-identifier)}})}
                   [:.branch
                    [:.last-build-status
-                    (om/build svg {:class "badge-icon"
-                                   :src (-> latest-build build-model/status-icon common/icon-path)})]
+                    (status/icon latest-build)]
                    [:.branch-info
                     (when show-project?
                       [:.project-name

@@ -1,4 +1,4 @@
-(ns frontend.components.pieces.status-badge
+(ns frontend.components.pieces.status
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.icon :as icon]
             [frontend.utils.devcards :as devcard-utils])
@@ -41,7 +41,13 @@
     "busy" (icon/status-running)
     "queued" (icon/status-queued)))
 
-(defn status-badge [build]
+(defn icon [build]
+  (component
+    (html
+     [:div {:class (status-class build)}
+      (status-icon build)])))
+
+(defn badge [build]
   (component
     (html
      [:div {:class (status-class build)}
@@ -49,23 +55,28 @@
       [:.badge-text (status-words build)]])))
 
 (dc/do
-  (defcard status-badge
+  (defcard statuses
     (html
-     [:div
-      (for [build [{:status "not_running", :outcome nil, :lifecycle "not_running"}
-                   {:status "running", :outcome nil, :lifecycle "running"}
-                   {:status "success" :outcome "success", :lifecycle "finished"}
-                   {:status "fixed", :outcome "success", :lifecycle "finished"}
-                   {:status "failed" :outcome "failed", :lifecycle "finished"}
-                   {:status "timedout", :outcome "timedout", :lifecycle "finished"}
-                   {:status "canceled", :outcome "canceled", :lifecycle "finished"}
-                   {:status "not_run", :outcome nil, :lifecycle "not_run"}]]
-        (html
-         [:div {:style {:display "flex"
-                        :align-items "center"
-                        :margin-bottom "20px"}}
-          [:div {:style {:flex "0 0 auto"
-                         :margin-right "10px"}}
-           (status-badge build)]
-          [:div {:style {:flex "1 1 0"}}
-           (devcard-utils/display-data build)]]))])))
+     [:table
+      [:thead
+       [:th {:style {:padding "5px"}} [:code "(badge build)"]]
+       [:th {:style {:padding "5px"}} [:code "(icon build)"]]
+       [:th {:style {:padding "5px"}} [:code "build"]]]
+      [:tbody
+       (for [build [{:status "not_running", :outcome nil, :lifecycle "not_running"}
+                    {:status "running", :outcome nil, :lifecycle "running"}
+                    {:status "success" :outcome "success", :lifecycle "finished"}
+                    {:status "fixed", :outcome "success", :lifecycle "finished"}
+                    {:status "failed" :outcome "failed", :lifecycle "finished"}
+                    {:status "timedout", :outcome "timedout", :lifecycle "finished"}
+                    {:status "canceled", :outcome "canceled", :lifecycle "finished"}
+                    {:status "not_run", :outcome nil, :lifecycle "not_run"}]]
+         [:tr
+          [:td {:style {:text-align "center"}}
+           [:div {:style {:display "inline-block"}}
+            (badge build)]]
+          [:td {:style {:text-align "center"}}
+           [:div {:style {:display "inline-block"}}
+            (icon build)]]
+          [:td {:style {:padding "5px"}}
+           (devcard-utils/display-data build)]])]])))

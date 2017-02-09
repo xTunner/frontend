@@ -1,5 +1,5 @@
-.ns("frontend.components.pieces.status-badge", {
-  .ui("status-badge", {
+.ns("frontend.components.pieces.status", {
+  .ui("badge", {
     @badge-height: 25px;
 
     .flexy(center, flex-start);
@@ -9,6 +9,7 @@
     border-radius: @badge-height / 2;
 
     color: @white;
+    text-align: left;
 
     > .status-icon {
       @badge-icon-margin: 4px;
@@ -43,6 +44,30 @@
 
     &.queued {
       background: @purple;
+    }
+  });
+
+  .ui("icon", {
+    width: 18px;
+
+    &.pass {
+      color: @green;
+    }
+
+    &.fail {
+      color: @red;
+    }
+
+    &.busy {
+      color: @blueLight;
+    }
+
+    &.stop {
+      color: @grayLight;
+    }
+
+    &.queued {
+      color: @purple;
     }
   });
 });

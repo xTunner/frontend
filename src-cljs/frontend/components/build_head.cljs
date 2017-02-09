@@ -9,7 +9,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.spinner :refer [spinner]]
-            [frontend.components.pieces.status-badge :as status-badge]
+            [frontend.components.pieces.status :as status]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise? github-endpoint]]
@@ -952,7 +952,7 @@
           [:div.summary-header
            [:div.summary-items
             [:div.summary-item
-             (status-badge/status-badge build)]
+             (status/badge build)]
             (if-not stop_time
               (when start_time
                 (build-running-status build))
@@ -1061,7 +1061,7 @@
          [:div.workflow-head
           [:div.details.job
            (card/titled {:title (str "Job: " job-name (gstring/unescapeEntities " ") build_num)
-                         :action (status-badge/status-badge build)}
+                         :action (status/badge build)}
                         [:div
                          [:div.line
                           [:span.head "Trigger"]
@@ -1084,7 +1084,7 @@
                                                                 :stop (:stop_time build)})]]]])]
           [:div.details.workflow
            (card/titled {:title (str "Workflow: " workflow-name (gstring/unescapeEntities " ") workflow-id)
-                         :action (status-badge/status-badge (workflow/workflow->buildlike-status-map workflow))}
+                         :action (status/badge (workflow/workflow->buildlike-status-map workflow))}
                         [:div
                          [:div.line
                           [:span.head "Trigger"]

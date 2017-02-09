@@ -4,7 +4,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.pieces.icon :as icon]
-            [frontend.components.pieces.status-badge :as status-badge]
+            [frontend.components.pieces.status :as status]
             [frontend.datetime :as datetime]
             [frontend.experimental.workflow-spike :as workflow]
             [frontend.models.build :as build-model]
@@ -87,7 +87,7 @@
            :title status-words
            :on-click #((om/get-shared owner :track-event) {:event-type :build-status-clicked
                                                            :properties {:status-words status-words}})}
-       (status-badge/status-badge build)]
+       (status/badge build)]
 
       ;; Actions should be mutually exclusive. Just in case they
       ;; aren't, use a cond so it doesn't try to render both in the
@@ -173,7 +173,7 @@
 (defn job-waiting-badge
   "badge for waiting job."
   [job]
-  (status-badge/status-badge {:status "not_running", :outcome nil, :lifecycle "not_running"}))
+  (status/badge {:status "not_running", :outcome nil, :lifecycle "not_running"}))
 
 (defn build-job-row-status [job build url project owner]
   (let [build-args (merge (build-model/build-args build) {:component "build-row" :no-cache? false})
@@ -187,7 +187,7 @@
             :title status-words
             :on-click #((om/get-shared owner :track-event) {:event-type :build-status-clicked
                                                             :properties {:status-words status-words}})}
-        (status-badge/status-badge build)]
+        (status/badge build)]
 
        ;; Actions should be mutually exclusive. Just in case they
        ;; aren't, use a cond so it doesn't try to render both in the
