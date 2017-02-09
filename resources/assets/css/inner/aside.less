@@ -477,7 +477,11 @@
   }
 
   > svg {
-    width: 24px;
+    width: @fontSizeLarge; // We should really rethink these variables
+
+    @media screen and ( min-height: 650px ){
+      width: 24px;
+    }
   }
 
   > i {
