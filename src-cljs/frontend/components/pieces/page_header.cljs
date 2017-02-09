@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.page-header
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.icon :as icon]
             [frontend.routes :as routes]
             [frontend.utils :as utils]
             [frontend.utils.devcards :refer [iframe]]
