@@ -529,8 +529,8 @@
                              :target "_blank"
                              :href "https://circleci.com/beta-access/"
                              :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
-             (icon/engine-2)
-             [:div.nav-label "What's New"]]
+               (icon/engine-2)
+               [:div.nav-label "What's New"]]
 
 
              (when (:admin user)
