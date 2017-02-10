@@ -57,6 +57,8 @@
     :cancel-clicked
     :cancel-build-clicked
     :cancel-plan-clicked
+    :cancel-plan-modal-dismissed
+    :cancel-plan-modal-impression
     :change-image-clicked
     :changelog-icon-clicked
     :container-filter-clicked

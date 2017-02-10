@@ -490,7 +490,7 @@
       (let [org-name (get-in app state/org-name-path)
             vcs_type (get-in app state/org-vcs_type-path)
             plan (get-in app state/org-plan-path)
-            cancel-clickable false]            
+            existing-plan (pm/paid-linux-containers plan)]
         (modal/modal-dialog
           {:title "Are you sure?"
            :body
@@ -531,8 +531,20 @@
                     :alt (if (get app (state/selected-cancel-reason-path "other"))
                            "Would you mind elaborating more?"
                            "Have any other thoughts?")}]]]]])
-           :close-fn close-fn
-           :actions [(button/button {:on-click close-fn} "Close")
+           :close-fn #(do (analytics-track/cancel-plan-modal-dismissed
+                                              {:current-state app
+                                               :existing-plan existing-plan
+                                               :vcs_type vcs_type
+                                               :component "close-default"})
+                          (close-fn))
+           :actions [(button/button 
+                       {:on-click #(do (analytics-track/cancel-plan-modal-dismissed
+                                              {:current-state app
+                                               :existing-plan existing-plan
+                                               :vcs_type vcs_type
+                                               :component "close-button"})
+                                       (close-fn))}
+                       "Close")
                      (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
                                         (filter second)
                                         keys
@@ -548,11 +560,13 @@
                           :disabled? enable-button?
                           :success-text "Canceled"
                           :loading-text "Canceling..."
-                          :on-click #(do (raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                              :vcs_type vcs_type
-                                                                              :cancel-reasons reasons
-                                                                              :cancel-notes notes}])
-                                         (close-fn))}
+                          :on-click #(do (raise! owner [:cancel-plan-clicked 
+                                                        {:org-name org-name
+                                                         :vcs_type vcs_type
+                                                         :previous-plan existing-plan
+                                                         :cancel-reasons reasons
+                                                         :cancel-notes notes
+                                                         :close-fn close-fn}]))}
                          "Cancel Plan"))]})))))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
@@ -593,9 +607,11 @@
                [:div
                 (om/build linux-oss-alert app)])]]
            (when show-modal?
+            (analytics-track/cancel-plan-modal-impression {:current-state app
+                                                           :existing-plan plan
+                                                           :vcs_type vcs-type}) 
             (om/build cancel-plan-modal {:app app
-                                         :close-fn close-fn
-                                         :show-modal? show-modal?}))
+                                         :close-fn close-fn}))
            [:div
             [:form
              (when-not (config/enterprise?)
@@ -626,14 +642,10 @@
                   (if (and (zero? new-total)
                            (not (config/enterprise?))
                            (not (zero? (pm/paid-linux-containers plan))))
-                    (button/managed-button
-                      {:success-text "Canceled"
-                       :loading-text "Canceling..."
-                       :disabled? (not button-clickable?)
+                    (button/button
+                      {:disabled? (not button-clickable?)
                        :kind :danger
-                       :on-click #(do (om/set-state! owner :show-modal? true)
-                                      (om/get-shared owner :track-event) {:event-type :cancel-plan-clicked
-                                                                          :properties {:repo nil}})}
+                       :on-click #(om/set-state! owner :show-modal? true)}
                       "Cancel Plan")
                     (button/managed-button
                       {:success-text "Saved"
