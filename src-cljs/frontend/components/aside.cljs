@@ -524,15 +524,16 @@
                   [:i.material-icons "receipt"]
                   [:div.nav-label "Changelog"]]))
 
-             [:a.aside-item {:data-placement "right"
-                             :data-trigger "hover"
-                             :title "What's New"
-                             :target "_blank"
-                             :href "https://circleci.com/beta-access/"
-                             :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
-               (icon/engine-2)
-               [:div.nav-label "What's New"]]
 
+             (when (ld/feature-on? "beta-sidebar-icon")
+               [:a.aside-item {:data-placement "right"
+                               :data-trigger "hover"
+                               :title "What's New"
+                               :target "_blank"
+                               :href "https://circleci.com/beta-access/"
+                               :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
+               (icon/engine-2)
+               [:div.nav-label "What's New"]])
 
              (when (:admin user)
                [:a.aside-item {:class (when (= :admin-settings current-route) "current")
