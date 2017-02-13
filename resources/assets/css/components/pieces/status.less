@@ -19,30 +19,30 @@
       margin: @badge-icon-margin (2 * @badge-icon-margin) @badge-icon-margin @badge-icon-margin;
     }
 
-    > .badge-text {
+    > .badge-label {
       .flex(1 0 auto);
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
     }
 
-    &.pass {
+    &.succeeded {
       background: @green;
     }
 
-    &.fail {
+    &.failed {
       background: @red;
     }
 
-    &.busy {
+    &.running {
       background: @blueLight;
     }
 
-    &.stop {
+    &.stopped {
       background: @grayLight;
     }
 
-    &.queued {
+    &.waiting {
       background: @purple;
     }
   });
@@ -50,23 +50,23 @@
   .ui("icon", {
     width: 18px;
 
-    &.pass {
+    &.succeeded {
       color: @green;
     }
 
-    &.fail {
+    &.failed {
       color: @red;
     }
 
-    &.busy {
+    &.running {
       color: @blueLight;
     }
 
-    &.stop {
+    &.stopped {
       color: @grayLight;
     }
 
-    &.queued {
+    &.waiting {
       color: @purple;
     }
   });

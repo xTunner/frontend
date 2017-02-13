@@ -11,7 +11,6 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.status :as status]
             [frontend.components.pieces.tabs :as tabs]
-            [frontend.components.svg :refer [svg]]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
             [frontend.experimental.workflow-spike :as workflow]
@@ -271,7 +270,7 @@
                        [:span.ssh-node-container (str "Container " i)]
                        [:span {:class command-class} (ssh-command node)]
                        (when no-ssh?
-                         (om/build svg {:class "ssh-node-running-icon" :src (common/icon-path "Status-Running")}))]))
+                         (status/icon :status-class/running))]))
                   nodes)]))
 
 (defn ssh-instructions
@@ -952,7 +951,7 @@
           [:div.summary-header
            [:div.summary-items
             [:div.summary-item
-             (status/badge build)]
+             (status/build-badge (build-model/build-status build))]
             (if-not stop_time
               (when start_time
                 (build-running-status build))
@@ -1061,7 +1060,7 @@
          [:div.workflow-head
           [:div.details.job
            (card/titled {:title (str "Job: " job-name (gstring/unescapeEntities " ") build_num)
-                         :action (status/badge build)}
+                         :action (status/build-badge (build-model/build-status build))}
                         [:div
                          [:div.line
                           [:span.head "Trigger"]
@@ -1084,7 +1083,7 @@
                                                                 :stop (:stop_time build)})]]]])]
           [:div.details.workflow
            (card/titled {:title (str "Workflow: " workflow-name (gstring/unescapeEntities " ") workflow-id)
-                         :action (status/badge (workflow/workflow->buildlike-status-map workflow))}
+                         :action (status/build-badge (build-model/build-status (workflow/build-status workflow)))}
                         [:div
                          [:div.line
                           [:span.head "Trigger"]

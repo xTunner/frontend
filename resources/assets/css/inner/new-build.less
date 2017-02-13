@@ -652,13 +652,6 @@ ul:last-child {
   color: @grayLight;
 }
 
-.ssh-node-running-icon {
-  @icon-size: 10px;
-
-  height: @icon-size;
-  width: @icon-size;
-}
-
 .circle-yml-highlight {
   color: @red;
 }
@@ -692,15 +685,15 @@ ul:last-child {
 
 
 .build-timings {
-  .container-step-pass {
+  .container-step-succeeded {
     fill: @green;
   }
 
-  .container-step-fail {
+  .container-step-failed {
     fill: @red;
   }
 
-  .container-step-stop {
+  .container-step-stopped {
     fill: @grayLight;
   }
 

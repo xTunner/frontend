@@ -1,82 +1,130 @@
 (ns frontend.components.pieces.status
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.icon :as icon]
+            [frontend.models.build :as build-model]
             [frontend.utils.devcards :as devcard-utils])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn- not-run-words [build]
-  (case (:dont_build build)
-    ("ci-skip" "branch-blacklisted" "branch-not-whitelisted") "skipped"
-    ("org-not-paid" "user-not-paid") "not paid"
-    "not run"))
+(defn- status-icon [status-class]
+  (case status-class
+    :status-class/failed (icon/status-failed)
+    :status-class/stopped (icon/status-canceled)
+    :status-class/succeeded (icon/status-passed)
+    :status-class/running (icon/status-running)
+    :status-class/waiting (icon/status-queued)))
 
-(defn- status-words [build]
-  (case (:status build)
-    "infrastructure_fail" "circle bug"
-    "timedout" "timed out"
-    "no_tests" "no tests"
-    "not_run" (not-run-words build)
-    "not_running" "not running"
-    (:status build)))
-
-(defn- status-class [build]
-  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
-        (= "success" (:outcome build)) "pass"
-        (= "running" (:status build)) "busy"
-        (#{"queued" "not_running" "scheduled"} (:status build)) "queued"
-
-        (or
-         (#{"infrastructure_fail" "killed" "not_run" "retried" "canceled"} (:status build))
-         ;; If there's no build at all, consider that a "stop"-like status.
-         (nil? build))
-        "stop"
-
-        :else nil))
-
-(defn- status-icon [build]
-  (case (status-class build)
-    "fail" (icon/status-failed)
-    "stop" (icon/status-canceled)
-    "pass" (icon/status-passed)
-    "busy" (icon/status-running)
-    "queued" (icon/status-queued)))
-
-(defn icon [build]
+(defn icon
+  "A status icon corresponding to the given status class."
+  [status-class]
   (component
     (html
-     [:div {:class (status-class build)}
-      (status-icon build)])))
+     [:div {:class (name status-class)}
+      (status-icon status-class)])))
 
-(defn badge [build]
+(defn badge
+  "A status badge corresponding to the given status class, with a text label."
+  [status-class label]
   (component
     (html
-     [:div {:class (status-class build)}
-      [:.status-icon (status-icon build)]
-      [:.badge-text (status-words build)]])))
+     [:div {:class (name status-class)
+            :title label}
+      [:.status-icon (status-icon status-class)]
+      [:.badge-label label]])))
+
+(defn build-icon
+  "A status icon corresponding to the given build status."
+  [build-status]
+  (icon (build-model/status-class build-status)))
+
+(defn build-badge
+  "A status badge corresponding to the given build status."
+  [build-status]
+  (badge (build-model/status-class build-status)
+         (case build-status
+           :build-status/infrastructure-fail "Circle Bug"
+           :build-status/timed-out "Timed Out"
+           :build-status/no-tests "No Tests"
+           :build-status/not-run "Not Run"
+           :build-status/skipped "Skipped"
+           :build-status/not-paid "Not Paid"
+           :build-status/not-running "Not Running"
+           :build-status/failed "Failed"
+           :build-status/fixed "Fixed"
+           :build-status/killed "Killed"
+           :build-status/queued "Queued"
+           :build-status/retried "Retried"
+           :build-status/running "Running"
+           :build-status/scheduled "Scheduled"
+           :build-status/success "Success"
+           :build-status/canceled "Canceled")))
 
 (dc/do
-  (defcard statuses
+  (def ^:private status-classes
+    [:status-class/waiting
+     :status-class/running
+     :status-class/succeeded
+     :status-class/failed
+     :status-class/stopped])
+
+  (def ^:private build-statuses
+    [:build-status/failed
+     :build-status/fixed
+     :build-status/infrastructure-fail
+     :build-status/killed
+     :build-status/no-tests
+     :build-status/not-paid
+     :build-status/not-run
+     :build-status/not-running
+     :build-status/queued
+     :build-status/retried
+     :build-status/running
+     :build-status/scheduled
+     :build-status/skipped
+     :build-status/success
+     :build-status/timed-out
+     :build-status/canceled])
+
+  (defcard status-classes
+    "There are five classes of status in CircleCI. Each has a color and an icon."
     (html
      [:table
       [:thead
-       [:th {:style {:padding "5px"}} [:code "(badge build)"]]
-       [:th {:style {:padding "5px"}} [:code "(icon build)"]]
-       [:th {:style {:padding "5px"}} [:code "build"]]]
+       [:th {:style {:padding "5px"}} "badge"]
+       [:th {:style {:padding "5px"}} "icon"]
+       [:th {:style {:padding "5px"}} "status class"]]
       [:tbody
-       (for [build [{:status "not_running", :outcome nil, :lifecycle "not_running"}
-                    {:status "running", :outcome nil, :lifecycle "running"}
-                    {:status "success" :outcome "success", :lifecycle "finished"}
-                    {:status "fixed", :outcome "success", :lifecycle "finished"}
-                    {:status "failed" :outcome "failed", :lifecycle "finished"}
-                    {:status "timedout", :outcome "timedout", :lifecycle "finished"}
-                    {:status "canceled", :outcome "canceled", :lifecycle "finished"}
-                    {:status "not_run", :outcome nil, :lifecycle "not_run"}]]
+       (for [status-class status-classes]
          [:tr
           [:td {:style {:text-align "center"}}
-           [:div {:style {:display "inline-block"}}
-            (badge build)]]
-          [:td {:style {:text-align "center"}}
-           [:div {:style {:display "inline-block"}}
-            (icon build)]]
+           [:div {:style {:display "flex"
+                          :justify-content "center"}}
+            (badge status-class "label")]]
+          [:td
+           [:div {:style {:display "flex"
+                          :justify-content "center"}}
+            (icon status-class)]]
           [:td {:style {:padding "5px"}}
-           (devcard-utils/display-data build)]])]])))
+           (devcard-utils/display-data status-class)]])]]))
+
+  (defcard build-statuses
+    "There are many build statuses. Each belongs to a status class, and each has its own badge label."
+    (html
+     [:table
+      [:thead
+       [:th {:style {:padding "5px"}} "badge"]
+       [:th {:style {:padding "5px"}} "icon"]
+       [:th {:style {:padding "5px"}} "build status"]]
+      [:tbody
+       (let [status-class-order (reduce-kv #(assoc %1 %3 %2) {} status-classes)]
+         (for [build-status (sort-by (comp status-class-order build-model/status-class) build-statuses)]
+           [:tr
+            [:td
+             [:div {:style {:display "flex"
+                            :justify-content "center"}}
+              (build-badge build-status)]]
+            [:td
+             [:div {:style {:display "flex"
+                            :justify-content "center"}}
+              (build-icon build-status)]]
+            [:td {:style {:padding "5px"}}
+             (devcard-utils/display-data build-status)]]))]])))

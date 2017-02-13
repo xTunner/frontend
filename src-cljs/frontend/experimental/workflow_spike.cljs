@@ -14,15 +14,18 @@
     "pass" "Status-Passed"
     "busy" "Status-Running"))
 
-(defn workflow->buildlike-status-map
-  "Hacky, temporary translation from a workflow to the properties of a build
-  that will produce the desired status badge."
+(defn build-status
+  "Returns a build status that reflects the status of the workflow. This is a
+  hack: eventually, workflows should have their own set of
+  statuses (`:workflow-status/*`), as their statuses are distinct from the
+  statuses that builds can have (although they're categorized by the same five
+  status classes). For now, though, we piggieback on the build statuses."
   [{:keys [status]}]
   (case status
-    "fail" {:status "failed", :outcome "failed", :lifecycle "finished"}
-    "success" {:status "success", :outcome "success", :lifecycle "finished"}
-    "running" {:status "running", :outcome nil, :lifecycle "running"}
-    "canceled" {:status "canceled", :outcome "canceled", :lifecycle "finished"}))
+    "fail" :build-status/failed
+    "success" :build-status/success
+    "running" :build-status/running
+    "canceled" :build-status/canceled))
 
 (defn trigger-vcs_url [workflow]
   (get-in workflow [:trigger-resource :data :vcs_url]))

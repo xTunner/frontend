@@ -5,6 +5,7 @@
             [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as pm]
             [frontend.models.project :as project-model]
@@ -66,8 +67,7 @@
                                                                                    :org org-name
                                                                                    :branch (name branch-identifier)}})}
                   [:.branch
-                   [:.last-build-status
-                    (status/icon latest-build)]
+                   [:.last-build-status (status/build-icon (build-model/build-status latest-build))]
                    [:.branch-info
                     (when show-project?
                       [:.project-name

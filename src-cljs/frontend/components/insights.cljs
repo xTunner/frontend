@@ -8,7 +8,7 @@
             [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
-            [frontend.models.build :as build]
+            [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -108,7 +108,7 @@
         (.text #(aget % "text")))))
 
 (defn add-queued-time [build]
-  (let [queued-time (max (build/queued-time build) 0)]
+  (let [queued-time (max (build-model/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
 
 (def insights-outcome-mapping
@@ -399,7 +399,9 @@
               repo-name (project-model/repo-name project)]
           [:div.project-block {:class (str "build-" (name sort-category))}
            [:h1.project-header
-            [:.last-build-status (status/icon latest-build)]
+            [:.last-build-status (if latest-build
+                                   (status/build-icon (build-model/build-status latest-build))
+                                   (status/icon :status-class/succeeded))]
             [:.project-name
              (if show-insights?
                [:a {:href (routes/v1-project-insights-path {:org org-name
