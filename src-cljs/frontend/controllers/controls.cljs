@@ -1398,10 +1398,12 @@
         (release-button! uuid (:status api-result))))))
 
 (defmethod post-control-event! :cancel-plan-clicked
-  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes previous-plan plan-type close-fn] :or {plan-type :paid}} previous-state current-state comms]
+  [target message {:keys [org-name vcs_type cancel-reasons cancel-notes plan-template plan-id plan-type plan-type-key on-success]} previous-state current-state comms]
   (analytics-track/cancel-plan-clicked {:current-state current-state
                                         :vcs_type vcs_type
-                                        :previous-plan previous-plan
+                                        :plan-template plan-template
+                                        :plan-id plan-id
+                                        :plan-type plan-type
                                         :cancel-reasons cancel-reasons
                                         :cancel-notes cancel-notes})
   (let [uuid frontend.async/*uuid*
@@ -1414,7 +1416,7 @@
                            (gstring/format "/api/v1.1/organization/%s/%s/plan"
                                            vcs_type
                                            org-name)
-                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes :plan-type plan-type}))]
+                           :params {:cancel-reasons cancel-reasons :cancel-notes cancel-notes :plan-type plan-type-key}))]
        (if-not (= :success (:status api-result))
          (put! errors-ch [:api-error api-result])
          (do
@@ -1426,7 +1428,8 @@
                                                                     :vcs_type vcs_type})
                                      :replace-token? true}])))
        (release-button! uuid (:status api-result))
-       (close-fn)))))
+       (when (fn? on-success)
+         (on-success))))))
 
 (defn track-and-redirect [event properties owner path]
   (let [redirect #(set! js/window.location.href path)

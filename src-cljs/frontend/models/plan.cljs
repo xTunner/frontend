@@ -41,6 +41,12 @@
 (defn osx? [plan]
   (boolean (:osx plan)))
 
+(defn osx-template [plan]
+  (-> plan :osx :template))
+
+(defn linux-template [plan]
+  (-> plan :paid :template))
+
 (defn osx-plan-id [plan]
   (-> plan :osx :template :id))
 

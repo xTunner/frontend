@@ -360,18 +360,121 @@
         :disabled? disabled?}
        text))))
 
-(defn osx-plan [{:keys [title price container-count daily-build-count max-minutes support-level team-size
+(defn cancel-plan-modal
+  [{:keys [app close-fn plan-type-key]} owner]
+  (let [org-name (get-in app state/org-name-path)
+        vcs_type (get-in app state/org-vcs_type-path)
+        plan (get-in app state/org-plan-path)
+        plan-template (if (= plan-type-key pm/linux-key)
+                        (pm/linux-template plan)
+                        (pm/osx-template plan))
+        plan-type (if (= plan-type-key pm/linux-key)
+                    pm/linux-plan-type
+                    pm/osx-plan-type)
+        plan-id (:id plan-template)
+        track-properties {:plan-template plan-template
+                          :plan-id plan-id
+                          :plan-type plan-type
+                          :vcs_type vcs_type}]
+    (reify
+      om/IDidMount
+      (did-mount [_]
+        ((om/get-shared owner :track-event) {:event-type :cancel-plan-modal-impression
+                                                         :properties {:plan-id plan-id
+                                                                      :plan-template plan-template
+                                                                      :plan-type plan-type
+                                                                      :vcs_type vcs_type}}))
+      om/IRender
+      (render [_]
+        (modal/modal-dialog
+          {:title "Are you sure?"
+           :body
+           (html
+            [:.inner.modal-contents
+             [:div.org-cancel
+              [:div.top-value
+               [:p.value-prop "If you cancel your plan, you will no longer have access to speed enabled by parallelism and concurrency."]
+               [:p.value-prop "You will also lose access to engineer support, insights, and more premium features."]]
+              [:div.bottom-value
+               [:p.value-prop "Your cancelation will be effective immediately"]]
+              [:div.row-fluid
+               [:h1
+                {:data-bind "attr: {alt: cancelFormErrorText}"}
+                "Please tell us why you're canceling. This helps us make CircleCI better!"]
+               [:form
+                (for [reason [{:value "project-ended", :text "Project Ended"},
+                              {:value "slow-performance", :text "Slow Performance"},
+                              {:value "unreliable-performance", :text "Unreliable Performance"},
+                              {:value "too-expensive", :text "Too Expensive"},
+                              {:value "didnt-work", :text "Couldn't Make it Work"},
+                              {:value "missing-feature", :text "Missing Feature"},
+                              {:value "poor-support", :text "Poor Support"},
+                              {:value "other", :text "Other"}]]
+                  [:label.cancel-reason
+                   [:input
+                    {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
+                     :on-change #(utils/toggle-input owner (state/selected-cancel-reason-path (:value reason)) %)
+                     :type "checkbox"}]
+                   (:text reason)])
+                [:textarea
+                 {:required true
+                  :value (get-in app state/cancel-notes-path)
+                  :on-change #(utils/edit-input owner state/cancel-notes-path %)}]
+                [:label
+                 {:placeholder "Thanks for the feedback!",
+                  :alt (if (get app (state/selected-cancel-reason-path "other"))
+                         "Would you mind elaborating more?"
+                         "Have any other thoughts?")}]]]]])
+           :close-fn #(do (analytics-track/cancel-plan-modal-dismissed
+                            (merge track-properties {:current-state app :component "close-button"}))
+                          (close-fn))
+           :actions [(button/button 
+                       {:on-click #(do (analytics-track/cancel-plan-modal-dismissed
+                                         (merge track-properties {:current-state app :component "close-button"}))
+                                       (close-fn))}
+                       "Close")
+                     (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
+                                        (filter second)
+                                        keys
+                                        set)
+                           notes (get-in app state/cancel-notes-path)
+                           needs-other-notes? (and (contains? reasons "other") (string/blank? notes))
+                           errors (cond (empty? reasons) "Please select at least one reason."
+                                        needs-other-notes? "Please specify above."
+                                        :else nil)
+                           enable-button? (or (empty? reasons) needs-other-notes?)]
+                       (button/managed-button
+                         {:kind :danger
+                          :disabled? enable-button?
+                          :success-text "Canceled"
+                          :loading-text "Canceling..."
+                          :on-click #(raise! owner [:cancel-plan-clicked 
+                                                     (merge track-properties {:org-name org-name
+                                                                              :cancel-reasons reasons
+                                                                              :cancel-notes notes
+                                                                              :on-success close-fn
+                                                                              :plan-type-key plan-type-key})])}
+                         "Cancel Plan"))]})))))
+
+(defn osx-plan [{:keys [app title price container-count daily-build-count max-minutes support-level team-size
                         plan-id plan trial-starts-here? org-name vcs-type]} owner]
   (reify
-    om/IRender
-    (render [_]
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
       (let [plan-data (get-in pm/osx-plans [plan-id])
             currently-selected? (= (name plan-id) (pm/osx-plan-id plan))
             on-trial? (and trial-starts-here? (pm/osx-trial-plan? plan))
             trial-expired? (and on-trial? (not (pm/osx-trial-active? plan)))
             trial-starts-here? (and trial-starts-here?
                                     (pm/trial-eligible? plan :osx)
-                                    (not (pm/osx? plan)))]
+                                    (not (pm/osx? plan)))
+            plan-type pm/osx-plan-type
+            osx-key pm/osx-key
+            close-fn #(om/set-state! owner :show-modal? false)
+            existing-plan-id (pm/osx-plan-id plan)]
         (html
           [:div {:data-component `osx-plan}
            [:div {:class (cond currently-selected? "plan-notice selected-notice"
@@ -383,6 +486,10 @@
              [:div.header
               [:div.title title]
               [:div.price "$" [:span.bold price] "/mo"]]
+             (when show-modal?
+               (om/build cancel-plan-modal {:app app
+                                            :close-fn close-fn
+                                            :plan-type-key osx-key}))
              [:div.content
               [:div.containers [:span.bold container-count] " OS X concurrency"]
               [:div.daily-builds
@@ -401,8 +508,8 @@
                                                                (raise! owner [:update-osx-plan-clicked {:plan-type {:template (name plan-id)}}])
                                                                (analytics-track/update-plan-clicked {:owner owner
                                                                                                      :new-plan plan-id
-                                                                                                     :previous-plan (pm/osx-plan-id plan)
-                                                                                                     :plan-type pm/osx-plan-type
+                                                                                                     :previous-plan existing-plan-id
+                                                                                                     :plan-type plan-type
                                                                                                      :upgrade? (> (:price plan-data) (pm/osx-cost plan))}))})
                 (om/build plan-payment-button {:text "Pay Now"
                                                :loading-text "Paying..."
@@ -413,7 +520,7 @@
                                                                                                                                   (clojure.string/capitalize (name plan-id))
                                                                                                                                   (:price plan-data))}])
                                                                ((om/get-shared owner :track-event) {:event-type :new-plan-clicked
-                                                                                                    :properties {:plan-type pm/osx-plan-type
+                                                                                                    :properties {:plan-type plan-type
                                                                                                                  :plan plan-id}}))}))
 
               (if (not (pm/osx? plan))
@@ -424,21 +531,14 @@
                       {:data-success-text "Success!"
                        :data-loading-text "Starting..."
                        :data-failed-text "Failed"
-                       :on-click #(raise! owner [:activate-plan-trial {:plan-type :osx
+                       :on-click #(raise! owner [:activate-plan-trial {:plan-type osx-key
                                                                        :template "osx-trial"
                                                                        :org (:org plan)}])}
                       "start a 2-week free trial"])])
                 (when currently-selected?
                   [:div.cancel-plan "OR" [:br]
-                   (forms/managed-button
-                     [:a
-                      {:data-success-text "Success!"
-                       :data-loading-text "Cancelling..."
-                       :data-failed-text "Failed"
-                       :on-click #(raise! owner [:cancel-plan-clicked {:org-name org-name
-                                                                       :vcs_type vcs-type
-                                                                       :plan-type :osx}])}
-                      "cancel your current OSX plan"])]))]]
+                   [:a {:on-click #(om/set-state! owner :show-modal? true)}
+                      "cancel your current OSX plan"]]))]]
 
             (cond
               trial-starts-here?
@@ -454,7 +554,7 @@
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
 
-(defn osx-plans-list [{:keys [plan org-name vcs-type]} owner]
+(defn osx-plans-list [{:keys [plan org-name vcs-type app]} owner]
   (reify
     om/IRender
     (render [_]
@@ -474,100 +574,13 @@
              [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])
            [:div.plan-selection
             (om/build-all osx-plan (->> osx-plans
-                                        (map #(assoc % :org-name org-name :vcs-type vcs-type))))]])))))
+                                        (map #(assoc % :org-name org-name :vcs-type vcs-type :app app))))]])))))
 (defn linux-oss-alert [app owner]
   (om/component
     (html
       [:div.usage-message
        [:div.text
         [:span "We "[:span.heart-emoji "❤"]" OSS. Projects that are public will build with " pm/oss-containers " extra containers - our gift to free and open source software."]]])))
-
-(defn cancel-plan-modal
-  [{:keys [app close-fn]} owner]
-  (reify
-    om/IRender
-     (render [_]
-      (let [org-name (get-in app state/org-name-path)
-            vcs_type (get-in app state/org-vcs_type-path)
-            plan (get-in app state/org-plan-path)
-            existing-plan (pm/paid-linux-containers plan)]
-        (modal/modal-dialog
-          {:title "Are you sure?"
-           :body
-           (html
-             [:.inner.modal-contents
-               [:div.org-cancel
-                [:div.top-value
-                 [:p.value-prop "If you cancel your plan, you will no longer have access to speed enabled by parallelism and concurrency."]
-                 [:p.value-prop "You will also lose access to engineer support, insights, and more premium features."]]
-                [:div.bottom-value
-                 [:p.value-prop "Your cancelation will be effective immediately"]]
-                [:div.row-fluid
-                 [:h1
-                  {:data-bind "attr: {alt: cancelFormErrorText}"}
-                  "Please tell us why you're canceling. This helps us make CircleCI better!"]
-
-                 [:form
-                  (for [reason [{:value "project-ended", :text "Project Ended"},
-                                {:value "slow-performance", :text "Slow Performance"},
-                                {:value "unreliable-performance", :text "Unreliable Performance"},
-                                {:value "too-expensive", :text "Too Expensive"},
-                                {:value "didnt-work", :text "Couldn't Make it Work"},
-                                {:value "missing-feature", :text "Missing Feature"},
-                                {:value "poor-support", :text "Poor Support"},
-                                {:value "other", :text "Other"}]]
-                    [:label.cancel-reason
-                     [:input
-                      {:checked (get-in app (state/selected-cancel-reason-path (:value reason)))
-                       :on-change #(utils/toggle-input owner (state/selected-cancel-reason-path (:value reason)) %)
-                       :type "checkbox"}]
-                     (:text reason)])
-                  [:textarea
-                   {:required true
-                    :value (get-in app state/cancel-notes-path)
-                    :on-change #(utils/edit-input owner state/cancel-notes-path %)}]
-                  [:label
-                   {:placeholder "Thanks for the feedback!",
-                    :alt (if (get app (state/selected-cancel-reason-path "other"))
-                           "Would you mind elaborating more?"
-                           "Have any other thoughts?")}]]]]])
-           :close-fn #(do (analytics-track/cancel-plan-modal-dismissed
-                                              {:current-state app
-                                               :existing-plan existing-plan
-                                               :vcs_type vcs_type
-                                               :component "close-default"})
-                          (close-fn))
-           :actions [(button/button 
-                       {:on-click #(do (analytics-track/cancel-plan-modal-dismissed
-                                              {:current-state app
-                                               :existing-plan existing-plan
-                                               :vcs_type vcs_type
-                                               :component "close-button"})
-                                       (close-fn))}
-                       "Close")
-                     (let [reasons (->> (get-in app state/selected-cancel-reasons-path)
-                                        (filter second)
-                                        keys
-                                        set)
-                           notes (get-in app state/cancel-notes-path)
-                           needs-other-notes? (and (contains? reasons "other") (string/blank? notes))
-                           errors (cond (empty? reasons) "Please select at least one reason."
-                                        needs-other-notes? "Please specify above."
-                                        :else nil)
-                           enable-button? (or (empty? reasons) needs-other-notes?)]
-                       (button/managed-button
-                         {:kind :danger
-                          :disabled? enable-button?
-                          :success-text "Canceled"
-                          :loading-text "Canceling..."
-                          :on-click #(do (raise! owner [:cancel-plan-clicked 
-                                                        {:org-name org-name
-                                                         :vcs_type vcs_type
-                                                         :previous-plan existing-plan
-                                                         :cancel-reasons reasons
-                                                         :cancel-notes notes
-                                                         :close-fn close-fn}]))}
-                         "Cancel Plan"))]})))))
 
 (defn linux-plan [{:keys [app checkout-loaded?]} owner]
   (reify
@@ -594,7 +607,8 @@
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)
             containers-str (pluralize-no-val selected-containers "container")
-            close-fn #(om/set-state! owner :show-modal? false)]
+            close-fn #(om/set-state! owner :show-modal? false)
+            plan-template (pm/linux-template plan)]
         (html
          [:div.edit-plan {:class "pricing.page" :data-component `linux-plan}
           [:div.main-content
@@ -607,11 +621,9 @@
                [:div
                 (om/build linux-oss-alert app)])]]
            (when show-modal?
-            (analytics-track/cancel-plan-modal-impression {:current-state app
-                                                           :existing-plan plan
-                                                           :vcs_type vcs-type}) 
             (om/build cancel-plan-modal {:app app
-                                         :close-fn close-fn}))
+                                         :close-fn close-fn
+                                         :plan-type-key pm/linux-key}))
            [:div
             [:form
              (when-not (config/enterprise?)
@@ -724,7 +736,8 @@
                  (om/build osx-plan-overview {:plan plan})
                  (om/build osx-plans-list {:plan plan
                                            :org-name (get-in app state/org-name-path)
-                                           :vcs-type (get-in app state/org-vcs_type-path)})
+                                           :vcs-type (get-in app state/org-vcs_type-path)
+                                           :app app})
                  (om/build faq osx-faq-items))))))))
 
 (defn pricing-starting-tab [subpage]

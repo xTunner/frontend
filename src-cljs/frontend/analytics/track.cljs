@@ -37,26 +37,23 @@
                                                     :previous-plan previous-plan
                                                     :is-upgrade upgrade?}}))
   
-(defn cancel-plan-modal-dismissed [{:keys [current-state component vcs_type existing-plan]}]
+(defn cancel-plan-modal-dismissed [{:keys [current-state component vcs_type plan-template plan-id plan-type]}]
   (analytics/track {:event-type :cancel-plan-modal-dismissed
                     :current-state current-state
                     :properties {:vcs-type vcs_type
-                                 :existing-plan existing-plan
+                                 :plan-template plan-template
+                                 :plan-id plan-id
+                                 :plan-type plan-type
                                  :component component}}))
 
-(defn cancel-plan-clicked [{:keys [current-state vcs_type previous-plan cancel-reasons cancel-notes]}]
+(defn cancel-plan-clicked [{:keys [current-state vcs_type plan-template plan-id cancel-reasons cancel-notes]}]
   (analytics/track {:event-type :cancel-plan-clicked
                     :current-state current-state
                     :properties {:vcs_type vcs_type
-                                 :previous-plan previous-plan
+                                 :plan-template plan-template
+                                 :plan-id plan-id
                                  :cancel-reasons cancel-reasons
                                  :cancel-notes cancel-notes}})) 
-
-(defn cancel-plan-modal-impression [{:keys [current-state vcs_type existing-plan]}]
-  (analytics/track {:event-type :cancel-plan-modal-impression
-                    :current-state current-state
-                    :properties {:vcs-type vcs_type
-                                 :existing-plan existing-plan}}))
 
 (defn rebuild-clicked
   "Handles click events for rebuilds triggered with and without SSH
