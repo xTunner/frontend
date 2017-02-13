@@ -1,19 +1,5 @@
 (ns frontend.experimental.workflow-spike)
 
-(defn status-class [{:keys [status] :as workflow}]
-  (case status
-    "fail" "fail"
-    "success" "pass"
-    "running" "busy"
-    "canceled" "stop"))
-
-(defn status-icon [{:keys [status] :as workflow}]
-  (case (status-class workflow)
-    "fail" "Status-Failed"
-    "stop" "Status-Canceled"
-    "pass" "Status-Passed"
-    "busy" "Status-Running"))
-
 (defn build-status
   "Returns a build status that reflects the status of the workflow. This is a
   hack: eventually, workflows should have their own set of
