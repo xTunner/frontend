@@ -25,3 +25,5 @@ out
 .#*
 .DS_Store
 /.dirac-chrome-profile
+.idea/
+frontend.iml
