@@ -95,7 +95,9 @@
                  :download "BuildOutput.txt"
                  :target "_blank"}
              (if (:truncated action)
-               "Download the first 4MB as a file."
+               (if-let [l (:truncation-len action)]
+                 (format "Download the first %s as a file." l)
+                 "Download the first 4MB as a file.")
                "Download the full output as a file.")])])))))
 
 (defn action [action owner {:keys [container-id uses-parallelism?] :as opts}]
