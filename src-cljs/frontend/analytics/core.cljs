@@ -39,6 +39,7 @@
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
+    :beta-icon-clicked
     :branch-clicked
     :breadcrumb-branch-clicked
     :breadcrumb-build-clicked
