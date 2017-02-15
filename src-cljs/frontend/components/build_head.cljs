@@ -1096,16 +1096,3 @@
                          [:div.line
                           [:span.head "Next Job"]
                           [:span.value next-link]]])]])))))
-
-(defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (html
-       [:div
-        (if workflow-data
-          (om/build build-head-content-workflow (select-keys data [:build-data :project-data :workflow-data]))
-          (om/build build-head-content (select-keys data [:build-data :project-data])))
-        [:div.build-head-wrapper
-         [:div.build-head
-          (om/build build-sub-head data)]]]))))

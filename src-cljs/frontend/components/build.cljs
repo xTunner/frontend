@@ -1,9 +1,9 @@
 (ns frontend.components.build
   (:require [frontend.async :refer [raise!]]
-            [frontend.components.build-head :as build-head]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.components.invites :as invites]
+            [frontend.components.pages.build.head :as build-head]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
