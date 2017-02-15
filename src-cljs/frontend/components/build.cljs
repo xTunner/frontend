@@ -143,7 +143,7 @@
     om/IRender
     (render [_]
       (om/build svg {:class "container-status-icon"
-                              :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}))))
+                     :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}))))
 
 (defn last-action-end-time
   [container]

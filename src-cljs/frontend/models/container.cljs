@@ -1,7 +1,5 @@
 (ns frontend.models.container
   (:require [clojure.set :refer (intersection)]
-            [frontend.datetime :as datetime]
-            [goog.string :as gstring]
             goog.string.format))
 
 (defn id [container]
@@ -15,7 +13,9 @@
          (= "running" (last action-statuses)))
      :running
      ;; If it has any of the failure-like statuses, it's 'failed'.
-     (some action-statuses ["failed" "timedout" "canceled" "infrastructure_fail"])
+     ;; `signaled` means the process terminated abruptly, potentially because of memory usage,
+     ;; or another process in background killed it.
+     (some action-statuses ["failed" "timedout" "canceled" "infrastructure_fail" "signaled"])
      :failed
      ;; If any of the actions have been canceled, it's 'canceled'.
      (some :canceled (:actions container))
