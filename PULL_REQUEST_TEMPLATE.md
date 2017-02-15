@@ -1,6 +1,6 @@
 Please make sure to add the zfe badge before submitting your PR
 
-**Rational**
+**Rationale**
 What was overarching product goal of this PR, any pertinent history of changes
 
 **Considerations**
