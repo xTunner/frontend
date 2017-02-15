@@ -207,7 +207,7 @@
        {:on-click #(do
                     (raise! owner
                             [:activate-plan-trial {:plan-type :osx
-                                                   :template "osx-trial"
+                                                   :template pm/osx-trial-template
                                                    :org {:name login
                                                          :vcs_type vcs_type}}]))}
        "Start 2 Week Trial"))))

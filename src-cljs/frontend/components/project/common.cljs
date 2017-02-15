@@ -4,15 +4,12 @@
             [frontend.components.forms :as forms]
             [frontend.components.common :as common]
             [frontend.config :as config]
-            [frontend.datetime :as time-utils]
-            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.models.user :as user-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
-            [cljs-time.format :as time-format]
             [goog.string :as gstring]
             [goog.string.format]
             [inflections.core :refer (pluralize)]
@@ -23,8 +20,10 @@
   (let [conditions [(not (project-model/oss? project))
                     (plan-model/trial? plan)
                     ;; only bug them if < 20 days left in trial
+                    ;; or if they are in the student trial
                     ;; note that this includes expired trials
-                    (< (plan-model/days-left-in-trial plan) 20)
+                    (or (< (plan-model/days-left-in-trial plan) 20)
+                        (plan-model/in-student-trial? plan))
 
                     ;; only show freemium trial notices if the
                     ;; trial is still active.
@@ -45,6 +44,7 @@
             (:plan data)
             project (:project data)
             project-name (gstring/format "%s/%s" (:username project) (:reponame project))
+            in-student-trial? (plan-model/in-student-trial? plan)
             days (plan-model/days-left-in-trial plan)
             plan-path (routes/v1-org-settings-path {:org plan-org-name
                                                     :vcs_type plan-vcs-type
@@ -52,10 +52,13 @@
         (html
           [:div.alert {:class "warning alert-warning"}
            [:i.material-icons.alert-icon.warning "warning"]
-           (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
-                                plan-org-name (plan-model/trial-containers plan) (pluralize days "day"))
-           [:a.pay-now-plain-text {:href plan-path} "Update your plan"]
-           " before the trial expires to continue using these containers."
+           (if in-student-trial?
+             [:span "This project is covered by a free student plan."]
+             [:span
+              (gstring/format "This project is covered by %s's trial of %s containers which expires in %s. "
+                              plan-org-name (plan-model/trial-containers plan) (pluralize days "day"))
+              [:a.pay-now-plain-text {:href plan-path} "Update your plan"]
+              " before the trial expires to continue using these containers."])
            [:a.dismiss {:on-click #(raise! owner [:dismiss-trial-update-banner])}
             [:i.material-icons "clear"]]])))))
 

@@ -18,6 +18,9 @@
 (def osx-key :osx)
 (def linux-key :paid)
 
+(def student-trial-template "st2")
+(def osx-trial-template "osx-trial")
+
 (defn max-parallelism
   "Maximum parallelism that the plan allows (usually 16x)"
   [plan]
@@ -48,10 +51,13 @@
   (-> plan :paid :template))
 
 (defn osx-plan-id [plan]
-  (-> plan :osx :template :id))
+  (get-in plan [:osx :template :id]))
+
+(defn linux-trial-plan-id [plan]
+  (get-in plan [:trial :template :id]))
 
 (defn osx-trial-plan? [plan]
-  (= "osx-trial" (osx-plan-id plan)))
+  (= osx-trial-template (osx-plan-id plan)))
 
 (defn osx-trial-active? [plan]
   (and (osx? plan)
@@ -67,6 +73,12 @@
 
 (defn in-trial? [plan]
   (and (trial? plan) (not (trial-over? plan))))
+
+(defn in-student-trial? [plan]
+  (and (in-trial? plan)
+       (-> plan
+           linux-trial-plan-id
+           (= student-trial-template))))
 
 (defn enterprise? [plan]
   (boolean (:enterprise plan)))
@@ -304,3 +316,8 @@
     (if (<= (.getTime (time/now)) (.getTime (js/Date. trial-end)))
       (datetime/time-ago (time/in-millis (time/interval (time/now) (js/Date. trial-end))))
       "0 days")))
+
+(defn github-personal-org-plan? [user plan]
+  (let [github-identity (get-in user [:identities :github])]
+    (and (:user? github-identity)
+         (= (:login github-identity) (:org_name plan)))))

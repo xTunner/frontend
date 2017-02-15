@@ -15,9 +15,9 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.project.common :as project-common]
-            [frontend.components.shared :as shared]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.feature :as feature]
             [frontend.models.organization :as org-model]
             [frontend.models.plan :as pm]
             [frontend.routes :as routes]
@@ -242,7 +242,7 @@
 (defn plural-multiples [num word]
   (if (> num 1)
     (pluralize num word)
-    word))
+    (gstring/format "%s %s" num word)))
 
 (defn pluralize-no-val [num word]
   (if (= num 1) (infl/singular word) (infl/plural word)))
@@ -315,6 +315,36 @@
 
    {:question "What if I am building open-source?"
     :answer [[:div "We offer a total of four free linux containers ($2400 annual value) for open-source projects. Simply keeping your project public will enable this for you!"]]}])
+
+(defn student-pack-faq-answer [{:keys [org-name vcs-type personal-org?]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         [:div
+          "If you are a verified student on Github, you can "
+          (if personal-org?
+            (forms/managed-button
+              [:a
+               {:data-success-text "Success!"
+                :data-loading-text "Activating..."
+                :data-failed-text "Failed"
+                :on-click #(raise! owner [:activate-plan-trial {:plan-type pm/linux-key
+                                                                :template pm/student-trial-template
+                                                                :org {:name org-name
+                                                                      :vcs_type vcs-type}}])}
+               "activate."])
+            "activate")
+          " our student plan to get two additional free linux containers ($1200 annual value) for only your own personal org (the org that has your username)."]
+         [:div
+          "This plan lasts as long as Github recognizes your account as a student account, or until you decide to upgrade to a paid plan. "
+          [:a {:href "https://education.github.com/pack"} "Learn more"]]]))))
+
+(defn student-pack-faq-item
+  [data]
+  {:question "What if I am a Student?"
+   :answer [(om/build student-pack-faq-answer data)]})
 
 (defn faq-answer-line [answer-line owner]
   (reify
@@ -532,7 +562,7 @@
                        :data-loading-text "Starting..."
                        :data-failed-text "Failed"
                        :on-click #(raise! owner [:activate-plan-trial {:plan-type osx-key
-                                                                       :template "osx-trial"
+                                                                       :template pm/osx-trial-template
                                                                        :org (:org plan)}])}
                       "start a 2-week free trial"])])
                 (when currently-selected?
@@ -641,7 +671,9 @@
                                         containers-str
                                         (str "paid " containers-str
                                              (str (when-not (zero? new-total) (str " at $" new-total "/month")))
-                                             " + 1 free container"))]]
+                                             " + " (str (if (pm/in-student-trial? plan)
+                                                          "3 free containers"
+                                                          "1 free container"))))]]
                 [:p
                  (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")
                  [:br]
@@ -701,13 +733,13 @@
                     [:em (cond
                           (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
                           (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]]]
-                  (if (pm/in-trial? plan)
-                    [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                     "."]
-                     ;; TODO: Only show for trial-plans?
-                    [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
-                     " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                     " ago. Pay now to enable builds of private projects."])))]]]]])))))
+                  (when-not (pm/in-student-trial? plan)
+                    (if (pm/in-trial? plan)
+                      [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                       "."]
+                      [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                       " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                       " ago. Pay now to enable builds of private projects."]))))]]]]])))))
 
 (defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
   (reify
@@ -730,7 +762,11 @@
          (case selected-tab-name
            :linux (list
                    (om/build linux-plan {:app app :checkout-loaded? checkout-loaded?})
-                   (om/build faq linux-faq-items))
+                   (om/build faq (cond-> linux-faq-items
+                                         (= (feature/ab-test-treatment :github-student-pack) :in-student-pack)
+                                         (conj (student-pack-faq-item {:org-name org-name
+                                                                       :vcs-type vcs-type
+                                                                       :personal-org? (pm/github-personal-org-plan? (get-in app state/user-path) plan)})))))
 
            :osx (list
                  (om/build osx-plan-overview {:plan plan})
@@ -1401,6 +1437,23 @@
                                                                 :vcs_type plan-vcs-type
                                                                 :_fragment "osx-pricing"})} "Choose a OS X plan"]] "."]])])))))
 
+(defn displayed-linux-plan-info [current-linux-cost containers in-student-trial?]
+  (gstring/format "Current Linux plan: %s - $%s/month"
+                  (cond
+                    in-student-trial? (gstring/format "Student (%s)" (plural-multiples containers "container"))
+                    (= current-linux-cost 0) "Hobbyist (1 container)"
+                    :else (plural-multiples containers " container"))
+                  current-linux-cost))
+
+(defn displayed-linux-paid-info [paid-linux-containers]
+  (gstring/format "%s %s paid"
+                  (plural-multiples paid-linux-containers "container")
+                  (if (> paid-linux-containers 1) "are" "is")))
+
+(defn displayed-linux-free-info [in-student-trial?]
+  (gstring/format "%s free"
+                  (if in-student-trial? "3 containers are" "1 container is")))
+
 (defn linux-plan-overview [app owner]
   (om/component
    (html
@@ -1410,8 +1463,11 @@
           plan-total (pm/stripe-cost plan)
           linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
+          paid-linux-containers (pm/paid-linux-containers plan)
           containers (pm/linux-containers plan)
-          piggiebacked? (pm/piggieback? plan org-name vcs_type)]
+          piggiebacked? (pm/piggieback? plan org-name vcs_type)
+          current-linux-cost (pm/current-linux-cost plan)
+          in-student-trial? (pm/in-student-trial? plan)]
       [:div.split-plan-block
        [:div.explanation
         (when piggiebacked?
@@ -1424,40 +1480,34 @@
                (:name plan-org) "'s plan."]]]]])
         (if (config/enterprise?)
           [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
-          (cond (> containers 1)
-                [:div
-                 [:h1 (str "Current Linux plan: " containers " containers - $" (pm/current-linux-cost plan) "/month.")]
-                 (when (and (not (config/enterprise?))
-                            (pm/linux? plan))
-                       [:p
-                        (str (pm/paid-linux-containers plan) " containers are paid")
-                        (if piggiebacked? ". "
-                            (list ", at $" (pm/current-linux-cost plan) "/month. "))
-                        (if (pm/grandfathered? plan)
-                          (list "We've changed our pricing model since this plan began, so its current price "
-                                "is grandfathered in. "
-                                "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
-                                "We'll switch it to the new model if you upgrade or downgrade. ")
-                          (list
-                            (when (and (pm/freemium? plan) (> containers 1))
-                              [:span (str (pm/freemium-containers plan) " container is free.")])
-                            [:br]
-                               ;; make sure to link to the add-containers page of the plan's org,
-                               ;; in case of piggiebacking.
-                           (when-not piggiebacked?)
-                           [:p "You can update your Linux plan below."]))
-                        [:p "Questions? Check out the FAQs below."]])]
-                (= containers 1)
-                [:div
-                 [:h1 "Current Linux plan: Hobbyist (1 container) - $0/month"]
-                 [:p "0 containers are paid. 1 container is free."]
-                 [:p
-                  [:strong "Add more containers to update your plan below"]
-                   
-                  " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]
-                 [:p "Questions? Check out the FAQs below."]]
-                :else nil))
-        (when (> (pm/trial-containers plan) 0)
+          [:p
+           [:h1 (displayed-linux-plan-info current-linux-cost containers in-student-trial?)]
+           (if (> current-linux-cost 0)
+             [:div
+              (displayed-linux-paid-info paid-linux-containers)
+              (if piggiebacked? ". "
+                                (list ", at $" (pm/current-linux-cost plan) "/month. "))
+              (if (pm/grandfathered? plan)
+                (list "We've changed our pricing model since this plan began, so its current price "
+                      "is grandfathered in. "
+                      "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
+                      "We'll switch it to the new model if you upgrade or downgrade. ")
+                (list
+                  (when (and (pm/freemium? plan) (> containers 1))
+                    [:span (displayed-linux-free-info in-student-trial?)])
+                  [:br]
+                  ;; make sure to link to the add-containers page of the plan's org,
+                  ;; in case of piggiebacking.
+                  (when-not piggiebacked?
+                    [:p "You can update your Linux plan below."])))]
+             [:div
+              (gstring/format "%s. %s." (displayed-linux-paid-info paid-linux-containers) (displayed-linux-free-info in-student-trial?))
+              [:p
+               [:strong "Add more containers to update your plan below"]
+               " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]])
+           [:p "Questions? Check out the FAQs below."]])
+        (when (and (> (pm/trial-containers plan) 0)
+                   (not in-student-trial?))
           [:p
            (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
@@ -1475,8 +1525,11 @@
           plan-total (pm/stripe-cost plan)
           linux-container-cost (pm/linux-per-container-cost plan)
           price (-> plan :paid :template :price)
+          paid-linux-containers (pm/paid-linux-containers plan)
           containers (pm/linux-containers plan)
-          piggiebacked? (pm/piggieback? plan org-name vcs_type)]
+          piggiebacked? (pm/piggieback? plan org-name vcs_type)
+          current-linux-cost (pm/current-linux-cost plan)   ; why linux-container-cost then current-linux-cost?
+          in-student-trial? (pm/in-student-trial? plan)]
       [:div.overview-cards-container
        [:legend "Plan Overview"]
        (when piggiebacked?
@@ -1490,58 +1543,56 @@
        [:div.overview-cards
         (card/collection
           [(card/titled {:title (html [:span [:i.fa.fa-linux.title-icon] "Linux Plan Overview"])}
-                     (html
-                       [:div.plan-overview.linux-plan-overview
-                        (if (config/enterprise?)
-                          [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
+             (html
+               [:div.plan-overview.linux-plan-overview
+                (if (config/enterprise?)
+                  [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
 
-                          (cond (> containers 1)
-                                [:div
-                                 [:h1 (str "Current Linux plan: " containers " containers - $" (pm/current-linux-cost plan) "/month.")]]
-                                (= containers 1)
-                                [:div
-                                 [:h1 (str "Current Linux plan: Hobbyist (1 container) - $0/month")]
-                                 [:p "0 containers are paid. 1 container is free."]
-                                 [:p
-                                  [:strong
-                                   [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                                            :vcs_type (:vcs_type plan-org)
-                                                                            :_fragment "linux-pricing"})}
-                                    "Add more containers to update your plan"]]
-                                  " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]]
-                                :else nil))
-                        (when (> (pm/trial-containers plan) 0)
-                          [:p
-                           (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
-                                (pluralize (pm/days-left-in-trial plan) "more day")
-                                ".")])
-                        (when (and (not (config/enterprise?))
-                                   (pm/linux? plan))
-                          [:p
-                           (str (pm/paid-linux-containers plan) " of these are paid")
-                           (if piggiebacked? ". "
-                               (list ", at $" (pm/current-linux-cost plan) "/month. "))
+                  [:div
+                   [:h1 (displayed-linux-plan-info current-linux-cost containers in-student-trial?)]
+                   (when (= current-linux-cost 0)
+                     [:div
+                      [:p (gstring/format "%s. %s." (displayed-linux-paid-info paid-linux-containers) (displayed-linux-free-info in-student-trial?))]
+                      [:p
+                       [:strong
+                        [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                 :vcs_type (:vcs_type plan-org)
+                                                                 :_fragment "linux-pricing"})}
+                         "Add more containers to update your plan"]]
+                       " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]])])
+                (when (and (> (pm/trial-containers plan) 0)
+                           (not in-student-trial?))
+                  [:p
+                   (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
+                        (pluralize (pm/days-left-in-trial plan) "more day")
+                        ".")])
+                (when (and (not (config/enterprise?))
+                           (pm/linux? plan))
+                  [:p
+                   (str (pm/paid-linux-containers plan) " of these are paid")
+                   (if piggiebacked? ". "
+                       (list ", at $" (pm/current-linux-cost plan) "/month. "))
 
-                           (when (and (pm/freemium? plan) (> containers 1))
-                             [:span (str (pm/freemium-containers plan) " container is free.")])
-                           [:br]
-                           (if (pm/grandfathered? plan)
-                             (list "We've changed our pricing model since this plan began, so its current price "
-                                   "is grandfathered in. "
-                                   "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
-                                   "We'll switch it to the new model if you upgrade or downgrade. ")
-                             (list
-                              ;; make sure to link to the add-containers page of the plan's org,
-                              ;; in case of piggiebacking.
-                              [:p
-                                [:strong
-                                 [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
-                                                                          :vcs_type (:vcs_type plan-org)
-                                                                          :_fragment "linux-pricing"})}
-                                  "Add more containers to update your plan"]]
-                                " for more parallelism and shorter queue times."]))])
-                        (when (config/enterprise?)
-                          (om/build linux-plan {:app app}))]))
+                   (when (and (pm/freemium? plan) (> containers 1))
+                     [:span (displayed-linux-free-info in-student-trial?) "."])
+                   [:br]
+                   (if (pm/grandfathered? plan)
+                     (list "We've changed our pricing model since this plan began, so its current price "
+                           "is grandfathered in. "
+                           "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
+                           "We'll switch it to the new model if you upgrade or downgrade. ")
+                     (list
+                      ;; make sure to link to the add-containers page of the plan's org,
+                      ;; in case of piggiebacking.
+                      [:p
+                        [:strong
+                         [:a {:href (routes/v1-org-settings-path {:org (:name plan-org)
+                                                                  :vcs_type (:vcs_type plan-org)
+                                                                  :_fragment "linux-pricing"})}
+                          "Add more containers to update your plan"]]
+                        " for more parallelism and shorter queue times."]))])
+                (when (config/enterprise?)
+                  (om/build linux-plan {:app app}))]))
            (card/titled {:title (html [:span [:i.fa.fa-apple.title-icon] "OS X Plan Overview"])}
                         (html
                           [:div.plan-overview.macos-plan-overview

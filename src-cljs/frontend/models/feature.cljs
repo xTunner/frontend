@@ -66,7 +66,9 @@
 
 (defn ab-test-treatment-map
   ([]
-   {:junit-ab-test {true :junit-button
+   {:github-student-pack {true :in-student-pack
+                          false :not-in-student-pack}
+    :junit-ab-test {true :junit-button
                     false :junit-banner}
     :setup-docs-ab-test {true :setup-docs-modal
                          false :setup-docs-banner}
