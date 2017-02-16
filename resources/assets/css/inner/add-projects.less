@@ -46,6 +46,28 @@
     color: @gray;
   }
 
+  .repoButtonColor(@color) {
+    button {
+      .subtleButton(@color);
+      &:not(.disabled) {
+        &:hover {
+          background-color: @color;
+          color: @white;
+          text-shadow: none;
+          svg {
+            > * {
+              fill: @white;
+            }
+          }
+          &:active {
+            box-shadow: 0 3px (darken(@color, 5)) inset;
+            text-shadow: none;
+          }
+        }
+      }
+    }
+  }
+
   .org-repo-container {
     .flexy();
     overflow: hidden;
@@ -59,12 +81,42 @@
     }
   }
 
-  .repo-filter {
-    padding: 10px;
+  .filter-row {
+    display: flex;
     border-bottom: 1px solid @grayLightest;
+    justify-content: space-between;
+    padding: .5em;
 
-    & > .material-icons {
-      font-size: 1.2em;
+    .repo-filter {
+
+      input {
+        margin-right: 10px;
+      }
+
+      & > .material-icons {
+        font-size: 1.2em;
+      }
+    }
+
+    .unfollow-repos {
+      .repoButtonColor(@redLight);
+
+      button {
+        min-width: 180px;
+
+        svg {
+          height: 1em;
+          width: 1em;
+          margin: auto;
+          > * {
+            fill: @grayDark;
+          }
+        }
+
+        i {
+          .scale3d(.75, .75);
+        }
+      }
     }
   }
 
@@ -347,28 +399,6 @@
 
       i {
         .scale3d(.75, .75);
-      }
-    }
-
-    .repoButtonColor(@color) {
-      button {
-        .subtleButton(@color);
-        &:not(.disabled) {
-          &:hover {
-            background-color: @color;
-            color: @white;
-            text-shadow: none;
-            svg {
-              > * {
-                fill: @white;
-              }
-            }
-            &:active {
-              box-shadow: 0 3px (darken(@color, 5)) inset;
-              text-shadow: none;
-            }
-          }
-        }
       }
     }
 

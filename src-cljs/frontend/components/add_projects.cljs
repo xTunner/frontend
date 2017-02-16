@@ -302,8 +302,18 @@
                    osx-repos (->> filtered-repos (filter repo-model/likely-osx-repo?))
                    linux-repos (->> filtered-repos (remove repo-model/likely-osx-repo?))]
                [:div
-                [:div
-                 (om/build repo-filter settings)]
+                [:div.filter-row
+                 (om/build repo-filter settings)
+                 [:div.unfollow-repos
+                  (managed-button
+                    [:button {:on-click #(do
+                                           (raise! owner [:unfollowed-repos (if (= :osx selected-tab-name)
+                                                                              osx-repos
+                                                                              linux-repos)])
+                                           (om/get-shared owner :track-event) {:event-type :unfollow-projects-clicked
+                                                                               :properties {:org-name selected-org-login}})
+                              :data-spinner true}
+                     [:span "Unfollow all projects"]])]]
                 [:div
                  (condp = selected-tab-name
                    :linux

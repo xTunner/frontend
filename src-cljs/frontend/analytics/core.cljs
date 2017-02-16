@@ -120,6 +120,7 @@
     :team-icon-clicked
     :teammates-invited
     :trial-offer-banner-impression
+    :unfollow-projects-clicked
     :update-parallelism-clicked
     :update-plan-clicked
     :view-demo-clicked

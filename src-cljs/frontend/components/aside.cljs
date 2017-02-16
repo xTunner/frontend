@@ -461,10 +461,10 @@
                                :href "/add-projects",
                                :data-placement "right"
                                :data-trigger "hover"
-                               :title "Add Projects"
+                               :title "Projects"
                                :on-click #(aside-nav-clicked owner :add-project-icon-clicked)}
                 [:i.material-icons "library_add"]
-                [:div.nav-label "Add Projects"]]))
+                [:div.nav-label "Projects"]]))
 
              (when show-aside-icons?
                [:a.aside-item {:class (when (= :team current-route) "current")

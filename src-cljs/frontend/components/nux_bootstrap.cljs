@@ -102,8 +102,10 @@
                       (remove nil?))
         organizations (:organizations data)
         project-orgs (group-by project-model/org-name projects)
+        projects-loaded? (:projects-loaded? data)
         cta-button-text "Follow and Build"
-        event-properties (event-properties cta-button-text projects)]
+        {:keys [total-selected-projects-count selected-building-projects-count selected-not-building-projects-count]
+         :as event-properties} (event-properties cta-button-text projects)]
     (reify
       om/IDidMount
       (did-mount [_]
@@ -123,24 +125,27 @@
                  "Projects that have never been built on CircleCI before have a "
                  [:span.new-badge]
                  "before the project name."]
-                [:.div.org-projects-container
+                [:div.org-projects-container
                  (map (fn [org]
                         (om/build project-list {:org org
-                                                :projects-loaded? (:projects-loaded? data)
+                                                :projects-loaded? projects-loaded?
                                                 :projects (get project-orgs (:login org))}))
                       organizations)]
                 (button/managed-button {:kind :primary
                                         :loading-text "Following..."
                                         :failed-text "Failed"
                                         :success-text "Success!"
-                                        :disabled? (->> projects
-                                                        (some :checked)
-                                                        not)
+                                        :disabled? (or (= total-selected-projects-count 0)
+                                                       (not projects-loaded?))
                                         :on-click #(do
                                                      (raise! owner [:followed-projects])
                                                      ((om/get-shared owner :track-event) {:event-type :follow-and-build-projects-clicked
                                                                                           :properties event-properties}))}
-                                       cta-button-text)]))))))))
+                                       cta-button-text)
+                (when (and projects-loaded? (> selected-building-projects-count 0))
+                  [:div.explanation (gstring/format "Follow (%s) projects currently building on CircleCI" selected-building-projects-count)])
+                (when (and projects-loaded? (> selected-not-building-projects-count 0))
+                  [:div.explanation (gstring/format "Add (%s) projects not yet building on CircleCI" selected-not-building-projects-count)])]))))))))
 
 (defn build-empty-state [{:keys [projects-loaded? organizations] :as data} owner]
   (reify

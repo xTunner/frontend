@@ -558,6 +558,15 @@
   (toggle-project current-state comms (:vcs_url repo) repo
                   :unfollow-repo api-path/project-unfollow))
 
+(defmethod post-control-event! :unfollowed-repos
+  [target message repos previous-state current-state comms]
+  (let [controls-ch (:controls comms)]
+    (do
+      (doseq [repo repos]
+        (toggle-project current-state comms (:vcs_url repo) repo
+                        :unfollow-repo api-path/project-unfollow))
+      (put! controls-ch [:refreshed-user-orgs {}]))))
+
 
 (defmethod post-control-event! :unfollowed-project
   [target message {:keys [vcs-url project-id] :as repo} previous-state current-state comms]
