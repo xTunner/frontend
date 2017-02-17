@@ -627,16 +627,6 @@
           [:article
            [:legend "Advanced Settings"]
            [:ul
-            (describe-flag {:flag :junit
-                            :title "JUnit support"
-                            :blurb [:p
-                                    "This flag enables collection of test data via junit xml or cucumber json files,"
-                                    " which we use to better display test results and make parallel builds more"
-                                    " efficient.  It also adds the necessary flags for collecting this to automatically"
-                                    " inferred ruby or python test commands, though for RSpec of Minitest you'll need"
-                                    " to add the necessary formatter gem - see "
-                                    [:a {:href "https://circleci.com/docs/test-metadata/#metadata-collection-in-custom-test-steps"}
-                                     "the docs"] " for more information."]})
 
             (let [pretty-vcs (utils/prettify-vcs_type (:vcs-type project))]
               (describe-flag {:flag :set-github-status
