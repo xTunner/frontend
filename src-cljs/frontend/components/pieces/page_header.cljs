@@ -1,6 +1,8 @@
 (ns frontend.components.pieces.page-header
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.popover :as popover]
             [frontend.routes :as routes]
             [frontend.utils :as utils]
             [frontend.utils.devcards :refer [iframe]]
@@ -159,6 +161,17 @@
                         :path (routes/v1-insights)
                         :active false}))
 
+(defn engine-2 []
+  (component
+    (html
+      [:svg {:xmlns "http://www.w3.org/2000/svg"
+             :viewBox "0 0 40 23"}
+       [:g
+        [:rect.rect {:rx "3"}]
+        [:text.text
+         [:tspan {:x "8" :y "17"}
+          "2.0"]]]])))
+
 (defn header
   "The page header.
 
@@ -169,7 +182,7 @@
   :actions     - (optional) A component (or collection of components) which will be
                  placed on the right of the header. This is where page-wide actions are
                  placed."
-  [{:keys [crumbs actions logged-out?]} owner]
+  [{:keys [crumbs actions logged-out? platform]} owner]
   (let [crumbs-login (map #(assoc % :logged-out? logged-out?) crumbs)]
     (reify
       om/IDisplayName (display-name [_] "User Header")
@@ -178,7 +191,17 @@
         (component
           (html
            [:div
-            [:ol.breadcrumbs (map crumb crumbs-login)]
+            [:ol.breadcrumbs
+             (map crumb crumbs-login)
+             (when (= platform "2.0")
+               (popover/popover {:body
+                                 (html [:span "This build ran on 2.0. "
+                                        [:a {:href "https://discuss.circleci.com/c/circleci-2-0"
+                                             :target "_blank"}
+                                         "Learn more"]])
+                                 :trigger-mode :hover
+                                 :placement :bottom}
+                                (engine-2)))]
             [:.actions actions]]))))))
 
 (dc/do
@@ -224,4 +247,7 @@
      {:width "991px"}
      (om/build header {:crumbs crumbs
                        :actions [(button/button {} "Do Something")
-                                 (button/button {:kind :primary} "Do Something")]}))))
+                                 (button/button {:kind :primary} "Do Something")]})))
+
+  (defcard engine-2.0-icon
+    (engine-2)))
