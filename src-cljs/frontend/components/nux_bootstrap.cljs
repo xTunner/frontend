@@ -4,6 +4,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
+            [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
@@ -29,6 +30,39 @@
      :displayed-not-building-projects-count (count-projects {:building? false :projects projects})
      :total-displayed-projects-count (count projects)
      :total-selected-projects-count (count selected-projects)}))
+
+(defn follow-and-build-confirm-button
+  [{:keys [cta-button-text selected-building-projects-count selected-not-building-projects-count projects-loaded? do-it-fn]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (html
+        [:span
+         (button/button {:kind :primary
+                         :disabled? (or (= (+ selected-not-building-projects-count selected-building-projects-count) 0)
+                                        (not projects-loaded?))
+                         :on-click #(om/set-state! owner :show-modal? true)}
+                        cta-button-text)
+         (when show-modal?
+           (let [close-fn #(om/set-state! owner :show-modal? false)]
+             (modal/modal-dialog {:title "Almost there!"
+                                  :body [:div
+                                         [:p (gstring/format "You're about to add (%s) new projects and to follow (%s) additional projects already building on CircleCI."
+                                                             selected-not-building-projects-count
+                                                             selected-building-projects-count)]
+                                         [:p "We will add your SSH key to all of the new projects, and then build them for the first time."]]
+                                  :actions [(button/button {:on-click close-fn} "Cancel")
+                                            (button/managed-button {:kind :primary
+                                                                    :loading-text "Following..."
+                                                                    :failed-text "Failed"
+                                                                    :success-text "Success!"
+                                                                    :on-click #(do ((do-it-fn)
+                                                                                     (close-fn)))}
+                                                                   "Got it!")]
+                                  :close-fn close-fn})))]))))
 
 (defn project-list [{:keys [org projects projects-loaded?] :as data} owner]
   (reify
@@ -105,7 +139,11 @@
         projects-loaded? (:projects-loaded? data)
         cta-button-text "Follow and Build"
         {:keys [total-selected-projects-count selected-building-projects-count selected-not-building-projects-count]
-         :as event-properties} (event-properties cta-button-text projects)]
+         :as event-properties} (event-properties cta-button-text projects)
+        follow-and-build-action #(do
+                                   (raise! owner [:followed-projects])
+                                   ((om/get-shared owner :track-event) {:event-type :follow-and-build-projects-clicked
+                                                                        :properties event-properties}))]
     (reify
       om/IDidMount
       (did-mount [_]
@@ -131,17 +169,20 @@
                                                 :projects-loaded? projects-loaded?
                                                 :projects (get project-orgs (:login org))}))
                       organizations)]
-                (button/managed-button {:kind :primary
-                                        :loading-text "Following..."
-                                        :failed-text "Failed"
-                                        :success-text "Success!"
-                                        :disabled? (or (= total-selected-projects-count 0)
-                                                       (not projects-loaded?))
-                                        :on-click #(do
-                                                     (raise! owner [:followed-projects])
-                                                     ((om/get-shared owner :track-event) {:event-type :follow-and-build-projects-clicked
-                                                                                          :properties event-properties}))}
-                                       cta-button-text)
+                (if (< total-selected-projects-count 25)
+                  (button/managed-button {:kind :primary
+                                          :loading-text "Following..."
+                                          :failed-text "Failed"
+                                          :success-text "Success!"
+                                          :disabled? (or (= total-selected-projects-count 0)
+                                                         (not projects-loaded?))
+                                          :on-click follow-and-build-action}
+                                         cta-button-text)
+                  (om/build follow-and-build-confirm-button {:cta-button-text cta-button-text
+                                                             :projects-loaded? projects-loaded?
+                                                             :selected-building-projects-count selected-building-projects-count
+                                                             :selected-not-building-projects-count selected-not-building-projects-count
+                                                             :do-it-fn follow-and-build-action}))
                 (when (and projects-loaded? (> selected-building-projects-count 0))
                   [:div.explanation (gstring/format "Follow (%s) projects currently building on CircleCI" selected-building-projects-count)])
                 (when (and projects-loaded? (> selected-not-building-projects-count 0))

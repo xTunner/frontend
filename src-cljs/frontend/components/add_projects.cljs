@@ -2,10 +2,10 @@
   (:require [clojure.set :as set]
             [clojure.string :as string]
             [frontend.async :refer [navigate! raise!]]
-            [frontend.components.common :as common]
             [frontend.components.forms :refer [managed-button]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.pieces.spinner :refer [spinner]]
@@ -234,6 +234,37 @@
          " "
          (om/build free-trial-button {:selected-org selected-org})]]))))
 
+(defn unfollow-projects-button
+  [{:keys [unfollowed-repos org-name]} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-modal? false})
+    om/IRenderState
+    (render-state [_ {:keys [show-modal?]}]
+      (html
+        [:div
+         [:button {:on-click #(om/set-state! owner :show-modal? true)}
+          "Unfollow all projects"]
+         (when show-modal?
+           (let [close-fn #(om/set-state! owner :show-modal? false)]
+             (modal/modal-dialog {:title "Are you sure?"
+                                  :body (gstring/format "Are you sure you want to unfollow (%s) projects in the %s organization?"
+                                                        (count unfollowed-repos)
+                                                        org-name)
+                                  :actions [(button/button {:on-click close-fn} "Cancel")
+                                            (button/managed-button {:kind :primary
+                                                                    :success-text "Removed"
+                                                                    :loading-text "Removing..."
+                                                                    :failed-text "Failed"
+                                                                    :on-click #(do
+                                                                                 (raise! owner [:unfollowed-repos unfollowed-repos])
+                                                                                 (close-fn)
+                                                                                 ((om/get-shared owner :track-event) {:event-type :unfollow-projects-clicked
+                                                                                                                      :properties {:org-name org-name}}))}
+                                                                   "Unfollow All")]
+                                  :close-fn close-fn})))]))))
+
 (defmulti repo-list (fn [{:keys [type]}] type))
 
 (defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org selected-plan settings]} owner]
@@ -305,15 +336,11 @@
                 [:div.filter-row
                  (om/build repo-filter settings)
                  [:div.unfollow-repos
-                  (managed-button
-                    [:button {:on-click #(do
-                                           (raise! owner [:unfollowed-repos (if (= :osx selected-tab-name)
-                                                                              osx-repos
-                                                                              linux-repos)])
-                                           (om/get-shared owner :track-event) {:event-type :unfollow-projects-clicked
-                                                                               :properties {:org-name selected-org-login}})
-                              :data-spinner true}
-                     [:span "Unfollow all projects"]])]]
+                  (om/build unfollow-projects-button {:unfollowed-repos (->> (if (= :osx selected-tab-name)
+                                                                               osx-repos
+                                                                               linux-repos)
+                                                                             (filter :following))
+                                                      :org-name selected-org-login})]]
                 [:div
                  (condp = selected-tab-name
                    :linux
