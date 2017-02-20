@@ -26,8 +26,8 @@
                  ;; Use a slightly later version of transit-cljs than cljs-ajax
                  ;; depends on to avoid a ClojureScript warning.
                  [com.cognitect/transit-cljs "0.8.239"]
-                 [cljsjs/react-with-addons "0.14.5-0"]
-                 [cljsjs/react-dom "0.14.5-0"]
+                 [cljsjs/react-with-addons "15.4.2-2"]
+                 [cljsjs/react-dom "15.4.2-2"]
                  [cljsjs/c3 "0.4.10-0"]
 
                  [org.omcljs/om "1.0.0-alpha47"]
