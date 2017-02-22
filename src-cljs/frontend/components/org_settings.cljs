@@ -322,7 +322,7 @@
     (render [_]
       (html
         [:div
-         [:div
+         [:p
           "If you are a verified student on Github, you can "
           (if personal-org?
             (forms/managed-button
@@ -334,12 +334,14 @@
                                                                 :template pm/student-trial-template
                                                                 :org {:name org-name
                                                                       :vcs_type vcs-type}}])}
-               "activate."])
+               "activate"])
             "activate")
-          " our student plan to get two additional free linux containers ($1200 annual value) for only your own personal org (the org that has your username)."]
-         [:div
-          "This plan lasts as long as Github recognizes your account as a student account, or until you decide to upgrade to a paid plan. "
-          [:a {:href "https://education.github.com/pack"} "Learn more"]]]))))
+          " our student plan to get two additional free linux containers ($1200 annual value) for only your own personal organization (the organization that has your username)."]
+         [:p
+          "This plan lasts as long as Github recognizes your account as a student account, or until you decide to upgrade to a paid plan. Learn more on Github's "
+          [:a {:href "https://education.github.com/pack" :target "_blank"}
+           "Student Pack Page"]
+          "."]]))))
 
 (defn student-pack-faq-item
   [data]

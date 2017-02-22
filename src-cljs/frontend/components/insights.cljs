@@ -1,33 +1,24 @@
 (ns frontend.components.insights
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
+            [devcards.core :as dc :refer-macros [defcard]]
             [frontend.async :refer [raise!]]
-            [frontend.routes :as routes]
             [frontend.components.common :as common]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
-            [frontend.components.forms :refer [managed-button]]
-            [frontend.components.svg :refer [svg]]
+            [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
-            [frontend.models.build :as build]
+            [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
-            [frontend.models.repo :as repo-model]
-            [frontend.models.user :as user-model]
-            [frontend.models.feature :as feature]
-            [frontend.state :as state]
-            [frontend.utils :as utils :refer-macros [inspect] :refer [unexterned-prop]]
-            [frontend.utils.github :as gh-utils]
-            [frontend.utils.vcs-url :as vcs-url]
             [frontend.routes :as routes]
-            [goog.string :as gstring]
-            [goog.string.format]
+            [frontend.state :as state]
+            [frontend.utils :as utils :refer [unexterned-prop]]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.events :as gevents]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [schema.core :as s :include-macros true]
-            [devcards.core :as dc :refer-macros [defcard]])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]
-                   [frontend.utils :refer [html defrender]]))
+            [schema.core :as s :include-macros true])
+  (:require-macros [frontend.utils :refer [defrender html]]))
 
 (def BarChartableBuild
   {:build_num s/Int
@@ -117,7 +108,7 @@
         (.text #(aget % "text")))))
 
 (defn add-queued-time [build]
-  (let [queued-time (max (build/queued-time build) 0)]
+  (let [queued-time (max (build-model/queued-time build) 0)]
     (assoc build :queued_time_millis queued-time)))
 
 (def insights-outcome-mapping
@@ -408,10 +399,10 @@
               repo-name (project-model/repo-name project)]
           [:div.project-block {:class (str "build-" (name sort-category))}
            [:h1.project-header
-            [:div.last-build-status
-             (om/build svg {:class "badge-icon"
-                            :src (-> latest-build build/status-icon common/icon-path)})]
-            [:span.project-name
+            [:.last-build-status (if latest-build
+                                   (status/build-icon (build-model/build-status latest-build))
+                                   (status/icon :status-class/succeeded))]
+            [:.project-name
              (if show-insights?
                [:a {:href (routes/v1-project-insights-path {:org org-name
                                                             :repo repo-name
@@ -419,17 +410,18 @@
                                                             :vcs_type (:vcs_type project)})}
                 (formatted-project-name project)]
                (formatted-project-name project))]
-            [:div.vcs-icon
-             [:a {:href (:vcs_url project)}
-              (if (= vcs_type "bitbucket")
-                [:i.fa.fa-bitbucket]
-                [:i.octicon.octicon-mark-github])]]
+            [:.vcs-icon
+             [:a.exception {:href (:vcs_url project)}
+              (case vcs_type
+                "github" (icon/github)
+                "bitbucket" (icon/bitbucket)
+                nil)]]
             (when (project-model/can-write-settings? project)
-             [:div.settings-icon
-              [:a {:href (routes/v1-project-settings-path {:org username
-                                                           :repo reponame
-                                                           :vcs_type vcs_type})}
-               [:i.material-icons "settings"]]])]
+             [:.settings-icon
+              [:a.exception {:href (routes/v1-project-settings-path {:org username
+                                                                     :repo reponame
+                                                                     :vcs_type vcs_type})}
+               (icon/settings)]])]
            [:h4 (if show-insights?
                   (str "Branch: " branch)
                   (gstring/unescapeEntities "&nbsp;"))]

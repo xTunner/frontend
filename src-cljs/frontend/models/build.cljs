@@ -125,46 +125,61 @@
     (gstring/format "%s waiting for builds to finish"
                     (datetime/as-duration (usage-queued-time build)))))
 
-(defn not-run-words [build]
-  (case (:dont_build build)
-    "ci-skip"            "skipped"
-    "branch-blacklisted" "skipped"
-    "branch-not-whitelisted" "skipped"
-    "org-not-paid"       "not paid"
-    "user-not-paid"      "not paid"
-    "not run"))
+(defn build-status
+  "Calculates the build status for a build."
+  [build]
+  (case (:status build)
+    "canceled" :build-status/canceled
+    "failed" :build-status/failed
+    "fixed" :build-status/fixed
+    "killed" :build-status/killed
+    "no_tests" :build-status/no-tests
+    "not_run" (case (:dont_build build)
+                ("ci-skip" "branch-blacklisted" "branch-not-whitelisted") :build-status/skipped
+                ("org-not-paid" "user-not-paid") :build-status/not-paid
+                :build-status/not-run)
+    "not_running" :build-status/not-running
+    "queued" :build-status/queued
+    "retried" :build-status/retried
+    "running" :build-status/running
+    "scheduled" :build-status/scheduled
+    "success" :build-status/success
+    "timedout" :build-status/timed-out
+    "infrastructure_fail" :build-status/infrastructure-fail
+    ;; This list should be exhaustive. If we get an unknown status, default to
+    ;; something that'll look okay.
+    (do
+      (js/console.error "Unexpected build :status" (pr-str (:status build)))
+      :build-status/not-run)))
 
-(defn status-words [build]
-  (condp = (:status build)
-    "infrastructure_fail" "circle bug"
-    "timedout" "timed out"
-    "no_tests" "no tests"
-    "not_run" (not-run-words build)
-    "not_running" "not running"
-    (:status build)))
+(defn status-class
+  "Maps a build status to a status class."
+  [build-status]
+  (case build-status
+    (:build-status/failed
+     :build-status/timed-out
+     :build-status/no-tests)
+    :status-class/failed
 
-(defn status-class [build]
-  (cond (#{"failed" "timedout" "no_tests"} (:status build)) "fail"
-        (= "success" (:outcome build)) "pass"
-        (= "running" (:status build)) "busy"
-        (#{"queued" "not_running" "scheduled"} (:status build)) "queued"
+    (:build-status/success
+     :build-status/fixed)
+    :status-class/succeeded
 
-        (or
-         (#{"infrastructure_fail" "killed" "not_run" "retried" "canceled"} (:status build))
-         ;; If there's no build at all, consider that a "stop"-like status.
-         (nil? build))
-        "stop"
+    :build-status/running :status-class/running
 
-        :else nil))
+    (:build-status/not-running
+     :build-status/queued
+     :build-status/scheduled)
+    :status-class/waiting
 
-(defn status-icon [build]
-  (case (status-class build)
-    "fail" "Status-Failed"
-    "stop" "Status-Canceled"
-    "pass" "Status-Passed"
-    "busy" "Status-Running"
-    "queued" "Status-Queued"
-    nil))
+    (:build-status/infrastructure-fail
+     :build-status/killed
+     :build-status/not-run
+     :build-status/retried
+     :build-status/canceled
+     :build-status/not-paid
+     :build-status/skipped)
+    :status-class/stopped))
 
 (defn favicon-color [build]
   (cond (#{"failed" "timedout" "no_tests"} (:status build)) "red"

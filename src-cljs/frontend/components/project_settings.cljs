@@ -389,7 +389,7 @@
          (for [parallelism (range 1 (inc number-tiles))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
-            parallelism
+            [:span parallelism]
             (parallelism-tile project-data owner parallelism)
             [:input {:id (str "parallel_input_" parallelism)
                      :type "radio"
@@ -883,10 +883,10 @@
                                              :checked (:show-slack-channel-override state)
                                              :on-change #(do (om/update-state! owner :show-slack-channel-override not)
                                                              (utils/edit-input owner (conj state/project-path :slack_channel_override) %
-                                                                               :value ""))}
-                                            [:span "Override room"]
-                                            [:i.fa.fa-question-circle {:id "slack-channel-override"
-                                                                       :title "If you want to send notifications to a different channel than the webhook URL was created for, enter the channel ID or channel name below."}]]]])
+                                                                               :value ""))}]
+                                           [:span "Override room"]
+                                           [:i.fa.fa-question-circle {:id "slack-channel-override"
+                                                                      :title "If you want to send notifications to a different channel than the webhook URL was created for, enter the channel ID or channel name below."}]]])
                               :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}
                                        (when (:show-slack-channel-override state)
                                          {:field :slack_channel_override :placeholder "Room"})]

@@ -1,5 +1,7 @@
 (ns frontend.utils.devcards
-  (:require [goog.events :as gevents]
+  (:require [devcards.core :as dc]
+            [devcards.util.utils :as dc-utils]
+            [goog.events :as gevents]
             [om.dom :as dom]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [html]]))
@@ -68,3 +70,6 @@
                             :transform "translateX(-50%)"}}])))
 
 (def iframe (om-next/factory IFrame))
+
+(defn display-data [data]
+  (dc/code-highlight (dc-utils/pprint-str data) "clojure"))
