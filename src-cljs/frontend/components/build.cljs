@@ -1,32 +1,31 @@
 (ns frontend.components.build
   (:require [frontend.async :refer [raise!]]
-            [frontend.experimental.no-test-intervention :as no-test-intervention]
-            [frontend.routes :as routes]
-            [frontend.datetime :as datetime]
-            [frontend.models.build :as build-model]
-            [frontend.models.container :as container-model]
-            [frontend.models.feature :as feature]
-            [frontend.models.plan :as plan-model]
-            [frontend.models.project :as project-model]
             [frontend.components.build-head :as build-head]
-            [frontend.components.invites :as invites]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
-            [frontend.components.project.common :as project-common]
-            [frontend.components.svg :refer [svg]]
+            [frontend.components.invites :as invites]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.project.common :as project-common]
+            [frontend.config :as config]
+            [frontend.datetime :as datetime]
+            [frontend.experimental.no-test-intervention :as no-test-intervention]
+            [frontend.models.build :as build-model]
+            [frontend.models.container :as container-model]
+            [frontend.models.plan :as plan-model]
+            [frontend.models.project :as project-model]
+            [frontend.routes :as routes]
             [frontend.scroll :as scroll]
             [frontend.state :as state]
-            [frontend.config :as config]
             [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
-            [frontend.utils.seq :refer [find-index]]
             [frontend.utils.build :as build-utils]
+            [frontend.utils.seq :refer [find-index]]
             [frontend.utils.vcs-url :as vcs-url]
-            [goog.string :as gstring]
             [goog.dom :as dom]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html defrender]]))
+  (:require-macros [frontend.utils :refer [defrender html]]))
 
 (defn report-infrastructure-error [{:keys [messages failed infrastructure_fail fail_reason]} owner]
   (when (and (empty? messages)
@@ -138,13 +137,6 @@
                         {:opts {:vcs_type (vcs-url/vcs-type (:vcs_url build))
                                 :project-name (vcs-url/project-name (:vcs_url build))}}))]]])))))
 
-(defn container-result-icon [{:keys [name]} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (om/build svg {:class "container-status-icon"
-                     :src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}))))
-
 (defn last-action-end-time
   [container]
   (-> (filter #(not (:filler-action %)) (:actions container)) last :end_time))
@@ -223,13 +215,13 @@
       (html
        (let [container-id (container-model/id container)
              status (maybe-override-status status override-status)
-             icon-name (case status
-                         :failed "Status-Failed"
-                         :success "Status-Passed"
-                         :canceled "Status-Canceled"
-                         :running "Status-Running"
-                         :waiting "Status-Queued"
-                         nil)
+             status-class (case status
+                            :failed :status-class/failed
+                            :success :status-class/succeeded
+                            :canceled :status-class/stopped
+                            :running :status-class/running
+                            :waiting :status-class/waiting
+                            nil)
              {:keys [vcs_type username reponame build_num]} build]
          [:a.container-selector.exception
           {:href (routes/v1-build-path vcs_type username
@@ -248,8 +240,13 @@
                           (when (= container-id selected-container-id) ["active"]))}
           [:span.upper-pill-section
            [:span.container-index (str (:index container))]
-           [:span.status-icon
-            (om/build container-result-icon {:name icon-name})]]
+           [:span.status-icon {:class (name status-class)}
+            (case status-class
+              :status-class/failed (icon/status-failed)
+              :status-class/stopped (icon/status-canceled)
+              :status-class/succeeded (icon/status-passed)
+              :status-class/running (icon/status-running)
+              :status-class/waiting (icon/status-queued))]]
           (when build-finished?
             (om/build container-duration-label {:actions (:actions container)}))])))))
 

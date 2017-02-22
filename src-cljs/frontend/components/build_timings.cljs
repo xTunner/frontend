@@ -1,9 +1,8 @@
 (ns frontend.components.build-timings
-  (:require [frontend.components.common :as common]
-            [frontend.components.pieces.spinner :refer [spinner]]
+  (:require [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.datetime :as datetime]
             [frontend.disposable :as disposable]
-            [frontend.models.build :as build]
+            [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.utils.vcs-url :as vcs-url]
@@ -167,7 +166,12 @@
           (.append "a")
             (.attr "href" (partial step-href build))
           (.append "rect")
-            (.attr "class"     #(str "container-step-" (build/status-class (wrap-status (aget % "status")))))
+            (.attr "class"     #(str "container-step-"
+                                     (-> (aget % "status")
+                                         wrap-status
+                                         build-model/build-status
+                                         build-model/status-class
+                                         name)))
             (.attr "width"     step-length)
             (.attr "height"    container-bar-height)
             (.attr "y"         container-position)

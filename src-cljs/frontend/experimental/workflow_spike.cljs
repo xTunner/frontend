@@ -1,18 +1,17 @@
 (ns frontend.experimental.workflow-spike)
 
-(defn status-class [{:keys [status] :as workflow}]
+(defn build-status
+  "Returns a build status that reflects the status of the workflow. This is a
+  hack: eventually, workflows should have their own set of
+  statuses (`:workflow-status/*`), as their statuses are distinct from the
+  statuses that builds can have (although they're categorized by the same five
+  status classes). For now, though, we piggieback on the build statuses."
+  [{:keys [status]}]
   (case status
-    "fail" "fail"
-    "success" "pass"
-    "running" "busy"
-    "canceled" "stop"))
-
-(defn status-icon [{:keys [status] :as workflow}]
-  (case (status-class workflow)
-    "fail" "Status-Failed"
-    "stop" "Status-Canceled"
-    "pass" "Status-Passed"
-    "busy" "Status-Running"))
+    "fail" :build-status/failed
+    "success" :build-status/success
+    "running" :build-status/running
+    "canceled" :build-status/canceled))
 
 (defn trigger-vcs_url [workflow]
   (get-in workflow [:trigger-resource :data :vcs_url]))

@@ -2,7 +2,7 @@
   (:require [clojure.string :refer [lower-case]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
-            [frontend.components.svg :refer [svg]]
+            [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -17,58 +17,6 @@
             [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
-
-(defn status-ico-name [build]
-  (case (:status build)
-    "running" :busy-light
-
-    "success" :pass-light
-    "fixed"   :pass-light
-
-    "failed"   :fail-light
-    "timedout" :fail-light
-
-    "queued"      :hold-light
-    "not_running" :hold-light
-    "retried"     :hold-light
-    "scheduled"   :hold-light
-
-    "canceled"            :stop-light
-    "no_tests"            :stop-light
-    "not_run"             :stop-light
-    "infrastructure_fail" :stop-light
-    "killed"              :stop-light
-
-    :none-light))
-
-(defn sidebar-build [build {:keys [vcs_type org repo branch latest?]}]
-  [:a.status {:class (when latest? "latest")
-              :href (routes/v1-build-path vcs_type org repo nil (:build_num build))
-              :title (str (build-model/status-words build) ": " (:build_num build))}
-   (common/ico (status-ico-name build))])
-
-(defn branch [data owner]
-  (reify
-    om/IDisplayName (display-name [_] "Aside Branch Activity")
-    om/IRender
-    (render [_]
-      (let [{:keys [org repo branch-data vcs_type]} data
-            [name-kw branch-builds] branch-data
-            display-builds (take-last 5 (sort-by :build_num (concat (:running_builds branch-builds)
-                                                                    (:recent_builds branch-builds))))]
-        (html
-         [:li
-          [:div.branch
-           {:role "button"}
-           [:a {:href (routes/v1-dashboard-path {:org org
-                                                 :repo repo
-                                                 :branch (name name-kw)
-                                                 :vcs_type vcs_type})
-                :title (utils/display-branch name-kw)}
-            (-> name-kw utils/display-branch (utils/trim-middle 23))]]
-          [:div.statuses {:role "button"}
-           (for [build display-builds]
-             (sidebar-build build {:vcs_type vcs_type :org org :repo repo :branch (name name-kw)}))]])))))
 
 (defn project-settings-link [{:keys [project]} owner]
   (when (and (project-model/can-write-settings? project))
@@ -119,9 +67,7 @@
                                                                                    :org org-name
                                                                                    :branch (name branch-identifier)}})}
                   [:.branch
-                   [:.last-build-status
-                    (om/build svg {:class "badge-icon"
-                                   :src (-> latest-build build-model/status-icon common/icon-path)})]
+                   [:.last-build-status (status/build-icon (build-model/build-status latest-build))]
                    [:.branch-info
                     (when show-project?
                       [:.project-name

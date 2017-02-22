@@ -76,9 +76,7 @@
   }
 
   .project-header {
-    @header-icon-color: @grayDark;
-    .flexy(center, row);
-    justify-content: center;
+    .flexy(center);
 
     padding: 15px 10px 15px 10px;
 
@@ -89,6 +87,12 @@
       color: @grayLight;
       margin-left: 1ex;
       vertical-align: middle;
+    }
+
+    > .vcs-icon, > .settings-icon {
+      .flex(0 0 18px);
+      color: @grayLight;
+      margin-left: 1ex;
     }
   }
 
@@ -112,16 +116,12 @@
       }
     }
 
+    .last-build-status {
+      margin-right: 10px;
+    }
+
     svg {
       display: block;
-
-      &.badge-icon {
-        display: inline;
-        vertical-align: middle;
-        margin-bottom: 1px;
-        margin-right: 10px;
-        width: 15px;
-      }
     }
 
     h1 {
