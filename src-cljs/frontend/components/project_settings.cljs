@@ -389,7 +389,7 @@
          (for [parallelism (range 1 (inc number-tiles))]
            [:label {:class (parallel-label-classes project-data parallelism)
                     :for (str "parallel_input_" parallelism)}
-            parallelism
+            [:span parallelism]
             (parallelism-tile project-data owner parallelism)
             [:input {:id (str "parallel_input_" parallelism)
                      :type "radio"
