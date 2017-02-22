@@ -145,7 +145,12 @@
     "scheduled" :build-status/scheduled
     "success" :build-status/success
     "timedout" :build-status/timed-out
-    "infrastructure_fail" :build-status/infrastructure-fail))
+    "infrastructure_fail" :build-status/infrastructure-fail
+    ;; This list should be exhaustive. If we get an unknown status, default to
+    ;; something that'll look okay.
+    (do
+      (js/console.error "Unexpected build :status" (pr-str (:status build)))
+      :build-status/not-run)))
 
 (defn status-class
   "Maps a build status to a status class."
