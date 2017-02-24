@@ -2,6 +2,7 @@
   (:require [clojure.string :refer [lower-case]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -467,6 +468,16 @@
                                  :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
                   [:i.material-icons "receipt"]
                   [:div.nav-label "Changelog"]]))
+
+
+               [:a.aside-item {:data-placement "right"
+                               :data-trigger "hover"
+                               :title "What's New"
+                               :target "_blank"
+                               :href "https://circleci.com/beta-access/"
+                               :on-click #(aside-nav-clicked owner :beta-icon-clicked)}
+               (icon/engine-new)
+               [:div.nav-label "What's New"]]
 
              (when (:admin user)
                [:a.aside-item {:class (when (= :admin-settings current-route) "current")
