@@ -5,6 +5,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.build-head :as old-build-head]
             [frontend.components.common :as common]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.status :as status]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
@@ -18,7 +19,15 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component defrender html]]))
+  (:require-macros [frontend.utils :refer [component defrender element html]]))
+
+(defn- summary-item [label value]
+  (component
+    (html
+     [:.summary-item
+      (when label
+        [:span.summary-label label])
+      value])))
 
 (defn- linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -133,11 +142,10 @@
 
 (defn- pull-requests [{:keys [urls]} owner]
   ;; It's possible for a build to be part of multiple PRs, but it's rare
-  [:div.summary-item
-   [:span.summary-label
-    (str "PR"
-         (when (< 1 (count urls)) "s")
-         ": ")]
+  (summary-item
+   (str "PR"
+        (when (< 1 (count urls)) "s")
+        ": ")
    [:span
     (interpose
      ", "
@@ -149,7 +157,7 @@
          [:a {:href url
               :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
           "#"
-          (gh-utils/pull-request-number url)])))]])
+          (gh-utils/pull-request-number url)])))]))
 
 (defn- build-canceler [{:keys [type name login]}]
   [:span
@@ -221,10 +229,10 @@
 (defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
   (when-let [build-number (:build_num previous)]
     (html
-     [:div.summary-item
-      [:span.summary-label "Previous: "]
+     (summary-item
+      "Previous: "
       [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) nil build-number)}
-       build-number]])))
+       build-number]))))
 
 (defn- expected-duration
   [build owner opts]
@@ -238,102 +246,103 @@
             previous-build (:previous_successful_build build)
             past-ms (:build_time_millis previous-build)]
         (html
-          [:div.summary-item
-           [:span.summary-label "Estimated: "]
-           [:span (formatter past-ms)]])))))
+         (summary-item
+          "Estimated: "
+          [:span (formatter past-ms)]))))))
 
 (defn- build-running-status [{start-time :start_time
                              :as build}]
   {:pre [(some? start-time)]}
-  [:div.summary-item
-   [:span.summary-label "Started: "]
+  (summary-item
+   "Started: "
    [:span.start-time
     {:title (datetime/full-datetime start-time)}
     (om/build common/updating-duration
               {:start start-time})
-    " ago"]])
+    " ago"]))
 
 (defn- build-finished-status [{stop-time :stop_time
                               :as build}]
   {:pre [(some? stop-time)]}
-  [:div.summary-item
-   [:span.summary-label "Finished: "]
-   [:span.stop-time
-    {:title (datetime/full-datetime stop-time)}
-    (om/build common/updating-duration
-              {:start stop-time}
-              {:opts {:formatter datetime/time-ago-abbreviated}})
-    " ago"]
-   (str " (" (build-model/duration build) ")")])
+  (summary-item
+   "Finished: "
+   (list
+    [:span.stop-time
+     {:title (datetime/full-datetime stop-time)}
+     (om/build common/updating-duration
+               {:start stop-time}
+               {:opts {:formatter datetime/time-ago-abbreviated}})
+     " ago"]
+    (str " (" (build-model/duration build) ")"))))
 
 (defn- build-head-content [{:keys [build-data project-data] :as data} owner]
   (reify
     om/IRender
     (render [_]
-      (let [{:keys [stop_time start_time parallel usage_queued_at
-                    pull_requests status canceler
-                    all_commit_details all_commit_details_truncated] :as build} (:build build-data)
-            {:keys [project plan]} project-data]
-        (html
-         [:div
-          [:div.summary-header
-           [:div.summary-items
-            [:div.summary-item
-             (status/build-badge (build-model/build-status build))]
-            (if-not stop_time
-              (when start_time
-                (build-running-status build))
-              (build-finished-status build))]
-           [:div.summary-items
-            (when (build-model/running? build)
-              (om/build expected-duration build))
-            (om/build previous-build-label build)
-            (when (project-model/parallel-available? project)
-              [:div.summary-item
-               [:span.summary-label "Parallelism: "]
-               [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
-                                          :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
-                                                                                          :properties {:repo (project-model/repo-name project)
-                                                                                                       :org (project-model/org-name project)}})
-                                          :href (build-model/path-for-parallelism build)}
-                (let [parallelism (str parallel "x")]
-                  (if (enterprise?)
-                    parallelism
-                    (str parallelism
-                         " out of "
-                         (min (+ (plan-model/linux-containers plan)
-                                 (if (project-model/oss? project)
-                                   plan-model/oss-containers
-                                   0))
-                              (plan-model/max-parallelism plan))
-                         "x")))]])]
-           (when usage_queued_at
-             [:div.summary-items
-              [:div.summary-item
-               [:span.summary-label "Queued: "]
-               [:span (queued-time build)]]])
+      (component
+        (let [{:keys [stop_time start_time parallel usage_queued_at
+                      pull_requests status canceler
+                      all_commit_details all_commit_details_truncated] :as build} (:build build-data)
+              {:keys [project plan]} project-data]
+          (html
+           [:div
+            [:.summary-header
+             (summary-item nil (status/build-badge (build-model/build-status build)))
+             (if-not stop_time
+               (when start_time
+                 (build-running-status build))
+               (build-finished-status build))
+             (when (build-model/running? build)
+               (om/build expected-duration build))
+             (om/build previous-build-label build)
+             (when (project-model/parallel-available? project)
+               (summary-item
+                "Parallelism: "
+                [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                                                                           :properties {:repo (project-model/repo-name project)
+                                                                                                        :org (project-model/org-name project)}})
+                                           :href (build-model/path-for-parallelism build)}
+                 (let [parallelism (str parallel "x")]
+                   (if (enterprise?)
+                     parallelism
+                     (str parallelism
+                          " out of "
+                          (min (+ (plan-model/linux-containers plan)
+                                  (if (project-model/oss? project)
+                                    plan-model/oss-containers
+                                    0))
+                               (plan-model/max-parallelism plan))
+                          "x")))]))
+             (when usage_queued_at
+               (summary-item
+                "Queued: "
+                [:span (queued-time build)]))
 
-           [:div.summary-build-contents
-            [:div.summary-item
-             [:span.summary-label "Triggered by: "]
-             [:span (trigger-html build)]]
+             [:.right-side
+              (summary-item
+               "Triggered by: "
+               [:span (trigger-html build)])
 
-            (when-let [canceler (and (= status "canceled")
-                                     canceler)]
-              [:div.summary-item
-               [:span.summary-label "Canceled by: "]
-               [:span (build-canceler canceler)]])
+              (when-let [canceler (and (= status "canceled")
+                                       canceler)]
+                (summary-item
+                 "Canceled by: "
+                 [:span (build-canceler canceler)]))
 
-            (when (build-model/has-pull-requests? build)
-              (pull-requests {:urls (map :url pull_requests)} owner))]]
+              (when (build-model/has-pull-requests? build)
+                (pull-requests {:urls (map :url pull_requests)} owner))]]
 
-          [:div.card
-           [:div.small-emphasis
-            (let [n (count all_commit_details)]
-              (if all_commit_details_truncated
-                (gstring/format "Last %d Commits" n)
-                (gstring/format "Commits (%d)" n)))]
-           (om/build build-commits build-data)]])))))
+            (card/basic
+             (element :commits
+               (html
+                [:div
+                 [:.heading
+                  (let [n (count all_commit_details)]
+                    (if all_commit_details_truncated
+                      (gstring/format "Last %d Commits" n)
+                      (gstring/format "Commits (%d)" n)))]
+                 (om/build build-commits build-data)])))]))))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
