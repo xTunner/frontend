@@ -10,16 +10,16 @@
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
-            [frontend.models.plan :as plan-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
+            [frontend.timer :as timer]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component defrender element html]]))
+  (:require-macros [frontend.utils :refer [component element html]]))
 
 (defn- summary-item [label value]
   (component
@@ -140,56 +140,31 @@
                  (when show-all-commits?
                    (om/build-all commit-line bottom-commits {:key :commit}))))])])))))
 
-(defn- pull-requests [{:keys [urls]} owner]
-  ;; It's possible for a build to be part of multiple PRs, but it's rare
-  (summary-item
-   (str "PR"
-        (when (< 1 (count urls)) "s")
-        ": ")
-   [:span
-    (interpose
-     ", "
-     (for [url urls]
-       ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-       ;; When that happens, this code blows up the page. To work around that,
-       ;; we just skip the PR if its URL is nil.
-       (when url
-         [:a {:href url
-              :on-click #((om/get-shared owner :track-event) {:event-type :pr-link-clicked})}
-          "#"
-          (gh-utils/pull-request-number url)])))]))
-
-(defn- build-canceler [{:keys [type name login]}]
-  [:span
-   (list
-         [:a {:href (case type
-                      "github" (str (github-endpoint) "/" login)
-                      "bitbucket" (bb-utils/user-profile-url login)
-                      nil)}
-          (if (not-empty name) name login)])])
-
 (defn- link-to-retry-source [build]
-  (when-let [retry-id (:retry_of build)]
-    [:a {:href (routes/v1-build-path
+  (html
+   (when-let [retry-id (:retry_of build)]
+     [:a {:href (routes/v1-build-path
                  (vcs-url/vcs-type (:vcs_url build))
                  (:username build)
                  (:reponame build)
                  nil
                  retry-id)}
-     retry-id]))
+      retry-id])))
 
 (defn- link-to-user [build]
-  (when-let [user (:user build)]
-    (if (= "none" (:login user))
-      [:em "Unknown"]
-      [:a {:href (vcs-url/profile-url user)}
-       (build-model/ui-user build)])))
+  (html
+   (when-let [user (:user build)]
+     (if (= "none" (:login user))
+       [:em "Unknown"]
+       [:a {:href (vcs-url/profile-url user)}
+        (build-model/ui-user build)]))))
 
 (defn- link-to-commit [build]
-  [:a {:href (:compare build)}
-   (take 7 (:vcs_revision build))])
+  (html
+   [:a {:href (:compare build)}
+    (take 7 (:vcs_revision build))]))
 
-(defn- trigger-html [build]
+(defn- trigger-description [build]
   (let [user-link (link-to-user build)
         commit-link (link-to-commit build)
         retry-link (link-to-retry-source build)
@@ -211,70 +186,6 @@
         (:job_name build)
         "unknown"))))
 
-(defn- queued-time [build]
-  (if (< 0 (build-model/run-queued-time build))
-    [:span
-     (om/build common/updating-duration {:start (:usage_queued_at build)
-                                         :stop (or (:queued_at build) (:stop_time build))})
-     " waiting + "
-     (om/build common/updating-duration {:start (:queued_at build)
-                                         :stop (or (:start_time build) (:stop_time build))})
-     " in queue"]
-
-    [:span
-     (om/build common/updating-duration {:start (:usage_queued_at build)
-                                         :stop (or (:queued_at build) (:stop_time build))})
-     " waiting for builds to finish"]))
-
-(defrender previous-build-label [{:keys [previous] vcs-url :vcs_url} owner]
-  (when-let [build-number (:build_num previous)]
-    (html
-     (summary-item
-      "Previous: "
-      [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs-url) (vcs-url/org-name vcs-url) (vcs-url/repo-name vcs-url) nil build-number)}
-       build-number]))))
-
-(defn- expected-duration
-  [build owner opts]
-  (reify
-    om/IDisplayName
-    (display-name [_] "Expected Duration")
-
-    om/IRender
-    (render [_]
-      (let [formatter (get opts :formatter datetime/as-duration)
-            previous-build (:previous_successful_build build)
-            past-ms (:build_time_millis previous-build)]
-        (html
-         (summary-item
-          "Estimated: "
-          [:span (formatter past-ms)]))))))
-
-(defn- build-running-status [{start-time :start_time
-                             :as build}]
-  {:pre [(some? start-time)]}
-  (summary-item
-   "Started: "
-   [:span.start-time
-    {:title (datetime/full-datetime start-time)}
-    (om/build common/updating-duration
-              {:start start-time})
-    " ago"]))
-
-(defn- build-finished-status [{stop-time :stop_time
-                              :as build}]
-  {:pre [(some? stop-time)]}
-  (summary-item
-   "Finished: "
-   (list
-    [:span.stop-time
-     {:title (datetime/full-datetime stop-time)}
-     (om/build common/updating-duration
-               {:start stop-time}
-               {:opts {:formatter datetime/time-ago-abbreviated}})
-     " ago"]
-    (str " (" (build-model/duration build) ")"))))
-
 (defn- build-head-content [{:keys [build-data project-data] :as data} owner]
   (reify
     om/IRender
@@ -282,56 +193,112 @@
       (component
         (let [{:keys [stop_time start_time parallel usage_queued_at
                       pull_requests status canceler
-                      all_commit_details all_commit_details_truncated] :as build} (:build build-data)
+                      all_commit_details all_commit_details_truncated
+                      vcs_url] :as build} (:build build-data)
               {:keys [project plan]} project-data]
           (html
            [:div
             [:.summary-header
              (summary-item nil (status/build-badge (build-model/build-status build)))
+
              (if-not stop_time
                (when start_time
-                 (build-running-status build))
-               (build-finished-status build))
+                 (summary-item
+                  "Started:"
+                  (html
+                   [:span {:title (datetime/full-datetime start_time)}
+                    (om/build common/updating-duration {:start start_time})
+                    " ago"])))
+
+               (summary-item
+                "Finished:"
+                (list
+                 (html
+                  [:span {:title (datetime/full-datetime stop_time)}
+                   (om/build common/updating-duration
+                             {:start stop_time}
+                             {:opts {:formatter datetime/time-ago-abbreviated}})
+                   " ago"])
+                 (str " (" (build-model/duration build) ")"))))
+
              (when (build-model/running? build)
-               (om/build expected-duration build))
-             (om/build previous-build-label build)
+               (summary-item
+                "Estimated:"
+                (datetime/as-duration (:build_time_millis (:previous_successful_build build)))))
+
+             (when-let [build-number (:build_num (:previous build))]
+               (summary-item
+                "Previous:"
+                (html
+                 [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs_url)
+                                                  (vcs-url/org-name vcs_url)
+                                                  (vcs-url/repo-name vcs_url)
+                                                  nil build-number)}
+                  build-number])))
+
              (when (project-model/parallel-available? project)
                (summary-item
-                "Parallelism: "
-                [:a.parallelism-link-head {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
-                                                                                           :properties {:repo (project-model/repo-name project)
-                                                                                                        :org (project-model/org-name project)}})
-                                           :href (build-model/path-for-parallelism build)}
-                 (let [parallelism (str parallel "x")]
-                   (if (enterprise?)
-                     parallelism
-                     (str parallelism
-                          " out of "
-                          (min (+ (plan-model/linux-containers plan)
-                                  (if (project-model/oss? project)
-                                    plan-model/oss-containers
-                                    0))
-                               (plan-model/max-parallelism plan))
-                          "x")))]))
+                "Parallelism:"
+                (html
+                 [:a
+                  {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
+                   :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                                                   :properties {:repo (project-model/repo-name project)
+                                                                                :org (project-model/org-name project)}})
+                   :href (build-model/path-for-parallelism build)}
+                  parallel "x"
+                  (when (not (enterprise?))
+                    (str " out of " (project-model/buildable-parallelism plan project) "x"))])))
+
              (when usage_queued_at
                (summary-item
-                "Queued: "
-                [:span (queued-time build)]))
+                "Queued:"
+                (if (< 0 (build-model/run-queued-time build))
+                  (list
+                   (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                       :stop (or (:queued_at build) (:stop_time build))})
+                   " waiting + "
+                   (om/build common/updating-duration {:start (:queued_at build)
+                                                       :stop (or (:start_time build) (:stop_time build))})
+                   " in queue")
+
+                  (list
+                   (om/build common/updating-duration {:start (:usage_queued_at build)
+                                                       :stop (or (:queued_at build) (:stop_time build))})
+                   " waiting for builds to finish"))))
 
              [:.right-side
               (summary-item
-               "Triggered by: "
-               [:span (trigger-html build)])
+               "Triggered by:"
+               (trigger-description build))
 
-              (when-let [canceler (and (= status "canceled")
-                                       canceler)]
+              (when (and (= "canceled" status) canceler)
                 (summary-item
-                 "Canceled by: "
-                 [:span (build-canceler canceler)]))
+                 "Canceled by:"
+                 (let [{:keys [type name login]} canceler]
+                   (html
+                    [:a {:href (case type
+                                 "github" (str (github-endpoint) "/" login)
+                                 "bitbucket" (bb-utils/user-profile-url login)
+                                 nil)}
+                     (if (not-empty name) name login)]))))
 
               (when (build-model/has-pull-requests? build)
-                (pull-requests {:urls (map :url pull_requests)} owner))]]
+                (summary-item
+                 (str "PR" (when (< 1 (count pull_requests)) "s") ":")
+                 (html
+                  (interpose
+                   ", "
+                   (for [url (map :url pull_requests)]
+                     ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+                     ;; When that happens, this code blows up the page. To work around that,
+                     ;; we just skip the PR if its URL is nil.
+                     (when url
+                       [:a {:href url
+                            :on-click #((om/get-shared owner :track-event)
+                                        {:event-type :pr-link-clicked})}
+                        "#"
+                        (gh-utils/pull-request-number url)]))))))]]
 
             (card/basic
              (element :commits
@@ -358,9 +325,64 @@
            (om/build old-build-head/build-sub-head data)]])))))
 
 (dc/do
-  (defcard-om build-head
-    build-head
+  (def ^:private sample-data
     {:build-data {:build {:vcs_url "https://github.com/acme/anvil"
-                          :status "success"}}}
+                          :previous_successful_build {:build_time_millis 342410}
+                          :previous {:build_num 3973}
+                          :parallel 5
+                          :usage_queued_at "2017-02-23T18:10:20.541Z"
+                          :queued_at "2017-02-23T18:13:20.541Z"
+                          :pull_requests [{:url "https://github.com/acme/anvil/pull/1726"}]
+                          :why "retry"
+                          :retry_of 3973
+                          :user {:vcs_type "github"
+                                 :name "Wile E. Coyote"
+                                 :login "wecoyote"}}}
+     :project-data {:project {:oss false}
+                    :plan {:paid true
+                           :containers 10
+                           :max_parallelism 10}}})
+
+  (def ^:private card-opts
     {:shared {:comms {:controls (chan)}
-              :track-event (constantly nil)}}))
+              :track-event (constantly nil)
+              :timer-atom (timer/initialize)}})
+
+  (defcard-om not-running
+    build-head
+    (update-in sample-data [:build-data :build] assoc
+               :status "not_running"
+               :queued_at nil)
+    card-opts)
+
+  (defcard-om queued
+    build-head
+    (update-in sample-data [:build-data :build] assoc
+               :status "queued")
+    card-opts)
+
+  (defcard-om running
+    build-head
+    (update-in sample-data [:build-data :build] assoc
+               :status "running"
+               :start_time "2017-02-23T18:14:20.541Z")
+    card-opts)
+
+  (defcard-om success
+    build-head
+    (update-in sample-data [:build-data :build] assoc
+               :status "success"
+               :start_time "2017-02-23T18:14:20.541Z"
+               :stop_time "2017-02-23uT18:32:20.541Z")
+    card-opts)
+
+  (defcard-om canceled
+    build-head
+    (update-in sample-data [:build-data :build] assoc
+               :status "canceled"
+               :start_time "2017-02-23T18:14:20.541Z"
+               :stop_time "2017-02-23uT18:32:20.541Z"
+               :canceler {:type "github"
+                          :name "Road Runner"
+                          :login "rrunner"})
+    card-opts))

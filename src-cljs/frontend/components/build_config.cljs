@@ -16,7 +16,9 @@
     (did-mount [_]
       (let [node (om/get-node owner)
             highlight-target (goog.dom.getElementByClass "error-snippet" node)]
-        (js/Prism.highlightElement highlight-target)))
+        ;; Prism is not yet available in Devcards.
+        (when js/window.Prism
+          (js/Prism.highlightElement highlight-target))))
     om/IRender
     (render [_]
       (let [lines (string/split-lines config-string)
