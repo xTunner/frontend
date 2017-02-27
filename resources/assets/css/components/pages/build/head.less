@@ -56,6 +56,41 @@
      });
   });
 
+  .ui("build-commits", {
+    .build-commits-list {
+      .build-commits-list-item {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .metadata-item, .commit-message {
+        font-size: 13px;
+        margin-right: 20px;
+      }
+
+      i.octicon {
+        margin-right: 8px;
+        font-size: @fontSizeLarge;
+        vertical-align: middle;
+        color: @grayLighter;
+      }
+
+      .chevron-label {
+        color: @gray;
+      }
+
+      .tooltip-inner {
+        max-width: 350px;
+        white-space: normal;
+      }
+
+      hr {
+        margin: 10px 0;
+      }
+    }
+  });
+
   .ui("build-head", {
     > .build-sub-head {
       margin: 15px 0;

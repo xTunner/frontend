@@ -114,22 +114,24 @@
       (let [build-id (build-model/id build)
             commits (:all_commit_details build)
             [top-commits bottom-commits] (->> commits
-                                             (map #(assoc % :build build))
-                                             (split-at initial-build-commits-count))]
-        (html
-         [:div.build-commits-container
-          (when (:subject build)
-            [:div.build-commits-list
-             (if-not (seq commits)
-               (om/build commit-line {:build build
-                                      :subject (:subject build)
-                                      :body (:body build)
-                                      :commit_url (build-model/commit-url build)
-                                      :commit (:vcs_revision build)})
-               (list
-                 (om/build-all commit-line top-commits {:key :commit})
-                 (when (< initial-build-commits-count (count commits))
-                   (list
+                                              (map #(assoc % :build build))
+                                              (split-at initial-build-commits-count))]
+        (component
+          (html
+           ;; .build-commits-container class is used for utils/tooltip in commit-line.
+           [:.build-commits-container
+            (when (:subject build)
+              [:div.build-commits-list
+               (if-not (seq commits)
+                 (om/build commit-line {:build build
+                                        :subject (:subject build)
+                                        :body (:body build)
+                                        :commit_url (build-model/commit-url build)
+                                        :commit (:vcs_revision build)})
+                 (list
+                  (om/build-all commit-line top-commits {:key :commit})
+                  (when (< initial-build-commits-count (count commits))
+                    (list
                      [:hr]
                      [:a {:class "chevron-label"
                           :role "button"
@@ -138,8 +140,8 @@
                       (if show-all-commits?
                         "Less"
                         "More")]))
-                 (when show-all-commits?
-                   (om/build-all commit-line bottom-commits {:key :commit}))))])])))))
+                  (when show-all-commits?
+                    (om/build-all commit-line bottom-commits {:key :commit}))))])]))))))
 
 (defn- summary-header [{{:keys [stop_time start_time parallel usage_queued_at
                                 pull_requests status canceler vcs_url] :as build} :build
@@ -256,10 +258,7 @@
     om/IRender
     (render [_]
       (component
-        (let [{:keys [stop_time start_time parallel usage_queued_at
-                      pull_requests status canceler
-                      all_commit_details all_commit_details_truncated
-                      vcs_url] :as build} (:build build-data)
+        (let [{:keys [all_commit_details all_commit_details_truncated] :as build} (:build build-data)
               {:keys [project plan]} project-data]
           (html
            [:div
@@ -305,7 +304,67 @@
                           :retry_of 3973
                           :user {:vcs_type "github"
                                  :name "Wile E. Coyote"
-                                 :login "wecoyote"}}}
+                                 :login "wecoyote"}
+
+                          :subject "Merge pull request #11 from acme/increased-mass"
+
+                          :all_commit_details
+                          [{:commit_url
+                            "https://github.com/Peeja/a-test/commit/cfbb2c8e5734c2dee7360568c3d82982feb966f9"
+                            :committer_name "Wile E. Coyote"
+                            :committer_email "wecoyote@gmail.com"
+                            :author_date "2016-04-28T15:40:26-04:00"
+                            :author_login "wecoyote"
+                            :committer_login "wecoyote"
+                            :commit "cfbb2c8e5734c2dee7360568c3d82982feb966f9"
+                            :author_name "Wile E. Coyote"
+                            :author_email "wecoyote@gmail.com"
+                            :committer_date "2016-04-28T15:40:26-04:00"
+                            :branch "master"
+                            :body ""
+                            :subject "Increase anvil mass"}
+                           {:commit_url
+                            "https://github.com/Peeja/a-test/commit/cfbb2c8e5734c2dee7360568c3d82982feb966fa"
+                            :committer_name "Wile E. Coyote"
+                            :committer_email "wecoyote@gmail.com"
+                            :author_date "2016-04-28T15:41:26-04:00"
+                            :author_login "wecoyote"
+                            :committer_login "wecoyote"
+                            :commit "cfbb2c8e5734c2dee7360568c3d82982feb966fa"
+                            :author_name "Wile E. Coyote"
+                            :author_email "wecoyote@gmail.com"
+                            :committer_date "2016-04-28T15:41:26-04:00"
+                            :branch "master"
+                            :body ""
+                            :subject "Increase anvil mass more"}
+                           {:commit_url
+                            "https://github.com/Peeja/a-test/commit/cfbb2c8e5734c2dee7360568c3d82982feb966fb"
+                            :committer_name "Wile E. Coyote"
+                            :committer_email "wecoyote@gmail.com"
+                            :author_date "2016-04-28T15:42:26-04:00"
+                            :author_login "wecoyote"
+                            :committer_login "wecoyote"
+                            :commit "cfbb2c8e5734c2dee7360568c3d82982feb966fb"
+                            :author_name "Wile E. Coyote"
+                            :author_email "wecoyote@gmail.com"
+                            :committer_date "2016-04-28T15:42:26-04:00"
+                            :branch "master"
+                            :body ""
+                            :subject "Increase anvil mass even more"}
+                           {:commit_url
+                            "https://github.com/Peeja/a-test/commit/cf16ef42db90668da03d6c2182f0a4b5ab1c71ca"
+                            :committer_name "Wile E. Coyote"
+                            :committer_email "wecoyote@gmail.com"
+                            :author_date "2016-04-28T15:42:44-04:00"
+                            :author_login "wecoyote"
+                            :committer_login "wecoyote"
+                            :commit "cf16ef42db90668da03d6c2182f0a4b5ab1c71ca"
+                            :author_name "Wile E. Coyote"
+                            :author_email "wecoyote@gmail.com"
+                            :committer_date "2016-04-28T15:42:44-04:00"
+                            :branch "master"
+                            :body "Fork PR"
+                            :subject "Merge pull request #11 from acme/increased-mass"}]}}
      :project-data {:project {:oss false}
                     :plan {:paid true
                            :containers 10
