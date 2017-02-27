@@ -74,36 +74,37 @@
                         :viewport ".build-commits-container"})))
     om/IRender
     (render [_]
-      (html
-       [:div.build-commits-list-item
-        [:span.metadata-item
-         (if-not (:author_email commit-details)
-           [:span
-            (build-model/author commit-details)]
-           [:a {:href (str "mailto:" (:author_email commit-details))}
-            (build-model/author commit-details)])]
-        (when (build-model/author-isnt-committer commit-details)
+      (component
+        (html
+         [:div
           [:span.metadata-item
-           (if-not (:committer_email commit-details)
+           (if-not (:author_email commit-details)
              [:span
-              (build-model/committer commit-details)]
-             [:a {:href (str "mailto:" (:committer_email commit-details))}
-              (build-model/committer commit-details)])])
+              (build-model/author commit-details)]
+             [:a {:href (str "mailto:" (:author_email commit-details))}
+              (build-model/author commit-details)])]
+          (when (build-model/author-isnt-committer commit-details)
+            [:span.metadata-item
+             (if-not (:committer_email commit-details)
+               [:span
+                (build-model/committer commit-details)]
+               [:a {:href (str "mailto:" (:committer_email commit-details))}
+                (build-model/committer commit-details)])])
 
-        [:i.octicon.octicon-git-commit]
-        [:a.metadata-item.sha-one {:href commit_url
-                                   :title commit
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked})}
-         (subs commit 0 7)]
-        [:span.commit-message
-         {:title body
-          :id (str "commit-line-tooltip-hack-" commit)
-          :dangerouslySetInnerHTML {:__html (let [vcs-url (:vcs_url build)]
-                                              (-> subject
-                                                  (gstring/htmlEscape)
-                                                  (linkify)
-                                                  (maybe-project-linkify (vcs-url/vcs-type vcs-url)
-                                                                         (vcs-url/project-name vcs-url))))}}]]))))
+          [:i.octicon.octicon-git-commit]
+          [:a.metadata-item.sha-one {:href commit_url
+                                     :title commit
+                                     :on-click #((om/get-shared owner :track-event) {:event-type :revision-link-clicked})}
+           (subs commit 0 7)]
+          [:span.commit-message
+           {:title body
+            :id (str "commit-line-tooltip-hack-" commit)
+            :dangerouslySetInnerHTML {:__html (let [vcs-url (:vcs_url build)]
+                                                (-> subject
+                                                    (gstring/htmlEscape)
+                                                    (linkify)
+                                                    (maybe-project-linkify (vcs-url/vcs-type vcs-url)
+                                                                           (vcs-url/project-name vcs-url))))}}]])))))
 
 (def ^:private initial-build-commits-count 3)
 
@@ -121,7 +122,7 @@
            ;; .build-commits-container class is used for utils/tooltip in commit-line.
            [:.build-commits-container
             (when (:subject build)
-              [:div.build-commits-list
+              [:.build-commits-list
                (if-not (seq commits)
                  (om/build commit-line {:build build
                                         :subject (:subject build)
