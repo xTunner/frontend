@@ -5,20 +5,10 @@
   padding-right: 1em;
 }
 
-.main-body.main-dashboard {
-  overflow-y: hidden;
-  padding: 0;
-
-  .wrapper {
-    height: 100%;
-    overflow-y: scroll;
-    padding: 0 15px 100px 15px;
-  }
-}
-
 .dashboard {
-  margin-top: 10px;
-  height: 100%;
+  &.extra-padding {
+    margin-top: 15px;
+  }
 
   a {
     color: @blueDark;
@@ -35,10 +25,15 @@
   }
 }
 
-.toggle-builds {
+.dashboard-top-menu {
   .flexy();
   .justify-content(flex-end);
-  margin: 0 30px 10px 0;
+  margin: 0 30px 0 0;
+  padding: 10px 0 10px 0;
+
+  .dashboard-top-menu {
+    width: 100%;
+  }
 }
 
 .toggle-all-builds {
@@ -47,16 +42,6 @@
 
   input[type=radio] {
     display: none;
-
-    &:checked + label {
-      background-color: rgba(0,0,0, 0.1);
-    }
-
-    &:disabled + label {
-      background-color: rgba(0,0,0, 0);
-      color: @grayLight;
-      cursor: default;
-    }
   }
 
   label {
@@ -71,13 +56,21 @@
 
     border-radius: 3px;
     cursor: pointer;
+
+    &.checked {
+      background-color: rgba(0,0,0, 0.1);
+    }
+
+    &.disabled {
+      background-color: rgba(0,0,0, 0);
+      color: @grayLight;
+      cursor: default;
+    }
   }
 }
 
 .no-projects-block {
-  padding: 15px;
-  height: 100%;
-  overflow-y: scroll;
+  margin-top: 15px;
 
   .getting-started {
     h2 {
@@ -192,7 +185,7 @@
 .recent-builds-pager {
   .flexy();
   .justify-content(space-between);
-
+  
   margin: 1em;
 
   a:hover {

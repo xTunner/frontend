@@ -283,30 +283,33 @@
       (let [show-all-builds? (get-in data state/show-all-builds-path)
             disable-toggle? on-branch?]
         (html
-          [:div.toggle-all-builds
-           (when disable-toggle?
-             {:data-original-title "My / All builds sort is not available on branches."
-              :data-placement "left"})
-           [:input {:id "my-builds"
-                    :name "toggle-all-builds"
-                    :type "radio"
-                    :value "false"
-                    :checked (not show-all-builds?)
-                    :react-key "toggle-all-builds-my-builds"
-                    :disabled disable-toggle?
-                    :on-change #(raise! owner [:show-all-builds-toggled false])}]
-           [:label {:for "my-builds"}
-            "My builds"] 
-           [:input {:id "all-builds"
-                    :name "toggle-all-builds"
-                    :type "radio"
-                    :value "true"
-                    :checked show-all-builds?
-                    :react-key "toggle-all-builds-all-builds"
-                    :disabled disable-toggle?
-                    :on-change #(raise! owner [:show-all-builds-toggled true])}]
-           [:label {:for "all-builds"}
-            "All builds"]])))))
+          [:div.dashboard-top-menu
+           [:header.toggle-all-builds
+            (when disable-toggle?
+              {:data-original-title "My / All builds sort is not available on branches."
+               :data-placement "left"})
+            [:label {:class (if disable-toggle?
+                              "disabled tooltip-anchor"
+                              (if show-all-builds? "" "checked"))}
+             "My builds"
+             [:input {:name "toggle-all-builds"
+                      :type "radio"
+                      :value "false"
+                      :checked (not show-all-builds?)
+                      :react-key "toggle-all-builds-my-builds"
+                      :disabled disable-toggle?
+                      :on-change #(raise! owner [:show-all-builds-toggled false])}]]
+            [:label {:class (if disable-toggle?
+                              "disabled"
+                              (if show-all-builds? "checked" ""))}
+             "All builds"
+             [:input {:name "toggle-all-builds"
+                      :type "radio"
+                      :value "true"
+                      :checked show-all-builds?
+                      :react-key "toggle-all-builds-all-builds"
+                      :disabled disable-toggle?
+                      :on-change #(raise! owner [:show-all-builds-toggled true])}]]]])))))
 
 (defn collapse-group-id [project]
   "Computes a hash of the project id.  Includes the :current-branch if
@@ -448,17 +451,17 @@
                                :title "Projects"
                                :on-click #(aside-nav-clicked owner :add-project-icon-clicked)}
                 [:i.material-icons "library_add"]
-                [:div.nav-label "Projects"]]))
+                [:div.nav-label "Projects"]])
 
              (when show-aside-icons?
-               [:a.aside-item {:class (when (= :team current-route) "current")
+               [:a.aside-item {:class (when (= :team current-route) "current")}
                              :href "/team",
                              :data-placement "right"
                              :data-trigger "hover"
                              :title "Team"
-                             :on-click #(aside-nav-clicked owner :team-icon-clicked)}
+                             :on-click #(aside-nav-clicked owner :team-icon-clicked)]
               [:i.material-icons "group"]
-              [:div.nav-label "Team"]])
+              [:div.nav-label "Team"])
 
              (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
                         show-aside-icons?)
@@ -504,7 +507,7 @@
                                  :href "https://circleci.com/changelog/"
                                  :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
                   [:i.material-icons "receipt"]
-                  [:div.nav-label "Changelog"]]))
+                  [:div.nav-label "Changelog"]])
 
 
                [:a.aside-item {:data-placement "right"
@@ -512,9 +515,9 @@
                                :title "What's New"
                                :target "_blank"
                                :href "https://circleci.com/beta-access/"
-                               :on-click #(aside-nav-clicked owner :beta-icon-clicked)}
+                               :on-click #(aside-nav-clicked owner :beta-icon-clicked)}]
                (icon/engine-new)
-               [:div.nav-label "What's New"]]
+               [:div.nav-label "What's New"])
 
              (when (:admin user)
                [:a.aside-item {:class (when (= :admin-settings current-route) "current")
@@ -524,7 +527,7 @@
                                :href "/admin"
                                :on-click #(aside-nav-clicked owner :admin-icon-clicked)}
                 [:i.material-icons "build"]
-                [:div.nav-label "Admin"]])
+                [:div.nav-label "Admin"]]))
 
            (when-not (ld/feature-on? "top-bar-ui-v-1")
              [:a.aside-item.push-to-bottom {:data-placement "right"

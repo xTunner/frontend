@@ -1,8 +1,5 @@
 (ns frontend.components.dashboard
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.api :as api]
-            [frontend.async :refer [raise!]]
-            [frontend.components.aside :as aside]
+  (:require [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
@@ -10,6 +7,7 @@
             [frontend.models.plan :as plan-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -28,7 +26,7 @@
             page (js/parseInt (get-in nav-data [:query-params :page] 0))
             builds-per-page (:builds-per-page data)
             current-user (:current-user data)
-            on-branch? (boolean (:branch nav-data))]
+            vcs-types [:github :bitbucket]]
         (html
           ;; ensure the both projects and builds are loaded before rendering to prevent
           ;; the build list and branch picker from resizing.
@@ -47,21 +45,18 @@
                                                   (get-in data (state/all-repos-loaded-path :bitbucket)))
                            :current-user current-user
                            :organizations (get-in data state/user-organizations-path)})
-               :else
-               [:div.dashboard
-                (when (project-common/show-trial-notice? project plan (get-in data state/dismissed-trial-update-banner))
-                  [:div.container-fluid
-                   [:div.row
-                    [:div.col-xs-12
-                     (om/build project-common/trial-notice current-project)]]])
 
-                (when (plan-model/suspended? plan)
-                  (om/build project-common/suspended-notice {:plan plan
-                                                             :vcs_type (:vcs_type project)}))
-                [:div.toggle-builds
-                  (om/build aside/builds-table-filter {:data data :on-branch? on-branch?})]
-                
-                [:.wrapper               
+                :else
+                [:div {:class (str "dashboard" (when-not (ld/feature-on? "my-all-builds-toggle") " extra-padding"))}
+                 (when (project-common/show-trial-notice? project plan (get-in data state/dismissed-trial-update-banner))
+                   [:div.container-fluid
+                    [:div.row
+                     [:div.col-xs-12
+                      (om/build project-common/trial-notice current-project)]]])
+
+                 (when (plan-model/suspended? plan)
+                   (om/build project-common/suspended-notice {:plan plan
+                                                              :vcs_type (:vcs_type project)}))
                  (om/build builds-table/builds-table
                            {:builds builds
                             :projects projects
@@ -82,4 +77,4 @@
                     ;; API call returns
                     :class (when (> builds-per-page (count builds)) "disabled")}
                    [:span "Older builds"]
-                   [:i.fa.fa-long-arrow-right.older]]]]]))))))
+                   [:i.fa.fa-long-arrow-right.older]]]]))))))

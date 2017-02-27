@@ -161,10 +161,9 @@
                           true "All builds"
                           false "My builds"))
         all? (get-in current-state state/show-all-builds-path)]
-    (api/get-dashboard-builds (merge
-                                (assoc (state/navigation-data current-state)
-                                       :builds-per-page (:builds-per-page current-state))
-                                {:all? all?})
+    (api/get-dashboard-builds (assoc (state/navigation-data current-state)
+                                     :builds-per-page (:builds-per-page current-state)
+                                     :all? all?)
                               (:api comms))
     (analytics/track {:event-type :show-all-builds-toggled
                       :current-state current-state
