@@ -1319,7 +1319,7 @@
                  (om/build osx-usage-table-plan {:plan plan})]])
              [:div.plan-header
               [:h1 "No OS X plan selected"]
-              [:p "Choose a OS X plan below."]])])))))
+              [:p "Choose an OS X plan below."]])])))))
 
 (defn osx-usage-table [{:keys [plan]} owner]
   (reify
@@ -1437,7 +1437,7 @@
              [:p
               [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                                 :vcs_type plan-vcs-type
-                                                                :_fragment "osx-pricing"})} "Choose a OS X plan"]] "."]])])))))
+                                                                :_fragment "osx-pricing"})} "Choose an OS X plan"]] "."]])])))))
 
 (defn displayed-linux-plan-info [current-linux-cost containers in-student-trial?]
   (gstring/format "Current Linux plan: %s - $%s/month"
