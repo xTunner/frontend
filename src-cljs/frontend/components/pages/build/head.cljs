@@ -5,6 +5,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.build-head :as old-build-head]
             [frontend.components.common :as common]
+            [frontend.components.pages.build.head.trigger :as trigger]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.status :as status]
             [frontend.config :refer [enterprise? github-endpoint]]
@@ -140,52 +141,6 @@
                  (when show-all-commits?
                    (om/build-all commit-line bottom-commits {:key :commit}))))])])))))
 
-(defn- link-to-retry-source [build]
-  (html
-   (when-let [retry-id (:retry_of build)]
-     [:a {:href (routes/v1-build-path
-                 (vcs-url/vcs-type (:vcs_url build))
-                 (:username build)
-                 (:reponame build)
-                 nil
-                 retry-id)}
-      retry-id])))
-
-(defn- link-to-user [build]
-  (html
-   (when-let [user (:user build)]
-     (if (= "none" (:login user))
-       [:em "Unknown"]
-       [:a {:href (vcs-url/profile-url user)}
-        (build-model/ui-user build)]))))
-
-(defn- link-to-commit [build]
-  (html
-   [:a {:href (:compare build)}
-    (take 7 (:vcs_revision build))]))
-
-(defn- trigger-description [build]
-  (let [user-link (link-to-user build)
-        commit-link (link-to-commit build)
-        retry-link (link-to-retry-source build)
-        cache? (build-model/dependency-cache? build)]
-    (case (:why build)
-      "github" (list user-link " (pushed " commit-link ")")
-      "bitbucket" (list user-link " (pushed " commit-link ")")
-      "edit" (list user-link " (updated project settings)")
-      "first-build" (list user-link " (first build)")
-      "retry"  (list user-link " (retried " retry-link
-                                (when-not cache? " without cache")")")
-      "ssh" (list user-link " (retried " retry-link " with SSH)")
-      "auto-retry" (list "CircleCI (auto-retry of " retry-link ")")
-      "trigger" (if (:user build)
-                  (list user-link " on CircleCI.com")
-                  (list "CircleCI.com"))
-      "api" "API"
-      (or
-        (:job_name build)
-        "unknown"))))
-
 (defn- build-head-content [{:keys [build-data project-data] :as data} owner]
   (reify
     om/IRender
@@ -270,7 +225,7 @@
              [:.right-side
               (summary-item
                "Triggered by:"
-               (trigger-description build))
+               (trigger/description build))
 
               (when (and (= "canceled" status) canceler)
                 (summary-item
