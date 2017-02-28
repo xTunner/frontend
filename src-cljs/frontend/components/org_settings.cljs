@@ -1552,7 +1552,7 @@
 
                   [:div
                    [:h1 (displayed-linux-plan-info current-linux-cost containers in-student-trial?)]
-                   (when (= current-linux-cost 0)
+                   (when (and (= current-linux-cost 0) (not piggiebacked?))
                      [:div
                       [:p (gstring/format "%s. %s." (displayed-linux-paid-info paid-linux-containers) (displayed-linux-free-info in-student-trial?))]
                       [:p
