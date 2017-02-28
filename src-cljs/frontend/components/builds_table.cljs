@@ -166,7 +166,9 @@
                                                     :stop (:stop_time build)})]))]
       [:div.metadata-row.pull-revision
        (om/build pull-requests {:build build})
-       (om/build commits {:build build})]]]))
+       (om/build commits {:build build})]]
+     [:div.build-list-notes
+        [:span.platform (:platform build)]]]))
 
 (defn job-waiting-badge
   "badge for waiting job."
