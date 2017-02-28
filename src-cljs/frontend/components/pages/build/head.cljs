@@ -8,6 +8,7 @@
             [frontend.components.common :as common]
             [frontend.components.pages.build.head.trigger :as trigger]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.status :as status]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
@@ -146,6 +147,22 @@
                   (when show-all-commits?
                     (om/build-all commit-line bottom-commits {:key :commit}))))])]))))))
 
+(defrender pull-requests [prs owner]
+  (html
+   [:span
+    (interpose
+     ", "
+     (for [url (map :url prs)]
+       ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+       ;; When that happens, this code blows up the page. To work around that,
+       ;; we just skip the PR if its URL is nil.
+       (when url
+         [:a {:href url
+              :on-click #((om/get-shared owner :track-event)
+                          {:event-type :pr-link-clicked})}
+          "#"
+          (gh-utils/pull-request-number url)])))]))
+
 (defn- summary-header [{{:keys [stop_time start_time parallel usage_queued_at
                                 pull_requests status canceler vcs_url] :as build} :build
                         :keys [project plan]} owner]
@@ -242,19 +259,7 @@
            (when (build-model/has-pull-requests? build)
              (summary-item
               (str "PR" (when (< 1 (count pull_requests)) "s") ":")
-              (html
-               (interpose
-                ", "
-                (for [url (map :url pull_requests)]
-                  ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-                  ;; When that happens, this code blows up the page. To work around that,
-                  ;; we just skip the PR if its URL is nil.
-                  (when url
-                    [:a {:href url
-                         :on-click #((om/get-shared owner :track-event)
-                                     {:event-type :pr-link-clicked})}
-                     "#"
-                     (gh-utils/pull-request-number url)]))))))]])))))
+              (om/build pull-requests pull_requests)))]])))))
 
 (defn- build-head-content [{:keys [build-data project-data] :as data} owner]
   (reify
@@ -320,7 +325,7 @@
                                      (keep-indexed #(when (= (-> %2 :data :build :build_num) build_num)
                                                       %1))
                                      first)
-              {job-name :name} (jobs current-job-index)
+              {job-name :name} (get jobs current-job-index)
               next-link
               (if (< current-job-index (dec (count jobs)))
                 (om/build build-link {:job (get jobs (inc current-job-index))
@@ -333,44 +338,47 @@
                                               :workflow workflow})))]
           (html
            [:div
-            [:div.details.job
+            [:.details
              (card/titled {:title (str "Job: " job-name (gstring/unescapeEntities " ") build_num)
                            :action (status/build-badge (build-model/build-status build))}
-                          [:div
-                           [:div.line
-                            [:span.head "Trigger"]
-                            [:span.value job-trigger]]
-                           [:div.line
-                            [:span.head "Start Time"]
-                            [:span.value
-                             [:span.metadata-item.start-time
-                              {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
-                              [:i.material-icons "today"]
-                              (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                              " ago"]]]
-                           [:div.line
-                            [:span.head "Duration"]
-                            [:span.value
-                             [:span.metadata-item.duration
-                              {:title (str "Duration: " (build-model/duration build))}
-                              [:i.material-icons "timer"]
-                              (om/build common/updating-duration {:start (:start_time build)
-                                                                  :stop (:stop_time build)})]]]])]
-            [:div.details.workflow
+                          (element :job
+                            (html
+                             [:div
+                              [:.line
+                               [:span.head "Trigger"]
+                               [:span.value job-trigger]]
+                              [:.line
+                               [:span.head "Start Time"]
+                               [:span.value
+                                [:span {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
+                                 [:i.material-icons "today"]
+                                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
+                                 " ago"]]]
+                              [:.line
+                               [:span.head "Duration"]
+                               [:span.value {:title (str "Duration: " (build-model/duration build))}
+                                [:i.material-icons "timer"]
+                                (om/build common/updating-duration {:start (:start_time build)
+                                                                    :stop (:stop_time build)})]]])))]
+            [:.details
              (card/titled {:title (str "Workflow: " workflow-name (gstring/unescapeEntities " ") workflow-id)
                            :action (status/build-badge (build-model/build-status (workflow/build-status workflow)))}
-                          [:div
-                           [:div.line
-                            [:span.head "Trigger"]
-                            [:span.value.metadata-row
-                             (om/build builds-table/pull-requests {:build (:data trigger-resource)})
-                             (om/build builds-table/commits {:build (:data trigger-resource)})]]
-                           [:div.line
-                            [:span.head "Previous Job"]
-                            [:span.value previous-link]]
-                           [:div.line
-                            [:span.head "Next Job"]
-                            [:span.value next-link]]])]]))))))
+                          (element :workflow
+                            (html
+                             [:div
+                              [:.line
+                               [:span.head "Trigger"]
+                               [:span.value
+                                [:span.metadata-icon (icon/git-pull-request)]
+                                (when (build-model/has-pull-requests? (:data trigger-resource))
+                                  (om/build pull-requests (:pull_requests (:data trigger-resource))))
+                                (om/build builds-table/commits {:build (:data trigger-resource)})]]
+                              [:.line
+                               [:span.head "Previous Job"]
+                               [:span.value previous-link]]
+                              [:.line
+                               [:span.head "Next Job"]
+                               [:span.value next-link]]])))]]))))))
 
 (defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
   (reify
