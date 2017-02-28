@@ -377,27 +377,27 @@
               :timer-atom (timer/initialize)}})
 
   (defcard-om not-running
-    build-head
+    build-head-content
     (update-in sample-data [:build-data :build] assoc
                :status "not_running"
                :queued_at nil)
     card-opts)
 
   (defcard-om queued
-    build-head
+    build-head-content
     (update-in sample-data [:build-data :build] assoc
                :status "queued")
     card-opts)
 
   (defcard-om running
-    build-head
+    build-head-content
     (update-in sample-data [:build-data :build] assoc
                :status "running"
                :start_time "2017-02-23T18:14:20.541Z")
     card-opts)
 
   (defcard-om success
-    build-head
+    build-head-content
     (update-in sample-data [:build-data :build] assoc
                :status "success"
                :start_time "2017-02-23T18:14:20.541Z"
@@ -405,7 +405,7 @@
     card-opts)
 
   (defcard-om canceled
-    build-head
+    build-head-content
     (update-in sample-data [:build-data :build] assoc
                :status "canceled"
                :start_time "2017-02-23T18:14:20.541Z"
