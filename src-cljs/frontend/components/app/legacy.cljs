@@ -14,9 +14,9 @@
             [frontend.components.pages.team :as team]
             [frontend.components.templates.main :as main-template]
             [frontend.config :as config]
+            [frontend.models.feature :as feature]
             [frontend.state :as state]
             [frontend.utils.legacy :refer [build-legacy]]
-            [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]))
 
@@ -43,7 +43,7 @@
            {:app app
             :main-content (om/build old-world-dominant-component-f app)
             :above-main-content (when (and show-branch-build? on-dashboard?
-                                           (ld/feature-on? "my-all-builds-toggle"))
+                                           (feature/enabled? :my-all-builds-toggle))
                                   (om/build aside/builds-table-filter {:data app
                                                                        :on-branch? (-> (:navigation-data app)
                                                                                        :branch
