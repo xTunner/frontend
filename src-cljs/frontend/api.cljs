@@ -4,6 +4,7 @@
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.utils.ajax :as ajax]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [secretary.core :as sec]))
@@ -105,7 +106,7 @@
     (str url "?" (sec/encode-query-params (merge {:shallow true
                                                   :offset offset
                                                   :limit limit
-                                                  :mine (not all?)}
+                                                  :mine (= all? false)}
                                                  query-params)))))
 
 (defn get-dashboard-builds [{:keys [branch repo org query-params] :as args} api-ch]

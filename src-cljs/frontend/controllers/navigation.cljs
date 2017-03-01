@@ -106,7 +106,9 @@
       (api/get-projects api-ch))
     (go (let [builds-url (api/dashboard-builds-url (assoc (state/navigation-data current-state)
                                                           :builds-per-page (:builds-per-page current-state)
-                                                          :all? (get-in current-state state/show-all-builds-path)))
+                                                          :all? (if (ld/feature-on? "my-all-builds-toggle")
+                                                                  (get-in current-state state/show-all-builds-path)
+                                                                  true)))
               api-resp (<! (ajax/managed-ajax :get builds-url))
               scopes (:scopes api-resp)]
           (mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
