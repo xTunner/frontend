@@ -108,6 +108,7 @@
     :setup-docs-clicked
     :setup-docs-impression
     :show-all-branches-toggled
+    :show-all-builds-toggled
     :show-queued-builds-clicked
     :signup-clicked
     :signup-impression
