@@ -220,6 +220,7 @@
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))
+(def show-all-builds-path (conj browser-settings-path :show-all-builds))
 (def expanded-repos-path (conj browser-settings-path :expanded-repos))
 (def sort-branches-by-recency-path (conj browser-settings-path :sort-branches-by-recency))
 (defn project-branches-collapsed-path [project-id] (conj browser-settings-path :projects project-id :branches-collapsed))

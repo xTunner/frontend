@@ -6,7 +6,9 @@
 }
 
 .dashboard {
-  margin-top: 15px;
+  &.extra-padding {
+    margin-top: 15px;
+  }
 
   a {
     color: @blueDark;
@@ -19,6 +21,50 @@
   .pay-now-button {
     button {
       .button_outline(@blue, (@tile / 3));
+    }
+  }
+}
+
+.dashboard-top-menu {
+  .flexy();
+  .justify-content(flex-end);
+  margin: 0 30px 0 0;
+  padding: 10px 0 10px 0;
+
+  .dashboard-top-menu {
+    width: 100%;
+  }
+}
+
+.toggle-all-builds {
+  .flexy;
+  font-size: @aside-font-size;
+
+  input[type=radio] {
+    display: none;
+  }
+
+  label {
+    width: @toggle-aside-width;
+    height: @toggle-aside-height;
+    margin: 0;
+
+    line-height: @toggle-aside-height;
+    font-weight: normal;
+    color: @grayDark;
+    text-align: center;
+
+    border-radius: 3px;
+    cursor: pointer;
+
+    &.checked {
+      background-color: rgba(0,0,0, 0.1);
+    }
+
+    &.disabled {
+      background-color: rgba(0,0,0, 0);
+      color: @grayLight;
+      cursor: default;
     }
   }
 }
@@ -139,7 +185,7 @@
 .recent-builds-pager {
   .flexy();
   .justify-content(space-between);
-
+  
   margin: 1em;
 
   a:hover {

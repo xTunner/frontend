@@ -16,6 +16,7 @@
             [frontend.config :as config]
             [frontend.state :as state]
             [frontend.utils.legacy :refer [build-legacy]]
+            [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]))
 
@@ -31,21 +32,28 @@
     (reify
       om/IRender
       (render [_]
-        (main-template/template
-         {:app app
-          :main-content (om/build old-world-dominant-component-f app)
-          :sidebar (case (:navigation-point app)
-                     :org-settings (om/build aside/org-settings-menu app)
-                     :admin-settings (om/build aside/admin-settings-menu app)
-                     ;; The dashboard doesn't show a sidebar when you're not
-                     ;; logged in (OSS), when the projects or builds haven't
-                     ;; loaded yet, or when you're not yet following any
-                     ;; projects.
-                     :dashboard (when (and (get-in app state/user-path)
-                                           (get-in app state/recent-builds-path)
-                                           (seq (get-in app state/projects-path)))
-                                  (om/build aside/branch-activity-list app))
-                     nil)})))))
+        ;; The dashboard doesn't show a sidebar or above-main-content when you're
+        ;; not logged in (OSS), when the projects or builds haven't loaded yet,
+        ;; or when you're not yet following any projects.
+        (let [show-branch-build? (boolean (and (get-in app state/user-path)
+                                               (get-in app state/recent-builds-path)
+                                               (seq (get-in app state/projects-path))))
+              on-dashboard? (= (:navigation-point app) :dashboard)]
+          (main-template/template
+           {:app app
+            :main-content (om/build old-world-dominant-component-f app)
+            :above-main-content (when (and show-branch-build? on-dashboard?
+                                           (ld/feature-on? "my-all-builds-toggle"))
+                                  (om/build aside/builds-table-filter {:data app
+                                                                       :on-branch? (-> (:navigation-data app)
+                                                                                       :branch
+                                                                                       boolean)}))
+            :sidebar (case (:navigation-point app)
+                       :org-settings (om/build aside/org-settings-menu app)
+                       :admin-settings (om/build aside/admin-settings-menu app)
+                       :dashboard (when show-branch-build?
+                                    (om/build aside/branch-activity-list app))
+                       nil)}))))))
 
 (def nav-point->page
   (merge
