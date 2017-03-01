@@ -92,7 +92,7 @@
 ;; Note that dashboard-builds-url can take a :page (within :query-params)
 ;; and :builds-per-page, or :limit and :offset directly.
 (defn dashboard-builds-url [{vcs-type :vcs_type
-                             :keys [branch repo org admin deployments query-params builds-per-page offset limit all?]
+                             :keys [branch repo org admin deployments query-params builds-per-page offset limit]
                              :as args}]
   (let [offset (or offset (* (get query-params :page 0) builds-per-page))
         limit (or limit builds-per-page)
@@ -104,18 +104,12 @@
                   :else "/api/v1/recent-builds")]
     (str url "?" (sec/encode-query-params (merge {:shallow true
                                                   :offset offset
-                                                  :limit limit
-                                                  :mine (not all?)}
+                                                  :limit limit}
                                                  query-params)))))
 
-(defn get-dashboard-builds [{:keys [branch repo org query-params] :as args} api-ch]
+(defn get-dashboard-builds [{:keys [branch repo org admin query-params builds-per-page] :as args} api-ch]
   (let [url (dashboard-builds-url args)]
-    (ajax/ajax :get url
-               :recent-builds api-ch
-               :context {:branch branch
-                         :repo repo
-                         :org org
-                         :query-params query-params})))
+    (ajax/ajax :get url :recent-builds api-ch :context {:branch branch :repo repo :org org})))
 
 (defn get-admin-dashboard-builds
   [tab api-ch]
