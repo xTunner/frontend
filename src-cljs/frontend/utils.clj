@@ -104,12 +104,26 @@
   `component` also sets the component name that `element` will use to build an
   element name.
 
+  BUG/WORKAROUND: Functional components with multiple arities or a variable
+  arity need to be treated slightly differently. `component` relies on the
+  `:fn-scope` that the analyzer sets, and during the complier's processing of
+  multiple and variable arity funcitons, the function bodies end up outside the
+  actual function, and so the `:fn-scope` is no longer available to the macro.
+  As a workaround, use an explicit `def` and `fn` rather than `defn`. When the
+  compiler expands the `fn`, the function bodies remain inside the `def`, which
+  makes the name still available. See examples below.
+
   Examples:
 
   ;; Functional stateless component
   (defn fancy-button [on-click title]
     (component
       (html [:button {:on-click on-click} title])))
+
+  ;; Functional stateless component with varargs workaround
+  (def card
+    (fn [& children]
+      (component (html [:div children]))))
 
   ;; Om Previous component
   (defn person [person-data owner]
