@@ -47,7 +47,6 @@ experimental:
             command: |
               source ~/.bashrc
               set -exu
-              set -o pipefail
               lein cljsbuild once whitespace test production
               lein run -m frontend.tasks.http/precompile-assets
 
@@ -86,8 +85,7 @@ dependencies:
   post:
     - node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
     - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
-    - set -o pipefail; lein cljsbuild once test production |&:
-        timeout: 600
+    - lein cljsbuild once test production
     - lein run -m frontend.tasks.http/precompile-assets
 
 
