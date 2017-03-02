@@ -53,4 +53,4 @@
              [:li [:a {:href "https://circleci.com/contact/"} "Contact Us"]]]]]]
       [:div.row
         [:div.col-md-5.additional-links
-          [:span "Copyright © 2015 CircleCI"]]]]])
+          [:span "Copyright © 2017 CircleCI"]]]]])
