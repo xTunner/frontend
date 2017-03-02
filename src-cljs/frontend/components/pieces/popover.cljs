@@ -208,6 +208,57 @@
                         :body body)
                  trigger)))
 
+  (defcard tooltip-card
+    (fn [state]
+      (html
+       [:div {:style {:display "flex"
+                      :justify-content "space-around"
+                      :padding-left 150
+                      :padding-right 150
+                      :padding-top 100
+                      :padding-bottom 200}}
+        (with-positioned-element
+         {:placement :left
+          :element (card {:title nil
+                          :body "Content"
+                          :placement :left
+                          :trigger-mode :click
+                          :visible? true})}
+         trigger)
+        (with-positioned-element
+         {:placement :top
+          :element (card {:title nil
+                          :body "Content"
+                          :placement :top
+                          :trigger-mode :click
+                          :visible? true})}
+         trigger)
+        (with-positioned-element
+         {:placement :bottom
+          :element (card {:title nil
+                          :body "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+                          :placement :bottom
+                          :trigger-mode :click
+                          :visible? true})}
+         trigger)
+        (with-positioned-element
+         {:placement :right
+          :element (card {:title nil
+                          :body "Content"
+                          :placement :right
+                          :trigger-mode :click
+                          :visible? true})}
+         trigger)])))
+
+  (defcard tooltip
+    (fn [state]
+      (html
+       [:div {:style {:display "flex"
+                      :justify-content "space-between"
+                      :padding 50}}
+        (vary-placements tooltip
+                         {:body "Content"})])))
+
   (defcard popover-card
     (fn [state]
       (html
@@ -253,16 +304,7 @@
                           :visible? true})}
          trigger)])))
 
-  (defcard tooltip
-    (fn [state]
-      (html
-       [:div {:style {:display "flex"
-                      :justify-content "space-between"
-                      :padding 50}}
-        (vary-placements tooltip
-                         {:body "Content"})])))
-
-  (defcard popover
+  (defcard popover-click
     (fn [state]
       (html
        [:div {:style {:display "flex"
@@ -271,4 +313,14 @@
         (vary-placements popover
                          {:title "Title"
                           :body "Content"
-                          :trigger-mode :click})]))))
+                          :trigger-mode :click})])))
+  (defcard popover-hover
+    (fn [state]
+      (html
+       [:div {:style {:display "flex"
+                      :justify-content "space-between"
+                      :padding 50}}
+        (vary-placements popover
+                         {:title "Title"
+                          :body "Content"
+                          :trigger-mode :hover})]))))

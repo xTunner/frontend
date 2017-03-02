@@ -142,7 +142,6 @@
                      current-route (if (= :route/legacy-page compassus-route)
                                      (:navigation-point app)
                                      compassus-route)]
-                 (when (not (ld/feature-on? "top-bar-ui-v-1"))
-                   (build-legacy aside/aside-nav {:user user :current-route current-route}))))
+                 (build-legacy aside/aside-nav {:user user :current-route current-route})))
 
              (factory props)]]))))))
