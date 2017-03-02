@@ -4,6 +4,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.status :as status]
             [frontend.datetime :as datetime]
             [frontend.experimental.workflow-spike :as workflow]
@@ -79,7 +80,8 @@
         should-show-cancel? (and (project-model/can-trigger-builds? project)
                                  (build-model/can-cancel? build))
         should-show-rebuild? (and (project-model/can-trigger-builds? project)
-                                  (#{"timedout" "failed"} (:outcome build)))]
+                                  (#{"timedout" "failed"} (:outcome build)))
+        platform (:platform build)]
     [:div.build {:class (-> build build-model/build-status build-model/status-class name)}
      [:div.status-area
       [:a {:href url
@@ -168,7 +170,17 @@
        (om/build pull-requests {:build build})
        (om/build commits {:build build})]]
      [:div.build-list-notes
-        [:span.platform (:platform build)]]]))
+       (popover/popover {:title nil
+                         :body [:span (if (= "1.0" platform)
+                                          "2.0 is coming soon!\n"
+                                          "This build ran on 2.0.\n")
+                                [:a {:href "https://discuss.circleci.com/c/circleci-2-0"
+                                     :target "_blank"}
+                                 "Learn more"]]
+                         :placement :left
+                         :trigger-mode :click}
+        [:span.platform platform])]]))
+
 
 (defn job-waiting-badge
   "badge for waiting job."
