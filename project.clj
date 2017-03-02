@@ -87,7 +87,13 @@
         :alias {:default [:chrome]}
         :paths {:karma "./node_modules/karma/bin/karma"}}
 
-  :cljsbuild {:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
+  :cljsbuild ~(let [warning-handlers ['(fn [warning-type env extra]
+                                         (when (warning-type cljs.analyzer/*cljs-warnings*)
+                                           (when-let [s (cljs.analyzer/error-message warning-type extra)]
+                                             (binding [*out* *err*]
+                                               (println "WARNING:" (cljs.analyzer/message env s)))
+                                             (System/exit 1))))]]
+                `{:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
                              ;; Port 4444 is proxied (with SSL) to 3449 (the Figwheel server port).
                              :figwheel {:websocket-url "wss://prod.circlehost:4444/figwheel-ws"}
                              :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
@@ -110,6 +116,7 @@
                        ;; This is the build normally used for testing on
                        ;; development machines. Use it by running lein doo.
                        :dev-test {:source-paths ["src-cljs" "test-cljs"]
+                                  :warning-handlers ~warning-handlers
                                   :compiler {:output-to "resources/public/cljs/dev-test/frontend-dev.js"
                                              :output-dir "resources/public/cljs/dev-test"
                                              ;; This is the default when we have :optimizations :advanced. It causes some
@@ -120,6 +127,7 @@
                                              :main frontend.test-runner}}
 
                        :whitespace {:source-paths ["src-cljs"]
+                                    :warning-handlers ~warning-handlers
                                     :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
                                                :output-dir "resources/public/cljs/whitespace"
                                                :optimizations :whitespace
@@ -130,6 +138,7 @@
                        ;; compilation bugs. That's too slow to run in
                        ;; development, so we run this one in CI.
                        :test {:source-paths ["src-cljs" "test-cljs"]
+                              :warning-handlers ~warning-handlers
                               :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                          :output-dir "resources/public/cljs/test"
                                          :optimizations :advanced
@@ -149,6 +158,7 @@
                                          :source-map "resources/public/cljs/test/frontend-test.js.map"}}
 
                        :production {:source-paths ["src-cljs"]
+                                    :warning-handlers ~warning-handlers
                                     :compiler {:pretty-print false
                                                :output-to "resources/public/cljs/production/frontend.js"
                                                :output-dir "resources/public/cljs/production"
@@ -161,7 +171,7 @@
                                                          "src-cljs/js/d3-externs.js"
                                                          "src-cljs/js/prismjs-externs.js"
                                                          "src-cljs/js/bootstrap-externs.js"]
-                                               :source-map "resources/public/cljs/production/frontend.js.map"}}}}
+                                               :source-map "resources/public/cljs/production/frontend.js.map"}}}})
   :profiles {:devtools {:repl-options {:port 8230
                                        :nrepl-middleware [dirac.nrepl.middleware/dirac-repl]
                                        :init (do
