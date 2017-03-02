@@ -85,7 +85,7 @@ dependencies:
   post:
     - node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
     - "[[ -d resources/components ]] || node_modules/bower/bin/bower install"
-    - lein cljsbuild once test production
+    - lein cljsbuild once whitespace test production
     - lein run -m frontend.tasks.http/precompile-assets
 
 
