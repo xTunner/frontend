@@ -201,9 +201,8 @@
                                              :on-click #((om/get-shared owner :track-event) {:event-type :beta-link-clicked
                                                                                              :properties {:location "build-page"}})}
                                          "Learn more"]])
-                                 :trigger-mode :hover
                                  :placement :bottom}
-                                (engine-2)))]
+                               (engine-2)))]
             [:.actions actions]]))))))
 
 (dc/do

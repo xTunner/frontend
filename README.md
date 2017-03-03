@@ -11,6 +11,8 @@ application.
 
 Watch [@brandonbloom](https://github.com/brandonbloom)'s Clojure/West talk, [Building CircleCI's Frontend with Om](https://www.youtube.com/watch?v=LNtQPSUi1iQ), for a quick overview.
 
+For a better overview of current/future architecture, please see [Peter Jaros' Eng Lunch Talk](https://www.dropbox.com/sh/gjbk4ca1pp9et3j/AAAj-lQ_-LImcLqn4d7i8KoDa?dl=0)
+
 
 Want to work with Clojure(Script) full-time? [We're hiring](https://circleci.com/jobs).
 

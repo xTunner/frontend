@@ -4,10 +4,10 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
             [frontend.components.nux-bootstrap :as nux-bootstrap]
+            [frontend.models.feature :as feature]
             [frontend.models.plan :as plan-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true])
   (:require-macros [frontend.utils :refer [html]]))
 
@@ -47,7 +47,7 @@
                            :organizations (get-in data state/user-organizations-path)})
 
                 :else
-                [:div {:class (str "dashboard" (when-not (ld/feature-on? "my-all-builds-toggle") " extra-padding"))}
+                [:div {:class (str "dashboard" (when-not (feature/enabled? :my-all-builds-toggle) " extra-padding"))}
                  (when (project-common/show-trial-notice? project plan (get-in data state/dismissed-trial-update-banner))
                    [:div.container-fluid
                     [:div.row
