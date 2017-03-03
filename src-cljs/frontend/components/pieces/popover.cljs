@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.popover
   (:require [clojure.string :as string]
             [devcards.core :as dc :refer-macros [defcard]]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [goog.string :as gstring]
             [om.dom :as om-dom]
@@ -208,58 +209,18 @@
                         :body body)
                  trigger)))
 
-  (defcard tooltip-card
-    (fn [state]
-      (html
-       [:div {:style {:display "flex"
-                      :justify-content "space-around"
-                      :padding-left 150
-                      :padding-right 150
-                      :padding-top 100
-                      :padding-bottom 200}}
-        (with-positioned-element
-         {:placement :left
-          :element (card {:title nil
-                          :body "Content"
-                          :placement :left
-                          :trigger-mode :click
-                          :visible? true})}
-         trigger)
-        (with-positioned-element
-         {:placement :top
-          :element (card {:title nil
-                          :body "Content"
-                          :placement :top
-                          :trigger-mode :click
-                          :visible? true})}
-         trigger)
-        (with-positioned-element
-         {:placement :bottom
-          :element (card {:title nil
-                          :body "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-                          :placement :bottom
-                          :trigger-mode :click
-                          :visible? true})}
-         trigger)
-        (with-positioned-element
-         {:placement :right
-          :element (card {:title nil
-                          :body "Content"
-                          :placement :right
-                          :trigger-mode :click
-                          :visible? true})}
-         trigger)])))
+  (defcard tooltip-and-popover-card
+    "Simple tooltips and more complex popovers for displaying extended
+    information for things.
 
-  (defcard tooltip
-    (fn [state]
-      (html
-       [:div {:style {:display "flex"
-                      :justify-content "space-between"
-                      :padding 50}}
-        (vary-placements tooltip
-                         {:body "Content"})])))
+    A simple popup provide extra information or operations on hover, focus
+    or click. Compared with tooltips, popovers can provide action elements
+    like links and buttons.
 
-  (defcard popover-card
+    The tooltip shows on mouse enter and hides on mouse leave and doesn’t support
+    complex text. The default behavior in hover mode is to respond to clicks as
+    well. If you click, it \"pins\" the tooltip. Clicking again or clicking out
+    dismisses it, allowing tooltips to work on touch devices as well."
     (fn [state]
       (html
        [:div {:style {:display "flex"
@@ -298,11 +259,21 @@
                           (html
                             [:div
                              [:p "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."]
-                             [:p [:a {:href "#"} "Click here!"]]])
+                             [:p [:a {:href "#"} "Click here!"]]
+                             [:p (button/button {:kind :primary} "Do Something")]])
                           :placement :right
                           :trigger-mode :click
                           :visible? true})}
          trigger)])))
+
+  (defcard tooltip
+    (fn [state]
+      (html
+       [:div {:style {:display "flex"
+                      :justify-content "space-between"
+                      :padding 50}}
+        (vary-placements tooltip
+                         {:body "Content"})])))
 
   (defcard popover-click
     (fn [state]
@@ -314,6 +285,7 @@
                          {:title "Title"
                           :body "Content"
                           :trigger-mode :click})])))
+
   (defcard popover-hover
     (fn [state]
       (html
