@@ -197,7 +197,8 @@
                (popover/popover {:body
                                  (html [:span "This build ran on 2.0. "
                                         [:a {:href "https://discuss.circleci.com/c/circleci-2-0"
-                                             :target "_blank"}
+                                             :target "_blank"
+                                             :on-click #((om/get-shared owner :track-event) {:event-type :beta-build-page-icon-clicked})}
                                          "Learn more"]])
                                  :trigger-mode :hover
                                  :placement :bottom}
