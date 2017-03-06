@@ -196,11 +196,12 @@
              (when (= platform "2.0")
                (popover/tooltip {:body
                                  (html [:span "This build ran on 2.0. "
-                                        [:a {:href "https://discuss.circleci.com/c/circleci-2-0"
-                                             :target "_blank"
-                                             :on-click #((om/get-shared owner :track-event) {:event-type :beta-link-clicked
-                                                                                             :properties {:location "build-page"}})}
-                                         "Learn more"]])
+                                        (let [href "https://discuss.circleci.com/c/circleci-2-0"]
+                                          [:a {:href href
+                                               :target "_blank"
+                                               :on-click #((om/get-shared owner :track-event) {:event-type :beta-link-clicked
+                                                                                               :properties {:href href}})}
+                                           "Learn more"])])
                                  :placement :bottom}
                                (engine-2)))]
             [:.actions actions]]))))))
