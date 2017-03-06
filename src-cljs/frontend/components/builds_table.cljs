@@ -178,7 +178,10 @@
                                      :target "_blank"}
                                  "Learn more"]]
                          :placement :left
-                         :trigger-mode :click}
+                         :trigger-mode :click
+                         :on-show #((om/get-shared owner :track-event) {:event-type :platform-number-popover-impression
+                                                                        :properties {:component "builds-table"
+                                                                                     :platform-number platform}})}
         [:span.platform platform])]]))
 
 

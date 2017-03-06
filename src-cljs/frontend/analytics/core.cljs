@@ -93,6 +93,7 @@
     :org-clicked
     :org-settings-link-clicked
     :parallelism-clicked
+    :platform-number-popover-impression
     :pr-link-clicked
     :project-branch-changed
     :project-clicked

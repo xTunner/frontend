@@ -104,7 +104,16 @@
     vice versa. This enables touch interactions for a popover in
     hover mode and allows users to pin it in place.
    Can be one of [:click :hover].
-   (default: :click)"
+   (default: :click)
+
+  :on-show (optional)
+   Function to be triggered when popover is shown.
+   Can be used to pass in an event-tracking function.
+
+  :on-hide (optional)
+   Function to be triggered when popover is hidden.
+   Can be used to pass in an event-tracking function."
+
   Object
   (initLocalState [_]
     {:visible-by-click? false
@@ -117,12 +126,22 @@
        document-click-handler
        true)))
   (componentDidUpdate [this prev-props prev-state]
-    ;; workaround for Safari iOS not firing click events
-    ;; reference: https://github.com/kentor/react-click-outside/issues/4#issuecomment-266644870
-    (when (exists? js/document.documentElement.ontouchstart)
-      (let [visible? (:visible-by-click? (om-next/get-state this))
-            prev-visible? (:visible-by-click? prev-state)]
-        (when (not= visible? prev-visible?)
+    (let [{:keys [on-show on-hide]} (om-next/props this)
+          current-state (om-next/get-state this)
+          visible? (or (:visible-by-click? current-state)
+                       (:visible-by-hover? current-state))
+          prev-visible? (or (:visible-by-click? prev-state)
+                            (:visible-by-hover? prev-state))
+          visibility-changed? (not= visible? prev-visible?)]
+      (when visibility-changed?
+        (if visible?
+          (when on-show (on-show))
+          (when on-hide (on-hide))))
+      ;; workaround for Safari iOS not firing click events
+      ;; reference: https://github.com/kentor/react-click-outside/issues/4#issuecomment-266644870
+      (when (exists? js/document.documentElement.ontouchstart)
+        (when (not= (:visible-by-click? current-state)
+                    (:visible-by-click? prev-state))
           (if visible?
             (set! (.-cursor document.body.style) "pointer")
             (set! (.-cursor document.body.style) nil))))))
@@ -177,13 +196,23 @@
   :placement
    The position of the tooltip relative to the trigger element.
    Can be one of [:top :bottom :left :right].
-   (default: :top)"
-  [{:keys [body placement]
+   (default: :top)
+
+  :on-show (optional)
+   Function to be triggered when tooltip is shown.
+   Can be used to pass in an event-tracking function.
+
+  :on-hide (optional)
+   Function to be triggered when tooltip is hidden.
+   Can be used to pass in an event-tracking function."
+  [{:keys [body placement on-show on-hide]
     :or {placement :top}}
    children]
   (popover {:title nil
             :body body
             :placement placement
+            :on-show on-show
+            :on-hide on-hide
             :trigger-mode :hover}
            children))
 
@@ -267,34 +296,41 @@
                           :trigger-mode :click
                           :visible? true})}
          trigger)])))
+  (let [card-style {:style {:display "flex"
+                            :justify-content "space-between"
+                            :padding 50}}]
+    (defcard tooltip
+      (fn [state]
+        (html
+         [:div card-style
+          (vary-placements tooltip
+                           {:body "Content"})])))
 
-  (defcard tooltip
-    (fn [state]
-      (html
-       [:div {:style {:display "flex"
-                      :justify-content "space-between"
-                      :padding 50}}
-        (vary-placements tooltip
-                         {:body "Content"})])))
+    (defcard popover-click
+      (fn [state]
+        (html
+         [:div card-style
+          (vary-placements popover
+                           {:title "Title"
+                            :body "Content"
+                            :trigger-mode :click})])))
 
-  (defcard popover-click
-    (fn [state]
-      (html
-       [:div {:style {:display "flex"
-                      :justify-content "space-between"
-                      :padding 50}}
-        (vary-placements popover
-                         {:title "Title"
-                          :body "Content"
-                          :trigger-mode :click})])))
+    (defcard popover-hover
+      (fn [state]
+        (html
+         [:div card-style
+          (vary-placements popover
+                           {:title "Title"
+                            :body "Content"
+                            :trigger-mode :hover})])))
 
-  (defcard popover-hover
-    (fn [state]
-      (html
-       [:div {:style {:display "flex"
-                      :justify-content "space-between"
-                      :padding 50}}
-        (vary-placements popover
-                         {:title "Title"
-                          :body "Content"
-                          :trigger-mode :hover})]))))
+    (defcard popover-callbacks
+      (fn [state]
+        (html
+         [:div card-style
+          (popover {:title "Callback fired!"
+                    :body "Check your console"
+                    :trigger-mode :hover
+                    :on-show #(println "popover shown")
+                    :on-hide #(println "popover hidden")}
+                   trigger)])))))
