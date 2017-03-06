@@ -1,6 +1,6 @@
 (ns frontend.components.pieces.popover
   (:require [clojure.string :as string]
-            [devcards.core :as dc :refer-macros [defcard]]
+            [devcards.core :as dc :refer-macros [defcard defcard-doc]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [goog.string :as gstring]
@@ -188,6 +188,19 @@
            children))
 
 (dc/do
+  (defcard-doc
+    "Simple tooltips and more complex popovers for displaying extended
+    information for things.
+
+    A simple popup provides extra information or operations on hover, focus
+    or click. Compared with tooltips, popovers can provide action elements
+    like links and buttons.
+
+    The tooltip shows on mouse enter and hides on mouse leave and doesn’t support
+    complex text. The default behavior in hover mode is to respond to clicks as
+    well. If you click, it \"pins\" the tooltip. Clicking again or clicking out
+    dismisses it, allowing tooltips to work on touch devices as well.")
+
   (def trigger
     (html
      [:div {:style {:width 32}}
@@ -210,17 +223,6 @@
                  trigger)))
 
   (defcard tooltip-and-popover-card
-    "Simple tooltips and more complex popovers for displaying extended
-    information for things.
-
-    A simple popup provide extra information or operations on hover, focus
-    or click. Compared with tooltips, popovers can provide action elements
-    like links and buttons.
-
-    The tooltip shows on mouse enter and hides on mouse leave and doesn’t support
-    complex text. The default behavior in hover mode is to respond to clicks as
-    well. If you click, it \"pins\" the tooltip. Clicking again or clicking out
-    dismisses it, allowing tooltips to work on touch devices as well."
     (fn [state]
       (html
        [:div {:style {:display "flex"
