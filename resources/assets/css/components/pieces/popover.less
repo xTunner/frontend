@@ -58,19 +58,24 @@
 
         > .content {
           width: 100%;
-          background-color: @white;
+          background-color: @grayDark;
           border-radius: 3px;
 
           > .title {
             margin: 0 @popover-padding;
             padding: @popover-padding @popover-padding;
-            color: @black;
             border-bottom: 1px solid @grayLightest;
+            color: @white;
+            font-weight: 500;
           }
 
           > .body {
             padding: @popover-padding @popover-padding*2;
-            color: @black;
+            color: @white;
+          }
+
+          a:not(.exception) {
+            color: @blueLight;
           }
         }
 
@@ -88,7 +93,7 @@
         flex-direction: column-reverse;
 
         &::after {
-          border-bottom-color: @white;
+          border-bottom-color: @grayDark;
         }
       }
 
@@ -96,7 +101,7 @@
         flex-direction: row;
 
         &::after {
-          border-left-color: @white;
+          border-left-color: @grayDark;
         }
       }
 
@@ -104,7 +109,7 @@
         flex-direction: column;
 
         &::after {
-          border-top-color: @white;
+          border-top-color: @grayDark;
         }
       }
 
@@ -112,7 +117,7 @@
         flex-direction: row-reverse;
 
         &::after {
-          border-right-color: @white;
+          border-right-color: @grayDark;
         }
       }
     }
