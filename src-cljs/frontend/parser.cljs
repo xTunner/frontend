@@ -177,11 +177,21 @@
   [{:keys [state route] :as env} key {:keys [subpage route-data]}]
   {:action (fn []
              (let [route-data (cond-> {}
+
                                 (contains? route-data :organization)
                                 (assoc :route-data/organization
                                        [:organization/by-vcs-type-and-name
                                         (select-keys (:organization route-data)
-                                                     [:organization/vcs-type :organization/name])]))]
+                                                     [:organization/vcs-type :organization/name])])
+
+                                (contains? route-data :workflow)
+                                (assoc :route-data/workflow
+                                       [:workflow/by-org-project-and-name
+                                        (select-keys (:workflow route-data)
+                                                     [:organization/vcs-type
+                                                      :organization/name
+                                                      :project/name
+                                                      :workflow/name])]))]
                (swap! state #(-> %
                                  (assoc :app/subpage-route subpage
                                         :app/route-data route-data)

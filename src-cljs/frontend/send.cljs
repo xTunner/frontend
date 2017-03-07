@@ -1,10 +1,36 @@
 (ns frontend.send
   (:require [cljs.core.async :refer [chan]]
+            [clojure.spec :as s :include-macros true]
+            [clojure.test.check.generators :as gen]
             [frontend.api :as api]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next]
             [om.util :as om-util])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
+
+;; These spec should find a better place to live, but data generation in `send`
+;; is all they're used for currently, they can live here for now.
+(s/def :organization/vcs-type #{"github" "bitbucket"})
+(s/def :organization/name string?)
+(s/def :organization/entity (s/keys :req [:organization/vcs-type :organization/name]))
+
+(s/def :project/name string?)
+(s/def :project/organization :organization/entity)
+(s/def :project/entity (s/keys :req [:project/name :project/organization]))
+
+(s/def :workflow/name string?)
+(s/def :workflow/runs (s/every :run/entity))
+(s/def :workflow/project :project/entity)
+(s/def :workflow/entity (s/keys :req [:workflow/name
+                                      :workflow/runs
+                                      :workflow/project]))
+
+(s/def :run/status #{:run-status/running})
+(s/def :run/started-at inst?)
+(s/def :run/stopped-at inst?)
+(s/def :run/entity (s/keys :req [:run/status
+                                 :run/started-at
+                                 :run/stopped-at]))
 
 (defn- callback-api-chan
   "Returns a channel which can be used with the API functions. Calls cb with the
@@ -77,6 +103,19 @@
                                                     :organization/vcs-type vcs-type
                                                     :organization/plan %}})
                  ui-query))))
+
+        (and (om-util/ident? (om-util/join-key expr))
+             (= :workflow/by-org-project-and-name (first (om-util/join-key expr))))
+        ;; Generate fake data for now.
+        (cb (rewrite {(om-util/join-key expr)
+                      (let [ident-vals (second (om-util/join-key expr))]
+                        (gen/generate
+                         (s/gen :workflow/entity
+                                {[:workflow/name] #(gen/return (:workflow/name ident-vals))
+                                 [:workflow/project :project/name] #(gen/return (:project/name ident-vals))
+                                 [:workflow/project :project/organization :organization/name] #(gen/return (:organization/name ident-vals))
+                                 [:workflow/project :project/organization :organization/vcs-type] #(gen/return (:organization/vcs-type ident-vals))})))})
+            ui-query)
 
         :else (throw (str "No clause found for " (pr-str expr)))))))
 
