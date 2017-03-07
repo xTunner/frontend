@@ -36,7 +36,7 @@
                                                     :new-plan new-plan
                                                     :previous-plan previous-plan
                                                     :is-upgrade upgrade?}}))
-  
+
 (defn cancel-plan-modal-dismissed [{:keys [current-state component vcs_type plan-template plan-id plan-type]}]
   (analytics/track {:event-type :cancel-plan-modal-dismissed
                     :current-state current-state
@@ -53,7 +53,7 @@
                                  :plan-template plan-template
                                  :plan-id plan-id
                                  :cancel-reasons cancel-reasons
-                                 :cancel-notes cancel-notes}})) 
+                                 :cancel-notes cancel-notes}}))
 
 (defn rebuild-clicked
   "Handles click events for rebuilds triggered with and without SSH

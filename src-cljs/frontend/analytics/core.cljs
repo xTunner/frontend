@@ -112,6 +112,10 @@
     :show-all-builds-toggled
     :show-queued-builds-clicked
     :signup-clicked
+    ;; This is a special event that is sent when we send a signup event on
+    ;; the backend, to work around the fact that some Segment integrations
+    ;; don't properly support backend events
+    :signup-event-sent
     :signup-impression
     :sort-branches-toggled
     :start-trial-clicked
@@ -265,8 +269,18 @@
             (get-in state/user-path))
     (segment/identify (get-user-properties-from-state (:current-state event-data)))))
 
-(defn init
+(defn init!
   "Initialize our analytics."
-  [state]
-  (track {:event-type :init-user
-          :current-state state}))
+  [state-atom]
+  (let [state @state-atom]
+    (track {:event-type :init-user
+            :current-state state})
+    ;; sends a frontend duplicate of the backend signup event to Segment
+    ;; only on first login and when flag isn't set in localStorage
+    (when (and (not (get-in state state/signup-event-sent))
+               (= 1 (get-in state state/user-sign-in-count-path)))
+      (track {:event-type :signup-event-sent
+              :current-state (assoc state
+                                    :navigation-point
+                                    :none)})
+      (swap! state-atom assoc-in state/signup-event-sent true))))

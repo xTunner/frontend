@@ -295,7 +295,7 @@
       (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user legacy-state)]
       (subscribe-to-user-channel user (:ws comms)))
-    (analytics/init legacy-state)))
+    (analytics/init! legacy-state-atom)))
 
 
 (defn ^:export toggle-admin []

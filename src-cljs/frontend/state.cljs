@@ -168,6 +168,7 @@
 (def user-plans-path (conj user-path :plans))
 (def user-tokens-path (conj user-path :tokens))
 (def user-analytics-id-path (conj user-path :analytics_id))
+(def user-sign-in-count-path (conj user-path :sign_in_count))
 
 (def repos-path (conj user-path :repos))
 (defn repo-path [repo-index] (conj repos-path repo-index))
@@ -229,6 +230,7 @@
 (def dismissed-osx-usage-level (conj browser-settings-path :dismissed-osx-usage-level))
 (def dismissed-trial-offer-banner (conj browser-settings-path :dismissed-trial-offer-banner))
 (def dismissed-trial-update-banner (conj browser-settings-path :dismissed-trial-update-banner))
+(def signup-event-sent (conj browser-settings-path :signup-event-sent))
 
 (def web-notifications-enabled-path (conj browser-settings-path :web-notifications-enabled?))
 (def remove-web-notification-banner-path (conj browser-settings-path :remove-web-notification-banner?))
