@@ -504,12 +504,15 @@
 }
 
 .build-list-notes {
-    padding: 7px 10px 7px 10px;
+  display: flex;
+  align-items: center;
+  padding: 0px 10px;
+  font-size: @fontSizeSmaller;
 
-    .platform {
-        color: @blueDark;
-        letter-spacing: 1px;
-    }
+  .platform {
+      color: @blueDark;
+      letter-spacing: 1px;
+  }
 }
 
 .build.succeeded .metadata {
