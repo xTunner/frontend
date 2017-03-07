@@ -1,7 +1,32 @@
 (ns frontend.components.pages.workflow
-  (:require [cljs.pprint :as pprint]
+  (:require [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.status :as status]
+            [frontend.components.templates.main :as main-template]
             [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require-macros [frontend.utils :refer [component element html]]))
+
+(defui ^:once Run
+  static om-next/IQuery
+  (query [this]
+    [:run/status
+     :run/started-at
+     :run/stopped-at])
+  Object
+  (render [this]
+    (component
+      (let [{:keys [run/status
+                    run/started-at
+                    run/stopped-at]}
+            (om-next/props this)]
+        (card/basic
+         (element :content
+           (html
+            [:div
+             [:.status (status/badge :status-class/running (name status))]
+             [:.started-at (str started-at)]
+             [:.stopped-at (str stopped-at)]])))))))
+
+(def run (om-next/factory Run))
 
 (defui ^:once WorkflowRuns
   static om-next/Ident
@@ -20,12 +45,11 @@
                          {:project/organization [:organization/vcs-type
                                                  :organization/name]}]}
      :workflow/name
-     {:workflow/runs [:run/status
-                      :run/started-at
-                      :run/stopped-at]}])
+     {:workflow/runs (om-next/get-query Run)}])
   Object
   (render [this]
-    (html [:code [:pre (with-out-str (pprint/pprint (dissoc (om-next/props this) :legacy/state)))]])))
+    (card/collection
+     (map run (:workflow/runs (om-next/props this))))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 
@@ -50,6 +74,6 @@
   #_(componentDidMount [this]
       (set-page-title! "Projects"))
   (render [this]
-    (html
-     [:div
-      (workflow-runs (get-in (om-next/props this) [:app/route-data :route-data/workflow]))])))
+    (main-template/template
+     {:app (:legacy/state (om-next/props this))
+      :main-content (workflow-runs (get-in (om-next/props this) [:app/route-data :route-data/workflow]))})))
