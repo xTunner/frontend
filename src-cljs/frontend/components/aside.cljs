@@ -3,6 +3,7 @@
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
@@ -271,45 +272,49 @@
           [:div.aside-user-options
            (expand-menu-items items subpage)]])))))
 
+(defn toggle-all-builds [owner show-all-builds? disable-toggle?]
+  [:header.toggle-all-builds
+   [:label {:class (if disable-toggle?
+                     "disabled tooltip-anchor"
+                     (if show-all-builds? "" "checked"))}
+    "My builds"
+    [:input {:name "toggle-all-builds"
+             :type "radio"
+             :value "false"
+             :checked (not show-all-builds?)
+             :react-key "toggle-all-builds-my-builds"
+             :disabled disable-toggle?
+             :on-change #(raise! owner [:show-all-builds-toggled false])}]]
+   [:label {:class (if disable-toggle?
+                     "disabled"
+                     (if show-all-builds? "checked" ""))}
+    "All builds"
+    [:input {:name "toggle-all-builds"
+             :type "radio"
+             :value "true"
+             :checked show-all-builds?
+             :react-key "toggle-all-builds-all-builds"
+             :disabled disable-toggle?
+             :on-change #(raise! owner [:show-all-builds-toggled true])}]]])
+
 (defn builds-table-filter [{:keys [data on-branch?]} owner]
   ;; Create an additional filter for the builds-table to feed into
   ; Currently just duplicating the my branches / all fiels
   (reify
-    om/IDidMount
-    (did-mount [_]
-      (utils/tooltip ".toggle-all-builds"))
     om/IRender
     (render [_]
       (let [show-all-builds? (get-in data state/show-all-builds-path)
-            disable-toggle? on-branch?]
+            disable-toggle? on-branch?
+            toggle-all-builds (toggle-all-builds owner show-all-builds? disable-toggle?)]
         (html
           [:div.dashboard-top-menu
-           [:header.toggle-all-builds
-            (when disable-toggle?
-              {:data-original-title "My / All builds sort is not available on branches."
-               :data-placement "left"})
-            [:label {:class (if disable-toggle?
-                              "disabled tooltip-anchor"
-                              (if show-all-builds? "" "checked"))}
-             "My builds"
-             [:input {:name "toggle-all-builds"
-                      :type "radio"
-                      :value "false"
-                      :checked (not show-all-builds?)
-                      :react-key "toggle-all-builds-my-builds"
-                      :disabled disable-toggle?
-                      :on-change #(raise! owner [:show-all-builds-toggled false])}]]
-            [:label {:class (if disable-toggle?
-                              "disabled"
-                              (if show-all-builds? "checked" ""))}
-             "All builds"
-             [:input {:name "toggle-all-builds"
-                      :type "radio"
-                      :value "true"
-                      :checked show-all-builds?
-                      :react-key "toggle-all-builds-all-builds"
-                      :disabled disable-toggle?
-                      :on-change #(raise! owner [:show-all-builds-toggled true])}]]]])))))
+           (if disable-toggle?
+             (popover/popover {:title nil
+                               :body [:span "My / All builds sort is not available on branches."]
+                               :placement :left
+                               :trigger-mode :hover}
+               toggle-all-builds)
+             toggle-all-builds)])))))
 
 (defn collapse-group-id [project]
   "Computes a hash of the project id.  Includes the :current-branch if
