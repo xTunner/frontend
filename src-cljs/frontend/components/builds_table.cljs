@@ -73,6 +73,17 @@
                                                                         :org (:username build)}})}
        (build-model/github-revision build)]])))
 
+(defn- platform-link
+  [{:keys [link links-to body-text owner]}]
+  [:span body-text
+   [:a {:href link
+        :target "_blank"
+        :on-click #((om/get-shared owner :track-event) {:event-type :platform-link-clicked
+                                                        :properties {:component "builds-table-popover"
+                                                                     :link link
+                                                                     :links-to links-to}})}
+    "Learn more"]])
+
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         build-args (merge (build-model/build-args build) {:component "build-row" :no-cache? false})
@@ -170,20 +181,22 @@
        (om/build pull-requests {:build build})
        (om/build commits {:build build})]]
      [:div.build-list-notes
-       (popover/popover {:title nil
-                         :body [:span (if (= "1.0" platform)
-                                          "2.0 is coming soon!\n"
-                                          "This build ran on 2.0.\n")
-                                [:a {:href "https://discuss.circleci.com/c/circleci-2-0"
-                                     :target "_blank"}
-                                 "Learn more"]]
-                         :placement :left
-                         :trigger-mode :click
-                         :on-show #((om/get-shared owner :track-event) {:event-type :platform-number-popover-impression
-                                                                        :properties {:component "builds-table"
-                                                                                     :platform-number platform}})}
+      (popover/popover {:title nil
+                        :body (if (= "1.0" platform)
+                                (platform-link {:body-text "2.0 is coming soon!\n"
+                                                :link "https://circleci.com/beta-access/"
+                                                :links-to "beta-access"
+                                                :owner owner})
+                                (platform-link {:body-text "This build ran on 2.0.\n"
+                                                :link "https://discuss.circleci.com/c/circleci-2-0"
+                                                :links-to "beta-docs"
+                                                :owner owner}))
+                        :placement :left
+                        :trigger-mode :click
+                        :on-show #((om/get-shared owner :track-event) {:event-type :platform-number-popover-impression
+                                                                       :properties {:component "builds-table"
+                                                                                    :platform-number platform}})}
         [:span.platform platform])]]))
-
 
 (defn job-waiting-badge
   "badge for waiting job."
