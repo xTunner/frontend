@@ -25,7 +25,11 @@
                                       :workflow/runs
                                       :workflow/project]))
 
-(s/def :run/status #{:run-status/running})
+(s/def :run/status #{:run-status/queued
+                     :run-status/running
+                     :run-status/succeeded
+                     :run-status/failed
+                     :run-status/canceled})
 (s/def :run/started-at inst?)
 (s/def :run/stopped-at inst?)
 (s/def :run/entity (s/keys :req [:run/status

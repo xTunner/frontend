@@ -8,6 +8,14 @@
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
 
+(defn- status-class [run-status]
+  (case run-status
+    :run-status/queued :status-class/waiting
+    :run-status/running :status-class/running
+    :run-status/succeeded :status-class/succeeded
+    :run-status/failed :status-class/failed
+    :run-status/canceled :status-class/stopped))
+
 (defui ^:once Run
   static om-next/IQuery
   (query [this]
@@ -25,7 +33,7 @@
          (element :content
            (html
             [:div
-             [:.status (status/badge :status-class/running (name status))]
+             [:.status (status/badge (status-class status) (name status))]
              [:.started-at {:title (str "Started: " (datetime/full-datetime started-at))}
               (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})]
              [:.duration {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
