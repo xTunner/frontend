@@ -45,7 +45,9 @@
     border-bottom: solid 1px @grayLighter;
 
     > .breadcrumbs {
+      .flexy(center);
       .text-overflow;
+      overflow: visible;
 
       margin: 0;
       padding: 0;
@@ -65,4 +67,22 @@
       }
     }
   });
+
+  .ui("engine-2", {
+    display: inline-block;
+    margin-left: 12px;
+    width: 40px;
+
+    .rect {
+      fill: @white;
+      width: 40px;
+      height: 23px;
+    }
+
+    .text {
+      fill: @blue;
+      font-family: "RobotoMono";
+      font-size: 14px;
+    }
+  })
 });

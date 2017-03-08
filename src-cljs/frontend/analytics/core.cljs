@@ -40,6 +40,7 @@
     :beta-join-clicked
     :beta-leave-clicked
     :beta-icon-clicked
+    :beta-link-clicked
     :branch-clicked
     :breadcrumb-branch-clicked
     :breadcrumb-build-clicked
