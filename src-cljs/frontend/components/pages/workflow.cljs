@@ -43,14 +43,26 @@
          (element :content
            (html
             [:div
-             [:.status (status/badge (status-class status) (name status))]
-             [:.started-at {:title (str "Started: " (datetime/full-datetime started-at))}
-              (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})]
-             [:.duration {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
-              (build-legacy common/updating-duration {:start started-at
-                                                      :stop stopped-at})]
-             [:.branch-name branch-name]
-             [:.commit-sha (subs commit-sha 0 7)]])))))))
+             #_[:.status (status/badge (status-class status) (name status))]
+             [:.status {:class (name status)}]
+             [:div.metadata
+              [:div.metadata-row.timing
+               [:span.metadata-item.recent-time.start-time
+                [:i.material-icons "today"]
+                [:span.started-at {:title (str "Started: " (datetime/full-datetime started-at))}
+                 (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})[:span " ago"]]]
+               [:span.metadata-item.recent-time.duration
+                [:i.material-icons "timer"]
+                [:span.duration {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
+                 (build-legacy common/updating-duration {:start started-at
+                                                         :stop stopped-at})]]]
+              [:div.metadata-row.pull-revision
+               [:span.metadata-item.pull-requests {:title "Pull Requests"}
+                (icon/git-pull-request)
+                [:a "#1234"]]
+               [:span.metadata-item.revision
+                [:i.octicon.octicon-git-commit]
+                [:a "1234345"]]]]])))))))
 
 (def run (om-next/factory Run {:keyfn :run/id}))
 
