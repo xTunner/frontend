@@ -5,7 +5,8 @@
             [frontend.api :as api]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next]
-            [om.util :as om-util])
+            [om.util :as om-util]
+            [clojure.string :as string])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
 
 ;; These spec should find a better place to live, but data generation in `send`
@@ -32,9 +33,17 @@
                      :run-status/canceled})
 (s/def :run/started-at inst?)
 (s/def :run/stopped-at inst?)
+(s/def :run/branch string?)
+(s/def :run/commit-sha (s/with-gen (s/and string?
+                                          #(= 40 (count %))
+                                          #_(partial re-find #"^[0-9A-Fa-f]*$"))
+                         ;; TODO Make these real shas.
+                         #(gen/fmap string/join (gen/vector gen/char-alphanumeric 40))))
 (s/def :run/entity (s/keys :req [:run/status
                                  :run/started-at
-                                 :run/stopped-at]))
+                                 :run/stopped-at
+                                 :run/branch
+                                 :run/commit-sha]))
 
 (defn- callback-api-chan
   "Returns a channel which can be used with the API functions. Calls cb with the

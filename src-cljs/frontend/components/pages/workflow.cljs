@@ -21,13 +21,17 @@
   (query [this]
     [:run/status
      :run/started-at
-     :run/stopped-at])
+     :run/stopped-at
+     :run/branch
+     :run/commit-sha])
   Object
   (render [this]
     (component
       (let [{:keys [run/status
                     run/started-at
-                    run/stopped-at]}
+                    run/stopped-at
+                    run/branch
+                    run/commit-sha]}
             (om-next/props this)]
         (card/basic
          (element :content
@@ -38,7 +42,9 @@
               (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})]
              [:.duration {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
               (build-legacy common/updating-duration {:start started-at
-                                                      :stop stopped-at})]])))))))
+                                                      :stop stopped-at})]
+             [:.branch branch]
+             [:.commit-sha (subs commit-sha 0 7)]])))))))
 
 (def run (om-next/factory Run))
 
