@@ -1,7 +1,131 @@
 .ns("frontend.components.pages.workflow", {
   .ui("Run", {}, {
     .el("content", {
-      background-color: red;
+      margin: -15px;
+      .flexy();
+
+      > .status {
+        .flexy(column);
+        flex: 0 0 130px;
+        background-color: transparent;
+
+       &.succeeded {
+        background-color: @green;
+       }
+
+       &.failed {
+        background-color: @red;
+       }
+
+       &.running {
+        background-color: @blueLight;
+       }
+
+       &.stopped,
+       &.canceled {
+        background-color: @grayLight;
+       }
+
+       &.waiting,
+       &.queued {
+        background-color: @purple;
+       }
+      }
+
+      @build-padding: 12px;
+      @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
+
+      > .metadata {
+        .flexy(column);
+        border-right: 2px solid transparent;
+        width: 214px;
+
+        @media (max-width: @screen-md-max) {
+          width: 100%;
+          border-right: none;
+        }
+
+        .metadata-row {
+          .flexy(row, flex-end);
+          padding-left: @build-padding;
+          padding-right: @build-padding;
+
+          &:first-of-type {
+            margin-top: 3px;
+          }
+
+          @media (max-width: @screen-md-max) {
+            border-bottom: @build-item-inner-border;
+            padding: 0;
+
+            &:first-of-type {
+              margin-top: 0;
+            }
+          }
+
+          .metadata-item {
+            .flex(1 0 auto);
+            padding-top: 5px;
+            padding-bottom: 3px;
+
+            font-size: @fontSizeSmaller;
+
+            &:last-child {
+              .flex(0 0 40%);
+            }
+
+            span {
+              vertical-align: middle;
+            }
+
+            @media (max-width: @screen-md-max) {
+              padding: 8px;
+
+              &:last-child {
+                .flex(0 0 50%);
+                border-left: @build-item-inner-border;
+              }
+            }
+
+            &.start-time,
+            &.duration,
+            &.pull-requests,
+            &.revision {
+              i, svg {
+                font-size: @fontSizeLarge;
+                height: 19px; // magic number to make all the things the same height
+                margin-right: 8px;
+                margin-left: 0;
+                padding-top: 1px;
+                vertical-align: bottom;
+                color: @grayLighter;
+                max-width: @fontSizeLarge;
+                display: inline;
+              }
+            }
+
+            &.pull-requests,
+            &.revision {
+              padding-top: 8px;
+              padding-bottom: 8px;
+            }
+
+            &.pull-requests {
+              padding-left: 3px;
+              @media (max-width: @screen-md-max) {
+                padding-left: 11px;
+              }
+            }
+
+            &.revision {
+              padding-left: 1px;
+              @media (max-width: @screen-md-max) {
+                padding-left: 9px;
+              }
+            }
+          }
+        }
+      }
     });
   });
 });
