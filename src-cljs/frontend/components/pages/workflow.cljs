@@ -1,7 +1,10 @@
 (ns frontend.components.pages.workflow
-  (:require [frontend.components.pieces.card :as card]
+  (:require [frontend.components.common :as common]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
+            [frontend.datetime :as datetime]
+            [frontend.utils.legacy :refer [build-legacy]]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
 
@@ -23,8 +26,11 @@
            (html
             [:div
              [:.status (status/badge :status-class/running (name status))]
-             [:.started-at (str started-at)]
-             [:.stopped-at (str stopped-at)]])))))))
+             [:.started-at {:title (str "Started: " (datetime/full-datetime started-at))}
+              (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})]
+             [:.duration {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
+              (build-legacy common/updating-duration {:start started-at
+                                                      :stop stopped-at})]])))))))
 
 (def run (om-next/factory Run))
 
