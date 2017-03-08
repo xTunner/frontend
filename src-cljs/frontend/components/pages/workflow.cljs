@@ -1,6 +1,7 @@
 (ns frontend.components.pages.workflow
   (:require [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
