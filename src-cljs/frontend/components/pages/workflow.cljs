@@ -44,7 +44,15 @@
            (html
             [:div
              #_[:.status (status/badge (status-class status) (name status))]
-             [:.status {:class (name status)}]
+             [:.status {:class (name status)}
+              [:span.status-icon {:class (name status)}
+               (case (status-class status)
+                 :status-class/failed (icon/status-failed)
+                 :status-class/stopped (icon/status-canceled)
+                 :status-class/succeeded (icon/status-passed)
+                 :status-class/running (icon/status-running)
+                 :status-class/waiting (icon/status-queued))]
+              [:.status-string (name status)]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time

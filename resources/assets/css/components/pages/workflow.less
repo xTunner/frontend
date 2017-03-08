@@ -5,9 +5,23 @@
       .flexy();
 
       > .status {
-        .flexy(column);
-        flex: 0 0 130px;
+        .flexy(center, center);
+        flex: 0 0 160px;
         background-color: transparent;
+
+        .status-icon {
+          color: @white;
+          fill: @white;
+
+        }
+
+        .status-string {
+          color: @white;
+          font-weight: 600;
+          text-transform: uppercase;
+          min-width: 80px;
+          margin-left: 1em;
+        }
 
        &.succeeded {
         background-color: @green;
