@@ -148,16 +148,16 @@
    [:span
     (interpose
      ", "
-     (for [url (map :url prs)]
-       ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-       ;; When that happens, this code blows up the page. To work around that,
-       ;; we just skip the PR if its URL is nil.
-       (when url
-         [:a {:href url
-              :on-click #((om/get-shared owner :track-event)
-                          {:event-type :pr-link-clicked})}
-          "#"
-          (gh-utils/pull-request-number url)])))]))
+     (for [url (map :url prs)
+           ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+           ;; When that happens, this code blows up the page. To work around that,
+           ;; we just skip the PR if its URL is nil.
+           :when url]
+       [:a {:href url
+            :on-click #((om/get-shared owner :track-event)
+                        {:event-type :pr-link-clicked})}
+        "#"
+        (gh-utils/pull-request-number url)]))]))
 
 (defn- summary-header [{{:keys [stop_time start_time parallel usage_queued_at
                                 pull_requests status canceler vcs_url] :as build} :build
