@@ -44,27 +44,23 @@
         (.replace (js/RegExp. (.-source pseudo-url-pattern) "gim")
                   "$1<a href=\"http://$2\" target=\"_blank\">$2</a>"))))
 
+(defn- replace-issue [text link endpoint project-name]
+  (string/replace text
+                  #"(^|\s)#(\d+)\b"
+                  (gstring/format link endpoint project-name)))
+
 (defn- maybe-project-linkify [text vcs-type project-name]
-  (if-not project-name
-    text
-    (let [issue-pattern #"(^|\s)#(\d+)\b"]
-      (cond
-        (and (= vcs-type "bitbucket") (re-find #"pull request #\d+" text))
-        (string/replace
-          text
-          issue-pattern
-          (gstring/format "$1<a href='%s/%s/pull-requests/$2' target='_blank'>pull request #$2</a>"
-                          (bb-utils/http-endpoint)
-                          project-name))
-        :else
-        (string/replace
-          text
-          issue-pattern
-          (gstring/format "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>"
-                          (case vcs-type
-                            "github" (gh-utils/http-endpoint)
-                            "bitbucket" (bb-utils/http-endpoint))
-                          project-name))))))
+  (cond-> text
+    (and project-name (= "bitbucket" vcs-type) (re-find #"pull request #\d+" text))
+    (replace-issue "$1<a href='%s/%s/pull-requests/$2' target='_blank'>pull request #$2</a>"
+                   (bb-utils/http-endpoint)
+                   project-name)
+    project-name
+    (replace-issue "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>"
+                   (case vcs-type
+                     "github" (gh-utils/http-endpoint)
+                     "bitbucket" (bb-utils/http-endpoint))
+                   project-name)))
 
 (defn- commit-line [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
   (reify
