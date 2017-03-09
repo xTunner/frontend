@@ -188,7 +188,7 @@
                                                 :links-to "beta-access"
                                                 :owner owner})
                                 (platform-link {:body-text "This build ran on 2.0.\n"
-                                                :link "https://discuss.circleci.com/c/circleci-2-0"
+                                                :link "https://circleci.com/docs/2.0/"
                                                 :links-to "beta-docs"
                                                 :owner owner}))
                         :placement :left

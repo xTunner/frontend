@@ -196,7 +196,7 @@
              (when (= platform "2.0")
                (popover/tooltip {:body
                                  (html [:span "This build ran on 2.0. "
-                                        (let [href "https://discuss.circleci.com/c/circleci-2-0"]
+                                        (let [href "https://circleci.com/docs/2.0/"]
                                           [:a {:href href
                                                :target "_blank"
                                                :on-click #((om/get-shared owner :track-event) {:event-type :beta-link-clicked
