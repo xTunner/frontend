@@ -38,8 +38,7 @@
         retry-link (link-to-retry-source build)
         cache? (build-model/dependency-cache? build)]
     (case (:why build)
-      "github" (list user-link " (pushed " commit-link ")")
-      "bitbucket" (list user-link " (pushed " commit-link ")")
+      ("github" "bitbucket") (list user-link " (pushed " commit-link ")")
       "edit" (list user-link " (updated project settings)")
       "first-build" (list user-link " (first build)")
       "retry" (list user-link " (retried " retry-link
