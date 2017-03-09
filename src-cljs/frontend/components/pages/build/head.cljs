@@ -376,7 +376,7 @@
                                [:span.head "Next Job"]
                                [:span.value next-link]]])))]]))))))
 
-(defn build-head [{:keys [build-data project-data workflow-data] :as data} owner]
+(defn build-head [{:keys [workflow-data] :as data} owner]
   (reify
     om/IRender
     (render [_]
