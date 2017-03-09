@@ -26,7 +26,7 @@
      :run/status
      :run/started-at
      :run/stopped-at
-     :run/branch
+     :run/branch-name
      :run/commit-sha])
   Object
   (render [this]
@@ -35,7 +35,7 @@
                     run/status
                     run/started-at
                     run/stopped-at
-                    run/branch
+                    run/branch-name
                     run/commit-sha]}
             (om-next/props this)]
         (card/basic
@@ -48,7 +48,7 @@
              [:.duration {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
               (build-legacy common/updating-duration {:start started-at
                                                       :stop stopped-at})]
-             [:.branch branch]
+             [:.branch-name branch-name]
              [:.commit-sha (subs commit-sha 0 7)]])))))))
 
 (def run (om-next/factory Run {:keyfn :run/id}))
