@@ -10,6 +10,7 @@
 
         button {
           background-color: transparent;
+          color: @gray;
           &:last-of-type {
             margin-left: .5em;
           }
@@ -29,6 +30,7 @@
         background-color: transparent;
 
         .status-icon {
+          width: 18px;
           color: @white;
           fill: @white;
         }
@@ -41,27 +43,29 @@
           margin-left: 1em;
         }
 
-       &.succeeded {
-        background-color: @green;
-       }
+        @background-lighten-ratio: 0%;
 
-       &.failed {
-        background-color: @red;
-       }
+        &.succeeded {
+         background-color: lighten(@green, @background-lighten-ratio);
+        }
 
-       &.running {
-        background-color: @blueLight;
-       }
+        &.failed {
+         background-color: lighten(@red, @background-lighten-ratio);
+        }
 
-       &.stopped,
-       &.canceled {
-        background-color: @grayLight;
-       }
+        &.running {
+         background-color: lighten(@blueLight, @background-lighten-ratio);
+        }
 
-       &.waiting,
-       &.queued {
-        background-color: @purple;
-       }
+        &.stopped,
+        &.canceled {
+         background-color: lighten(@grayLight, @background-lighten-ratio);
+        }
+
+        &.waiting,
+        &.queued {
+         background-color: lighten(@purple, @background-lighten-ratio);
+        }
       }
 
       @build-padding: 12px;
