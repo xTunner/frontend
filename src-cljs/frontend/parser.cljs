@@ -115,49 +115,68 @@
   [env key params]
   nil)
 
+(defn- route-data-ident
+  "Returns an ident that addresses the given route-data `subkey`, according to
+  the `route-data`. That is, when `subkey` is `:route-data/organization`,
+  returns an ident which addresses the organization identified in the
+  `route-data`. If `route-data` doesn't provide enough data to identify the
+  entity that `subkey` would refer to, returns `nil`."
+  [subkey route-data]
+  (case subkey
+    :route-data/organization (when (every? #(contains? route-data %)
+                                           [:organization/vcs-type
+                                            :organization/name])
+                               [:organization/by-vcs-type-and-name
+                                (select-keys route-data
+                                             [:organization/vcs-type
+                                              :organization/name])])
+    :route-data/project (when (every? #(contains? route-data %)
+                                      [:organization/vcs-type
+                                       :organization/name
+                                       :project/name])
+                          [:project/by-org-and-name
+                           (select-keys route-data
+                                        [:organization/vcs-type
+                                         :organization/name
+                                         :project/name])])
+    :route-data/workflow (when (every? #(contains? route-data %)
+                                       [:organization/vcs-type
+                                        :organization/name
+                                        :project/name
+                                        :workflow/name])
+                           [:workflow/by-org-project-and-name
+                            (select-keys route-data
+                                         [:organization/vcs-type
+                                          :organization/name
+                                          :project/name
+                                          :workflow/name])])))
 
-;; The keys in :app/route-data have idents for values. If we query through
-;; them, we replace the key with the current ident value before passing it
-;; on to the remote. That is, if the UI queries for
-;;
-;; [{:app/route-data [{:route-data/widget [:widget/name]}]}]
-;;
-;; and the app state contains
-;;
-;; {;; ...
-;;  :app/route-data {:route-data/widget [:widget/by-id 5]}
-;;  ;; ...
-;;  }
-;;
-;; we rewrite the query for the remote to be
-;;
-;; [{:app/route-data [^:query-root {[:widget/by-id 5] [:widget/name]}]}]
-;;
-;; Then the remote will look up the name of the current widget.
-;;
-;; Note that the :default case already handles the read-local
-;; for :app/route-data perfectly.
+(defmethod read-local :app/route-data
+  [{:keys [state query] :as env} key params]
+  (let [st @state]
+    (reduce (fn [res expr]
+              (let [subkey (om-util/join-key expr)
+                    subquery (om-util/join-value expr)
+                    ident (route-data-ident subkey (:app/route-data st))]
+                (cond-> res
+                  ident (assoc subkey (om-next/db->tree subquery (get-in st ident) st)))))
+            {}
+            query)))
+
 (defmethod read-remote :app/route-data
-  [{:keys [state ast] :as env} key params]
+  [{:keys [state query] :as env} key params]
   (let [st @state
-        new-ast (update ast :children
-                        (partial
-                         into [] (keep
-                                  #(let [ident (get-in st [key (:key %)])]
-                                     (when ident
-                                       (assert (om-util/ident? ident)
-                                               (str "The values stored in " key " must be idents."))
-                                       ;; Replace the :key and :dispatch-key with the
-                                       ;; ident we've found, and make them :query-roots.
-                                       (assoc %
-                                              :key ident
-                                              :dispatch-key (first ident)
-                                              :query-root true))))))]
-
-    ;; Only include this key in the remote query if there are any children left.
-    (if (seq (:children new-ast))
-      (recalculate-query new-ast)
-      nil)))
+        remote-query (reduce (fn [res expr]
+                               (let [subkey (om-util/join-key expr)
+                                     subquery (om-util/join-value expr)
+                                     ident (route-data-ident subkey (:app/route-data st))]
+                                 (cond-> res
+                                   ident (conj ^:query-root {ident subquery}))))
+                             []
+                             query)]
+    (when (seq remote-query)
+      (parser/expr->ast
+       {key remote-query}))))
 
 
 (defn read [{:keys [target] :as env} key params]
@@ -176,43 +195,27 @@
 (defmethod mutate `routes/set-data
   [{:keys [state route] :as env} key {:keys [subpage route-data]}]
   {:action (fn []
-             (let [route-data (cond-> {}
+             (swap! state #(-> %
+                               (assoc :app/subpage-route subpage
+                                      :app/route-data route-data)
 
-                                (contains? route-data :organization)
-                                (assoc :route-data/organization
-                                       [:organization/by-vcs-type-and-name
-                                        (select-keys (:organization route-data)
-                                                     [:organization/vcs-type :organization/name])])
-
-                                (contains? route-data :workflow)
-                                (assoc :route-data/workflow
-                                       [:workflow/by-org-project-and-name
-                                        (select-keys (:workflow route-data)
-                                                     [:organization/vcs-type
-                                                      :organization/name
-                                                      :project/name
-                                                      :workflow/name])]))]
-               (swap! state #(-> %
-                                 (assoc :app/subpage-route subpage
-                                        :app/route-data route-data)
-
-                                 ;; Clean up the legacy state so it doesn't leak
-                                 ;; from the previous page. This goes away when
-                                 ;; the legacy state dies. In the Om Next world,
-                                 ;; all route data is in :app/route-data, and is
-                                 ;; replaced completely on each route change.
-                                 (update :legacy/state dissoc
-                                         :navigation-point
-                                         :navigation-data
-                                         :current-build-data
-                                         :current-org-data
-                                         :current-project-data)))
-               (analytics/track {:event-type :pageview
-                                 :navigation-point route
-                                 :subpage :default
-                                 :properties {:user (get-in @state [:app/current-user :user/login])
-                                              :view route
-                                              :org (get-in route-data [:route-data/organization :organization/name])}})))})
+                               ;; Clean up the legacy state so it doesn't leak
+                               ;; from the previous page. This goes away when
+                               ;; the legacy state dies. In the Om Next world,
+                               ;; all route data is in :app/route-data, and is
+                               ;; replaced completely on each route change.
+                               (update :legacy/state dissoc
+                                       :navigation-point
+                                       :navigation-data
+                                       :current-build-data
+                                       :current-org-data
+                                       :current-project-data)))
+             (analytics/track {:event-type :pageview
+                               :navigation-point route
+                               :subpage :default
+                               :properties {:user (get-in @state [:app/current-user :user/login])
+                                            :view route
+                                            :org (get-in route-data [:route-data/organization :organization/name])}}))})
 
 (def parser (compassus/parser {:read read
                                :mutate mutate

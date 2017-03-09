@@ -122,6 +122,24 @@
                  ui-query))))
 
         (and (om-util/ident? (om-util/join-key expr))
+             (= :organization/by-vcs-type-and-name (first (om-util/join-key expr)))
+             (= '[:organization/vcs-type
+                  :organization/name]
+                (om-util/join-value expr)))
+        (let [{:keys [organization/vcs-type organization/name]} (second (om-util/join-key expr))]
+          (let [org {:organization/name name
+                     :organization/vcs-type vcs-type}]
+            (cb (rewrite {(om-util/join-key expr) org}) ui-query)))
+
+        (and (om-util/ident? (om-util/join-key expr))
+             (= :project/by-org-and-name (first (om-util/join-key expr)))
+             (= '[:project/name]
+                (om-util/join-value expr)))
+        (let [{:keys [project/name]} (second (om-util/join-key expr))]
+          (let [project {:project/name name}]
+            (cb (rewrite {(om-util/join-key expr) project}) ui-query)))
+
+        (and (om-util/ident? (om-util/join-key expr))
              (= :workflow/by-org-project-and-name (first (om-util/join-key expr))))
         ;; Generate fake data for now.
         (cb (rewrite {(om-util/join-key expr)

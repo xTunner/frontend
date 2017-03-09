@@ -246,11 +246,10 @@
   (defroute v1-workflow #"/(gh|bb)/([^/]+)/([^/]+)/workflows/([^/]+)"
     [short-vcs-type org-name project-name workflow-name]
     (open! app :route/workflow {:route-data
-                                {:workflow
-                                 {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-                                  :organization/name org-name
-                                  :project/name project-name
-                                  :workflow/name workflow-name}}}))
+                                {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+                                 :organization/name org-name
+                                 :project/name project-name
+                                 :workflow/name workflow-name}}))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
@@ -272,9 +271,8 @@
     (open! app :route/account {:subpage (keyword subpage)}))
   (defroute v1-organization-projects "/projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
     (open! app :route/projects {:route-data
-                                {:organization
-                                 {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-                                  :organization/name org-name}}}))
+                                {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+                                 :organization/name org-name}}))
   (defroute v1-projects "/projects" []
     (open! app :route/projects))
   (defroute v1-team "/team" []
