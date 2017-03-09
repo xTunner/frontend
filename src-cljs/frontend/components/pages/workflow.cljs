@@ -17,9 +17,13 @@
     :run-status/canceled :status-class/stopped))
 
 (defui ^:once Run
+  static om-next/Ident
+  (ident [this {:keys [run/id]}]
+    [:run/by-id id])
   static om-next/IQuery
   (query [this]
-    [:run/status
+    [:run/id
+     :run/status
      :run/started-at
      :run/stopped-at
      :run/branch
@@ -27,7 +31,8 @@
   Object
   (render [this]
     (component
-      (let [{:keys [run/status
+      (let [{:keys [run/id
+                    run/status
                     run/started-at
                     run/stopped-at
                     run/branch
@@ -46,7 +51,7 @@
              [:.branch branch]
              [:.commit-sha (subs commit-sha 0 7)]])))))))
 
-(def run (om-next/factory Run))
+(def run (om-next/factory Run {:keyfn :run/id}))
 
 (defui ^:once WorkflowRuns
   static om-next/Ident

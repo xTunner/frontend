@@ -19,13 +19,16 @@
 (s/def :project/organization :organization/entity)
 (s/def :project/entity (s/keys :req [:project/name :project/organization]))
 
+(s/def :workflow/id uuid?)
 (s/def :workflow/name string?)
 (s/def :workflow/runs (s/every :run/entity))
 (s/def :workflow/project :project/entity)
-(s/def :workflow/entity (s/keys :req [:workflow/name
+(s/def :workflow/entity (s/keys :req [:workflow/id
+                                      :workflow/name
                                       :workflow/runs
                                       :workflow/project]))
 
+(s/def :run/id uuid?)
 (s/def :run/status #{:run-status/queued
                      :run-status/running
                      :run-status/succeeded
@@ -39,7 +42,8 @@
                                           #_(partial re-find #"^[0-9A-Fa-f]*$"))
                          ;; TODO Make these real shas.
                          #(gen/fmap string/join (gen/vector gen/char-alphanumeric 40))))
-(s/def :run/entity (s/keys :req [:run/status
+(s/def :run/entity (s/keys :req [:run/id
+                                 :run/status
                                  :run/started-at
                                  :run/stopped-at
                                  :run/branch
