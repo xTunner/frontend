@@ -6,6 +6,7 @@
 
       > .actions {
         .flexy(center, center);
+        padding: (@build-padding / 2) @build-padding;
 
         button {
           background-color: transparent;
@@ -68,8 +69,8 @@
 
       > .metadata {
         .flexy(column);
-        border-right: 2px solid transparent;
         width: 214px;
+        border-right: @build-item-inner-border;
 
         @media (max-width: @screen-md-max) {
           width: 100%;
