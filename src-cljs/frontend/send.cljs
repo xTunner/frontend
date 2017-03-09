@@ -36,8 +36,8 @@
                      :run-status/succeeded
                      :run-status/failed
                      :run-status/canceled})
-(s/def :run/started-at inst?)
-(s/def :run/stopped-at inst?)
+(s/def :run/started-at (s/nilable inst?))
+(s/def :run/stopped-at (s/nilable inst?))
 (s/def :run/branch-name string?)
 (s/def :run/commit-sha (s/with-gen
                          (s/and string?
@@ -49,6 +49,33 @@
                                                (gen/one-of [(gen/choose 48 57)
                                                             (gen/choose 97 102)]))
                                      40))))
+
+(defmulti run-entity-spec-by-status :run/status)
+
+(defmethod run-entity-spec-by-status :run-status/queued [_]
+  (s/and #(nil? (:run/started-at %))
+         #(nil? (:run/stopped-at %))))
+
+(defmethod run-entity-spec-by-status :run-status/running [_]
+  (s/and #(:run/started-at %)
+         #(nil? (:run/stopped-at %))))
+
+(defmethod run-entity-spec-by-status :run-status/failed [_]
+  (s/and #(:run/started-at %)
+         #(:run/stopped-at %)
+         #(< (:run/started-at %)
+             (:run/stopped-at %))))
+
+(defmethod run-entity-spec-by-status :run-status/failed [_]
+  (s/and #(:run/started-at %)
+         #(:run/stopped-at %)
+         #(< (:run/started-at %)
+             (:run/stopped-at %))))
+
+(defmethod run-entity-spec-by-status :run-status/canceled [_]
+  (s/and #(:run/started-at %)
+         #(nil? (:run/stopped-at %))))
+
 (s/def :run/entity (s/and
                     (s/keys :req [:run/id
                                   :run/status
@@ -56,8 +83,7 @@
                                   :run/stopped-at
                                   :run/branch-name
                                   :run/commit-sha])
-                    #(< (:run/started-at %)
-                        (:run/stopped-at %))))
+                    (s/multi-spec run-entity-spec-by-status :run/status)))
 
 
 ;; via https://github.com/paraseba/faker/blob/master/srfaker/lorem_data.clj
@@ -66,8 +92,8 @@
    ["alias" "consequatur" "aut" "perferendis" "sit" "voluptatem" "accusantium" "doloremque" "aperiam" "eaque" "ipsa" "quae" "ab" "illo" "inventore" "veritatis" "et" "quasi" "architecto" "beatae" "vitae" "dicta" "sunt" "explicabo" "aspernatur" "aut" "odit" "aut" "fugit" "sed" "quia" "consequuntur" "magni" "dolores" "eos" "qui" "ratione" "voluptatem" "sequi" "nesciunt" "neque" "dolorem" "ipsum" "quia" "dolor" "sit" "amet" "consectetur" "adipisci" "velit" "sed" "quia" "non" "numquam" "eius" "modi" "tempora" "incidunt" "ut" "labore" "et" "dolore" "magnam" "aliquam" "quaerat" "voluptatem" "ut" "enim" "ad" "minima" "veniam" "quis" "nostrum" "exercitationem" "ullam" "corporis" "nemo" "enim" "ipsam" "voluptatem" "quia" "voluptas" "sit" "suscipit" "laboriosam" "nisi" "ut" "aliquid" "ex" "ea" "commodi" "consequatur" "quis" "autem" "vel" "eum" "iure" "reprehenderit" "qui" "in" "ea" "voluptate" "velit" "esse" "quam" "nihil" "molestiae" "et" "iusto" "odio" "dignissimos" "ducimus" "qui" "blanditiis" "praesentium" "laudantium" "totam" "rem" "voluptatum" "deleniti" "atque" "corrupti" "quos" "dolores" "et" "quas" "molestias" "excepturi" "sint" "occaecati" "cupiditate" "non" "provident" "sed" "ut" "perspiciatis" "unde" "omnis" "iste" "natus" "error" "similique" "sunt" "in" "culpa" "qui" "officia" "deserunt" "mollitia" "animi" "id" "est" "laborum" "et" "dolorum" "fuga" "et" "harum" "quidem" "rerum" "facilis" "est" "et" "expedita" "distinctio" "nam" "libero" "tempore" "cum" "soluta" "nobis" "est" "eligendi" "optio" "cumque" "nihil" "impedit" "quo" "porro" "quisquam" "est" "qui" "minus" "id" "quod" "maxime" "placeat" "facere" "possimus" "omnis" "voluptas" "assumenda" "est" "omnis" "dolor" "repellendus" "temporibus" "autem" "quibusdam" "et" "aut" "consequatur" "vel" "illum" "qui" "dolorem" "eum" "fugiat" "quo" "voluptas" "nulla" "pariatur" "at" "vero" "eos" "et" "accusamus" "officiis" "debitis" "aut" "rerum" "necessitatibus" "saepe" "eveniet" "ut" "et" "voluptates" "repudiandae" "sint" "et" "molestiae" "non" "recusandae" "itaque" "earum" "rerum" "hic" "tenetur" "a" "sapiente" "delectus" "ut" "aut" "reiciendis" "voluptatibus" "maiores" "doloribus" "asperiores" "repellat"]))
 
 (def inst-in-last-day
-  #(s/gen (s/inst-in (time-coerce/to-date (time/minus (time/now) (time/days 1)))
-                     (time-coerce/to-date (time/now)))))
+  (s/gen (s/inst-in (time-coerce/to-date (time/minus (time/now) (time/days 1)))
+                    (time-coerce/to-date (time/now)))))
 
 (def
   ^{:doc
@@ -76,8 +102,8 @@
   dummy-data-overrides
   {:run/branch-name #(gen/fmap (partial string/join "-")
                                (gen/vector latin-word 1 7))
-   :run/started-at inst-in-last-day
-   :run/stopped-at inst-in-last-day})
+   :run/started-at #(gen/one-of [inst-in-last-day (gen/return nil)])
+   :run/stopped-at #(gen/one-of [inst-in-last-day (gen/return nil)])})
 
 
 

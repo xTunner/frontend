@@ -43,41 +43,45 @@
         (card/basic
          (element :content
            (html
-             [:div
-              #_[:.status (status/badge (status-class status) (name status))]
-              [:div.status {:class (name status)}
-               [:span.status-icon {:class (name status)}
+            [:div
+             [:div.status {:class (name status)}
+              [:span.status-icon {:class (name status)}
                (case (status-class status)
                  :status-class/failed (icon/status-failed)
                  :status-class/stopped (icon/status-canceled)
                  :status-class/succeeded (icon/status-passed)
                  :status-class/running (icon/status-running)
                  :status-class/waiting (icon/status-queued))]
-               [:.status-string (name status)]]
-              [:div.run-info]
-              [:div.metadata
-               [:div.metadata-row.timing
+              [:.status-string (name status)]]
+             [:div.run-info]
+             [:div.metadata
+              [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
                 [:i.material-icons "today"]
-                [:span.started-at {:title (str "Started: " (datetime/full-datetime started-at))}
-                 (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})[:span " ago"]]]
+                (if started-at
+                  [:span {:title (str "Started: " (datetime/full-datetime started-at))}
+                   (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
+                   " ago"]
+                  "-")]
                [:span.metadata-item.recent-time.duration
                 [:i.material-icons "timer"]
-                [:span.duration {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
-                 (build-legacy common/updating-duration {:start started-at
-                                                         :stop stopped-at})]]]
-               [:div.metadata-row.pull-revision
-                [:span.metadata-item.pull-requests {:title "Pull Requests"}
-                 (icon/git-pull-request)
-                 [:a "#1234"]]
-                [:span.metadata-item.revision
-                 [:i.octicon.octicon-git-commit]
-                 [:a "1234345"]]]]
-              [:div.actions
-               (button/icon {:label "Icon"}
-                     (icon/cancel-circle))
-               (button/icon {:label "Icon"}
-                     (icon/rebuild))]])))))))
+                (if stopped-at
+                  [:span {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
+                   (build-legacy common/updating-duration {:start started-at
+                                                           :stop stopped-at})]
+                  "-")]]
+              [:div.metadata-row.pull-revision
+               [:span.metadata-item.pull-requests {:title "Pull Requests"}
+                (icon/git-pull-request)
+                [:a "#1234"]]
+               [:span.metadata-item.revision
+                [:i.octicon.octicon-git-commit]
+                [:a "1234345"]]]]
+             [:div.actions
+              (button/icon {:label "Icon"}
+                           (icon/cancel-circle))
+              (button/icon {:label "Icon"}
+                           (icon/rebuild))]])))))))
 
 (def run (om-next/factory Run {:keyfn :run/id}))
 
@@ -102,7 +106,7 @@
   Object
   (render [this]
     (card/collection
-     (map run (:workflow/runs (om-next/props this))))))
+     (map run (sort-by :run/started-at (:workflow/runs (om-next/props this)))))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 
