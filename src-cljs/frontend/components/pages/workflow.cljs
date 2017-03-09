@@ -1,5 +1,6 @@
 (ns frontend.components.pages.workflow
   (:require [frontend.components.common :as common]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.status :as status]
@@ -53,6 +54,7 @@
                  :status-class/running (icon/status-running)
                  :status-class/waiting (icon/status-queued))]
                [:.status-string (name status)]]
+              [:div.run-info]
               [:div.metadata
                [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
@@ -72,7 +74,10 @@
                  [:i.octicon.octicon-git-commit]
                  [:a "1234345"]]]]
               [:div.actions
-               ]])))))))
+               (button/icon {:label "Icon"}
+                     (icon/cancel-circle))
+               (button/icon {:label "Icon"}
+                     (icon/rebuild))]])))))))
 
 (def run (om-next/factory Run {:keyfn :run/id}))
 

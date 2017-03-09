@@ -4,15 +4,32 @@
       margin: -15px;
       .flexy();
 
+      > .actions {
+        .flexy(center, center);
+
+        button {
+          background-color: transparent;
+          &:last-of-type {
+            margin-left: .5em;
+          }
+        }
+      }
+
+      > .run-info {
+        .flex(1 0 auto);
+        padding: (@build-padding / 2) @build-padding;
+        border-right: @build-item-inner-border;
+        line-height: 1.8;
+      }
+
       > .status {
         .flexy(center, center);
-        flex: 0 0 160px;
+        .flex(0 0 160px);
         background-color: transparent;
 
         .status-icon {
           color: @white;
           fill: @white;
-
         }
 
         .status-string {
