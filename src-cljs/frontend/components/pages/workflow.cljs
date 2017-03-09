@@ -76,7 +76,7 @@
                 [:a "#1234"]]
                [:span.metadata-item.revision
                 [:i.octicon.octicon-git-commit]
-                [:a "1234345"]]]]
+                [:a (subs commit-sha 0 7)]]]]
              [:div.actions
               (button/icon {:label "Icon"}
                            (icon/cancel-circle))
