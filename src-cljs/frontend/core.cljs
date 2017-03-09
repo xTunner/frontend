@@ -185,31 +185,6 @@
     (doseq [c (descendant-components root-component)]
       (.forceUpdate c))))
 
-;; http://stackoverflow.com/a/15020649/42188
-(defn- map-zipper [m]
-  (zip/zipper
-    (fn [x] (or (map? x) (map? (nth x 1))))
-    (fn [x] (seq (if (map? x) x (nth x 1))))
-    (fn [x children]
-      (if (map? x)
-        (into {} children)
-        (assoc x 1 (into {} children))))
-    m))
-
-(defn- nils->maps
-  "Turns {:a {:b nil}, :one {:two {:three \"3\"}}} into
-  {:a {:b {}}, :one {:two {:three \"3\"}}}"
-  [m]
-  (loop [z (map-zipper m)]
-    (cond
-      (zip/end? z) (zip/root z)
-
-      (and (implements? IMapEntry (zip/node z))
-           (nil? (val (zip/node z))))
-      (recur (zip/replace z [(key (zip/node z)) {}]))
-
-      :else (recur (zip/next z)))))
-
 (defn ^:export setup! []
   (let [legacy-state (initial-state)
         comms {:controls (chan)
@@ -255,7 +230,7 @@
 
                           ;; Workaround for
                           ;; https://github.com/omcljs/om/issues/781
-                          :merge-tree #(utils/deep-merge %1 (nils->maps %2))
+                          :merge-tree #(utils/deep-merge %1 %2)
 
                           :shared {:comms comms
                                    :timer-atom (timer/initialize)
