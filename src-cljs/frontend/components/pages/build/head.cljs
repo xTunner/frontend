@@ -50,17 +50,21 @@
                   (gstring/format link endpoint project-name)))
 
 (defn- maybe-project-linkify [text vcs-type project-name]
-  (cond-> text
+  (cond
     (and project-name (= "bitbucket" vcs-type) (re-find #"pull request #\d+" text))
-    (replace-issue "$1<a href='%s/%s/pull-requests/$2' target='_blank'>pull request #$2</a>"
+    (replace-issue text
+                   "$1<a href='%s/%s/pull-requests/$2' target='_blank'>pull request #$2</a>"
                    (bb-utils/http-endpoint)
                    project-name)
     project-name
-    (replace-issue "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>"
+    (replace-issue text
+                   "$1<a href='%s/%s/issues/$2' target='_blank'>#$2</a>"
                    (case vcs-type
                      "github" (gh-utils/http-endpoint)
                      "bitbucket" (bb-utils/http-endpoint))
-                   project-name)))
+                   project-name)
+
+    :else text))
 
 (defn- commit-line [{:keys [author_name build subject body commit_url commit] :as commit-details} owner]
   (reify
