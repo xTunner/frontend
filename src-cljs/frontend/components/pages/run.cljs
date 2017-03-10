@@ -122,18 +122,18 @@
   #_(componentDidMount [this]
     (set-page-title! "Projects"))
   (render [this]
-    (main-template/template
-     {:app (:legacy/state (om-next/props this))
-      :main-content
-      (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])]
-        (html
-         [:div {:style {:margin-top "20px"}}
-          (when-not (empty? run)
-            (workflow-page/run-row run))
-          [:div {:style {:display "flex"
-                         :margin-top "20px"}}
-           [:div {:style {:width "300px"
-                          :margin-right "20px"}}
-            (card/collection
-             (map job-run (:run/job-runs run)))]
-           (build-legacy build-page (:legacy/state (om-next/props this)))]]))})))
+    (component
+      (main-template/template
+       {:app (:legacy/state (om-next/props this))
+        :main-content
+        (element :main-content
+          (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])]
+            (html
+             [:div
+              (when-not (empty? run)
+                (workflow-page/run-row run))
+              [:.jobs-and-output
+               [:.jobs
+                (card/collection
+                 (map job-run (:run/job-runs run)))]
+               (build-legacy build-page (:legacy/state (om-next/props this)))]])))}))))

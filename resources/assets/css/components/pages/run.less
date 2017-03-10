@@ -1,0 +1,21 @@
+.ns("frontend.components.pages.run", {
+  .ui("JobRun", {}, {
+    .el("content", {
+    });
+  });
+
+  .ui("Page", {}, {
+    .el("main-content", {
+      margin-top: 20px;
+
+      > .jobs-and-output {
+        .flexy;
+        margin-top: 20px;
+
+        > .jobs {
+          margin-right: 20px;
+        }
+      }
+    });
+  });
+});
