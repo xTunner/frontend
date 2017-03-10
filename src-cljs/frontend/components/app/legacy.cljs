@@ -42,8 +42,7 @@
           (main-template/template
            {:app app
             :main-content (om/build old-world-dominant-component-f app)
-            :above-main-content (when (and show-branch-build? on-dashboard?
-                                           (feature/enabled? :my-all-builds-toggle))
+            :above-main-content (when (and show-branch-build? on-dashboard?)
                                   (om/build aside/builds-table-filter {:data app
                                                                        :on-branch? (-> (:navigation-data app)
                                                                                        :branch

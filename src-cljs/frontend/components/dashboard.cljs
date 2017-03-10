@@ -47,7 +47,7 @@
                            :organizations (get-in data state/user-organizations-path)})
 
                 :else
-                [:div {:class (str "dashboard" (when-not (feature/enabled? :my-all-builds-toggle) " extra-padding"))}
+                [:div.dashboard
                  (when (project-common/show-trial-notice? project plan (get-in data state/dismissed-trial-update-banner))
                    [:div.container-fluid
                     [:div.row
