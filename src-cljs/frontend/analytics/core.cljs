@@ -2,6 +2,7 @@
   (:require [frontend.analytics.amplitude :as amplitude]
             [frontend.analytics.segment :as segment]
             [frontend.analytics.common :as common-analytics]
+            [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
@@ -277,10 +278,16 @@
   (let [state @state-atom]
     (track {:event-type :init-user
             :current-state state})
-    ;; sends a frontend duplicate of the backend signup event to Segment
-    ;; only on first login and when flag isn't set in localStorage
+    ;; Sends a frontend duplicate of the backend signup event to Segment
+    ;;  only on first login and when flag isn't set in localStorage.
+    ;; Also limit it to users who have signed up after this feature was
+    ;;  implemented, to address false positives for users who have never
+    ;;  signed out since signup.
     (when (and (not (get-in state state/signup-event-sent))
-               (= 1 (get-in state state/user-sign-in-count-path)))
+               (= 1 (get-in state state/user-sign-in-count-path))
+               (datetime/iso-comparator
+                (get-in state state/user-created-at-path)
+                "2017-03-09T00:00:00.000Z"))
       (track {:event-type :signup-event-sent
               :current-state (assoc state
                                     :navigation-point

@@ -169,6 +169,7 @@
 (def user-tokens-path (conj user-path :tokens))
 (def user-analytics-id-path (conj user-path :analytics_id))
 (def user-sign-in-count-path (conj user-path :sign_in_count))
+(def user-created-at-path (conj user-path :created_at))
 
 (def repos-path (conj user-path :repos))
 (defn repo-path [repo-index] (conj repos-path repo-index))
