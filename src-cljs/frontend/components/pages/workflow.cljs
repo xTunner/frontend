@@ -12,7 +12,7 @@
 
 (defn- status-class [run-status]
   (case run-status
-    :run-status/queued :status-class/waiting
+    :run-status/waiting :status-class/waiting
     :run-status/running :status-class/running
     :run-status/succeeded :status-class/succeeded
     :run-status/failed :status-class/failed
@@ -108,7 +108,7 @@
   Object
   (render [this]
     (card/collection
-     (map run-row (sort-by :run/started-at (:workflow/runs (om-next/props this)))))))
+     (map run-row (reverse (sort-by :run/started-at (:workflow/runs (om-next/props this))))))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 

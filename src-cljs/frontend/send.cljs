@@ -31,7 +31,7 @@
                                       :workflow/project]))
 
 (s/def :run/id uuid?)
-(s/def :run/status #{:run-status/queued
+(s/def :run/status #{:run-status/waiting
                      :run-status/running
                      :run-status/succeeded
                      :run-status/failed
@@ -49,32 +49,7 @@
                                                (gen/one-of [(gen/choose 48 57)
                                                             (gen/choose 97 102)]))
                                      40))))
-
-(defmulti run-entity-spec-by-status :run/status)
-
-(defmethod run-entity-spec-by-status :run-status/queued [_]
-  (s/and #(nil? (:run/started-at %))
-         #(nil? (:run/stopped-at %))))
-
-(defmethod run-entity-spec-by-status :run-status/running [_]
-  (s/and #(:run/started-at %)
-         #(nil? (:run/stopped-at %))))
-
-(defmethod run-entity-spec-by-status :run-status/failed [_]
-  (s/and #(:run/started-at %)
-         #(:run/stopped-at %)
-         #(< (:run/started-at %)
-             (:run/stopped-at %))))
-
-(defmethod run-entity-spec-by-status :run-status/failed [_]
-  (s/and #(:run/started-at %)
-         #(:run/stopped-at %)
-         #(< (:run/started-at %)
-             (:run/stopped-at %))))
-
-(defmethod run-entity-spec-by-status :run-status/canceled [_]
-  (s/and #(:run/started-at %)
-         #(nil? (:run/stopped-at %))))
+(s/def :run/job-runs (s/every :job-run/entity))
 
 (s/def :run/entity (s/and
                     (s/keys :req [:run/id
@@ -82,8 +57,74 @@
                                   :run/started-at
                                   :run/stopped-at
                                   :run/branch-name
-                                  :run/commit-sha])
-                    (s/multi-spec run-entity-spec-by-status :run/status)))
+                                  :run/commit-sha
+                                  :run/job-runs])
+                    (s/or
+                     :waiting
+                     (s/and
+                      #(= :run-status/waiting (:run/status %))
+                      #(nil? (:run/started-at %))
+                      #(nil? (:run/stopped-at %)))
+
+                     :running
+                     (s/and
+                      #(= :run-status/running (:run/status %))
+                      #(:run/started-at %)
+                      #(nil? (:run/stopped-at %)))
+
+                     :finished
+                     (s/and
+                      #(#{:run-status/succeeded
+                          :run-status/failed
+                          :run-status/canceled}
+                        (:run/status %))
+                      #(:run/started-at %)
+                      #(:run/stopped-at %)
+                      #(< (:run/started-at %)
+                          (:run/stopped-at %))))))
+
+(s/def :job/id uuid?)
+(s/def :job/name string?)
+(s/def :job/entity (s/keys :req [:job/id
+                                 :job/name]))
+
+(s/def :job-run/id uuid?)
+(s/def :job-run/status #{:job-run-status/waiting
+                         :job-run-status/running
+                         :job-run-status/succeeded
+                         :job-run-status/failed
+                         :job-run-status/canceled})
+(s/def :job-run/started-at (s/nilable inst?))
+(s/def :job-run/stopped-at (s/nilable inst?))
+(s/def :job-run/job :job/entity)
+(s/def :job-run/entity (s/and (s/keys :req [:job-run/id
+                                            :job-run/status
+                                            :job-run/started-at
+                                            :job-run/stopped-at
+                                            :job-run/job])
+                              (s/or
+                               :waiting
+                               (s/and
+                                #(= :job-run-status/waiting (:job-run/status %))
+                                #(nil? (:job-run/started-at %))
+                                #(nil? (:job-run/stopped-at %)))
+
+                               :job-running
+                               (s/and
+                                #(= :job-run-status/job-running (:job-run/status %))
+                                #(:job-run/started-at %)
+                                #(nil? (:job-run/stopped-at %)))
+
+                               :finished
+                               (s/and
+                                #(#{:job-run-status/succeeded
+                                    :job-run-status/failed
+                                    :job-run-status/canceled}
+                                  (:job-run/status %))
+                                #(:job-run/started-at %)
+                                #(:job-run/stopped-at %)
+                                #(< (:job-run/started-at %)
+                                    (:job-run/stopped-at %))))))
 
 
 ;; via https://github.com/paraseba/faker/blob/master/srfaker/lorem_data.clj
@@ -103,7 +144,11 @@
   {:run/branch-name #(gen/fmap (partial string/join "-")
                                (gen/vector latin-word 1 7))
    :run/started-at #(gen/one-of [inst-in-last-day (gen/return nil)])
-   :run/stopped-at #(gen/one-of [inst-in-last-day (gen/return nil)])})
+   :run/stopped-at #(gen/one-of [inst-in-last-day (gen/return nil)])
+   :job/name #(gen/fmap (partial string/join "-")
+                        (gen/vector latin-word 1 2))
+   :job-run/started-at #(gen/one-of [inst-in-last-day (gen/return nil)])
+   :job-run/stopped-at #(gen/one-of [inst-in-last-day (gen/return nil)])})
 
 
 
