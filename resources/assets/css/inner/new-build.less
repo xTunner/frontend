@@ -46,28 +46,10 @@
 
 // V2 from here on !!!!
 
-@status-badge-height: 25px;
-
-.small-emphasis {
-  font-size: 11px;
-  font-weight: 400;
-  text-transform: uppercase;
-  padding-bottom: 8px;
-}
-
-
 @pills-breakpoint: @screen-xs-max;
 
 .build-info-v2 {
   margin-top: 15px;
-
-  .summary-item {
-    margin-right: 20px;
-
-    &:last-child {
-      margin-right: 0;
-    }
-  }
 
   a:not(.exception):hover {
     text-decoration: underline;
@@ -75,91 +57,6 @@
 
   .container-selector:hover {
     text-decoration: none;
-  }
-
-  .card {
-    color: @gray;
-
-    .small-emphasis {
-      color: @gray;
-    }
-  }
-
-  .workflow-head {
-
-    .flexy();
-    .justify-content(space-between);
-
-    > .details {
-
-      .flex(1, 0, 0);
-
-      &:last-child {
-        margin-left: 15px;
-      }
-
-      &:first-child {
-        margin-left: 0;
-      }
-
-      .heading {
-
-        .flexy();
-
-        padding: 20px;
-        font-size: 20px;
-      }
-
-      .card {
-        margin-bottom: 0;
-      }
-
-      .line {
-
-        .flexy();
-        .justify-content(space-between);
-
-        padding-top: 5px;
-        padding-bottom: 5px;
-
-        font-size: @fontSizeSmaller;
-
-        &:first-of-type {
-          padding-top: 0;
-        }
-
-        &:last-of-type {
-          padding-bottom: 0;
-        }
-
-        > .head {
-          font-weight: 500;
-        }
-
-        > .value {
-
-          .flex(0, 0, 86%);
-
-          .revision, .pull-requests {
-            display: inline-block;
-
-            &:last-child {
-              margin-left: 9px;
-            }
-          }
-
-          i{
-            font-size: @fontSizeLarge;
-            height: 19px; // magic number to make all the things the same height
-            margin-right: 8px;
-            margin-left: 0;
-            padding-top: 1px;
-            vertical-align: bottom;
-            color: @grayLighter;
-          }
-        }
-      }
-    }
   }
 }
 
@@ -386,92 +283,6 @@
   }
 }
 
-.summary-items {
-  .flexy();
-  margin-right: 20px;
-}
-
-.summary-build-contents {
-  .flexy(stretch, flex-end, row);
-  flex-grow: 2;
-}
-
-@media (max-width: 767px) {
-  .summary-header {
-    .flexy(stretch, space-around, column);
-  }
-
-  .summary-items {
-    .flexy(stretch, flex-start, column);
-
-    margin-right: 0;
-
-    .summary-item {
-      margin-top: 1em;
-      margin-right: 0;
-    }
-  }
-
-  .summary-build-contents {
-    .flexy(stretch, flex-start, column);
-
-    margin-right: 0;
-
-    .summary-item {
-      margin-top: 1em;
-      margin-right: 0;
-    }
-  }
-}
-
-.summary-header {
-  .flexy();
-  margin-bottom: 15px;
-
-  font-size: 13px;
-  color: @grayDarker;
-  line-height: @status-badge-height;
-}
-
-.summary-label {
-  font-weight: 500;
-  display: block;
-  color: @gray;
-}
-
-.summary-spacer {
-  padding: 0 5px;
-}
-
-.build-commits-list {
-  .build-commits-list-item {
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  .metadata-item, .commit-message {
-    font-size: 13px;
-    margin-right: 20px;
-  }
-
-  i.octicon {
-    margin-right: 8px;
-    font-size: @fontSizeLarge;
-    vertical-align: middle;
-    color: @grayLighter;
-  }
-
-  .chevron-label {
-    color: @gray;
-  }
-
-  .tooltip-inner {
-    max-width: 350px;
-    white-space: normal;
-  }
-}
-
 .build-tests-info {
   margin-bottom: 0;
 }
@@ -490,12 +301,6 @@
       text-decoration: underline;
     }
   }
-}
-
-// TODO, just remove build-head-wrapper once v2 ships
-.build-head-wrapper {
-  margin: 15px 0;
-  padding: 0;
 }
 
 .build-tests-summary {

@@ -6,37 +6,40 @@
   (:require-macros [frontend.utils :refer [component html]]))
 
 (defn- exterior [content]
-  (html
-   [:div {:data-component `exterior}
-    content]))
+  (component
+    (html
+     [:div
+      content])))
 
 (defn- body [content]
-  (html
-   [:div {:data-component `body}
-    content]))
+  (component
+    (html
+     [:div
+      content])))
 
 (defn- header [title action]
-  (html
-   [:div {:data-component `header}
-    [:.title title]
-    (when action
-      [:.action action])]))
+  (component
+    (html
+     [:div
+      [:.title title]
+      (when action
+        [:.action action])])))
 
 (defn basic
   "The most basic of cards. The given content appears on a card."
-  [content]
-  (-> content body exterior))
+  [& children]
+  (-> children body exterior))
 
 (defn titled
   "A card with a title.
 
   :title - The card title.
   :action - (optional) An action to place on the right of the header."
-  ([{:keys [title action]} content]
+  ([{:keys [title action]} & children]
    (exterior
     (list
      (header title action)
-     (body content)))))
+     (body children)))))
 
 (defn tabbed
   "A card with a tab row.
