@@ -3,9 +3,9 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
-            [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
+            [frontend.routes :as routes]
             [frontend.utils.legacy :refer [build-legacy]]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
@@ -18,7 +18,8 @@
     :run-status/failed :status-class/failed
     :run-status/canceled :status-class/stopped))
 
-(defui ^:once Run
+;; TODO: Move this to pieces.*, as it's used on the run page as well.
+(defui ^:once RunRow
   static om-next/Ident
   (ident [this {:keys [run/id]}]
     [:run/by-id id])
@@ -45,14 +46,15 @@
            (html
             [:div
              [:div.status {:class (name status)}
-              [:span.status-icon {:class (name status)}
-               (case (status-class status)
-                 :status-class/failed (icon/status-failed)
-                 :status-class/stopped (icon/status-canceled)
-                 :status-class/succeeded (icon/status-passed)
-                 :status-class/running (icon/status-running)
-                 :status-class/waiting (icon/status-queued))]
-              [:.status-string (name status)]]
+              [:a.exception {:href (routes/v1-run {:run-id id})}
+               [:span.status-icon {:class (name status)}
+                (case (status-class status)
+                  :status-class/failed (icon/status-failed)
+                  :status-class/stopped (icon/status-canceled)
+                  :status-class/succeeded (icon/status-passed)
+                  :status-class/running (icon/status-running)
+                  :status-class/waiting (icon/status-queued))]
+               [:.status-string (name status)]]]
              [:div.run-info]
              [:div.metadata
               [:div.metadata-row.timing
@@ -83,7 +85,7 @@
               (button/icon {:label "Icon"}
                            (icon/rebuild))]])))))))
 
-(def run (om-next/factory Run {:keyfn :run/id}))
+(def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
 (defui ^:once WorkflowRuns
   static om-next/Ident
@@ -102,21 +104,17 @@
                          {:project/organization [:organization/vcs-type
                                                  :organization/name]}]}
      :workflow/name
-     {:workflow/runs (om-next/get-query Run)}])
+     {:workflow/runs (om-next/get-query RunRow)}])
   Object
   (render [this]
     (card/collection
-     (map run (sort-by :run/started-at (:workflow/runs (om-next/props this)))))))
+     (map run-row (sort-by :run/started-at (:workflow/runs (om-next/props this)))))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 
 (defui ^:once Page
   static om-next/IQuery
   (query [this]
-    ;; NB: Every Page *must* query for {:legacy/state [*]}, to make it available
-    ;; to frontend.components.header/header. This is necessary until the
-    ;; wrapper, not the template, renders the header.
-    ;; See https://circleci.atlassian.net/browse/CIRCLE-2412
     ['{:legacy/state [*]}
      {:app/route-data [{:route-data/workflow (om-next/get-query WorkflowRuns)}]}])
   ;; TODO: Add the correct analytics properties.

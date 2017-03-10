@@ -149,7 +149,10 @@
                                          [:organization/vcs-type
                                           :organization/name
                                           :project/name
-                                          :workflow/name])])))
+                                          :workflow/name])])
+    :route-data/run (when (every? #(contains? route-data %)
+                                  [:run/id])
+                      [:run/by-id (:run/id route-data)])))
 
 (defmethod read-local :app/route-data
   [{:keys [state query] :as env} key params]

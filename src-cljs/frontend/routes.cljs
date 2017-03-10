@@ -251,6 +251,10 @@
                                  :project/name project-name
                                  :workflow/name workflow-name}}))
 
+  (defroute v1-run "/workflow-run/:run-id"
+    [run-id]
+    (open! app :route/run {:route-data {:run/id (uuid run-id)}}))
+
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                                   :project-name (str org "/" repo)

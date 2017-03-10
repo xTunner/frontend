@@ -8,6 +8,7 @@
             [frontend.components.inspector :as inspector]
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.pages.projects :as projects]
+            [frontend.components.pages.run :as run]
             [frontend.components.pages.user-settings :as user-settings]
             [frontend.components.pages.workflow :as workflow]
             [frontend.components.pieces.flash-notification :as flash]
@@ -31,7 +32,8 @@
    :route/legacy-page legacy/LegacyPage
    :route/projects projects/Page
    :route/account user-settings/Page
-   :route/workflow workflow/Page})
+   :route/workflow workflow/Page
+   :route/run run/Page})
 
 (def index-route :route/loading)
 

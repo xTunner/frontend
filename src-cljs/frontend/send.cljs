@@ -212,6 +212,18 @@
                                   [:workflow/project :project/organization :organization/vcs-type] #(gen/return (:organization/vcs-type ident-vals))}))))})
             ui-query)
 
+        (and (om-util/ident? (om-util/join-key expr))
+             (= :run/by-id (first (om-util/join-key expr))))
+        ;; Generate fake data for now.
+        (cb (rewrite {(om-util/join-key expr)
+                      (let [id (second (om-util/join-key expr))]
+                        (gen/generate
+                         (s/gen :run/entity
+                                (merge
+                                 dummy-data-overrides
+                                 {[:run/id] #(gen/return id)}))))})
+            ui-query)
+
         :else (throw (str "No clause found for " (pr-str expr)))))))
 
 

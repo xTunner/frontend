@@ -1,5 +1,5 @@
 .ns("frontend.components.pages.workflow", {
-  .ui("Run", {}, {
+  .ui("RunRow", {}, {
     .el("content", {
       margin: -15px;
       .flexy();
@@ -25,9 +25,16 @@
       }
 
       > .status {
-        .flexy(center, center);
         .flex(0 0 160px);
+        .flexy(center, center);
         background-color: transparent;
+
+        > a {
+          .flex(1 1 auto);
+          align-self: stretch;
+          .flexy(center, center);
+        }
+
 
         .status-icon {
           width: 18px;
