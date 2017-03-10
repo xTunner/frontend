@@ -199,9 +199,16 @@
     width: 1200px;
     min-width: 512px;
     padding-top: 16px;
+    width: 100%;
 
     @media (max-width: 1800px) {
       width: 66.66%;
+      min-width: 512px;
+    }
+
+    @media (max-width: @screen-xs-max) {
+      width: 100%;
+      min-width: 100%;
     }
   });
 });
