@@ -1,11 +1,17 @@
 (ns frontend.components.pages.run
-  (:require [frontend.components.common :as common]
+  (:require [frontend.components.build-head :as old-build-head]
+            [frontend.components.build-steps :as build-steps]
+            [frontend.components.common :as common]
             [frontend.components.pages.workflow :as workflow-page]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
+            [frontend.state :as state]
+            [frontend.utils.ajax :as ajax]
             [frontend.utils.legacy :refer [build-legacy]]
+            [goog.string :as gstring]
+            [om.core :as om]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [component element html]]))
 
@@ -62,13 +68,40 @@
 
 (def job-run (om-next/factory JobRun {:keyfn :job-run/id}))
 
+(defn- build-page [app owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (let [vcs_type "github"
+            project-name "circleci/circle"
+            build-num 162332
+            build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)]
+        (ajax/ajax :get build-url
+                   :build-fetch
+                   (om/get-shared owner [:comms :api])
+                   :context {:project-name project-name :build-num build-num})))
+    om/IRender
+    (render [_]
+      (html
+       [:div
+         (om/build old-build-head/build-sub-head {:build-data (dissoc (get-in app state/build-data-path) :container-data)
+                                                  :current-tab (get-in app state/navigation-tab-path)
+                                                  :container-id (state/current-container-id app)
+                                                  :project-data (get-in app state/project-data-path)
+                                                  :user (get-in app state/user-path)
+                                                  :projects (get-in app state/projects-path)
+                                                  :scopes (get-in app state/project-scopes-path)
+                                                  :ssh-available? false})
+         (om/build build-steps/container-build-steps
+                   (assoc (get-in app state/container-data-path)
+                          :selected-container-id (state/current-container-id app))
+                   {:key :selected-container-id})]))))
+
 (defui ^:once Page
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     {:app/route-data [{:route-data/run #_(om-next/get-query Run)
-                        #_[:run/id
-                           #_{:run/workflow []}]
+     {:app/route-data [{:route-data/run
                         ;; FIXME Merging two queries like this is a bad idea.
                         ;; The best solution people have right now is
                         ;; placeholder keys in the query, which requires
@@ -87,15 +120,20 @@
   Object
   ;; TODO: Title this page.
   #_(componentDidMount [this]
-      (set-page-title! "Projects"))
+    (set-page-title! "Projects"))
   (render [this]
     (main-template/template
      {:app (:legacy/state (om-next/props this))
       :main-content
       (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])]
         (html
-         [:div
+         [:div {:style {:margin-top "20px"}}
           (when-not (empty? run)
             (workflow-page/run-row run))
-          (card/collection
-           (map job-run (:run/job-runs run)))]))})))
+          [:div {:style {:display "flex"
+                         :margin-top "20px"}}
+           [:div {:style {:width "300px"
+                          :margin-right "20px"}}
+            (card/collection
+             (map job-run (:run/job-runs run)))]
+           (build-legacy build-page (:legacy/state (om-next/props this)))]]))})))

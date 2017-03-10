@@ -248,12 +248,14 @@
             (not reset?))
       state
       (cond-> state
-              (and branch (not tag)) (assoc-in branch-crumb-path branch)
-              tag (assoc-in tag-crumb-path tag)
-              tag (assoc-in active-crumb-path true)
+        (and branch (not tag) (every? identity branch-crumb-path))
+        (assoc-in branch-crumb-path branch)
 
-              true (reset-state-scopes scopes)
-              true (reset-state-build build)))))
+        tag (assoc-in tag-crumb-path tag)
+        tag (assoc-in active-crumb-path true)
+
+        true (reset-state-scopes scopes)
+        true (reset-state-build build)))))
 
 (defn maybe-set-containers-filter!
   "Depending on the status and outcome of the build, set active
