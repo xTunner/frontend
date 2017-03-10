@@ -80,9 +80,11 @@
                 [:i.octicon.octicon-git-commit]
                 [:a (subs commit-sha 0 7)]]]]
              [:div.actions
-              (button/icon {:label "Icon"}
+              (button/icon {:label "Stop this workflow"
+                            :disabled? true}
                            (icon/cancel-circle))
-              (button/icon {:label "Icon"}
+              (button/icon {:label "Re-run this workflow"
+                            :disabled? true}
                            (icon/rebuild))]])))))))
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
