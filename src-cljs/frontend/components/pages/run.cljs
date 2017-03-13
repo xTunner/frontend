@@ -47,8 +47,9 @@
          (element :content
            (html
             [:div
-             (status/icon (status-class status))
-             job-name
+             [:div.status-name
+               [:span.job-status (status/icon (status-class status))]
+               [:span.job-name job-name]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
@@ -56,7 +57,7 @@
                 (if started-at
                   [:span {:title (str "Started: " (datetime/full-datetime started-at))}
                    (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
-                   " ago"]
+                   [:span " ago"]]
                   "-")]
                [:span.metadata-item.recent-time.duration
                 [:i.material-icons "timer"]
