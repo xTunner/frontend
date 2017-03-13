@@ -107,8 +107,11 @@
      {:workflow/runs (om-next/get-query RunRow)}])
   Object
   (render [this]
-    (card/collection
-     (map run-row (reverse (sort-by :run/started-at (:workflow/runs (om-next/props this))))))))
+          (component
+            (html
+              [:div
+               (card/collection
+                 (map run-row (reverse (sort-by :run/started-at (:workflow/runs (om-next/props this))))))]))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 
