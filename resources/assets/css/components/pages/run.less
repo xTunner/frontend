@@ -1,6 +1,92 @@
 .ns("frontend.components.pages.run", {
   .ui("JobRun", {}, {
     .el("content", {
+      > .metadata {
+
+        @build-padding: 12px;
+        @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
+
+        .metadata-row {
+          .flexy(row, flex-end);
+          padding-left: 0;
+          padding-right: 0;
+
+          &:first-of-type {
+            margin-top: 3px;
+          }
+
+          @media (max-width: @screen-md-max) {
+            border-bottom: @build-item-inner-border;
+            padding: 0;
+
+            &:first-of-type {
+              margin-top: 0;
+            }
+          }
+
+          .metadata-item {
+            .flex(1 0 auto);
+
+            padding: 0;
+
+            font-size: @fontSizeSmaller;
+
+            &:last-child {
+              .flex(0 0 40%);
+            }
+
+            span {
+              vertical-align: middle;
+            }
+
+            @media (max-width: @screen-md-max) {
+              padding: 8px;
+
+              &:last-child {
+                .flex(0 0 50%);
+                border-left: @build-item-inner-border;
+              }
+            }
+
+            &.start-time,
+            &.duration,
+            &.pull-requests,
+            &.revision {
+              i, svg {
+                font-size: @fontSizeLarge;
+                height: 19px; // magic number to make all the things the same height
+                margin-right: 8px;
+                margin-left: 0;
+                padding-top: 1px;
+                vertical-align: bottom;
+                color: @grayLighter;
+                max-width: @fontSizeLarge;
+                display: inline;
+              }
+            }
+
+            &.pull-requests,
+            &.revision {
+              padding-top: 8px;
+              padding-bottom: 8px;
+            }
+
+            &.pull-requests {
+              padding-left: 3px;
+              @media (max-width: @screen-md-max) {
+                padding-left: 11px;
+              }
+            }
+
+            &.revision {
+              padding-left: 1px;
+              @media (max-width: @screen-md-max) {
+                padding-left: 9px;
+              }
+            }
+          }
+        }
+      }
     });
   });
 
@@ -8,12 +94,81 @@
     .el("main-content", {
       margin-top: 20px;
 
+      margin-left: auto;
+      margin-right: auto;
+      width: 1200px;
+      min-width: 512px;
+      padding-top: 16px;
+      width: 100%;
+
+      @media (max-width: 1800px) {
+        width: 66.66%;
+        min-width: 512px;
+      }
+
+      @media (max-width: @screen-xs-max) {
+        width: 100%;
+        min-width: 100%;
+      }
+
       > .jobs-and-output {
         .flexy;
         margin-top: 20px;
 
+        .hr-title {
+          font-weight: 600;
+          line-height: 20px;
+          height: auto;
+          margin-top: 20px;
+          text-align: center;
+          color: @grayDark;
+          border-top: 1px solid;
+
+          span {
+            position: relative;
+            top: -10px;
+            padding: 2px 10px;
+            text-transform: uppercase;
+            border-radius: 2px;
+            background-color: #f5f5f5;
+          }
+        }
+
+        .output-header {
+          .flexy(center, space-between);
+        }
+
+        .output-title {
+          font-weight: 600;
+          line-height: 20px;
+          height: auto;
+          margin-top: 20px;
+          text-align: left;
+          color: @grayDark;
+          border-top: 1px solid transparent;
+
+          span {
+            position: relative;
+            top: -10px;
+            padding: 2px 10px;
+          }
+        }
+
+        .job-output-tabs {
+          margin-bottom: 15px;
+        }
+
         > .jobs {
           margin-right: 20px;
+
+          .status-name {
+            .flexy(center);
+            margin-bottom: 1em;
+
+            .job-status {
+              margin-right: 8px;
+            }
+          }
         }
       }
     });

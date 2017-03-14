@@ -63,7 +63,7 @@
                 (if started-at
                   [:span {:title (str "Started: " (datetime/full-datetime started-at))}
                    (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
-                   " ago"]
+                   [:span " ago"]]
                   "-")]
                [:span.metadata-item.recent-time.duration
                 [:i.material-icons "timer"]
@@ -80,9 +80,11 @@
                 [:i.octicon.octicon-git-commit]
                 [:a (subs commit-sha 0 7)]]]]
              [:div.actions
-              (button/icon {:label "Icon"}
+              (button/icon {:label "Stop this workflow"
+                            :disabled? true}
                            (icon/cancel-circle))
-              (button/icon {:label "Icon"}
+              (button/icon {:label "Re-run this workflow"
+                            :disabled? true}
                            (icon/rebuild))]])))))))
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
@@ -107,8 +109,11 @@
      {:workflow/runs (om-next/get-query RunRow)}])
   Object
   (render [this]
-    (card/collection
-     (map run-row (reverse (sort-by :run/started-at (:workflow/runs (om-next/props this))))))))
+          (component
+            (html
+              [:div
+               (card/collection
+                 (map run-row (reverse (sort-by :run/started-at (:workflow/runs (om-next/props this))))))]))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 

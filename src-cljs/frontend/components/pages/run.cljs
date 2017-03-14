@@ -2,8 +2,10 @@
   (:require [frontend.components.build-head :as old-build-head]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pages.workflow :as workflow-page]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
@@ -47,8 +49,9 @@
          (element :content
            (html
             [:div
-             (status/icon (status-class status))
-             job-name
+             [:div.status-name
+               [:span.job-status (status/icon (status-class status))]
+               [:span.job-name job-name]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
@@ -56,7 +59,7 @@
                 (if started-at
                   [:span {:title (str "Started: " (datetime/full-datetime started-at))}
                    (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
-                   " ago"]
+                   [:span " ago"]]
                   "-")]
                [:span.metadata-item.recent-time.duration
                 [:i.material-icons "timer"]
@@ -84,18 +87,18 @@
     (render [_]
       (html
        [:div
-         (om/build old-build-head/build-sub-head {:build-data (dissoc (get-in app state/build-data-path) :container-data)
+         [:div.job-output-tabs (om/build old-build-head/build-sub-head {:build-data (dissoc (get-in app state/build-data-path) :container-data)
                                                   :current-tab (get-in app state/navigation-tab-path)
                                                   :container-id (state/current-container-id app)
                                                   :project-data (get-in app state/project-data-path)
                                                   :user (get-in app state/user-path)
                                                   :projects (get-in app state/projects-path)
                                                   :scopes (get-in app state/project-scopes-path)
-                                                  :ssh-available? false})
-         (om/build build-steps/container-build-steps
+                                                  :ssh-available? false})]
+         [:div.card (om/build build-steps/container-build-steps
                    (assoc (get-in app state/container-data-path)
                           :selected-container-id (state/current-container-id app))
-                   {:key :selected-container-id})]))))
+                   {:key :selected-container-id})]]))))
 
 (defui ^:once Page
   static om-next/IQuery
@@ -134,6 +137,15 @@
                 (workflow-page/run-row run))
               [:.jobs-and-output
                [:.jobs
+                [:.hr-title
+                 [:span "Jobs"]]
                 (card/collection
                  (map job-run (:run/job-runs run)))]
-               (build-legacy build-page (:legacy/state (om-next/props this)))]])))}))))
+               [:.output
+                [:div.output-header
+                  [:.output-title
+                   [:span "job-name #1234"]]
+                  (button/icon {:label "Re-run job-name"
+                                :disabled? true}
+                               (icon/rebuild))]
+                (build-legacy build-page (:legacy/state (om-next/props this)))]]])))}))))

@@ -4,13 +4,27 @@
       margin: -15px;
       .flexy();
 
+      @media (max-width: @screen-md-max) {
+        .flex-direction(column);
+        .flex-wrap(nowrap);
+        min-width: 285px;
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: @screen-md-max) {
+        margin-bottom: -15px;
+      }
+
       > .actions {
         .flexy(center, center);
         padding: (@build-padding / 2) @build-padding;
 
+        @media (max-width: @screen-md-max) {
+          justify-content: space-around;
+        }
+
         button {
           background-color: transparent;
-          color: @gray;
           &:last-of-type {
             margin-left: .5em;
           }
@@ -22,11 +36,15 @@
         padding: (@build-padding / 2) @build-padding;
         border-right: @build-item-inner-border;
         line-height: 1.8;
+
+        @media (max-width: @screen-md-max) {
+          padding: 0;
+        }
       }
 
       > .status {
-        .flex(0 0 160px);
         .flexy(center, center);
+        .flex(0 0 160px);
         background-color: transparent;
 
         > a {
@@ -35,6 +53,10 @@
           .flexy(center, center);
         }
 
+        @media (max-width: @screen-md-max) {
+          flex: 0 0 auto;
+          padding: 1em;
+        }
 
         .status-icon {
           width: 18px;
@@ -170,5 +192,23 @@
         }
       }
     });
+  });
+  .ui("WorkflowRuns", {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1200px;
+    min-width: 512px;
+    padding-top: 16px;
+    width: 100%;
+
+    @media (max-width: 1800px) {
+      width: 66.66%;
+      min-width: 512px;
+    }
+
+    @media (max-width: @screen-xs-max) {
+      width: 100%;
+      min-width: 100%;
+    }
   });
 });
