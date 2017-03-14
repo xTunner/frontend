@@ -1,6 +1,8 @@
 .ns("frontend.components.pages.run", {
   .ui("JobRun", {}, {
     .el("content", {
+      margin: -15px;
+
       > .metadata {
 
         @build-padding: 12px;
@@ -11,41 +13,31 @@
           padding-left: 0;
           padding-right: 0;
 
+          border-top: @build-item-inner-border;
+          padding: 0;
+
           &:first-of-type {
-            margin-top: 3px;
-          }
-
-          @media (max-width: @screen-md-max) {
-            border-bottom: @build-item-inner-border;
-            padding: 0;
-
-            &:first-of-type {
-              margin-top: 0;
-            }
+            margin-bottom: 0;
           }
 
           .metadata-item {
             .flex(1 0 auto);
 
-            padding: 0;
-
             font-size: @fontSizeSmaller;
 
+            padding: 8px;
+
             &:last-child {
-              .flex(0 0 40%);
+              .flex(0 0 50%);
+              border-left: @build-item-inner-border;
             }
+
+            // &:last-child {
+            //   .flex(0 0 40%);
+            // }
 
             span {
               vertical-align: middle;
-            }
-
-            @media (max-width: @screen-md-max) {
-              padding: 8px;
-
-              &:last-child {
-                .flex(0 0 50%);
-                border-left: @build-item-inner-border;
-              }
             }
 
             &.start-time,
@@ -115,6 +107,11 @@
         .flexy;
         margin-top: 20px;
 
+        @media (max-width: @screen-md-max) {
+          flex-direction: column;
+          align-items: stretch;
+        }
+
         .hr-title {
           font-weight: 600;
           line-height: 20px;
@@ -161,13 +158,51 @@
         > .jobs {
           margin-right: 20px;
 
-          .status-name {
-            .flexy(center);
-            margin-bottom: 1em;
+          @media (max-width: @screen-md-max) {
+            margin-right: 0;
+          }
+
+          .status-heading {
+            .flexy(center, space-between);
+            padding: 8px;
+
+            .status-name {
+              .flexy(center);
+              // min-width: 88%;
+            }
+
+            .status-actions {
+              .flexy(center);
+              @media (min-width: @screen-md-max) {
+                display: none;
+              }
+            }
+
+            button {
+              background-color: transparent;
+            }
 
             .job-status {
               margin-right: 8px;
             }
+
+            // FIXME: need to add ellipsis for all the things
+            // .job-name {
+            //   overflow: hidden;
+            //   white-space: nowrap;
+            //   text-overflow: ellipsis;
+            //   max-width: 168px;
+
+            //   @media (min-width: @screen-md-max) {
+            //     max-width: 100px;
+            //   }
+            // }
+          }
+        }
+
+        > .output {
+          @media (max-width: @screen-md-max) {
+            display: none;
           }
         }
       }

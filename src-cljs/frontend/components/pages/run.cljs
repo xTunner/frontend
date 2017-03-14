@@ -49,9 +49,17 @@
          (element :content
            (html
             [:div
-             [:div.status-name
-               [:span.job-status (status/icon (status-class status))]
-               [:span.job-name job-name]]
+             [:div.status-heading
+               [:div.status-name
+                [:span.job-status (status/icon (status-class status))]
+                [:span.job-name job-name]]
+               [:div.status-actions
+                (button/icon {:label "View job output"
+                              :disabled? true}
+                             [:i.material-icons "list"])
+                (button/icon {:label "Re-run job-name"
+                             :disabled? true}
+                            (icon/rebuild))]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
