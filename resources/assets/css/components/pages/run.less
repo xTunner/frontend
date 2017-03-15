@@ -112,6 +112,11 @@
           align-items: stretch;
         }
 
+        .jobs-header,
+        .output-header {
+          margin-bottom: .5em;
+        }
+
         .hr-title {
           font-weight: 600;
           line-height: 20px;
@@ -201,6 +206,18 @@
         }
 
         > .output {
+
+          button {
+            .iconed-button {
+              .flexy(center, center);
+
+              svg {
+                width: 18px;
+                margin-right: .5em;
+              }
+            }
+          }
+
           @media (max-width: @screen-md-max) {
             display: none;
           }

@@ -55,7 +55,12 @@
                   :status-class/running (icon/status-running)
                   :status-class/waiting (icon/status-queued))]
                [:.status-string (name status)]]]
-             [:div.run-info]
+             [:div.run-info
+              [:div.build-info-header
+               [:div.contextual-identifier
+                [:span "workflow-name #1234"]]]
+              [:div.recent-commit-msg
+               [:span.recent-log "This is the thing that triggered the run"]]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
@@ -83,7 +88,7 @@
               (button/icon {:label "Stop this workflow"
                             :disabled? true}
                            (icon/cancel-circle))
-              (button/icon {:label "Re-run this workflow"
+              (button/icon {:label "Retry this workflow"
                             :disabled? true}
                            (icon/rebuild))]])))))))
 

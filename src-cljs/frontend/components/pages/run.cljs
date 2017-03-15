@@ -56,8 +56,8 @@
                [:div.status-actions
                 (button/icon {:label "View job output"
                               :disabled? true}
-                             [:i.material-icons "list"])
-                (button/icon {:label "Re-run job-name"
+                             [:i.material-icons "format_align_right"])
+                (button/icon {:label "Retry job-name"
                              :disabled? true}
                             (icon/rebuild))]]
              [:div.metadata
@@ -145,15 +145,17 @@
                 (workflow-page/run-row run))
               [:.jobs-and-output
                [:.jobs
-                [:.hr-title
-                 [:span "Jobs"]]
+                [:div.jobs-header
+                 [:.hr-title
+                  [:span "Jobs"]]]
                 (card/collection
                  (map job-run (:run/job-runs run)))]
                [:.output
                 [:div.output-header
                   [:.output-title
                    [:span "job-name #1234"]]
-                  (button/icon {:label "Re-run job-name"
-                                :disabled? true}
-                               (icon/rebuild))]
+                  (button/button {:kind :primary
+                                  :size :medium
+                                  :label "Retry job-name"}
+                                 [:span.iconed-button (icon/rebuild) "Retry"])]
                 (build-legacy build-page (:legacy/state (om-next/props this)))]]])))}))))
