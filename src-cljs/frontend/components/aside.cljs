@@ -426,6 +426,15 @@
               [:i.material-icons "storage"]
               [:div.nav-label "Builds"]])
 
+           (when (ld/feature-on? "workflows-poc")
+             [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
+                             :data-placement "right"
+                             :data-trigger "hover"
+                             :title "Workflows"
+                             :href (routes/v1-workflow-path :github "circleci" "workflows-poc" "main-workflow")}
+              [:i.material-icons "storage"]
+              [:div.nav-label "Workflows"]])
+
            (when show-aside-icons?
              [:a.aside-item {:class (when (= :build-insights current-route) "current")
                              :data-placement "right"
