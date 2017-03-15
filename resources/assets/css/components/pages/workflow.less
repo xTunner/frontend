@@ -100,6 +100,105 @@
       @build-padding: 12px;
       @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
 
+      > .run-info {
+
+        .flex(1 0 auto);
+        padding: (@build-padding / 2) @build-padding;
+        border-right: @build-item-inner-border;
+        line-height: 1.8;
+
+        .recent-commit-msg {
+          // TODO: Make these fiddly margins unnecessary.
+          margin-top: 6px;
+          margin-bottom: 2px;
+
+          color: @gray;
+          font-size: @fontSizeSmaller;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+
+          // TODO: Instead of this, use flexboxes to make the .recent-commit-msg
+          // take up the remaining space.
+          @media (max-width: @screen-lg-min) {
+            max-width: 440px;
+          }
+
+          @media (min-width: 1200px) {
+            max-width: 440px;
+          }
+
+          @media (min-width: 1400px) {
+            max-width: 640px;
+          }
+        }
+
+        @media (max-width: @screen-md-max) {
+          width: 100%;
+          border-right: 0;
+          border-bottom: @build-item-inner-border;
+        }
+
+        .build-info-header {
+          .flexy;
+          .justify-content(space-between);
+          .flex-wrap(wrap);
+        }
+
+        .contextual-identifier {
+          font-size: @baseFontSize;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+
+          a {
+            color: @grayDarker;
+          }
+        }
+
+        .dashboard-icon {
+          width: 16px;
+          height: 16px;
+          margin-right: 10px;
+          opacity: 0.4;
+        }
+
+        @avatar-size: 20px;
+        .recent-user {
+          display: inline-block;
+
+          width: @avatar-size;
+          height: @avatar-size;
+
+          margin-right: 8px;
+
+          .material-icons {
+            margin-left: 0;
+          }
+
+          .dashboard-icon {
+            width: @avatar-size;
+            height: @avatar-size;
+            margin: 0;
+
+            vertical-align: bottom;
+
+            border-radius: 50%;
+            opacity: 1;
+          }
+        }
+
+        .recent-time {
+          font-family: @sansSerifFontFamily;
+          color: @grayDark;
+        }
+
+        .recent-log {
+          font-family: @monoFontFamily;
+          word-break: normal;
+        }
+      }
+
       > .metadata {
         .flexy(column);
         width: 214px;
