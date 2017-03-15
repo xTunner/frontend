@@ -58,7 +58,8 @@
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier
-                [:span "workflow-name #1234"]]]
+                [:a {:href (routes/v1-run {:run-id id})}
+                 [:span "workflow-name #1234"]]]]
               [:div.recent-commit-msg
                [:span.recent-log "This is the thing that triggered the run"]]]
              [:div.metadata
