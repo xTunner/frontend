@@ -58,7 +58,10 @@
     (html
      [:div
       (for [card cards]
-        [:.item card])]))))
+        ;; Reuse the card's key. Thus, if each card is built with a unique key,
+        ;; each .item will be built with a unique key.
+        [:.item {:key (.-key card)}
+         card])]))))
 
 (dc/do
   (defcard basic-card

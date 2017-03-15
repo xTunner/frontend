@@ -1,0 +1,214 @@
+.ns("frontend.components.pages.workflow", {
+  .ui("RunRow", {}, {
+    .el("content", {
+      margin: -15px;
+      .flexy();
+
+      @media (max-width: @screen-md-max) {
+        .flex-direction(column);
+        .flex-wrap(nowrap);
+        min-width: 285px;
+        margin-bottom: 8px;
+      }
+
+      @media (max-width: @screen-md-max) {
+        margin-bottom: -15px;
+      }
+
+      > .actions {
+        .flexy(center, center);
+        padding: (@build-padding / 2) @build-padding;
+
+        @media (max-width: @screen-md-max) {
+          justify-content: space-around;
+        }
+
+        button {
+          background-color: transparent;
+          &:last-of-type {
+            margin-left: .5em;
+          }
+        }
+      }
+
+      > .run-info {
+        .flex(1 0 auto);
+        padding: (@build-padding / 2) @build-padding;
+        border-right: @build-item-inner-border;
+        line-height: 1.8;
+
+        @media (max-width: @screen-md-max) {
+          padding: 0;
+        }
+      }
+
+      > .status {
+        .flexy(center, center);
+        .flex(0 0 160px);
+        background-color: transparent;
+
+        > a {
+          .flex(1 1 auto);
+          align-self: stretch;
+          .flexy(center, center);
+        }
+
+        @media (max-width: @screen-md-max) {
+          flex: 0 0 auto;
+          padding: 1em;
+        }
+
+        .status-icon {
+          width: 18px;
+          color: @white;
+          fill: @white;
+        }
+
+        .status-string {
+          color: @white;
+          font-weight: 600;
+          text-transform: uppercase;
+          min-width: 90px;
+          margin-left: 1em;
+        }
+
+        @background-lighten-ratio: 0%;
+
+        &.succeeded {
+         background-color: lighten(@green, @background-lighten-ratio);
+        }
+
+        &.failed {
+         background-color: lighten(@red, @background-lighten-ratio);
+        }
+
+        &.running {
+         background-color: lighten(@blueLight, @background-lighten-ratio);
+        }
+
+        &.stopped,
+        &.canceled {
+         background-color: lighten(@grayLight, @background-lighten-ratio);
+        }
+
+        &.waiting,
+        &.queued {
+         background-color: lighten(@purple, @background-lighten-ratio);
+        }
+      }
+
+      @build-padding: 12px;
+      @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
+
+      > .metadata {
+        .flexy(column);
+        width: 214px;
+        border-right: @build-item-inner-border;
+
+        @media (max-width: @screen-md-max) {
+          width: 100%;
+          border-right: none;
+        }
+
+        .metadata-row {
+          .flexy(row, flex-end);
+          padding-left: @build-padding;
+          padding-right: @build-padding;
+
+          &:first-of-type {
+            margin-top: 3px;
+          }
+
+          @media (max-width: @screen-md-max) {
+            border-bottom: @build-item-inner-border;
+            padding: 0;
+
+            &:first-of-type {
+              margin-top: 0;
+            }
+          }
+
+          .metadata-item {
+            .flex(1 0 auto);
+            padding-top: 5px;
+            padding-bottom: 3px;
+
+            font-size: @fontSizeSmaller;
+
+            &:last-child {
+              .flex(0 0 40%);
+            }
+
+            span {
+              vertical-align: middle;
+            }
+
+            @media (max-width: @screen-md-max) {
+              padding: 8px;
+
+              &:last-child {
+                .flex(0 0 50%);
+                border-left: @build-item-inner-border;
+              }
+            }
+
+            &.start-time,
+            &.duration,
+            &.pull-requests,
+            &.revision {
+              i, svg {
+                font-size: @fontSizeLarge;
+                height: 19px; // magic number to make all the things the same height
+                margin-right: 8px;
+                margin-left: 0;
+                padding-top: 1px;
+                vertical-align: bottom;
+                color: @grayLighter;
+                max-width: @fontSizeLarge;
+                display: inline;
+              }
+            }
+
+            &.pull-requests,
+            &.revision {
+              padding-top: 8px;
+              padding-bottom: 8px;
+            }
+
+            &.pull-requests {
+              padding-left: 3px;
+              @media (max-width: @screen-md-max) {
+                padding-left: 11px;
+              }
+            }
+
+            &.revision {
+              padding-left: 1px;
+              @media (max-width: @screen-md-max) {
+                padding-left: 9px;
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+  .ui("WorkflowRuns", {
+    margin-left: auto;
+    margin-right: auto;
+    width: 1200px;
+    min-width: 512px;
+    padding-top: 16px;
+    width: 100%;
+
+    @media (max-width: 1800px) {
+      width: 66.66%;
+      min-width: 512px;
+    }
+
+    @media (max-width: @screen-xs-max) {
+      width: 100%;
+      min-width: 100%;
+    }
+  });
+});

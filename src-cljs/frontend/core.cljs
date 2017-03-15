@@ -1,6 +1,5 @@
 (ns frontend.core
   (:require [cljs.core.async :as async :refer [chan]]
-            [clojure.zip :as zip]
             [compassus.core :as compassus]
             [figwheel.client.utils :as figwheel-utils]
             [frontend.analytics.core :as analytics]
@@ -28,8 +27,8 @@
             [frontend.utils :as utils :refer [mlog set-canonical!]]
             goog.dom
             [goog.events :as gevents]
-            [om.core :as om :include-macros true]
             [om.next :as om-next]
+            [om.util :as om-util]
             [schema.core :as s :include-macros true])
   (:require-macros
    [cljs.core.async.macros :as am :refer [alt! go]]
@@ -185,30 +184,26 @@
     (doseq [c (descendant-components root-component)]
       (.forceUpdate c))))
 
-;; http://stackoverflow.com/a/15020649/42188
-(defn- map-zipper [m]
-  (zip/zipper
-    (fn [x] (or (map? x) (map? (nth x 1))))
-    (fn [x] (seq (if (map? x) x (nth x 1))))
-    (fn [x children]
-      (if (map? x)
-        (into {} children)
-        (assoc x 1 (into {} children))))
-    m))
+;; Note: the fact that we need this probably indicates we're not using Om Next
+;; quite right yet.
+(defn- move-route-data-idents-to-root
+  "Merge helper. Turns
 
-(defn- nils->maps
-  "Turns {:a {:b nil}, :one {:two {:three \"3\"}}} into
-  {:a {:b {}}, :one {:two {:three \"3\"}}}"
-  [m]
-  (loop [z (map-zipper m)]
-    (cond
-      (zip/end? z) (zip/root z)
+  {:app/route-data {[:some/ident 123] {:some \"data\"}}}
 
-      (and (implements? IMapEntry (zip/node z))
-           (nil? (val (zip/node z))))
-      (recur (zip/replace z [(key (zip/node z)) {}]))
+  into
 
-      :else (recur (zip/next z)))))
+  {:app/route-data {}
+   [:some/ident 123] {:some \"data\"}}"
+  [data]
+  (if (contains? data :app/route-data)
+    (let [route-data-ident-pairs (filter (comp om-util/ident? key) (:app/route-data data))]
+      (-> data
+          ;; Remove each ident from :app/route-data
+          (update :app/route-data #(apply dissoc % (map key route-data-ident-pairs)))
+          ;; Insert that ident data at the root of the response
+          (into route-data-ident-pairs)))
+    data))
 
 (defn ^:export setup! []
   (let [legacy-state (initial-state)
@@ -236,7 +231,8 @@
                                                                    #(hash-map :identity/type (:type %)
                                                                               :identity/login (:login %))
                                                                    legacy-format-identites))})
-                          :organization/by-vcs-type-and-name {}})
+                          :organization/by-vcs-type-and-name {}
+                          :workflow/by-org-project-and-name {}})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a
         ;; normal atom but which presents only the legacy state.
@@ -254,7 +250,10 @@
 
                           ;; Workaround for
                           ;; https://github.com/omcljs/om/issues/781
-                          :merge-tree #(utils/deep-merge %1 (nils->maps %2))
+                          :merge-tree #(utils/deep-merge %1 %2)
+
+                          :merge (fn [reconciler state res query]
+                                   (om-next/default-merge reconciler state (move-route-data-idents-to-root res) query))
 
                           :shared {:comms comms
                                    :timer-atom (timer/initialize)

@@ -22,6 +22,7 @@
                  [org.clojure/clojurescript "1.9.227"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [org.clojure/core.match "0.3.0-alpha4"]
+                 [org.clojure/test.check "0.9.0"]
                  [cljs-ajax "0.3.13" :exclusions [com.cognitect/transit-cljs]]
                  ;; Use a slightly later version of transit-cljs than cljs-ajax
                  ;; depends on to avoid a ClojureScript warning.

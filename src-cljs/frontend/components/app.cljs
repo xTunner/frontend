@@ -8,7 +8,9 @@
             [frontend.components.inspector :as inspector]
             [frontend.components.instrumentation :as instrumentation]
             [frontend.components.pages.projects :as projects]
+            [frontend.components.pages.run :as run]
             [frontend.components.pages.user-settings :as user-settings]
+            [frontend.components.pages.workflow :as workflow]
             [frontend.components.pieces.flash-notification :as flash]
             [frontend.components.pieces.topbar :as topbar]
             [frontend.components.statuspage :as statuspage]
@@ -17,8 +19,6 @@
             [frontend.utils :as utils]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.legacy :refer [build-legacy]]
-            [frontend.utils.seq :refer [dissoc-in]]
-            [goog.dom :as gdom]
             [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [frontend.utils :refer [html]]))
@@ -31,7 +31,9 @@
   {:route/loading Loading
    :route/legacy-page legacy/LegacyPage
    :route/projects projects/Page
-   :route/account user-settings/Page})
+   :route/account user-settings/Page
+   :route/workflow workflow/Page
+   :route/run run/Page})
 
 (def index-route :route/loading)
 
