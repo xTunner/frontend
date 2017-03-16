@@ -436,6 +436,7 @@
     }
 
     .metadata-item {
+      .flexy(center);
       .flex(1 0 auto);
       padding-top: 5px;
       padding-bottom: 3px;
@@ -446,8 +447,8 @@
         .flex(0 0 40%);
       }
 
-      span {
-        vertical-align: middle;
+      .ago {
+        margin-left: 3px;
       }
 
       @media (max-width: @screen-md-max) {
@@ -466,13 +467,14 @@
         i, svg {
           font-size: @fontSizeLarge;
           height: 19px; // magic number to make all the things the same height
+          width: 18px;
           margin-right: 8px;
           margin-left: 0;
           padding-top: 1px;
-          vertical-align: bottom;
           color: @grayLighter;
           max-width: @fontSizeLarge;
           display: inline;
+          text-align: center;
         }
       }
 
@@ -480,20 +482,6 @@
       &.revision {
         padding-top: 8px;
         padding-bottom: 8px;
-      }
-
-      &.pull-requests {
-        padding-left: 3px;
-        @media (max-width: @screen-md-max) {
-          padding-left: 11px;
-        }
-      }
-
-      &.revision {
-        padding-left: 1px;
-        @media (max-width: @screen-md-max) {
-          padding-left: 9px;
-        }
       }
     }
   }
