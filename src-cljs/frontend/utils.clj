@@ -64,28 +64,17 @@
        om.core/IRender
        (~'render [~'_] ~@body))))
 
-(defmacro html [body]
-  `(if-not (:render-colors? initial-query-map)
-     (html/html ~body)
-     (let [body# ~body]
-       (try
-         (let [[tag# & rest#] body#
-               attrs# (if (map? (first rest#))
-                        (first rest#)
-                        {})
-               rest# (if (map? (first rest#))
-                       (rest rest#)
-                       rest#)]
-           (html/html (vec (concat [tag# (assoc-in attrs# [:style :border] (str "5px solid rgb("
-                                                                                (rand-int 255)
-                                                                                ","
-                                                                                (rand-int 255)
-                                                                                ","
-                                                                                (rand-int 255)
-                                                                                ")"))]
-                                   rest#))))
-         (catch :default e#
-           (html/html body#))))))
+(defmacro html [hiccup]
+  `(let [hiccup# ~hiccup]
+     (if-not hiccup#
+       (html/html hiccup#)
+       (let [safe-hiccup# (dissoc-nil-react-keys hiccup#)]
+         (if-not (:render-colors? initial-query-map)
+           (html/html safe-hiccup#)
+           (try
+             (html/html (add-white-border safe-hiccup#))
+             (catch :default e#
+               (html/html safe-hiccup#))))))))
 
 (def ^:private component-name-symbol
   "A symbol which will be (lexically) bound to the current component name inside
