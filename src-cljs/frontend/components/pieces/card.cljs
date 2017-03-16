@@ -60,7 +60,8 @@
       (for [card cards]
         ;; Reuse the card's key. Thus, if each card is built with a unique key,
         ;; each .item will be built with a unique key.
-        [:.item {:key (.-key card)}
+        [:.item (when-let [react-key (.-key card)]
+                  {:key react-key})
          card])]))))
 
 (dc/do
