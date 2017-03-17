@@ -329,23 +329,6 @@
     }
   }
 
-  .build-engine {
-    display: flex;
-    align-items: center;
-    padding: 0px 10px;
-    font-size: @fontSizeSmaller;
-
-    .platform {
-      color: @blueDark;
-      letter-spacing: 1px;
-      font-family: @monoFontFamily;
-    }
-
-    @media (min-width: @screen-md-max) {
-      display: none;
-    }
-  }
-
   @media (max-width: @screen-md-max) {
     .flexy(center, space-between);
     width: 100%;
@@ -365,6 +348,7 @@
   align-items: center;
   padding: 0px 10px;
   font-size: @fontSizeSmaller;
+  font-weight: 500;
 
   .platform {
     color: @blueDark;
@@ -372,8 +356,16 @@
     font-family: @monoFontFamily;
   }
 
-  @media (max-width: @screen-md-max) {
-    display: none;
+  &.screen-md-up {
+    @media (max-width: @screen-md-max) {
+      display: none;
+    }
+  }
+
+  &.screen-md-down {
+    @media (min-width: @screen-md-max) {
+      display: none;
+    }
   }
 }
 
