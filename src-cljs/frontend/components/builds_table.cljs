@@ -192,7 +192,7 @@
                 {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
                 [:i.material-icons "today"]
                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                [:span " ago"]]
+                [:span.ago " ago"]]
                [:span.metadata-item.recent-time.duration
                 {:title (str "Duration: " (build-model/duration build))}
                 [:i.material-icons "timer"]
@@ -308,7 +308,7 @@
                   {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
                   [:i.material-icons "today"]
                   (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                  " ago"]
+                  [:span.ago " ago"]]
                  [:div.metadata-item.recent-time.duration
                   {:title (str "Duration: " (build-model/duration build))}
                   [:i.material-icons "timer"]
