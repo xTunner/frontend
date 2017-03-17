@@ -85,6 +85,25 @@
                                                                       :links-to links-to}})}
      "Learn more →"]]])
 
+(defn build-engine-popover
+  [platform owner]
+  (popover/popover {:title nil
+                    :body (if (= "1.0" platform)
+                            (platform-link {:body-text "2.0 is coming soon!\n"
+                                            :link "https://circleci.com/beta-access/"
+                                            :links-to "beta-access"
+                                            :owner owner})
+                            (platform-link {:body-text "This build ran on 2.0.\n"
+                                            :link "https://circleci.com/docs/2.0/"
+                                            :links-to "beta-docs"
+                                            :owner owner}))
+                    :placement :left
+                    :trigger-mode :click
+                    :on-show #((om/get-shared owner :track-event) {:event-type :platform-number-popover-impression
+                                                                   :properties {:component "builds-table"
+                                                                                :platform-number platform}})}
+                   [:span.platform platform]))
+
 (defn build-row [{:keys [build project]} owner {:keys [show-actions? show-branch? show-project?]}]
   (let [url (build-model/path-for (select-keys build [:vcs_url]) build)
         build-args (merge (build-model/build-args build) {:component "build-row" :no-cache? false})
@@ -155,23 +174,7 @@
          [:span.recent-log
           {:title (:body build)}
           (:subject build)]]]
-      [:div.build-engine
-        (popover/popover {:title nil
-                          :body (if (= "1.0" platform)
-                                  (platform-link {:body-text "2.0 is coming soon!\n"
-                                                  :link "https://circleci.com/beta-access/"
-                                                  :links-to "beta-access"
-                                                  :owner owner})
-                                  (platform-link {:body-text "This build ran on 2.0.\n"
-                                                  :link "https://circleci.com/docs/2.0/"
-                                                  :links-to "beta-docs"
-                                                  :owner owner}))
-                          :placement :left
-                          :trigger-mode :click
-                          :on-show #((om/get-shared owner :track-event) {:event-type :platform-number-popover-impression
-                                                                         :properties {:component "builds-table"
-                                                                                      :platform-number platform}})}
-                         [:span.platform platform])]]
+      [:div.build-engine.screen-md-down (build-engine-popover platform owner)]]
 
      [:div.metadata
       [:div.metadata-row.timing
@@ -199,23 +202,7 @@
       [:div.metadata-row.pull-revision
        (om/build pull-requests {:build build})
        (om/build commits {:build build})]]
-     [:div.build-engine
-      (popover/popover {:title nil
-                        :body (if (= "1.0" platform)
-                                (platform-link {:body-text "2.0 is coming soon!\n"
-                                                :link "https://circleci.com/beta-access/"
-                                                :links-to "beta-access"
-                                                :owner owner})
-                                (platform-link {:body-text "This build ran on 2.0.\n"
-                                                :link "https://circleci.com/docs/2.0/"
-                                                :links-to "beta-docs"
-                                                :owner owner}))
-                        :placement :left
-                        :trigger-mode :click
-                        :on-show #((om/get-shared owner :track-event) {:event-type :platform-number-popover-impression
-                                                                       :properties {:component "builds-table"
-                                                                                    :platform-number platform}})}
-        [:span.platform platform])]]))
+     [:div.build-engine.screen-md-up (build-engine-popover platform owner)]]))
 
 (defn job-waiting-badge
   "badge for waiting job."
