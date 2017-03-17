@@ -143,37 +143,36 @@
 
      [:div.build-info
       [:div.build-info-container
-        [:div.build-info-header
-         [:div.contextual-identifier
-          [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
-               :href url
-               :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
-                                                               :properties {:org (vcs-url/org-name (:vcs_url build))
-                                                                            :repo (:reponame build)
-                                                                            :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
+       [:div.build-info-header
+        [:div.contextual-identifier
+         [:a {:title (str (:username build) "/" (:reponame build) " #" (:build_num build))
+              :href url
+              :on-click #((om/get-shared owner :track-event) {:event-type :build-link-clicked
+                                                              :properties {:org (vcs-url/org-name (:vcs_url build))
+                                                                           :repo (:reponame build)
+                                                                           :vcs-type (vcs-url/vcs-type (:vcs_url build))}})}
 
-           (when show-project?
-             (str (:username build) " / " (:reponame build) " "))
+          (when show-project?
+            (str (:username build) " / " (:reponame build) " "))
 
-           (when (and show-project? show-branch?) " / ")
-
-           (when show-branch?
-             (-> build build-model/vcs-ref-name))
-           " #"
-           (:build_num build)]]]
-        [:div.recent-commit-msg
-         (let [pusher-name (build-model/ui-user build)
-               trigger (:why build)]
-           [:div.recent-user
-            {:title (if (= "api" trigger)
-                      "API"
-                      pusher-name)
-             :data-toggle "tooltip"
-             :data-placement "right"}
-            (avatar (:user build) :trigger trigger)])
-         [:span.recent-log
-          {:title (:body build)}
-          (:subject build)]]]
+          (when (and show-project? show-branch?) " / ")
+          (when show-branch?
+            (-> build build-model/vcs-ref-name))
+          " #"
+          (:build_num build)]]]
+       [:div.recent-commit-msg
+        (let [pusher-name (build-model/ui-user build)
+              trigger (:why build)]
+          [:div.recent-user
+           {:title (if (= "api" trigger)
+                     "API"
+                     pusher-name)
+            :data-toggle "tooltip"
+            :data-placement "right"}
+           (avatar (:user build) :trigger trigger)])
+        [:span.recent-log
+         {:title (:body build)}
+         (:subject build)]]]
       [:div.build-engine.screen-md-down (build-engine-popover platform owner)]]
 
      [:div.metadata

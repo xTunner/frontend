@@ -301,31 +301,29 @@
   border-right: @build-item-inner-border;
   line-height: 1.8;
 
-  .build-info-container {
-    .recent-commit-msg {
-      // TODO: Make these fiddly margins unnecessary.
-      margin-top: 6px;
-      margin-bottom: 2px;
+  .recent-commit-msg {
+    // TODO: Make these fiddly margins unnecessary.
+    margin-top: 6px;
+    margin-bottom: 2px;
 
-      color: @gray;
-      font-size: @fontSizeSmaller;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    color: @gray;
+    font-size: @fontSizeSmaller;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 
-      // TODO: Instead of this, use flexboxes to make the .recent-commit-msg
-      // take up the remaining space.
-      @media (max-width: @screen-lg-min) {
-        max-width: 440px;
-      }
+    // TODO: Instead of this, use flexboxes to make the .recent-commit-msg
+    // take up the remaining space.
+    @media (max-width: @screen-lg-min) {
+      max-width: 440px;
+    }
 
-      @media (min-width: 1200px) {
-        max-width: 440px;
-      }
+    @media (min-width: 1200px) {
+      max-width: 440px;
+    }
 
-      @media (min-width: 1400px) {
-        max-width: 640px;
-      }
+    @media (min-width: 1400px) {
+      max-width: 640px;
     }
   }
 
