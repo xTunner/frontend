@@ -5,12 +5,11 @@
             [frontend.state :as state]
             [frontend.stefon :refer [data-uri]]
             [frontend.utils.ajax :as ajax]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
             [goog.style]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
 
 (defn customers-trust [& {:keys [company-size]
                           :or {company-size "big-company"}}]

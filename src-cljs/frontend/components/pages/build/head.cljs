@@ -17,13 +17,12 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [component defrender element html]]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component defrender element html]]))
+            [om.core :as om :include-macros true]))
 
 (defn- summary-item [label value]
   (component

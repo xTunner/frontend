@@ -7,7 +7,7 @@
             [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [defrender]]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.seq :refer [select-in]]
             [goog.events]
@@ -16,8 +16,7 @@
             [om.core :as om :include-macros true]
             [om.dom :as dom :include-macros true]
             [sablono.core :as html :refer-macros [html]])
-  (:require-macros [frontend.utils :refer [defrender]]
-                   [cljs.core.async.macros :as am :refer [go go-loop alt!]])
+  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]])
   (:import [goog.ui IdGenerator]))
 
 (defn maybe-set-state! [owner korks value]

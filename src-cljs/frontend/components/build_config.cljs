@@ -3,12 +3,11 @@
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [clojure.string :as string])
-    (:require-macros [frontend.utils :refer [html]]))
+            [clojure.string :as string]))
 
 (defn config-error-snippet [{:keys [error config-string]} owner]
   (reify

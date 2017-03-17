@@ -49,8 +49,8 @@
   always empty that cache. To see your changes, you may need to open the SVG
   itself in a separate tab and refresh there."
 
-  (:require [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+  (:require [om.core :as om :include-macros true]
+            [frontend.utils :refer-macros [html]]))
 
 (defn- svg-inject! [owner]
   (let [node (om/get-node owner)

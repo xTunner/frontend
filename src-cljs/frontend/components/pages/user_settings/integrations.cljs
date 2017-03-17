@@ -5,11 +5,11 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.models.user :as user]
+            [frontend.utils :refer-macros [component element html]]
             [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.function-query :as fq :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [om.next :as om-next :refer-macros [defui]]))
 
 (defn- card
   {::fq/queries {:identity [:identity/login]}}

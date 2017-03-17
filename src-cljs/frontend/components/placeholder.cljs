@@ -1,9 +1,8 @@
 (ns frontend.components.placeholder
   (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.dom :as dom :include-macros true]))
 
 (defn placeholder [app owner]
   (reify

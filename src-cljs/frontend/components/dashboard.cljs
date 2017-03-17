@@ -8,8 +8,8 @@
             [frontend.models.plan :as plan-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [frontend.utils :refer-macros [html]]
+            [om.core :as om :include-macros true]))
 
 (defn dashboard [data owner]
   (reify

@@ -13,9 +13,8 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component html]]))
+            [frontend.utils :as utils :refer-macros [component html]]
+            [om.core :as om :include-macros true]))
 
 (defn- ssh-available?
   "Show the SSH button unless it's disabled"

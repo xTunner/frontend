@@ -18,12 +18,11 @@
             [frontend.models.project :as project]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]))
 
 (defn switch [app owner]
   (reify

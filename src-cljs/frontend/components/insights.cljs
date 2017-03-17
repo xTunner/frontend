@@ -12,13 +12,12 @@
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :refer [unexterned-prop]]
+            [frontend.utils :as utils :refer [unexterned-prop] :refer-macros [defrender html]]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.events :as gevents]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
-            [schema.core :as s :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+            [schema.core :as s :include-macros true]))
 
 (def BarChartableBuild
   {:build_num s/Int

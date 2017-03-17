@@ -14,11 +14,10 @@
             [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.launchdarkly :as ld]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]))
 
 (defn project-settings-link [{:keys [project]} owner]
   (when (and (project-model/can-write-settings? project))

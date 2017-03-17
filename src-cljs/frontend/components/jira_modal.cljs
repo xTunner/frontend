@@ -10,8 +10,8 @@
             [frontend.state :as state]
             [om.core :as om :include-macros true]
             [frontend.async :refer [navigate! raise!]]
-            [frontend.utils.vcs-url :as vcs-url])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+            [frontend.utils :refer-macros [defrender html]]
+            [frontend.utils.vcs-url :as vcs-url]))
 
 (defn jira-modal [{:keys [project jira-data close-fn]} owner]
   (reify

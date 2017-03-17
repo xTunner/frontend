@@ -1,8 +1,8 @@
 (ns frontend.components.license
   (:require [om.core :as om :include-macros true]
             [cljs-time.coerce :as t-coerce]
-            [cljs-time.core :as t])
-  (:require-macros [frontend.utils :refer [html]]))
+            [cljs-time.core :as t]
+            [frontend.utils :refer-macros [html]]))
 
 (defn- days-until-api-time
   "Takes a string representing a time in the format the API delivers it and

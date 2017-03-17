@@ -2,8 +2,8 @@
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [om.core :as om :include-macros true]
             [frontend.components.pieces.button :as button]
-            [frontend.components.pieces.tabs :as tabs])
-  (:require-macros [frontend.utils :refer [component html]]))
+            [frontend.components.pieces.tabs :as tabs]
+            [frontend.utils :refer-macros [component html]]))
 
 (defn- exterior [content]
   (component

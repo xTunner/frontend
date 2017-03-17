@@ -3,8 +3,8 @@
   `description`."
   (:require [frontend.models.build :as build-model]
             [frontend.routes :as routes]
-            [frontend.utils.vcs-url :as vcs-url])
-  (:require-macros [frontend.utils :refer [html]]))
+            [frontend.utils :refer-macros [html]]
+            [frontend.utils.vcs-url :as vcs-url]))
 
 (defn- link-to-retry-source [build]
   (html

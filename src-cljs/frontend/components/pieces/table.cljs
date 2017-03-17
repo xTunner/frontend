@@ -1,8 +1,8 @@
 (ns frontend.components.pieces.table
   (:require [devcards.core :as dc :refer-macros [defcard-om]]
             [frontend.components.pieces.icon :as icon]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component html]]))
+            [frontend.utils :refer-macros [component html]]
+            [om.core :as om :include-macros true]))
 
 (defn- cell-classes
   "The HTML classes applied to a cell (th or td) in a column of the given type."

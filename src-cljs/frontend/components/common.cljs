@@ -5,7 +5,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.feature :as feature]
             [frontend.models.user :as user]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.github :refer [auth-url]]
             [frontend.timer :as timer]
@@ -13,8 +13,7 @@
             [goog.dom]
             [goog.dom.BrowserFeature]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.dom :as dom :include-macros true]))
 
 (defn icon-path [name]
   (utils/cdn-path (str "/img/inner/icons/" name ".svg")))

@@ -14,15 +14,14 @@
             [frontend.models.user :as user-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :refer-macros [defrender html]]
             [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-next]]
             [frontend.utils.vcs :as vcs-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+            [om.core :as om :include-macros true]))
 
 (def view "add-projects")
 
