@@ -50,16 +50,13 @@
            (html
             [:div
              [:div.status-heading
-               [:div.status-name
-                [:span.job-status (status/icon (status-class status))]
-                [:span.job-name job-name]]
-               [:div.status-actions
-                (button/icon {:label "View job output"
-                              :disabled? true}
-                             [:i.material-icons "format_align_right"])
-                (button/icon {:label "Retry job-name"
-                             :disabled? true}
-                            (icon/rebuild))]]
+              [:div.status-name
+               [:span.job-status (status/icon (status-class status))]
+               [:span.job-name job-name]]
+              [:div.status-actions
+               (button/icon {:label "Retry job-name"
+                            :disabled? true}
+                           (icon/rebuild))]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
@@ -154,7 +151,11 @@
                 [:div.output-header
                   [:.output-title
                    [:span "job-name #1234"]]
-                  (button/button {:kind :primary
+                  (button/icon {:label "Retry job-name"
+                                :disabled? true}
+                               (icon/rebuild))
+
+                  #_(button/button {:kind :primary
                                   :size :medium
                                   :label "Retry job-name"}
                                  [:span.iconed-button (icon/rebuild) "Retry"])]
