@@ -56,7 +56,7 @@
               [:div.status-actions
                (button/icon {:label "Retry job-name"
                             :disabled? true}
-                           (icon/rebuild))]]
+                           [:i.material-icons "more_vert"])]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time
