@@ -233,6 +233,8 @@
 (def dismissed-trial-update-banner (conj browser-settings-path :dismissed-trial-update-banner))
 (def signup-event-sent (conj browser-settings-path :signup-event-sent))
 
+(def show-stripe-error-banner-path [:show-stripe-error-banner])
+
 (def web-notifications-enabled-path (conj browser-settings-path :web-notifications-enabled?))
 (def remove-web-notification-banner-path (conj browser-settings-path :remove-web-notification-banner?))
 (def remove-web-notification-confirmation-banner-path (conj browser-settings-path :remove-web-notification-banner-follow-up?))

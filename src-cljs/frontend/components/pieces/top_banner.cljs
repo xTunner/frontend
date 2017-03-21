@@ -48,21 +48,21 @@
   (defcard banners
     (html
       [:div
-     (om/build banner {:banner-type "success"
-                       :content [:span "A success banner."]
-                       :impression-event-type nil
-                       :dismiss-fn nil
-                       :owner nil})
-     (om/build banner {:banner-type "warning"
-                       :content [:span "A warning banner."]
-                       :impression-event-type nil
-                       :dismiss-fn nil
-                       :owner nil})
-     (om/build banner {:banner-type "danger"
-                       :content [:span "A dangerous banner!"]
-                       :impression-event-type nil
-                       :dismiss-fn nil
-                       :owner nil})]))
+       (om/build banner {:banner-type "success"
+                         :content [:span "A success banner."]
+                         :impression-event-type nil
+                         :dismiss-fn nil
+                         :owner nil})
+       (om/build banner {:banner-type "warning"
+                         :content [:span "A warning banner."]
+                         :impression-event-type nil
+                         :dismiss-fn nil
+                         :owner nil})
+       (om/build banner {:banner-type "danger"
+                         :content [:span "A dangerous banner!"]
+                         :impression-event-type nil
+                         :dismiss-fn nil
+                         :owner nil})]))
   (defcard green-banner-dismissable
     (om/build banner {:banner-type "success"
                       :content [:span "Some inner content for a card!"]

@@ -7,6 +7,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.pieces.top-banner :refer [banner]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.pieces.form :as form]
@@ -586,6 +587,13 @@
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
 
+(defn show-stripe-error-banner
+  [owner]
+  (om/build banner {:banner-type "danger"
+                    :content [:span "Unable to process payment."]
+                    :dismiss-fn #(raise! owner [:toggle-stripe-error-banner false])
+                    :owner owner}))
+
 (defn osx-plans-list [{:keys [plan org-name vcs-type app]} owner]
   (reify
     om/IRender
@@ -598,12 +606,13 @@
            (if (pm/osx? plan)
              [:legend.update-plan "Update OS X Plan"]
              [:legend.update-plan "Choose OS X Plan"])
-             
            [:p [:em "Your selection below only applies to OS X service and will not affect Linux containers."]]
            (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
              [:p "The OS X trial you've selected has expired, please choose a plan below."])
            (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
              [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])
+           (when (get-in app state/show-stripe-error-banner-path)
+             (show-stripe-error-banner owner))
            [:div.plan-selection
             (om/build-all osx-plan (->> osx-plans
                                         (map #(assoc % :org-name org-name :vcs-type vcs-type :app app))))]])))))
@@ -628,8 +637,6 @@
                                     (if (config/enterprise?)
                                       (pm/enterprise-containers plan)
                                       (pm/paid-linux-containers plan)))
-            login (get-in app state/user-login-path)
-            view (get-in app state/current-view-path)
             selected-paid-containers (max 0 selected-containers)
             osx-total (or (some-> plan :osx :template :price) 0)
             old-total (- (pm/stripe-cost plan) osx-total)
@@ -639,8 +646,7 @@
             button-clickable? (not= (if piggiebacked? 0 (pm/paid-linux-containers plan))
                                     selected-paid-containers)
             containers-str (pluralize-no-val selected-containers "container")
-            close-fn #(om/set-state! owner :show-modal? false)
-            plan-template (pm/linux-template plan)]
+            close-fn #(om/set-state! owner :show-modal? false)]
         (html
          [:div.edit-plan {:class "pricing.page" :data-component `linux-plan}
           [:div.main-content
@@ -663,6 +669,8 @@
                 (if (pm/linux? plan)
                   [:legend.update-plan "Update Linux Plan"]
                   [:legend.update-plan "Choose Linux Plan"])
+                (when (get-in app state/show-stripe-error-banner-path)
+                  (show-stripe-error-banner owner))
                 [:h1.container-input
                  [:span "Use "]
                  [:input.form-control
@@ -1198,6 +1206,8 @@
       (html
         [:div
          [:legend "Billing & Statements"]
+         (when (get-in app state/show-stripe-error-banner-path)
+           (show-stripe-error-banner owner))
          (card/collection
            [(om/build billing-card app)
             (om/build billing-invoice-data app)
