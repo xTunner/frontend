@@ -179,7 +179,7 @@
        {:type :subpage :href "#aws" :title "AWS Permissions" :subpage :aws}
        {:type :subpage :href "#jira-integration" :title "JIRA Integration" :subpage :jira-integration}
        (when (project-model/osx? project)
-         {:type :subpage :href "#code-signing" :title "OS X Code Signing" :subpage :code-signing})
+         {:type :subpage :href "#code-signing" :title "Code Signing" :subpage :code-signing})
        {:type :heading :title "Continuous Deployment"}
        {:type :subpage :href "#heroku" :title "Heroku Deployment" :subpage :heroku}
        {:type :subpage :href "#aws-codedeploy" :title "AWS CodeDeploy" :subpage :aws-codedeploy}
