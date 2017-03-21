@@ -1439,12 +1439,14 @@
                                                                 :vcs_type plan-vcs-type
                                                                 :_fragment "osx-pricing"})} "Choose an OS X plan"]] "."]])])))))
 
-(defn displayed-linux-plan-info [current-linux-cost containers in-student-trial?]
-  (gstring/format "Current Linux plan: %s - $%s/month"
-                  (cond
-                    in-student-trial? (gstring/format "Student (%s)" (plural-multiples containers "container"))
-                    (= current-linux-cost 0) "Hobbyist (1 container)"
-                    :else (plural-multiples containers " container"))
+(defn displayed-linux-plan-info [current-linux-cost containers trial-containers in-student-trial?]
+  (gstring/format "Current Linux plan: %s (%s) - $%s/month"
+                  (if in-student-trial?
+                    "Student"
+                    (gstring/format "%s%s"
+                      (if (= current-linux-cost 0) "Hobbyist" "Paid")
+                      (if (> trial-containers 0) " + Trial " " ")))
+                  (plural-multiples containers "container")
                   current-linux-cost))
 
 (defn displayed-linux-paid-info [paid-linux-containers]
@@ -1469,7 +1471,8 @@
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name vcs_type)
           current-linux-cost (pm/current-linux-cost plan)
-          in-student-trial? (pm/in-student-trial? plan)]
+          in-student-trial? (pm/in-student-trial? plan)
+          trial-containers (pm/trial-containers plan)]
       [:div.split-plan-block
        [:div.explanation
         (when piggiebacked?
@@ -1483,7 +1486,7 @@
         (if (config/enterprise?)
           [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
           [:p
-           [:h1 (displayed-linux-plan-info current-linux-cost containers in-student-trial?)]
+           [:h1 (displayed-linux-plan-info current-linux-cost containers trial-containers in-student-trial?)]
            (if (> current-linux-cost 0)
              [:div
               (displayed-linux-paid-info paid-linux-containers)
@@ -1511,7 +1514,7 @@
         (when (and (> (pm/trial-containers plan) 0)
                    (not in-student-trial?))
           [:p
-           (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
+           (str trial-containers " of these are provided by a trial. They'll be around for "
                 (pluralize (pm/days-left-in-trial plan) "more day")
                 ".")])
 
@@ -1531,7 +1534,8 @@
           containers (pm/linux-containers plan)
           piggiebacked? (pm/piggieback? plan org-name vcs_type)
           current-linux-cost (pm/current-linux-cost plan)   ; why linux-container-cost then current-linux-cost?
-          in-student-trial? (pm/in-student-trial? plan)]
+          in-student-trial? (pm/in-student-trial? plan)
+          trial-containers (pm/trial-containers plan)]
       [:div.overview-cards-container
        [:legend "Plan Overview"]
        (when piggiebacked?
@@ -1551,7 +1555,7 @@
                   [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
 
                   [:div
-                   [:h1 (displayed-linux-plan-info current-linux-cost containers in-student-trial?)]
+                   [:h1 (displayed-linux-plan-info current-linux-cost containers trial-containers in-student-trial?)]
                    (when (and (= current-linux-cost 0) (not piggiebacked?))
                      [:div
                       [:p (gstring/format "%s. %s." (displayed-linux-paid-info paid-linux-containers) (displayed-linux-free-info in-student-trial?))]
@@ -1562,10 +1566,10 @@
                                                                  :_fragment "linux-pricing"})}
                          "Add more containers to update your plan"]]
                        " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]])])
-                (when (and (> (pm/trial-containers plan) 0)
+                (when (and (> trial-containers 0)
                            (not in-student-trial?))
                   [:p
-                   (str (pm/trial-containers plan) " of these are provided by a trial. They'll be around for "
+                   (str trial-containers " of these are provided by a trial. They'll be around for "
                         (pluralize (pm/days-left-in-trial plan) "more day")
                         ".")])
                 (when (and (not (config/enterprise?))

@@ -1,9 +1,8 @@
 (ns frontend.components.pieces.modal
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.button :as button]
-            [frontend.utils :as utils]
-            [om.next :as om :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [frontend.utils :as utils :refer-macros [component element html]]
+            [om.next :as om :refer-macros [defui]]))
 
 (defn dialog
   "A dialog box suitable for presenting in a modal.

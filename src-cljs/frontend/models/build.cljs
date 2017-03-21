@@ -3,13 +3,11 @@
             [frontend.models.project :as proj]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.github :as github]
             [goog.string :as gstring]
-            goog.string.format)
-  (:require-macros [frontend.utils :refer [inspect]]))
+            goog.string.format))
 
 (defn id [build]
   (:build_url build))

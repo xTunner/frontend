@@ -5,9 +5,8 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.form :as form]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [frontend.utils :as utils :refer-macros [html]]
+            [om.core :as om :include-macros true]))
 
 (defn- api-key-card
   [{:keys [heroku-api-key heroku-api-key-input on-change-key-input submit-form!]}]

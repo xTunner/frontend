@@ -2,8 +2,8 @@
   (:require [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [frontend.models.build :as build-model]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [frontend.utils :refer-macros [html]]
+            [om.core :as om :include-macros true]))
 
 (defn- open-pull-request-action [{:keys [build]} owner]
   (reify

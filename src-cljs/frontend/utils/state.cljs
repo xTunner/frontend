@@ -3,8 +3,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.seq :refer [find-index]]
             [frontend.models.plan :as plan]
-            [clojure.string :as string])
-  (:require-macros [frontend.utils :refer [inspect]]))
+            [clojure.string :as string]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch vcs_type]}]
   (assoc-in state state/crumbs-path

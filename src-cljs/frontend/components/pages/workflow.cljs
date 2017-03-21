@@ -6,9 +6,9 @@
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
             [frontend.routes :as routes]
+            [frontend.utils :refer-macros [component element html]]
             [frontend.utils.legacy :refer [build-legacy]]
-            [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [om.next :as om-next :refer-macros [defui]]))
 
 (defn- status-class [run-status]
   (case run-status

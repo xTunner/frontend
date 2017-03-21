@@ -3,8 +3,8 @@
             [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]
             [frontend.components.pieces.button :as button]
-            [goog.events :as gevents])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [frontend.utils :refer-macros [component element html]]
+            [goog.events :as gevents]))
 
 (defn- field-wrapper [{:keys [label id validation-error field]} owner]
   (reify

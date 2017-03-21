@@ -18,14 +18,13 @@
             [frontend.scroll :as scroll]
             [frontend.state :as state]
             [frontend.timer :as timer]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [defrender html]]
             [frontend.utils.build :as build-utils]
             [frontend.utils.seq :refer [find-index]]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.dom :as dom]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+            [om.core :as om :include-macros true]))
 
 (defn report-infrastructure-error [{:keys [messages failed infrastructure_fail fail_reason]} owner]
   (when (and (empty? messages)

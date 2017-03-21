@@ -1,10 +1,10 @@
 (ns frontend.utils.devcards
   (:require [devcards.core :as dc]
             [devcards.util.utils :as dc-utils]
+            [frontend.utils :refer-macros [html]]
             [goog.events :as gevents]
             [om.dom :as dom]
-            [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.next :as om-next :refer-macros [defui]]))
 
 (defui IFrame
   "Renders its children in an iframe. Perfect for demonstrating a component on a

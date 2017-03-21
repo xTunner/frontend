@@ -3,9 +3,9 @@
   (:require [frontend.components.aside :as aside]
             [frontend.components.header :as header]
             [frontend.state :as state]
+            [frontend.utils :refer-macros [html]]
             [frontend.utils.seq :refer [dissoc-in]]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]))
 
 (defn template
   "The template for building a page in the app.

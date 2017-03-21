@@ -1,10 +1,10 @@
 (ns frontend.components.pieces.top-banner
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.notifications :as n]
+            [frontend.utils :refer-macros [component html]]
             [frontend.utils.launchdarkly :as ld]
             [frontend.components.pieces.button :as button]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component html]]))
+            [om.core :as om :include-macros true]))
 
 (defn banner
   "Banners create a colored section on the screen with content informing the

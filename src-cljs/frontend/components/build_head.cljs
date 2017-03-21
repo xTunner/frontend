@@ -19,13 +19,12 @@
             [frontend.models.test :as test-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [defrender html]]
             [frontend.utils.build :as build-util]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [inflections.core :refer [pluralize]]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+            [om.core :as om :include-macros true]))
 
 ;; This is awful, can't we just pass build-head the whole app state?
 ;; splitting it up this way means special purpose paths to find stuff

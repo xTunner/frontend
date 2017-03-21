@@ -260,7 +260,7 @@
 (defn maybe-set-containers-filter!
   "Depending on the status and outcome of the build, set active
   container filter to failed."
-  [state comms]
+  [state comms build-changed?]
   (let [build (get-in state state/build-path)
         containers (get-in state state/containers-path)
         build-running? (not (build-model/finished? build))
@@ -273,7 +273,8 @@
     ;; set filter
     (when (and (not build-running?)
                (seq failed-containers)
-               failed-filter-valid?)
+               failed-filter-valid?
+               build-changed?)
       (put! controls-ch [:container-filter-changed {:new-filter :failed
                                                     :containers failed-containers}]))))
 
@@ -300,7 +301,8 @@
         {:keys [build-num project-name]} context
         {:keys [org repo vcs_type]} (state/navigation-data current-state)
         {:keys [read-settings]} scopes
-        plan-url (gstring/format "/api/v1.1/project/%s/%s/plan" vcs_type project-name)]
+        plan-url (gstring/format "/api/v1.1/project/%s/%s/plan" vcs_type project-name)
+        build-changed? (not (= (-> previous-state :current-build-data) (-> current-state :current-build-data)))]
     ;; This is slightly different than the api-event because we don't want to have to
     ;; convert the build from steps to containers again.
     (analytics/track {:event-type :view-build
@@ -341,7 +343,7 @@
                (= project-name (vcs-url/project-name (get-in args [:resp :vcs_url]))))
       (fetch-visible-output current-state comms build-num (get-in args [:resp :vcs_url]))
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
-      (maybe-set-containers-filter! current-state comms))))
+      (maybe-set-containers-filter! current-state comms build-changed?))))
 
 (defmethod api-event [:cancel-build :success]
   [target message status {:keys [context resp]} state]

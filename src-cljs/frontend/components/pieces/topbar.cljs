@@ -4,9 +4,8 @@
             [frontend.config :as config]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.html :as html]
-            [frontend.utils :as utils :include-macros true]
-            [om.core :as om])
-  (:require-macros [frontend.utils :refer [component html]]))
+            [frontend.utils :as utils :refer-macros [component html]]
+            [om.core :as om]))
 
 (defn topbar
   "A bar which sits at the top of the screen and provides navigation and context.

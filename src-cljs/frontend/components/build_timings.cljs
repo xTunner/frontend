@@ -5,11 +5,11 @@
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
+            [frontend.utils :refer-macros [html]]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.events :as gevents]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]))
 
 (def required-build-keys
   "Keys which are required from the build model to appropriately render a

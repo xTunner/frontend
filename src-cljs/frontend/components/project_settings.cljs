@@ -25,7 +25,7 @@
             [frontend.models.user :as user-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [component element html]]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.html :refer [hiccup->html-str]]
@@ -34,8 +34,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [om.core :as om :include-macros true]))
 
 (defn- remove-action-button
   "Renders a \"Remove\" action button suitable for a settings table row which

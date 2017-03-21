@@ -11,11 +11,10 @@
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [defrender html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [defrender html]]))
+            [om.core :as om :include-macros true]))
 
 (defn dashboard-icon [name]
   [:img.dashboard-icon {:src (utils/cdn-path (str "/img/inner/icons/" name ".svg"))}])

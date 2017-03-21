@@ -16,12 +16,11 @@
             [frontend.components.statuspage :as statuspage]
             [frontend.config :as config]
             [frontend.state :as state]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.legacy :refer [build-legacy]]
             [om.core :as om :include-macros true]
-            [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.next :as om-next :refer-macros [defui]]))
 
 (defui ^:once Loading
   Object
