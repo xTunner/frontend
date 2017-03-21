@@ -5,10 +5,9 @@
             [frontend.config :as config]
             [frontend.models.feature :as feature]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils :refer [auth-url]]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]))
 
 (defn error-page-with-cta [{:keys [status logged-in?]} owner]
   (reify

@@ -13,15 +13,14 @@
             [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :refer [set-page-title!]]
+            [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
             [frontend.utils.function-query :as fq :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]
-            [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [om.next :as om-next :refer-macros [defui]]))
 
 (defn- table
   {::fq/queries {:projects (fq/merge [:project/vcs-url

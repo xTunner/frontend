@@ -13,13 +13,12 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.user :as user]
-            [frontend.utils :as utils :refer [valid-email?] :include-macros true]
+            [frontend.utils :as utils :refer [valid-email?] :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-next]]
             [goog.string :as gstr]
             [inflections.core :as inflections]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [om.core :as om :include-macros true]))
 
 ;; This is only the keys that we're interested in in this namespace. We'd give
 ;; this a broader scope if we could, but that's the trouble with legacy keys:

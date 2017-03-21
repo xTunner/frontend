@@ -4,13 +4,12 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
             [frontend.routes :as routes]
             [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]])
   (:import [goog Uri]))
 
 (defn invitees

@@ -14,12 +14,11 @@
             [frontend.notifications :as n]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :refer [auth-url]]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :refer [format]]
-            [om.core :as om :include-macros true]) 
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]))
 
 (defn show-follow-project-button? [app]
   (when-let [project (get-in app state/project-path)]

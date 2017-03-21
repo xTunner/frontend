@@ -2,8 +2,8 @@
   (:require [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.icon :as icon]
             [frontend.models.build :as build-model]
-            [frontend.utils.devcards :as devcard-utils])
-  (:require-macros [frontend.utils :refer [component html]]))
+            [frontend.utils :refer-macros [component html]]
+            [frontend.utils.devcards :as devcard-utils]))
 
 (defn- status-icon [status-class]
   (case status-class

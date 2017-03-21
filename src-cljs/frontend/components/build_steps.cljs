@@ -9,7 +9,7 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.state :as state]
             [frontend.disposable :as disposable :refer [dispose]]
-            [frontend.utils :as utils :include-macros true]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.html :as html-utils]
             [om.core :as om :include-macros true]
             [goog.events]
@@ -18,8 +18,7 @@
             goog.style
             goog.string.format
             goog.fx.dom.Scroll
-            goog.fx.easing)
-  (:require-macros [frontend.utils :refer [html]]))
+            goog.fx.easing))
 
 (defn source-type [source]
   (condp = source

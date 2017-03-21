@@ -9,11 +9,10 @@
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.state :as state]
-            [frontend.utils :as utils]
+            [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [om.core :as om :include-macros true]))
 
 (defn count-projects [{:keys [building? projects]}]
   (let [action (if building? filter remove)]

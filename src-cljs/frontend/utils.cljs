@@ -487,3 +487,74 @@ top.  The remaining keys/values goes into the bottom."
     ;; prevent that submission.
     (when (and button (.-form button))
       (.preventDefault element))))
+
+(defn- hiccup-element? [x]
+  (and (vector? x)
+       (keyword? (first x))))
+
+(defn hiccup?
+  "Returns true if the given data structure is valid hiccup."
+  [x]
+  (or (hiccup-element? x)
+      (and (sequential? x)
+           (every? hiccup? x))))
+
+(defn add-white-border
+  "Takes a hiccup structure that has a tag, attribute map, and
+  children. Returns the same hiccup structure with a white border
+  style."
+  [[tag attrs & children :as hiccup]]
+  (if-not (and (hiccup? hiccup)
+               (map? attrs))
+    hiccup
+    (into [tag
+           (assoc-in attrs
+                     [:style :border]
+                     (str "5px solid rgb("
+                          (rand-int 255)
+                          ","
+                          (rand-int 255)
+                          ","
+                          (rand-int 255)
+                          ")"))]
+          children)))
+
+(defn flatten-hiccup-children
+  "Takes a sequential collection of either hiccup elements or
+  sequential collections of hiccup elements. Returns a flattened
+  sequential collection of hiccup elements."
+  [children]
+  (reduce (fn [acc child]
+            ;; if the child is a collection but is
+            ;; not a hiccup element, conj its
+            ;; contents into the children
+            (if (and (sequential? child)
+                     (not (hiccup-element? child)))
+              (into acc (flatten-hiccup-children child))
+              ;; otherwise, conj the child itself
+              ;; into the children
+              (conj acc child)))
+          []
+          children))
+
+(defn dissoc-nil-react-keys
+  "Takes a hiccup element and returns an updated version where its
+  and all of its children's attribute maps don't have `nil` `:key`
+  values."
+  [hiccup]
+  (if-not (hiccup-element? hiccup)
+    hiccup
+    (let [[tag & remainder] hiccup
+          has-attr-map? (map? (first remainder))
+          attrs (if has-attr-map?
+                  (first remainder)
+                  {})
+          safe-attrs (cond-> attrs
+                       (and (contains? attrs :key)
+                            (nil? (:key attrs)))
+                       (dissoc :key))
+          children (flatten-hiccup-children (if has-attr-map?
+                                              (rest remainder)
+                                              remainder))
+          processed-children (map dissoc-nil-react-keys children)]
+      (into [tag safe-attrs] processed-children))))

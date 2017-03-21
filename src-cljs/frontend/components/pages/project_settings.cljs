@@ -4,8 +4,8 @@
             [frontend.components.templates.main :as main-template]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [frontend.utils :refer-macros [html]]
+            [om.core :as om :include-macros true]))
 
 (defn page [app owner]
   (reify

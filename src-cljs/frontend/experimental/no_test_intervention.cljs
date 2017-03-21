@@ -3,8 +3,8 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.modal :as modal]
             [frontend.models.feature :as feature]
-            [om.core :as om :include-macros true])
-  (:require-macros [frontend.utils :refer [html]]))
+            [frontend.utils :refer-macros [html]]
+            [om.core :as om :include-macros true]))
 
 (defn ab-test-treatment []
   (feature/ab-test-treatment :setup-docs-ab-test))

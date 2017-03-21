@@ -11,12 +11,11 @@
             [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :refer [set-page-title!]]
+            [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.seq :refer [select-in]]
-            [om.next :as om-next :refer-macros [defui ui]])
-  (:require-macros [frontend.utils :refer [component element html]]))
+            [om.next :as om-next :refer-macros [defui ui]]))
 
 (defn nav-items []
   (remove

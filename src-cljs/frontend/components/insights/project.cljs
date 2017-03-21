@@ -9,13 +9,13 @@
             [frontend.state :as state]
             [frontend.async :refer [raise!]]
             [frontend.api :as api]
+            [frontend.utils :refer-macros [html defrender]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [devcards.core :as dc :refer-macros [defcard]]
-            cljsjs.c3)
-  (:require-macros [frontend.utils :refer [html defrender]]))
+            cljsjs.c3))
 
 (def build-time-bar-chart-plot-info
   {:top 30
