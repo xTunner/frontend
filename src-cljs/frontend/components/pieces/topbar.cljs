@@ -22,23 +22,6 @@
             [:a.logomark {:href "/dashboard"
                           :aria-label "Dashboard"}
              (common/ico :logo)]
-            [:ul.nav-items.collapsing-nav
-              [:li
-                [:a.has-icon {:href "/dashboard"
-                              :aria-label "Builds"}
-                  [:i.material-icons "storage"] [:span.nav-label "Builds"]]]
-              [:li
-                [:a.has-icon {:href "/build-insights"
-                              :aria-label "Insights"}
-                  [:i.material-icons "assessment"] [:span.nav-label "Insights"]]]
-              [:li
-                [:a.has-icon {:href "/projects"
-                              :aria-label "Projects"}
-                  [:i.material-icons "book"] [:span.nav-label "Projects"]]]
-              [:li
-                [:a.has-icon {:href "/team"
-                              :aria-label "Teams"}
-                  [:i.material-icons "group"] [:span.nav-label "Teams"]]]]
             [:ul.nav-items.nav-items-left.collapsing-nav
              [:li.dropdown
               [:button.dropdown-toggle
