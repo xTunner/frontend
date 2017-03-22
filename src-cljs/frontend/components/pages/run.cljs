@@ -49,30 +49,31 @@
          (element :content
            (html
             [:div
-             [:div.status-heading
-              [:div.status-name
-               [:span.job-status (status/icon (status-class status))]
-               [:span.job-name job-name]]
-              [:div.status-actions
-               (button/icon {:label "Retry job-name"
-                            :disabled? true}
-                           [:i.material-icons "more_vert"])]]
-             [:div.metadata
-              [:div.metadata-row.timing
-               [:span.metadata-item.recent-time.start-time
-                [:i.material-icons "today"]
-                (if started-at
-                  [:span {:title (str "Started: " (datetime/full-datetime started-at))}
-                   (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
-                   [:span " ago"]]
-                  "-")]
-               [:span.metadata-item.recent-time.duration
-                [:i.material-icons "timer"]
-                (if stopped-at
-                  [:span {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
-                   (build-legacy common/updating-duration {:start started-at
-                                                           :stop stopped-at})]
-                  "-")]]]])))))))
+             [:div.job-card-inner
+              [:div.status-heading
+               [:div.status-name
+                [:span.job-status (status/icon (status-class status))]
+                [:span.job-name job-name]]
+               [:div.status-actions
+                (button/icon {:label "Retry job-name"
+                             :disabled? true}
+                            [:i.material-icons "more_vert"])]]
+              [:div.metadata
+               [:div.metadata-row.timing
+                [:span.metadata-item.recent-time.start-time
+                 [:i.material-icons "today"]
+                 (if started-at
+                   [:span {:title (str "Started: " (datetime/full-datetime started-at))}
+                    (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
+                    [:span " ago"]]
+                   "-")]
+                [:span.metadata-item.recent-time.duration
+                 [:i.material-icons "timer"]
+                 (if stopped-at
+                   [:span {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
+                    (build-legacy common/updating-duration {:start started-at
+                                                            :stop stopped-at})]
+                   "-")]]]]])))))))
 
 (def job-run (om-next/factory JobRun {:keyfn :job-run/id}))
 

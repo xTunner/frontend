@@ -2,63 +2,74 @@
   .ui("JobRun", {}, {
     .el("content", {
       margin: -15px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-      > .metadata {
+      &.selected {
+        box-shadow: 0 3px 6px 0 rgba(0,0,0,0.23), 0 3px 6px 0 rgba(0,0,0,0.16);
 
-        @build-padding: 12px;
-        @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
+        &:hover {
+          box-shadow: 0 3px 6px 0 rgba(0,0,0,0.23), 0 3px 6px 0 rgba(0,0,0,0.16);
+        }
+      }
 
-        .metadata-row {
-          .flexy(row, flex-end);
-          padding-left: 0;
-          padding-right: 0;
+      &:hover {
+        box-shadow: 0 6px 6px 0 rgba(0,0,0,0.26), 0 10px 20px 0 rgba(0,0,0,0.19);
+      }
 
-          border-top: @build-item-inner-border;
-          padding: 0;
+      > .job-card-inner {
+        .metadata {
 
-          &:first-of-type {
-            margin-bottom: 0;
-          }
+          @build-padding: 12px;
+          @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
 
-          .metadata-item {
-            .flexy(center);
-            .flex(1 0 auto);
+          .metadata-row {
+            .flexy(row, flex-end);
+            padding-left: 0;
+            padding-right: 0;
 
-            font-size: @fontSizeSmaller;
+            border-top: @build-item-inner-border;
+            padding: 0;
 
-            padding: 8px;
-
-            &:last-child {
-              .flex(0 0 50%);
-              border-left: @build-item-inner-border;
+            &:first-of-type {
+              margin-bottom: 0;
             }
 
-            // &:last-child {
-            //   .flex(0 0 40%);
-            // }
+            .metadata-item {
+              .flexy(center);
+              .flex(1 0 auto);
 
-            &.start-time,
-            &.duration,
-            &.pull-requests,
-            &.revision {
-              i, svg {
-                font-size: @fontSizeLarge;
-                height: 19px; // magic number to make all the things the same height
-                width: 18px;
-                margin-right: 8px;
-                margin-left: 0;
-                padding-top: 1px;
-                color: @grayLighter;
-                max-width: @fontSizeLarge;
-                display: inline;
-                text-align: center;
+              font-size: @fontSizeSmaller;
+
+              padding: 8px;
+
+              &:last-child {
+                .flex(0 0 50%);
+                border-left: @build-item-inner-border;
               }
-            }
 
-            &.pull-requests,
-            &.revision {
-              padding-top: 8px;
-              padding-bottom: 8px;
+              &.start-time,
+              &.duration,
+              &.pull-requests,
+              &.revision {
+                i, svg {
+                  font-size: @fontSizeLarge;
+                  height: 19px; // magic number to make all the things the same height
+                  width: 18px;
+                  margin-right: 8px;
+                  margin-left: 0;
+                  padding-top: 1px;
+                  color: @grayLighter;
+                  max-width: @fontSizeLarge;
+                  display: inline;
+                  text-align: center;
+                }
+              }
+
+              &.pull-requests,
+              &.revision {
+                padding-top: 8px;
+                padding-bottom: 8px;
+              }
             }
           }
         }
