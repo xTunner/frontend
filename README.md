@@ -61,9 +61,10 @@ sudo openssl req -batch -new \
 
 ### Hosts
 
-In your `/etc/hosts`, add the following line:
+In your `/etc/hosts`, add the following lines:
 
 ```
+127.0.0.1 dex
 127.0.0.1 prod.circlehost
 ```
 
