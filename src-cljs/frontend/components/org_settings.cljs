@@ -587,12 +587,19 @@
               currently-selected?
               [:div.bottom "Your Current Plan"])]])))))
 
-(defn show-stripe-error-banner
-  [owner]
+(defn show-org-settings-error-banner
+  [owner message banner-key]
   (om/build banner {:banner-type "danger"
-                    :content [:span "Unable to process payment."]
-                    :dismiss-fn #(raise! owner [:toggle-stripe-error-banner false])
+                    :content [:span message]
+                    :dismiss-fn #(raise! owner [banner-key false])
                     :owner owner}))
+
+(defn maybe-show-error-banner!
+  [app owner]
+  (when (get-in app state/show-stripe-error-banner-path)
+    (show-org-settings-error-banner owner "Unable to process payment." :toggle-stripe-error-banner))
+  (when (get-in app state/show-admin-error-banner-path)
+    (show-org-settings-error-banner owner "We're sorry, but there appears to be an error! This usually happens when a non-admin attempts to access or update this page." :toggle-admin-error-banner)))
 
 (defn osx-plans-list [{:keys [plan org-name vcs-type app]} owner]
   (reify
@@ -611,8 +618,7 @@
              [:p "The OS X trial you've selected has expired, please choose a plan below."])
            (when (and (pm/osx-trial-plan? plan) (pm/osx-trial-active? plan))
              [:p (gstring/format "You have %s left on the OS X trial." (pm/osx-trial-days-left plan))])
-           (when (get-in app state/show-stripe-error-banner-path)
-             (show-stripe-error-banner owner))
+           (maybe-show-error-banner! app owner)
            [:div.plan-selection
             (om/build-all osx-plan (->> osx-plans
                                         (map #(assoc % :org-name org-name :vcs-type vcs-type :app app))))]])))))
@@ -669,8 +675,7 @@
                 (if (pm/linux? plan)
                   [:legend.update-plan "Update Linux Plan"]
                   [:legend.update-plan "Choose Linux Plan"])
-                (when (get-in app state/show-stripe-error-banner-path)
-                  (show-stripe-error-banner owner))
+                (maybe-show-error-banner! app owner)
                 [:h1.container-input
                  [:span "Use "]
                  [:input.form-control
@@ -1206,8 +1211,7 @@
       (html
         [:div
          [:legend "Billing & Statements"]
-         (when (get-in app state/show-stripe-error-banner-path)
-           (show-stripe-error-banner owner))
+         (maybe-show-error-banner! app owner)
          (card/collection
            [(om/build billing-card app)
             (om/build billing-invoice-data app)

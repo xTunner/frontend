@@ -234,6 +234,7 @@
 (def signup-event-sent (conj browser-settings-path :signup-event-sent))
 
 (def show-stripe-error-banner-path [:show-stripe-error-banner])
+(def show-admin-error-banner-path [:show-admin-error-banner])
 
 (def web-notifications-enabled-path (conj browser-settings-path :web-notifications-enabled?))
 (def remove-web-notification-banner-path (conj browser-settings-path :remove-web-notification-banner?))
