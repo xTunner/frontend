@@ -158,15 +158,19 @@
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args}
    state]
   (mlog "navigated-to :build with args " args)
-  (if (and (= :build (state/current-view state))
-           (not (state-utils/stale-current-build? state project-name build-num)))
-    ;; page didn't change, just switched tabs
-    (-> state
+  (let [maybe-set-container-id (fn [state]
+                                 (if (not (nil? container-id))
+                                   (assoc-in state state/current-container-path container-id)
+                                   state))]
+    (if (and (= :build (state/current-view state))
+             (not (state-utils/stale-current-build? state project-name build-num)))
+      ;; page didn't change, just switched tabs
+      (-> state
         (assoc-in state/navigation-tab-path tab)
-        (assoc-in state/current-container-path container-id)
+        (maybe-set-container-id)
         (assoc-in state/current-action-id-path action-id))
-    ;; navigated to page, load everything
-    (-> state
+      ;; navigated to page, load everything
+      (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
                state/navigation-data (assoc args :show-settings-link? false)
@@ -177,7 +181,7 @@
             (state-utils/reset-current-project %)
             %))
         state-utils/reset-dismissed-osx-usage-level
-        maybe-add-workflow-response-data)))
+        maybe-add-workflow-response-data))))
 
 (defn initialize-pusher-subscriptions
   "Subscribe to pusher channels for initial messaging. This subscribes
