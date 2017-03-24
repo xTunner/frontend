@@ -333,7 +333,7 @@
                            :vcs-type vcs_type}))
     ;; Attach information about this build so support knows the last build a user
     ;; was viewing before the sent in a support ticket.
-    (elevio/add-user-traits! {:last-build-viewed (merge (select-keys build [:vcs_url :build_url :build_num :branch])
+    (elevio/add-user-traits! {:last-build-viewed (merge (select-keys build [:vcs_url :build_url :build_num :branch :platform])
                                                         {:repo-name (:reponame build)
                                                          :org-name (-> build :vcs_url vcs-url/org-name)
                                                          :scopes scopes})})
