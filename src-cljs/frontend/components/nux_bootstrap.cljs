@@ -157,7 +157,7 @@
              (when (not-empty organizations)
                [:div.getting-started
                 [:div
-                 "Choose projects to follow and populate your dashboard to see what builds pass/fail and show fast they run."]
+                 "Choose projects to follow and populate your dashboard to see what builds pass/fail and show how fast they run."]
                 [:div
                  "Projects that have never been built on CircleCI before have a "
                  [:span.new-badge]
