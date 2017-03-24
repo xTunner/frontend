@@ -6,7 +6,8 @@
   (:index container))
 
 (defn status [container build-running?]
-  (let [action-statuses (->> container :actions (remove :filler-action) (map :status) (remove nil?) set)]
+  ; `insignificant` is the step which failure can be ignored because it doesn't affect build itlself
+  (let [action-statuses (->> container :actions (remove :filler-action) (remove :insignificant) (map :status) (remove nil?) set)]
     (cond
      ;; If there are no action statuses, or the last one is running, it's 'running'.
      (or (empty? action-statuses)

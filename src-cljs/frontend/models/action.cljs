@@ -27,10 +27,13 @@
 (defn show-by-default?
   "Should this action be shown if the user has not explicitly opened or closed it."
   [action]
-  (or (not= "success" (:status action))
-      ;; We're not entirely sure what this case signifies, if you know, please leave a
-      ;; comment or make it more obvious.
-      (seq (:messages action))))
+  ; In 2.0 background steps show their ouput in action log, however we don't want
+  ; them to be expanded by default
+  (when (not (:background action))
+   (or (not= "success" (:status action))
+           ;; We're not entirely sure what this case signifies, if you know, please leave a
+           ;; comment or make it more obvious.
+           (seq (:messages action)))))
 
 (defn show-output?
   "Should we show the output for this action."
