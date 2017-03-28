@@ -803,6 +803,10 @@
             (assoc-in state/org-plan-path plan)
             (assoc-in state/selected-piggieback-orgs-path (set piggieback-orgs)))))))
 
+(defmethod api-event [:org-plan :failed]
+  [target message status {:keys [resp context]} state]
+  (assoc-in state state/org-authorized?-path false))
+
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
   (let [{:keys [org-name vcs-type]} context]
@@ -810,8 +814,7 @@
       state
       (-> state
           (update-in state/org-data-path merge resp)
-          (assoc-in state/org-loaded-path true)
-          (assoc-in state/org-authorized?-path true)))))
+          (assoc-in state/org-loaded-path true)))))
 
 (defmethod api-event [:org-settings :failed]
   [target message status {:keys [resp context]} state]
