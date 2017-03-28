@@ -17,6 +17,7 @@
                (:uri req)
                (query-string-with-om-build-id req))
      :timeout 120000 ;ms
+     :keepalive -1
      :method (:request-method req)
      :headers (assoc (:headers req)
                      "host" (:host backend)
