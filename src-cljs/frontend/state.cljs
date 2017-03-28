@@ -201,7 +201,7 @@
 (def org-users-path (conj org-data-path :users))
 (def org-projects-path (conj org-data-path :projects))
 (def org-loaded-path (conj org-data-path :loaded))
-(def org-authorized?-path (conj org-data-path :authorized?))
+(def org-admin?-path (conj org-data-path :admin?))
 (def selected-containers-path (conj org-data-path :selected-containers))
 ;; Map of org login to boolean (selected or not selected)
 (def selected-piggieback-orgs-path (conj org-data-path :selected-piggieback-orgs))

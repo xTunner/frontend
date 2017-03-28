@@ -801,11 +801,12 @@
             resp]
         (-> state
             (assoc-in state/org-plan-path plan)
+            (assoc-in state/org-admin?-path true)
             (assoc-in state/selected-piggieback-orgs-path (set piggieback-orgs)))))))
 
 (defmethod api-event [:org-plan :failed]
   [target message status {:keys [resp context]} state]
-  (assoc-in state state/org-authorized?-path false))
+  (assoc-in state state/org-admin?-path false))
 
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
@@ -823,7 +824,7 @@
       state
       (-> state
           (assoc-in state/org-loaded-path true)
-          (assoc-in state/org-authorized?-path false)))))
+          (assoc-in state/org-admin?-path false)))))
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
