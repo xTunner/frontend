@@ -1,6 +1,7 @@
 (ns frontend.components.nux-bootstrap
   (:require [clojure.string :as string]
             [frontend.async :refer [raise!]]
+            [frontend.components.add-projects :refer [orgs-from-repos]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
@@ -133,7 +134,7 @@
   (let [projects (->> (:projects data)
                       vals
                       (remove nil?))
-        organizations (:organizations data)
+        organizations (orgs-from-repos (:current-user data) projects)
         project-orgs (group-by project-model/org-name projects)
         projects-loaded? (:projects-loaded? data)
         cta-button-text "Follow and Build"
@@ -154,7 +155,7 @@
           (card/titled
            {:title "Getting Started"}
            (html
-             (when (not-empty organizations)
+             (when-not (empty? organizations)
                [:div.getting-started
                 [:div
                  "Choose projects to follow and populate your dashboard to see what builds pass/fail and show how fast they run."]
