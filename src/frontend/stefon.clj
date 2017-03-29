@@ -6,6 +6,8 @@
                       :url "https://js.pusher.com/2.2/pusher.min.js"}
                      {:path "js/hosted/elevio.js"
                       :url "https://static.elev.io/js/v3.js"}
+                     {:path "js/hosted/optimizely.js"
+                      :url "https://cdn.optimizely.com/js/8188917468.js"}
                      {:path "js/hosted/segment-mAJ9W2SwLHgmJtFkpaXWCbwEeNk9D8CZ.js"
                       :url "https://cdn.segment.com/analytics.js/v1/mAJ9W2SwLHgmJtFkpaXWCbwEeNk9D8CZ/analytics.min.js"}
                      {:path "js/hosted/segment-AbgkrgN4cbRhAVEwlzMkHbwvrXnxHh35.js"
