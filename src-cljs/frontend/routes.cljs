@@ -23,6 +23,7 @@
   ([app route data]
    ;; Note: We always call set-data: if values aren't given, we still want to
    ;; set them to `nil`.
+   (js/console.log "open!" (clj->js [app route data]))
    (compassus/set-route! app route {:tx [`(set-data ~data)]})))
 
 (defn open-to-inner!

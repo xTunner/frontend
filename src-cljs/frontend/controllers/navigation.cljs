@@ -26,10 +26,20 @@
 
 
 (defn- maybe-add-workflow-response-data [state]
+  (js/console.log "maybe-add-workflow-response-data")
   (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
     (cond-> state
       (= workflow-id "mock-workflow-id")
       (assoc-in state/workflow-path workflow/fake-progress-response))))
+
+(defn- maybe-fetch-workflow-response-data! [state api-ch]
+  (js/console.log "maybe-fetch-workflow-response-data!" (clj->js (get-in state state/navigation-data-path)))
+  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
+    (when (= workflow-id "mock-workflow-id")
+      (ajax/ajax :post
+                 "http://localhost:3009/query"
+                 :workflow-status
+                 api-ch))))
 
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
@@ -37,7 +47,8 @@
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti navigated-to
-  (fn [history-imp navigation-point args state] navigation-point))
+  (fn [history-imp navigation-point args state]
+    navigation-point))
 
 (defmulti post-navigated-to!
   (fn [history-imp navigation-point args previous-state current-state comms]
@@ -99,6 +110,7 @@
   (let [api-ch (:api comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)]
+    (maybe-fetch-workflow-response-data! current-state api-ch)
     (mlog (str "post-navigated-to! :dashboard with current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
     (when (and (not projects-loaded?)
