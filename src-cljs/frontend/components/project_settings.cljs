@@ -2,6 +2,7 @@
   (:require [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [clojure.string :as string]
+            [frontend.analytics.track :as analytics-track]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
@@ -500,6 +501,56 @@
             [:hr]
             (clear-cache-button "source" project-data owner)]]]]))))
 
+(defn env-vars-modal
+  [{:keys [close-fn project-id project]} owner]
+  (let [inputs (inputs/get-inputs-from-app-state owner)
+        new-env-var-name (:new-env-var-name inputs)
+        new-env-var-value (:new-env-var-value inputs)
+        track-properties {:project-id project-id
+                          :owner owner}
+        success-fn (fn [] (do (analytics-track/env-vars-created track-properties)
+                              (close-fn)))]
+    (reify
+      om/IDidMount
+      (did-mount [_]
+        ((om/get-shared owner :track-event) {:event-type :env-vars-modal-impression
+                                             :properties (dissoc track-properties :owner)}))
+      om/IRender
+      (render [_]
+        (modal/modal-dialog {:title "Add an Environment Variable"
+                             :body (html
+                                     [:div
+                                      [:p
+                                       " To disable string substitution you need to escape the " [:code "$"]
+                                       " characters by prefixing them with " [:code "\\"] "."
+                                       " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
+                                      (form/form {}
+                                        (om/build form/text-field {:label "Name"
+                                                                   :required true
+                                                                   :value new-env-var-name
+                                                                   :auto-focus true
+                                                                   :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
+                                        (om/build form/text-field {:label "Value"
+                                                                   :required true
+                                                                   :value new-env-var-value
+                                                                   :auto-complete "off"
+                                                                   :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
+                             :actions [(button/button {:on-click #(do (analytics-track/env-vars-modal-dismissed
+                                                                        (merge track-properties {:component "cancel"}))
+                                                                      (close-fn))}
+                                         "Cancel")
+                                       (button/managed-button {:failed-text "Failed"
+                                                               :success-text "Added"
+                                                               :loading-text "Adding..."
+                                                               :kind :primary
+                                                               :on-click #(raise! owner [:created-env-var
+                                                                                         {:project-id project-id
+                                                                                          :on-success success-fn}])}
+                                         "Add Variable")]
+                             :close-fn #(do (analytics-track/env-vars-modal-dismissed
+                                              (merge track-properties {:component "close-x"}))
+                                            (close-fn))})))))
+
 (defn env-vars [project-data owner]
   (reify
     om/IInitState
@@ -508,10 +559,8 @@
     om/IRenderState
     (render-state [_ {:keys [show-modal?]}]
       (let [project (:project project-data)
-            inputs (inputs/get-inputs-from-app-state owner)
-            new-env-var-name (:new-env-var-name inputs)
-            new-env-var-value (:new-env-var-value inputs)
-            project-id (project-model/id project)]
+            project-id (project-model/id project)
+            close-fn #(om/set-state! owner :show-modal? false)]
         (html
          ;; The :section and :article here are artifacts of the legacy styling
          ;; of the settings pages, and should go away as the structure of the
@@ -533,35 +582,7 @@
                [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
 
               (when show-modal?
-                (let [close-fn #(om/set-state! owner :show-modal? false)]
-                  (modal/modal-dialog {:title "Add an Environment Variable"
-                                       :body (html
-                                              [:div
-                                               [:p
-                                                " To disable string substitution you need to escape the " [:code "$"]
-                                                " characters by prefixing them with " [:code "\\"] "."
-                                                " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
-                                               (form/form {}
-                                                          (om/build form/text-field {:label "Name"
-                                                                                     :required true
-                                                                                     :value new-env-var-name
-                                                                                     :auto-focus true
-                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-name) %)})
-                                                          (om/build form/text-field {:label "Value"
-                                                                                     :required true
-                                                                                     :value new-env-var-value
-                                                                                     :auto-complete "off"
-                                                                                     :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
-                                       :actions [(button/button {:on-click close-fn} "Cancel")
-                                                 (button/managed-button {:failed-text "Failed"
-                                                                         :success-text "Added"
-                                                                         :loading-text "Adding..."
-                                                                         :kind :primary
-                                                                         :on-click #(raise! owner [:created-env-var
-                                                                                                   {:project-id project-id
-                                                                                                    :on-success close-fn}])}
-                                                                        "Add Variable")]
-                                       :close-fn close-fn})))
+                (om/build env-vars-modal {:close-fn close-fn :project-id project-id :project project}))
               (when-let [env-vars-entries (->> (:envvars project-data)
                                                (sort-by key)
                                                seq)]

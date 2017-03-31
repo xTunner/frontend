@@ -459,7 +459,7 @@
                          "Would you mind elaborating more?"
                          "Have any other thoughts?")}]]]]])
            :close-fn #(do (analytics-track/cancel-plan-modal-dismissed
-                            (merge track-properties {:current-state app :component "close-button"}))
+                            (merge track-properties {:current-state app :component "close-x"}))
                           (close-fn))
            :actions [(button/button 
                        {:on-click #(do (analytics-track/cancel-plan-modal-dismissed

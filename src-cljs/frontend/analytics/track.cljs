@@ -55,6 +55,14 @@
                                  :cancel-reasons cancel-reasons
                                  :cancel-notes cancel-notes}}))
 
+(defn env-vars-modal-dismissed [{:keys [component project-id owner]}]
+  ((om/get-shared owner :track-event) {:event-type :env-vars-modal-dismissed
+                                       :properties {:component component
+                                                    :project-id project-id}}))
+
+(defn env-vars-created [{:keys [project-id owner]}]
+  ((om/get-shared owner :track-event) {:event-type :env-vars-created
+                                       :properties {:project-id project-id}}))
 (defn rebuild-clicked
   "Handles click events for rebuilds triggered with and without SSH
   Use with any post-control events called to initiate a rebuild, such as:

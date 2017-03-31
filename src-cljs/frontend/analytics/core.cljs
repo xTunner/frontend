@@ -72,6 +72,9 @@
     :checked-all-projects-clicked
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
+    :env-vars-created
+    :env-vars-modal-dismissed
+    :env-vars-modal-impression
     :expand-repo-toggled
     :follow-and-build-projects-clicked
     :follow-project-clicked
