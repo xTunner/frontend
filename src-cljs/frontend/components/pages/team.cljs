@@ -13,7 +13,7 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.user :as user]
-            [frontend.utils :as utils :refer [valid-email?] :refer-macros [component element html]]
+            [frontend.utils :as utils :refer [valid-email? prettify-vcs_type] :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-next]]
             [goog.string :as gstr]
@@ -323,9 +323,18 @@
                                                          {:event-type :invite-teammates-clicked
                                                           :properties {:view :team}}))}
                                           "Invite Teammates")]]))}
-                  (if (:users selected-org)
-                    (table (select-keys selected-org [:users :projects]))
-                    (spinner))))
+                  [:div
+                   [:p
+                    (gstr/format
+                      "These are all the users that follow %s projects.
+                      Some users might be following only open-source projects.
+                      If you want to invite someone not listed here, please
+                      make sure they have the right permissions on %s first."
+                      org-name
+                      (prettify-vcs_type vcs-type))]
+                   (if (:users selected-org)
+                     (table (select-keys selected-org [:users :projects]))
+                     (spinner))]))
               (no-org-selected available-orgs (user/bitbucket-authorized? user)))]]))))))
 
 (defn page [app owner]
