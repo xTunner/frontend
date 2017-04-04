@@ -20,9 +20,6 @@
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
-  static om-next/Ident
-  (ident [this {:keys [run/id]}]
-    [:run/by-id id])
   static om-next/IQuery
   (query [this]
     [:run/id
@@ -100,28 +97,24 @@
 (defui ^:once WorkflowRuns
   static om-next/Ident
   (ident [this props]
-    [:workflow/by-org-project-and-name (merge (select-keys props [:workflow/name])
-                                              (-> props
-                                                  (get-in [:workflow/project])
-                                                  (select-keys [:project/name]))
-                                              (-> props
-                                                  (get-in [:workflow/project :project/organization])
-                                                  (select-keys [:organization/vcs-type
-                                                                :organization/name])))])
+    [:run/by-id (:run/id props)])
   static om-next/IQuery
   (query [this]
-    [{:workflow/project [:project/name
-                         {:project/organization [:organization/vcs-type
-                                                 :organization/name]}]}
-     :workflow/name
-     {:workflow/runs (om-next/get-query RunRow)}])
+    (vec
+     (into
+      #{{:run/project [:project/name
+                       {:project/organization [:organization/vcs-type
+                                               :organization/name]}]}
+        :run/name}
+      (om-next/get-query RunRow))))
   Object
   (render [this]
-          (component
-            (html
-              [:div
-               (card/collection
-                 (map run-row (reverse (sort-by :run/started-at (:workflow/runs (om-next/props this))))))]))))
+    (component
+      (html
+       [:div
+        (when-let [props (not-empty (om-next/props this))]
+          (card/collection
+           [(run-row props)]))]))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 
