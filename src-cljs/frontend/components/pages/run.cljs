@@ -81,14 +81,17 @@
   (reify
     om/IWillMount
     (will-mount [_]
-      (let [vcs_type "github"
-            project-name "circleci/circle"
-            build-num 162332
-            build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)]
+      (let [{:keys [:build/vcs-type :build/org :build/repo :build/number]} (:job-build app)
+            build-url (gstring/format "/api/v1.1/project/%s/%s/%s/%s"
+                                      (name vcs-type)
+                                      org
+                                      repo
+                                      number)]
         (ajax/ajax :get build-url
                    :build-fetch
                    (om/get-shared owner [:comms :api])
-                   :context {:project-name project-name :build-num build-num})))
+                   :context {:project-name (gstring/format "%s/%s" org repo)
+                             :build-num number})))
     om/IRender
     (render [_]
       (html
@@ -118,7 +121,8 @@
                         ;; but this is the fast way to get something on the
                         ;; screen for a prototype.
                         (into (om-next/get-query workflow-page/RunRow)
-                              [{:run/jobs (om-next/get-query Job)}])}]}])
+                              [{:run/jobs (into [:job/build]
+                                                (om-next/get-query Job))}])}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -136,7 +140,8 @@
        {:app (:legacy/state (om-next/props this))
         :main-content
         (element :main-content
-          (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])]
+          (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])
+                first-job-build (not-empty (get-in run [:run/jobs 0 :job/build]))]
             (html
              [:div
               (when-not (empty? run)
@@ -160,4 +165,7 @@
                                   :size :medium
                                   :label "Retry job-name"}
                                  [:span.iconed-button (icon/rebuild) "Retry"])]
-                (build-legacy build-page (:legacy/state (om-next/props this)))]]])))}))))
+                (when first-job-build
+                  (build-legacy build-page (assoc (:legacy/state (om-next/props this))
+                                                  :job-build
+                                                  first-job-build)))]]])))}))))

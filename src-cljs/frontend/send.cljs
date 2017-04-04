@@ -37,7 +37,11 @@
      :job/status (status->job-run-status (:job/status job-response))
      :job/started-at (js/Date.) ;; FIXME
      :job/stopped-at (js/Date.) ;; FIXME
-     :job/name (:job/name job-response)}))
+     :job/name (:job/name job-response)
+     :job/build {:build/vcs-type :github
+                 :build/org "circleci"
+                 :build/repo "circle"
+                 :build/number 162332}}))
 
 (defn adapt-to-run
   [response]
