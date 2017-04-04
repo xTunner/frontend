@@ -33,11 +33,11 @@
                                 "canceled" :job-run-status/canceled
                                 "running" :job-run-status/running
                                 "waiting" :job-run-status/waiting}]
-    {:job-run/id (:job/id job-response)
-     :job-run/status (status->job-run-status (:job/status job-response))
-     :job-run/started-at (js/Date.) ;; FIXME
-     :job-run/stopped-at (js/Date.) ;; FIXME
-     :job-run/name (:job/name job-response)}))
+    {:job/id (:job/id job-response)
+     :job/status (status->job-run-status (:job/status job-response))
+     :job/started-at (js/Date.) ;; FIXME
+     :job/stopped-at (js/Date.) ;; FIXME
+     :job/name (:job/name job-response)}))
 
 (defn adapt-to-run
   [response]
@@ -48,7 +48,7 @@
    :run/stopped-at nil  ;; FIXME
    :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
    :run/commit-sha (get-in response [:workflow/trigger-resource :data :vcs_revision])
-   :run/job-runs (mapv adapt-to-job (:workflow/jobs response))})
+   :run/jobs (mapv adapt-to-job (:workflow/jobs response))})
 
 (defn adapt-to-workflow
   [response]

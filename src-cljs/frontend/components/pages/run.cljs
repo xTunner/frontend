@@ -25,25 +25,25 @@
     :job-run-status/failed :status-class/failed
     :job-run-status/canceled :status-class/stopped))
 
-(defui ^:once JobRun
+(defui ^:once Job
   static om-next/Ident
-  (ident [this {:keys [job-run/id]}]
-    [:job-run/by-id id])
+  (ident [this {:keys [job/id]}]
+    [:job/by-id id])
   static om-next/IQuery
   (query [this]
-    [:job-run/id
-     :job-run/status
-     :job-run/started-at
-     :job-run/stopped-at
-     :job-run/name])
+    [:job/id
+     :job/status
+     :job/started-at
+     :job/stopped-at
+     :job/name])
   Object
   (render [this]
     (component
-      (let [{:keys [job-run/id
-                    job-run/status
-                    job-run/started-at
-                    job-run/stopped-at]
-             job-name :job-run/name}
+      (let [{:keys [job/id
+                    job/status
+                    job/started-at
+                    job/stopped-at]
+             job-name :job/name}
             (om-next/props this)]
         (card/basic
          (element :content
@@ -75,7 +75,7 @@
                                                             :stop stopped-at})]
                    "-")]]]]])))))))
 
-(def job-run (om-next/factory JobRun {:keyfn :job-run/id}))
+(def job (om-next/factory Job {:keyfn :job/id}))
 
 (defn- build-page [app owner]
   (reify
@@ -118,7 +118,7 @@
                         ;; but this is the fast way to get something on the
                         ;; screen for a prototype.
                         (into (om-next/get-query workflow-page/RunRow)
-                              [{:run/job-runs (om-next/get-query JobRun)}])}]}])
+                              [{:run/jobs (om-next/get-query Job)}])}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -147,7 +147,7 @@
                  [:.hr-title
                   [:span "Jobs"]]]
                 (card/collection
-                 (map job-run (:run/job-runs run)))]
+                 (map job (:run/jobs run)))]
                [:.output
                 [:div.output-header
                   [:.output-title
