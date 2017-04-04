@@ -37,8 +37,7 @@
      :job-run/status (status->job-run-status (:job/status job-response))
      :job-run/started-at (js/Date.) ;; FIXME
      :job-run/stopped-at (js/Date.) ;; FIXME
-     :job-run/job {:job/id (:job/id job-response)
-                   :job/name (:job/name job-response)}}))
+     :job-run/name (:job/name job-response)}))
 
 (defn adapt-to-run
   [response]

@@ -35,7 +35,7 @@
      :job-run/status
      :job-run/started-at
      :job-run/stopped-at
-     {:job-run/job [:job/name]}])
+     :job-run/name])
   Object
   (render [this]
     (component
@@ -43,7 +43,7 @@
                     job-run/status
                     job-run/started-at
                     job-run/stopped-at]
-             {job-name :job/name} :job-run/job}
+             job-name :job-run/name}
             (om-next/props this)]
         (card/basic
          (element :content
