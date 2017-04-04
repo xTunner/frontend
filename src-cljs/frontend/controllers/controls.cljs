@@ -20,6 +20,7 @@
             [frontend.state :as state]
             [frontend.stripe :as stripe]
             [frontend.utils.ajax :as ajax]
+            [frontend.utils.build :as build-utils]
             [frontend.utils.map :as map-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils :as utils :include-macros true]
@@ -368,12 +369,22 @@
 (defmethod post-control-event! :container-filter-changed
   [target message {:keys [new-filter containers]} previous-state current-state comms]
   (let [selected-container-id (state/current-container-id current-state)
-        selected-container-in-containers? (some #(= selected-container-id (:index %)) containers)
-        controls-ch (:controls comms)]
-    (if-not (and selected-container-in-containers?
-                 (seq containers))
-      (put! controls-ch [:container-selected {:container-id (:index (first containers))
-                                              :animate? true}])))
+        selected-container-in-containers? (some #(= selected-container-id (:index %)) containers)]
+    (when-not (and selected-container-in-containers?
+                   (seq containers))
+      (let [nav-ch (:nav comms)
+            build (get-in current-state [:current-build-data :build])
+            {:keys [vcs_type username reponame build_num]} build
+            current-or-default-tab (or (get-in current-state state/navigation-tab-path)
+                                       (build-utils/default-tab build (get-in current-state state/project-scopes-path)))]
+        (put! nav-ch [:navigate! {:path (routes/v1-build-path
+                                          vcs_type
+                                          username
+                                          reponame
+                                          nil
+                                          build_num
+                                          current-or-default-tab
+                                          (-> containers first :index))}]))))
   (analytics/track {:event-type :container-filter-changed
                     :current-state current-state
                     :properties {:new-filter new-filter}}))

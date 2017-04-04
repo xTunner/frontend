@@ -227,14 +227,10 @@
                                        reponame nil build_num
                                        (or current-tab (build-utils/default-tab build scopes))
                                        container-id)
-           :on-click #(do
-                       (raise! owner [:container-selected {:container-id container-id}])
-                       ; tracking is added here because `:container-selected` action is used
-                       ; in various purposes including resize.
-                       (when (not= container-id selected-container-id)
-                         ((om/get-shared owner :track-event) {:event-type :container-selected
-                                                              :properties {:old-container-id selected-container-id
-                                                                           :new-container-id container-id}})))
+           :on-click #(when (not= container-id selected-container-id)
+                        ((om/get-shared owner :track-event) {:event-type :container-selected
+                                                             :properties {:old-container-id selected-container-id
+                                                                          :new-container-id container-id}}))
            :class (concat (container-model/status->classes status)
                           (when (= container-id selected-container-id) ["active"]))}
           [:span.upper-pill-section
