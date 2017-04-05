@@ -181,6 +181,7 @@
       :build (when (get-in current-state state/show-usage-queue-path)
                (api/get-usage-queue (get-in current-state state/build-path) api-ch))
       :dashboard (api/get-dashboard-builds (assoc (:navigation-data current-state)
-                                             :builds-per-page (:builds-per-page current-state))
+                                             :builds-per-page (:builds-per-page current-state)
+                                             :all? (get-in current-state state/show-all-builds-path))
                                            api-ch)
       nil)))
