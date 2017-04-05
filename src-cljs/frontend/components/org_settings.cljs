@@ -44,26 +44,23 @@
   (reify
     om/IRender
     (render [_]
-      (html [:div.row-fluid.plans
-             [:div.span12
-              [:h3
-               "Do you want to create a plan for an organization that you don't admin?"]
-              [:ol
-               [:li
-                "Sign up for a plan from your "
+      (html
+        [:div
+         (card/titled {:title "Organization Admin Permission Needed"}
+           (html
+             [:div.body
+               [:p "To view/edit this page, you must be an organization admin on your VCS-provider (e.g., Github)."]
+               [:p "As a non-admin, you may still create a plan for this organization by signing up for a plan under your "
                 [:a {:href (routes/v1-org-settings-path {:org login
                                                          :vcs_type vcs_type
                                                          :_fragment "containers"})}
-                 "\"personal organization\" page"]]
-               [:li
-                "Add " org-name
-                " to the list of organizations you pay for or transfer the plan to "
-                org-name " from the "
+                 "personal organization"]
+                " and then "
                 [:a {:href (routes/v1-org-settings-path {:org login
                                                          :vcs_type vcs_type
                                                          :_fragment "organizations"})}
-                 "plan's organization page"]
-                "."]]]]))))
+                 "paying for/transfering"]
+                " your personal plan to " org-name "."]]))]))))
 
 (defn users [app owner]
   (reify
