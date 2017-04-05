@@ -233,7 +233,7 @@
                                                                               :identity/login (:login %))
                                                                    legacy-format-identites))})
                           :organization/by-vcs-type-and-name {}
-                          :workflow/by-org-project-and-name {}})
+                          :project/by-org-and-name {}})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a
         ;; normal atom but which presents only the legacy state.

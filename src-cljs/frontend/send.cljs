@@ -129,12 +129,17 @@
            (cb (rewrite {(om-util/join-key expr) project}) ui-query)))
 
        (and (om-util/ident? (om-util/join-key expr))
-            (= :workflow/by-org-project-and-name (first (om-util/join-key expr))))
+            (= :project/by-org-and-name (first (om-util/join-key expr)))
+            (some #(and (map? %)
+                        (-> % first key (= :project/workflow-runs)))
+                  (om-util/join-value expr)))
        ;; Generate fake data for now.
        (api/get-workflow-status
         (callback-api-chan
          (fn [response]
-           (cb (rewrite {(om-util/join-key expr) (adapt-to-run response)})
+           (cb (rewrite {(om-util/join-key expr) (assoc (second (om-util/join-key expr))
+                                                        :project/workflow-runs
+                                                        [(adapt-to-run response)])})
                ui-query))))
 
        (and (om-util/ident? (om-util/join-key expr))

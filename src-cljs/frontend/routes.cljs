@@ -244,13 +244,12 @@
                                                 :org org
                                                 :repo repo}))))
 
-  (defroute v1-workflow #"/(gh|bb)/([^/]+)/([^/]+)/workflows/([^/]+)"
-    [short-vcs-type org-name project-name workflow-name]
+  (defroute v1-workflow #"/(gh|bb)/([^/]+)/([^/]+)/workflows"
+    [short-vcs-type org-name project-name]
     (open! app :route/workflow {:route-data
                                 {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
                                  :organization/name org-name
-                                 :project/name project-name
-                                 :workflow/name workflow-name}}))
+                                 :project/name project-name}}))
 
   (defroute v1-run "/workflow-run/:run-id"
     [run-id]

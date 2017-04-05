@@ -142,14 +142,12 @@
     :route-data/workflow (when (every? #(contains? route-data %)
                                        [:organization/vcs-type
                                         :organization/name
-                                        :project/name
-                                        :workflow/name])
-                           [:workflow/by-org-project-and-name
-                            (select-keys route-data
-                                         [:organization/vcs-type
-                                          :organization/name
-                                          :project/name
-                                          :workflow/name])])
+                                        :project/name])
+                           [:project/by-org-and-name
+                            {:project/name (:project/name route-data)
+                             :project/organization (select-keys route-data
+                                                                [:organization/vcs-type
+                                                                 :organization/name])}])
     :route-data/run (when (every? #(contains? route-data %)
                                   [:run/id])
                       [:run/by-id (:run/id route-data)])))

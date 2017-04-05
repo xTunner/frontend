@@ -20,6 +20,9 @@
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
+  static om-next/Ident
+  (ident [this props]
+    [:run/by-id (:run/id props)])
   static om-next/IQuery
   (query [this]
     [:run/id
@@ -95,26 +98,19 @@
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
 (defui ^:once WorkflowRuns
-  static om-next/Ident
-  (ident [this props]
-    [:run/by-id (:run/id props)])
   static om-next/IQuery
   (query [this]
-    (vec
-     (into
-      #{{:run/project [:project/name
-                       {:project/organization [:organization/vcs-type
-                                               :organization/name]}]}
-        :run/name}
-      (om-next/get-query RunRow))))
+    [:project/name
+     {:project/organization [:organization/vcs-type
+                             :organization/name]}
+     {:project/workflow-runs (om-next/get-query RunRow)}])
   Object
   (render [this]
     (component
       (html
        [:div
-        (when-let [props (not-empty (om-next/props this))]
-          (card/collection
-           [(run-row props)]))]))))
+        (card/collection
+         (map run-row (:project/workflow-runs (om-next/props this))))]))))
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 
