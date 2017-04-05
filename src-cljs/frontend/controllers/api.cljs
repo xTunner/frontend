@@ -1,5 +1,6 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
+            [cognitect.transit :as transit]
             [frontend.api :as api]
             [frontend.api.path :as api-path]
             [frontend.async :refer [put! raise!]]
@@ -344,6 +345,11 @@
       (fetch-visible-output current-state comms build-num (get-in args [:resp :vcs_url]))
       (frontend.favicon/set-color! (build-model/favicon-color (get-in current-state state/build-path)))
       (maybe-set-containers-filter! current-state comms build-changed?))))
+
+(defmethod api-event [:workflow-status :success]
+  [target message status {:keys [resp]} state]
+  (js/console.log "workflow status" resp)
+  state)
 
 (defmethod api-event [:cancel-build :success]
   [target message status {:keys [context resp]} state]

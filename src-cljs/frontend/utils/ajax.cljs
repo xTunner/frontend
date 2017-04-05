@@ -3,6 +3,7 @@
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
             [clojure.string :as str]
+            [cognitect.transit :as transit]
             [frontend.async :refer [put!]]
             [frontend.utils :as utils :include-macros true])
   (:import [goog Uri]))
@@ -50,6 +51,23 @@
   {:read (fn read-text [xhrio]
            {:resp (.getResponseText xhrio)})})
 
+(defn transit-response-format
+  [{:keys [prefix keywords? url method start-time]
+    :or {start-time (time/now)}}]
+  {:read (fn read-transit [xhrio]
+           (let [reader (transit/reader :json)
+                 headers (js->clj (.getResponseHeaders xhrio))
+                 request-time (try
+                                (time/in-millis (time/interval start-time (time/now)))
+                                (catch :default e
+                                  (utils/merror e)
+                                  0))]
+             {:resp (transit/read reader (.getResponseText xhrio))
+              :response-headers headers
+              :url url
+              :method method
+              :request-time request-time}))})
+
 (defn scopes-from-response [api-resp]
   (if-let [scope-str (get-in api-resp [:response-headers "X-Circleci-Scopes"])]
     (->> (str/split scope-str #"[,\s]+")
@@ -76,6 +94,11 @@
                              :headers (merge {:Accept "application/json"}
                                              csrf-header
                                              headers)}
+                      :transit {:format (clj-ajax/transit-request-format)
+                                :response-format (transit-response-format {:url uri :method method})
+                                :headers (merge {:Accept "application/transit+json"}
+                                               csrf-header
+                                               headers)}
                       :xml {:format (xml-request-format)
                             :response-format (xml-response-format)
                             :headers (merge {:Accept "application/xml"}

@@ -74,6 +74,13 @@
              :context {:org-name org-name
                        :vcs-type vcs-type}))
 
+(defn get-workflow-status [api-ch]
+  (ajax/ajax :post
+             "http://localhost:3009/query"
+             :workflow-status
+             api-ch
+             :format :transit))
+
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
              :user-plans

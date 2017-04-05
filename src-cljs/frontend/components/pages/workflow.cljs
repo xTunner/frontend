@@ -26,6 +26,7 @@
   static om-next/IQuery
   (query [this]
     [:run/id
+     :run/name
      :run/status
      :run/started-at
      :run/stopped-at
@@ -39,7 +40,8 @@
                     run/started-at
                     run/stopped-at
                     run/branch-name
-                    run/commit-sha]}
+                    run/commit-sha]
+             run-name :run/name}
             (om-next/props this)]
         (card/basic
          (element :content
@@ -59,7 +61,7 @@
               [:div.build-info-header
                [:div.contextual-identifier
                 [:a {:href (routes/v1-run {:run-id id})}
-                 [:span "workflow-name #1234"]]]]
+                 [:span (str run-name " " id)]]]]
               [:div.recent-commit-msg
                [:span.recent-log "This is the thing that triggered the run"]]]
              [:div.metadata
@@ -81,7 +83,7 @@
               [:div.metadata-row.pull-revision
                [:span.metadata-item.pull-requests {:title "Pull Requests"}
                 (icon/git-pull-request)
-                [:a "#1234"]]
+                [:a id]]
                [:span.metadata-item.revision
                 [:i.octicon.octicon-git-commit]
                 [:a (subs commit-sha 0 7)]]]]
