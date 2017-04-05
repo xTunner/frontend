@@ -54,9 +54,17 @@
                                                                 (html
                                                                   [:div.organization
                                                                    [:.vcs-icon vcs-icon]
-                                                                   [:a
-                                                                    {:href org-url}
-                                                                    [:span (:login org)]]])))}]})]]]))])))))
+                                                                   (if (:admin org)
+                                                                     [:a
+                                                                      {:href org-url}
+                                                                      [:span (:login org)]]
+                                                                     [:.locked
+                                                                      [:span (:login org)]
+                                                                      [:span.locked-icon
+                                                                        {:title "You must be an org admin to edit settings"}
+                                                                        [:i.material-icons.lock "lock"]
+                                                                        "Contact org admin"]])])))}]})]]]))])))))
+
 
 (defn api-tokens [app owner]
   (reify
