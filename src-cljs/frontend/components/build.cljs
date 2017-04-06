@@ -228,6 +228,9 @@
                                        (or current-tab (build-utils/default-tab build scopes))
                                        container-id)
            :on-click #(when (not= container-id selected-container-id)
+                        (when (or (= status-class :status-class/running)
+                                  (= status-class :status-class/waiting))
+                          (raise! owner [:container-selected {:container-id container-id}]))
                         ((om/get-shared owner :track-event) {:event-type :container-selected
                                                              :properties {:old-container-id selected-container-id
                                                                           :new-container-id container-id}}))
