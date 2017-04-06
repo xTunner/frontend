@@ -1817,3 +1817,7 @@
   [target message args previous-state current-state comms]
   (api/get-orgs (:api comms) :include-user? true)
   (api/get-all-repos (:api comms)))
+
+(defmethod control-event :update-org
+  [_ _ selected-org state]
+  (assoc-in state state/selected-org-path selected-org))

@@ -3,9 +3,10 @@
     .flexy(row);
     background-color: @grayDark;
     height: @top-bar-height;
+    @top-bar-sep-border: 1px solid @gray;
 
     > .navs-container {
-      .flexy(stretch, space-between, row);
+      .flexy(center, space-between, row);
       width: 100%;
 
       > .logomark {
@@ -26,7 +27,7 @@
         }
       }
 
-      > button.navbar-toggler {
+      > .navbar-toggler {
         background: inherit;
         border: none;
         padding: 0 2ex;
@@ -44,10 +45,6 @@
         margin-bottom: 0;
         padding-left: 0;
 
-        &.nav-items-left {
-          margin-left: auto;
-        }
-
         &.collapsing-nav {
           @media (max-width: @screen-sm-min) {
             display: none;
@@ -57,7 +54,7 @@
         > li {
           .flexy;
 
-          > button.dropdown-toggle {
+          > button.dropdown-toggle:not(.org-button) {
             border: none;
             background: none;
           }
@@ -74,15 +71,15 @@
           }
 
           > a,
-          > button.dropdown-toggle {
+          > button.dropdown-toggle:not(.org-button) {
             display: block;
-            padding: 20px;
             font-size: @fontSizeSmall;
             font-weight: 500;
             line-height: 30px;
             color: @white;
             text-decoration: none;
             white-space: nowrap;
+            padding: 20px;
 
             .transition(all .1s ease-in);
 
@@ -104,15 +101,6 @@
               vertical-align: middle;
             }
 
-            // TODO -ac Note, this should become its own component, since we
-            // reuse it - *a lot*
-            > .gravatar {
-              min-width: 28px;
-              height: 28px;
-              border-radius: 50%;
-              border: 1px solid @white;
-            }
-
             &:hover {
               // OVERRIDE--ICON-STYLE
               color: @grayLighter;
@@ -123,7 +111,7 @@
             }
           }
 
-          > .dropdown-menu {
+          > .dropdown-menu:not(.org-dropdown-menu) {
             // Bootstrap Overrides
             margin-top: -4px;
             padding: 0;
@@ -161,13 +149,138 @@
           }
 
           &.user-menu {
-            border-left: 1px solid fade(@gray, 50%);
+            border-left: @top-bar-sep-border;
 
             @media (max-width: @screen-sm-max) {
               padding-left: 0;
               border-left: none;
             }
           }
+        }
+      }
+
+      // TODO Note, this should become its own component, since we
+      // reuse it - *a lot*
+      .gravatar {
+        min-width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 1px solid @white;
+      }
+
+      @dropdown-width: 280px;
+
+      .org-button {
+        .flexy(center, space-between, row);
+        width: @dropdown-width;
+        padding: 0 20px;
+        border: none;
+        border-right: @top-bar-sep-border;
+        background: none;
+
+
+        .avatar-and-name-container {
+          .selected-org-icon {
+            height: 40px;
+            width: 40px;
+            border: 3px solid @white;
+          }
+          .selected-org-name {
+            color: @white;
+            font-weight: 500;
+            font-size: @fontSizeMedium;
+            margin-left: 10px;
+          }
+        }
+
+        .org-picker-arrow {
+          color: @white;
+        }
+      }
+
+      .org-dropdown-menu {
+        border-radius: 0;
+        padding: 0;
+        margin: 0;
+      }
+
+      .org-dropdown {
+        border-radius: 0;
+        padding: 0;
+        width: @dropdown-width;
+        height: @top-bar-height;
+
+        .dropdown-menu {
+          left: 0;
+
+          .org-dropdown-menu__item {
+            .flexy(center, space-between, row);
+            border-bottom: 1px solid @grayLightest;
+            color: black;
+            padding-left: 9px;
+
+            .vcs-icon, .avatar {
+              border-radius: 50%;
+            }
+            .avatar {
+              height: 30px;
+              width: 30px;
+            }
+            .vcs-icon {
+              height: 20px;
+              width: 20px;
+
+              a {
+                color: @grayLighter;
+              }
+            }
+
+            .org-name {
+              margin-left: 16px;
+            }
+
+            .leading-dot {
+              padding-right: 5px;
+              color: transparent;
+              vertical-align: middle;
+              transition: color 0.3s ease-in-out;
+            }
+
+            &.selected-org {
+              font-weight: bold;
+
+              .leading-dot {
+                color: black;
+              }
+              .vcs-icon a {
+                color: black;
+              }
+            }
+
+            &:hover:not(.switch-org-text) {
+              background-color: @grayLightest;
+
+              &:not(.selected-org) {
+                .leading-dot {
+                  color: @grayLighter;
+                }
+              }
+            }
+          }
+
+          .switch-org-text {
+            font-size: @fontSizeSmaller;
+            line-height: @baseLineHeight;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: @grayLight;
+            text-indent: 15px;
+          }
+        }
+
+        &:hover {
+          color: currentColor;
+          background-color: @grayDarker;
         }
       }
     }

@@ -219,6 +219,7 @@
 (def instrumentation-path [:instrumentation])
 
 (def browser-settings-path [:settings :browser-settings])
+(def selected-org-path (conj browser-settings-path :selected-org))
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))

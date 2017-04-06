@@ -25,6 +25,7 @@
             [frontend.support :as support]
             [frontend.timer :as timer]
             [frontend.utils :as utils :refer [mlog set-canonical!]]
+            [frontend.utils.launchdarkly :as ld]
             goog.dom
             [goog.events :as gevents]
             [om.next :as om-next]
@@ -294,7 +295,9 @@
       (routes/dispatch! (str "/" (.getToken history-imp))))
     (when-let [user (:current-user legacy-state)]
       (subscribe-to-user-channel user (:ws comms)))
-    (analytics/init! legacy-state-atom)))
+    (analytics/init! legacy-state-atom)
+    (when (ld/feature-on? "top-bar-ui-v-1")
+      (api/get-orgs (:api comms) :include-user? true))))
 
 
 (defn ^:export toggle-admin []

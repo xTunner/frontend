@@ -108,6 +108,10 @@
       (if (app-blocked? app)
         (blocked-page app)
         (let [user (get-in app state/user-path)
+              orgs (get-in app state/user-organizations-path)
+              ;; use the first org in the org list as the default
+              selected-org (or (get-in app state/selected-org-path)
+                               (first orgs))
               admin? (if (config/enterprise?)
                        (get-in app [:current-user :dev-admin])
                        (get-in app [:current-user :admin]))
@@ -130,7 +134,9 @@
             [:.top
              [:.bar
               (when (ld/feature-on? "top-bar-ui-v-1")
-                (build-legacy topbar/topbar {:user user}))]
+                (build-legacy topbar/topbar {:user user
+                                             :selected-org selected-org
+                                             :orgs orgs}))]
              [:.flash-presenter
               (flash/presenter {:display-timeout 2000
                                 :notification
