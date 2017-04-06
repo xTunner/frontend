@@ -70,6 +70,7 @@
     :create-jira-issue-failed
     :create-jira-issue-success
     :checked-all-projects-clicked
+    :dependency-commands-saved
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
     :env-vars-created
@@ -132,6 +133,7 @@
     :support-icon-clicked
     :team-icon-clicked
     :teammates-invited
+    :test-commands-saved
     :trial-offer-banner-impression
     :unfollow-projects-clicked
     :update-parallelism-clicked

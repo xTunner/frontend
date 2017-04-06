@@ -119,6 +119,14 @@
       (= status-code 402) (set-error-banner! comms true :toggle-stripe-error-banner)
       (= status-code 403) (set-error-banner! comms true :toggle-admin-error-banner))))
 
+(defn steps-changed
+  [steps inputs]
+  (->> steps
+       (map (fn [step]
+              [(-> step name (str "_changed") keyword)
+               (-> inputs step boolean)]))
+       (into {})))
+
 ;; --- Navigation Multimethod Declarations ---
 
 (defmulti control-event
@@ -707,24 +715,33 @@
 (defmethod post-control-event! :saved-dependencies-commands
   [target message {:keys [project-id]} previous-state current-state comms]
   (let [project-name (vcs-url/project-name project-id)
-        settings (state-utils/merge-inputs (get-in current-state state/projects-path)
-                                           (get-in current-state state/inputs-path)
-                                           [:setup :dependencies :post_dependencies])
+        project (get-in current-state state/project-path)
+        inputs (get-in current-state state/inputs-path)
+        dependency-steps [:setup :dependencies :post_dependencies]
+        settings (state-utils/merge-inputs project
+                                           inputs
+                                           dependency-steps)
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
         vcs-type (vcs-url/vcs-type project-id)
         uuid frontend.async/*uuid*]
     (go
-      (let [api-result (<! (ajax/managed-ajax
-                             :put (api-path/project-settings vcs-type org repo)
-                             :params settings))]
-       (if (= :success (:status api-result))
+     (let [api-result (<! (ajax/managed-ajax
+                            :put (api-path/project-settings vcs-type org repo)
+                            :params settings))
+           status (:status api-result)
+           steps-changed (steps-changed dependency-steps inputs)
+           track-properties (merge {:outcome status} steps-changed)]
+       (analytics/track {:event-type :dependency-commands-saved
+                         :current-state current-state
+                         :properties track-properties})
+       (if (= :success status)
          (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/project-settings vcs-type org repo)))]
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
            (put! (:nav comms) [:navigate! {:path (routes/v1-project-settings-path {:org org :repo repo :vcs_type vcs-type :_fragment "tests"})}]))
          (put! (:errors comms) [:api-error api-result]))
-       (release-button! uuid (:status api-result))))))
+       (release-button! uuid status)))))
 
 
 (defmethod post-control-event! :saved-test-commands
@@ -732,15 +749,24 @@
   (let [project-name (vcs-url/project-name project-id)
         project (get-in current-state state/project-path)
         inputs (get-in current-state state/inputs-path)
-        settings (state-utils/merge-inputs project inputs [:test :extra])
+        test-steps [:test :extra]
+        settings (state-utils/merge-inputs project inputs test-steps)
         branch (get inputs :settings-branch (:default_branch project))
         vcs-type (vcs-url/vcs-type project-id)
         org (vcs-url/org-name project-id)
         repo (vcs-url/repo-name project-id)
         uuid frontend.async/*uuid*]
     (go
-     (let [api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org repo) :params settings))]
-       (if (= :success (:status api-result))
+     (let [api-result (<! (ajax/managed-ajax :put (api-path/project-settings vcs-type org repo) :params settings))
+           status (:status api-result)
+           steps-changed (steps-changed test-steps inputs)
+           track-properties (merge {:outcome status
+                                    :start-build (boolean start-build?)} 
+                                   steps-changed)]
+       (analytics/track {:event-type :test-commands-saved
+                         :current-state current-state
+                         :properties track-properties})
+       (if (= :success status)
          (let [settings-api-result (<! (ajax/managed-ajax :get (api-path/project-settings vcs-type org repo)))]
            (put! (:api comms) [:project-settings (:status settings-api-result) (assoc settings-api-result :context {:project-name project-name})])
            (put! (:controls comms) [:clear-inputs {:paths (map vector (keys settings))}])
@@ -748,7 +774,7 @@
              (let [build-api-result (<! (ajax/managed-ajax :post (api-path/branch-path vcs-type org repo branch)))]
                (put! (:api comms) [:start-build (:status build-api-result) build-api-result]))))
          (put! (:errors comms) [:api-error api-result]))
-       (release-button! uuid (:status api-result))))))
+       (release-button! uuid status)))))
 
 (defn save-project-settings
   "Takes the state of project settings inputs and PUTs the new settings to
