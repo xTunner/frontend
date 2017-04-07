@@ -1,21 +1,15 @@
 (ns frontend.timer
-  (:require [om.core :as om :include-macros true]
-            [frontend.models.feature :as feature]))
+  (:require [om.core :as om :include-macros true]))
 
 (defn update-components
   "Takes a set of components to refresh. Returns the set of components that are
   still mounted and were updated."
   [components]
   (reduce (fn [acc component]
-            (if (feature/enabled? :build-timer-fix)
-              (do
-                (when (om/mounted? component)
-                  (om/refresh! component))
-                acc)
-              (if (.isMounted component) ;TODO: Om 0.8.0 has `om/mounted?
-                (do (om/refresh! component)
-                    acc)
-                (disj acc component))))
+            (if (.isMounted component) ;TODO: Om 0.8.0 has `om/mounted?
+              (do (om/refresh! component)
+                  acc)
+              (disj acc component)))
           components
           components))
 
