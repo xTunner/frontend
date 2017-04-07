@@ -9,6 +9,7 @@
             [frontend.components.project.common :as project-common]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.models.feature :as feature]
             [frontend.experimental.no-test-intervention :as no-test-intervention]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
@@ -205,6 +206,10 @@
     om/IDidUpdate
     (did-update [_ _ _]
       (timer/set-updating! owner (not (last-action-end-time container))))
+    om/IWillUnmount
+    (will-unmount [_]
+      (when (feature/enabled? :build-timer-fix)
+        (timer/set-updating! owner false)))
     om/IWillReceiveProps
     (will-receive-props [this next-props]
       (let [next-status (:status next-props)]
