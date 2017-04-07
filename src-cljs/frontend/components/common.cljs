@@ -229,6 +229,11 @@
     (did-update [_ _ _]
       (timer/set-updating! owner (not stop)))
 
+    om/IWillUnmount
+    (will-unmount [this]
+      (when (feature/enabled? :build-timer-fix)
+        (timer/set-updating! owner false)))
+
     om/IRender
     (render [_]
       (let [formatter (get opts :formatter datetime/as-duration)
