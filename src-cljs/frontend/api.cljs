@@ -74,13 +74,15 @@
              :context {:org-name org-name
                        :vcs-type vcs-type}))
 
-(defn get-workflow-status [api-ch]
+(defn get-workflow-status [api-ch query]
   (ajax/ajax :post
              "https://api.circleci.com/query"
              :workflow-status
              api-ch
              :format :transit
-             :with-credentials true))
+             :with-credentials true
+             :params
+             query))
 
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
