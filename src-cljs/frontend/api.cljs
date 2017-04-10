@@ -79,7 +79,8 @@
              "https://api.circleci.com/query"
              :workflow-status
              api-ch
-             :format :transit))
+             :format :transit
+             :with-credentials true))
 
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
