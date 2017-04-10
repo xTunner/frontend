@@ -121,7 +121,8 @@
                         ;; but this is the fast way to get something on the
                         ;; screen for a prototype.
                         (into (om-next/get-query workflow-page/RunRow)
-                              [{:run/jobs (into [:job/build]
+                              [{:run/jobs (into [:job/build
+                                                 :job/name]
                                                 (om-next/get-query Job))}])}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
@@ -141,7 +142,9 @@
         :main-content
         (element :main-content
           (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])
-                first-job-build (not-empty (get-in run [:run/jobs 0 :job/build]))]
+                first-job (-> run :run/jobs first)
+                first-job-build (:job/build first-job)
+                first-job-name (:job/name first-job)]
             (html
              [:div
               (when-not (empty? run)
@@ -155,16 +158,19 @@
                  (map job (:run/jobs run)))]
                [:.output
                 [:div.output-header
-                  [:.output-title
-                   [:span "job-name #1234"]]
-                  (button/icon {:label "Retry job-name"
-                                :disabled? true}
-                               (icon/rebuild))
-
-                  #_(button/button {:kind :primary
-                                  :size :medium
-                                  :label "Retry job-name"}
-                                 [:span.iconed-button (icon/rebuild) "Retry"])]
+                 [:.output-title
+                  [:span (gstring/format "%s #%s"
+                                         first-job-name
+                                         (:build/number first-job-build))]]
+                 (button/icon {:label (gstring/format "Retry %s"
+                                                      first-job-name)
+                               :disabled? true}
+                              (icon/rebuild))
+                 #_(button/button {:kind :primary
+                                 :size :medium
+                                 :label (gstring/format "Retry %s"
+                                                        first-job-name)}
+                                [:span.iconed-button (icon/rebuild) "Retry"])]
                 (when first-job-build
                   (build-legacy build-page (assoc (:legacy/state (om-next/props this))
                                                   :job-build
