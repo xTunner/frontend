@@ -76,7 +76,7 @@
 
 (defn get-workflow-status [api-ch]
   (ajax/ajax :post
-             "http://localhost:3009/query"
+             "https://api.circleci.com/query"
              :workflow-status
              api-ch
              :format :transit))

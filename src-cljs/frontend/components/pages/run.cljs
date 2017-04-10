@@ -25,25 +25,25 @@
     :job-run-status/failed :status-class/failed
     :job-run-status/canceled :status-class/stopped))
 
-(defui ^:once JobRun
+(defui ^:once Job
   static om-next/Ident
-  (ident [this {:keys [job-run/id]}]
-    [:job-run/by-id id])
+  (ident [this {:keys [job/id]}]
+    [:job/by-id id])
   static om-next/IQuery
   (query [this]
-    [:job-run/id
-     :job-run/status
-     :job-run/started-at
-     :job-run/stopped-at
-     {:job-run/job [:job/name]}])
+    [:job/id
+     :job/status
+     :job/started-at
+     :job/stopped-at
+     :job/name])
   Object
   (render [this]
     (component
-      (let [{:keys [job-run/id
-                    job-run/status
-                    job-run/started-at
-                    job-run/stopped-at]
-             {job-name :job/name} :job-run/job}
+      (let [{:keys [job/id
+                    job/status
+                    job/started-at
+                    job/stopped-at]
+             job-name :job/name}
             (om-next/props this)]
         (card/basic
          (element :content
@@ -75,20 +75,23 @@
                                                             :stop stopped-at})]
                    "-")]]]]])))))))
 
-(def job-run (om-next/factory JobRun {:keyfn :job-run/id}))
+(def job (om-next/factory Job {:keyfn :job/id}))
 
 (defn- build-page [app owner]
   (reify
     om/IWillMount
     (will-mount [_]
-      (let [vcs_type "github"
-            project-name "circleci/circle"
-            build-num 162332
-            build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)]
+      (let [{:keys [:build/vcs-type :build/org :build/repo :build/number]} (:job-build app)
+            build-url (gstring/format "/api/v1.1/project/%s/%s/%s/%s"
+                                      (name vcs-type)
+                                      org
+                                      repo
+                                      number)]
         (ajax/ajax :get build-url
                    :build-fetch
                    (om/get-shared owner [:comms :api])
-                   :context {:project-name project-name :build-num build-num})))
+                   :context {:project-name (gstring/format "%s/%s" org repo)
+                             :build-num number})))
     om/IRender
     (render [_]
       (html
@@ -118,7 +121,9 @@
                         ;; but this is the fast way to get something on the
                         ;; screen for a prototype.
                         (into (om-next/get-query workflow-page/RunRow)
-                              [{:run/job-runs (om-next/get-query JobRun)}])}]}])
+                              [{:run/jobs (into [:job/build
+                                                 :job/name]
+                                                (om-next/get-query Job))}])}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -136,7 +141,10 @@
        {:app (:legacy/state (om-next/props this))
         :main-content
         (element :main-content
-          (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])]
+          (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])
+                first-job (-> run :run/jobs first)
+                first-job-build (:job/build first-job)
+                first-job-name (:job/name first-job)]
             (html
              [:div
               (when-not (empty? run)
@@ -147,17 +155,23 @@
                  [:.hr-title
                   [:span "Jobs"]]]
                 (card/collection
-                 (map job-run (:run/job-runs run)))]
+                 (map job (:run/jobs run)))]
                [:.output
                 [:div.output-header
-                  [:.output-title
-                   [:span "job-name #1234"]]
-                  (button/icon {:label "Retry job-name"
-                                :disabled? true}
-                               (icon/rebuild))
-
-                  #_(button/button {:kind :primary
-                                  :size :medium
-                                  :label "Retry job-name"}
-                                 [:span.iconed-button (icon/rebuild) "Retry"])]
-                (build-legacy build-page (:legacy/state (om-next/props this)))]]])))}))))
+                 [:.output-title
+                  [:span (gstring/format "%s #%s"
+                                         first-job-name
+                                         (:build/number first-job-build))]]
+                 (button/icon {:label (gstring/format "Retry %s"
+                                                      first-job-name)
+                               :disabled? true}
+                              (icon/rebuild))
+                 #_(button/button {:kind :primary
+                                 :size :medium
+                                 :label (gstring/format "Retry %s"
+                                                        first-job-name)}
+                                [:span.iconed-button (icon/rebuild) "Retry"])]
+                (when first-job-build
+                  (build-legacy build-page (assoc (:legacy/state (om-next/props this))
+                                                  :job-build
+                                                  first-job-build)))]]])))}))))

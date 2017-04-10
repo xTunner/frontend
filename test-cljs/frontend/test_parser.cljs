@@ -28,11 +28,10 @@
                            :organization/by-vcs-type-and-name {{:organization/vcs-type "github"
                                                                 :organization/name "acme"}
                                                                {:organization/avatar-url "http://i.imgur.com/UaQcTEe.jpg"}}
-                           :workflow/by-org-project-and-name {{:organization/vcs-type "github"
-                                                               :organization/name "acme"
-                                                               :project/name "anvil"
-                                                               :workflow/name "build-test-deploy"}
-                                                              {::made-up-key 5}}})}]
+                           :project/by-org-and-name {{:project/name "anvil"
+                                                      :project/organization {:organization/vcs-type "github"
+                                                                             :organization/name "acme"}}
+                                                     {::made-up-key 5}}})}]
     (testing "local reads read from the matching table(s)"
       (is (= {:app/route-data {:route-data/organization {:organization/avatar-url "http://i.imgur.com/UaQcTEe.jpg"}
                                :route-data/workflow {::made-up-key 5}}}
@@ -44,10 +43,9 @@
                                                                          :organization/name "acme"}]
                                     [:organization/avatar-url]}
 
-                                   {[:workflow/by-org-project-and-name {:organization/vcs-type "github"
-                                                                        :organization/name "acme"
-                                                                        :project/name "anvil"
-                                                                        :workflow/name "build-test-deploy"}]
+                                   {[:project/by-org-and-name {:project/name "anvil"
+                                                               :project/organization {:organization/vcs-type "github"
+                                                                                      :organization/name "acme"}}]
                                     [::made-up-key]}]}]]
                remote-query))
         (is (every? #(:query-root (meta %))

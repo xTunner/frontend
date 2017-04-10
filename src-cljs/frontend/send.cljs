@@ -33,33 +33,26 @@
                                 "canceled" :job-run-status/canceled
                                 "running" :job-run-status/running
                                 "waiting" :job-run-status/waiting}]
-    {:job-run/id (:job/id job-response)
-     :job-run/status (status->job-run-status (:job/status job-response))
-     :job-run/started-at (js/Date.) ;; FIXME
-     :job-run/stopped-at (js/Date.) ;; FIXME
-     :job-run/job {:job/id (:job/id job-response)
-                   :job/name (:job/name job-response)}}))
+    {:job/id (:job/id job-response)
+     :job/status (status->job-run-status (:job/status job-response))
+     :job/started-at (js/Date.) ;; FIXME
+     :job/stopped-at (js/Date.) ;; FIXME
+     :job/name (:job/name job-response)
+     :job/build (:job/build job-response)}))
 
 (defn adapt-to-run
   [response]
   {:run/id (:workflow/id response)
    :run/name (:workflow/name response)
+   :run/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
+                 :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
+                                        :organization/vcs-type "github"}}
    :run/status :run-status/succeeded
    :run/started-at (:workflow/created-at response)
    :run/stopped-at nil  ;; FIXME
    :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
    :run/commit-sha (get-in response [:workflow/trigger-resource :data :vcs_revision])
-   :run/job-runs (mapv adapt-to-job (:workflow/jobs response))})
-
-(defn adapt-to-workflow
-  [response]
-  {:workflow/id (:workflow/id response)
-   :workflow/name (:workflow/name response)
-   :workflow/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
-                      :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
-                                             :organization/vcs-type "github"}} ;; FIXME
-   :workflow/runs [(adapt-to-run response)]})
-
+   :run/jobs (mapv adapt-to-job (:workflow/jobs response))})
 
 (defmulti send* key)
 
@@ -137,12 +130,17 @@
            (cb (rewrite {(om-util/join-key expr) project}) ui-query)))
 
        (and (om-util/ident? (om-util/join-key expr))
-            (= :workflow/by-org-project-and-name (first (om-util/join-key expr))))
+            (= :project/by-org-and-name (first (om-util/join-key expr)))
+            (some #(and (map? %)
+                        (-> % first key (= :project/workflow-runs)))
+                  (om-util/join-value expr)))
        ;; Generate fake data for now.
        (api/get-workflow-status
         (callback-api-chan
          (fn [response]
-           (cb (rewrite {(om-util/join-key expr) (adapt-to-workflow response)})
+           (cb (rewrite {(om-util/join-key expr) (assoc (second (om-util/join-key expr))
+                                                        :project/workflow-runs
+                                                        [(adapt-to-run response)])})
                ui-query))))
 
        (and (om-util/ident? (om-util/join-key expr))
