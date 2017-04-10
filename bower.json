@@ -16,8 +16,5 @@
     "d3": "3.5.5",
     "svg-injector": "1.1.3",
     "prism": "https://github.com/PrismJS/prism.git#~1.3.0"
-  },
-  "devDependencies": {
-    "jquery-mockjax": "1.5.3"
   }
 }
