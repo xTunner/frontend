@@ -387,6 +387,7 @@
         :failed-text "Failed"
         :on-click on-click-fn
         :kind :primary
+        :fixed? true
         :disabled? disabled?}
        text))))
 
