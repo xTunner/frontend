@@ -332,13 +332,22 @@
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
-               [:a (common/contact-support-a-info owner)
-                "Contact us if you'd like more."]]
+
+               (button/link {:kind :primary
+                             :href (common/contact-support-a-info owner)}
+                            "Contact us for more.")]
 
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers for " parallelism "x."
-               [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+               (button/link {:kind :primary
+                             :href (routes/v1-org-settings-path {:org plan-org-name
+                                                                 :vcs_type plan-vcs-type
+                                                                 :_fragment "linux-pricing"})
+                             :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                             :properties {:button-text add-button-text}})}
+                            add-button-text)
+               #_[:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                         :vcs_type plan-vcs-type
                                                         :_fragment "linux-pricing"})
                     :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
@@ -347,10 +356,11 @@
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
-           [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                    :vcs_type plan-vcs-type
-                                                    :_fragment "linux-pricing"})}
-            "Add a plan"]]))]
+           (button/link {:kind :primary
+                         :href (routes/v1-org-settings-path {:org plan-org-name
+                                                             :vcs_type plan-vcs-type
+                                                             :_fragment "linux-pricing"})}
+                        "Add a plan")]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
      ;; but only on the tiles between (allowed parallelism and their current parallelism]
@@ -361,10 +371,11 @@
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
                                                parallelism "x parallelism.")}]
-        [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                 :vcs_type plan-vcs-type
-                                                 :_fragment "linux-pricing"})}
-         "Upgrade"]]))))
+        (button/link {:kind :primary
+                      :href (routes/v1-org-settings-path {:org plan-org-name
+                                                          :vcs_type plan-vcs-type
+                                                          :_fragment "linux-pricing"})}
+                     "Upgrade plan")]))))
 
 (defn get-offered-parallelism
   "In enterprise, offer whatever their plan's setting is (since they cannot upgrade).
@@ -1721,6 +1732,7 @@
                      "here"]
                     "."]
                    (button/button {:kind :primary
+                                   :fixed? true
                                    :on-click (fn [_]
                                                (om/set-state! owner :modal :connect)
                                                (track-event "connect"))}
@@ -1734,6 +1746,7 @@
                         "S")
                       "tore your JIRA username, password, and JIRA base hostname to connect JIRA and CircleCI.")]
                  (button/button {:kind :primary
+                                 :fixed? true
                                  :on-click (fn [_]
                                              (om/set-state! owner :modal :basic)
                                              (track-event "basic"))}
