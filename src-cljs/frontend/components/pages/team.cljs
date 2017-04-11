@@ -310,13 +310,13 @@
                                        [:span
                                         (button/button
                                           {:kind :secondary
-                                           :size :medium
+                                           :size :small
                                            :on-click #(raise! owner [:org-settings-normalized {:org-name org-name :vcs-type vcs-type}])}
                                           (str "Resync with " vcs-label))]
                                        [:span
                                         (button/button
                                           {:kind :primary
-                                           :size :medium
+                                           :size :small
                                            :on-click #(do
                                                        (om/set-state! owner :show-invite-modal? true)
                                                        ((om/get-shared owner :track-event)

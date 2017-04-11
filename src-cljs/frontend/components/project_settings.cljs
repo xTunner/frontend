@@ -572,7 +572,7 @@
             {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                      :kind :primary
-                                     :size :medium}
+                                     :size :small}
                                     "Add Variable")}
             (html
              [:div
@@ -1073,7 +1073,7 @@
             {:title (str "SSH keys for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                      :kind :primary
-                                     :size :medium}
+                                     :size :small}
                                     "Add SSH Key")}
             (html
              [:div
@@ -1383,7 +1383,7 @@
             {:title (str "API tokens for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                      :kind :primary
-                                     :size :medium}
+                                     :size :small}
                                     "Create Token")}
             (html
              [:div

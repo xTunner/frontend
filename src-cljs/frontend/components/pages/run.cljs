@@ -167,7 +167,7 @@
                                :disabled? true}
                               (icon/rebuild))
                  #_(button/button {:kind :primary
-                                 :size :medium
+                                 :size :small
                                  :label (gstring/format "Retry %s"
                                                         first-job-name)}
                                 [:span.iconed-button (icon/rebuild) "Retry"])]

@@ -25,7 +25,7 @@
                                           :on-click #(analytics/track! c {:event-type :authorize-vcs-clicked
                                                                           :properties {:vcs-type type}})
                                           :kind :primary
-                                          :size :medium}
+                                          :size :small}
                                          "Connect"))}
                  (element :body
                    (html

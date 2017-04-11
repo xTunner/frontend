@@ -458,7 +458,7 @@
            :close-fn #(do (analytics-track/cancel-plan-modal-dismissed
                             (merge track-properties {:current-state app :component "close-x"}))
                           (close-fn))
-           :actions [(button/button 
+           :actions [(button/button
                        {:on-click #(do (analytics-track/cancel-plan-modal-dismissed
                                          (merge track-properties {:current-state app :component "close-button"}))
                                        (close-fn))}
@@ -478,7 +478,7 @@
                           :disabled? enable-button?
                           :success-text "Canceled"
                           :loading-text "Canceling..."
-                          :on-click #(raise! owner [:cancel-plan-clicked 
+                          :on-click #(raise! owner [:cancel-plan-clicked
                                                      (merge track-properties {:org-name org-name
                                                                               :cancel-reasons reasons
                                                                               :cancel-notes notes
@@ -1037,7 +1037,7 @@
                                    :loading-text "Updating"
                                    :on-click #(raise! owner [:update-card-clicked])
                                    :kind :primary
-                                   :size :medium}
+                                   :size :small}
                                   "Update Credit Card")}
                        (om/build table/table
                                  {:rows [card]
@@ -1109,7 +1109,7 @@
                         :action (button/managed-button {:kind :primary
                                                         :success-text "Saved Statement Info"
                                                         :loading-text "Saving Statement Info..."
-                                                        :size :medium
+                                                        :size :small
                                                         :on-click #(raise! owner [:save-invoice-data-clicked])}
                                                        "Save Statement Info")}
 
@@ -1197,7 +1197,7 @@
                                                      :loading-text "Sending..." ,
                                                      :on-click #(raise! owner [:resend-invoice-clicked
                                                                                {:invoice-id (:id invoice)}])
-                                                     :size :medium
+                                                     :size :small
                                                      :kind :flat}
                                                     "Resend"))}]})])))))))
 
@@ -1434,7 +1434,7 @@
                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                                     :vcs_type plan-vcs-type
                                                                     :_fragment "osx-pricing"})} "Choose OS X plan"]])
-                  
+
                  "."]
                 [:fieldset
                  (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))

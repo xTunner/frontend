@@ -157,7 +157,7 @@
                                   :ref "file-input"
                                   :on-change #(file-selected-fn (-> % .-target .-files (aget 0)))}]
                          (button/button {:on-click #(.click (om/get-node owner "file-input"))
-                                         :size :medium}
+                                         :size :small}
                                         (element :button-label
                                           (html
                                            [:span

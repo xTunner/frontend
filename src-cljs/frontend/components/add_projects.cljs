@@ -80,7 +80,7 @@
     (render [_]
       (button/button {:on-click #(raise! owner [:refreshed-user-orgs {}])
                       :kind :primary
-                      :size :medium}
+                      :size :small}
                      "Reload Organizations"))))
 
 (defn- repo-title [repo link?]

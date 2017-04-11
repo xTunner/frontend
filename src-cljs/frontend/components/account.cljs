@@ -100,7 +100,7 @@
           (card/titled {:title "API Tokens"
                         :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                                 :kind :primary
-                                                :size :medium}
+                                                :size :small}
                                                "Create New Token")}
                        [:div
                         [:div.api-item

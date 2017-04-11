@@ -134,7 +134,7 @@
                 :failed-text  "Couldn't Cancel"
                 :success-text "Canceled"
                 :kind :secondary
-                :size :medium
+                :size :small
                 :bordered? true
                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                "Cancel Build"))
