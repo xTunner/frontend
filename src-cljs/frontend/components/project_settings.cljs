@@ -211,8 +211,9 @@
                         "Projects are only tested if they have a follower."]
                        (button/managed-button
                          {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                          :kind :primary
                           :loading-text "Following..."}
-                         "Follow")]))])))]])))))
+                         "Follow Project")]))])))]])))))
 
 
 (defn build-environment [project-data owner]
