@@ -539,8 +539,8 @@
                                                                    :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
                              :actions [(button/button {:on-click #(do (analytics-track/env-vars-modal-dismissed
                                                                         (merge track-properties {:component "cancel"}))
-                                                                      (close-fn))}
-                                         "Cancel")
+                                                                      (close-fn))
+                                                       :kind :flat} "Cancel")
                                        (button/managed-button {:failed-text "Failed"
                                                                :success-text "Added"
                                                                :loading-text "Adding..."
