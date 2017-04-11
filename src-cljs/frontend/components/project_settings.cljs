@@ -346,13 +346,8 @@
                                                                  :_fragment "linux-pricing"})
                              :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
                                                                              :properties {:button-text add-button-text}})}
-                            add-button-text)
-               #_[:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                        :vcs_type plan-vcs-type
-                                                        :_fragment "linux-pricing"})
-                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
-                                                                    :properties {:button-text add-button-text}})}
-                add-button-text]])
+                            add-button-text)])
+
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
