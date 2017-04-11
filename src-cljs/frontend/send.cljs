@@ -141,7 +141,8 @@
            (cb (rewrite {(om-util/join-key expr) (assoc (second (om-util/join-key expr))
                                                         :project/workflow-runs
                                                         [(adapt-to-run response)])})
-               ui-query))))
+               ui-query)))
+        {})
 
        (and (om-util/ident? (om-util/join-key expr))
             (= :run/by-id (first (om-util/join-key expr))))
@@ -149,7 +150,9 @@
         (callback-api-chan
          (fn [response]
            (cb (rewrite {(om-util/join-key expr) (adapt-to-run response)})
-               ui-query))))
+               ui-query)))
+        {:type :get-workflow-status
+         :params {:run/id (second (om-util/join-key expr))}})
 
        :else (throw (str "No clause found for " (pr-str expr)))))))
 
