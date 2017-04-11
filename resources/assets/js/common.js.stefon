@@ -3,7 +3,6 @@
   "../../components/jquery/dist/jquery.min.js" ;; TODO: used by bootstrap
   "../../components/bootstrap3-typeahead/bootstrap3-typeahead.min.js" ;; docs typeahead
   "../../components/jquery-placeholder/jquery.placeholder.min.js" ;; TODO: necessary?
-  "../../components/marked/lib/marked.js" ;; used by docs
   "../../components/d3/d3.min.js" ;; used by build time visualization; FIX load on demand?
   "../../components/svg-injector/svg-injector.js"
   "../../components/prism/prism.js" ;; syntax highlighting

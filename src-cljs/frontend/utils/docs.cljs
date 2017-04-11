@@ -88,13 +88,6 @@
                   (fn [[_ asset]]
                     (str "(" (stefon/asset-path asset) ")"))))
 
-(defn render-markdown [input]
-  (when input
-    (-> input
-        replace-asset-paths
-        replace-variables
-        js/marked)))
-
 (defn article-info [doc-kw doc]
   (let [doc-name (name doc-kw)
         children (map keyword (or (:children doc) []))
