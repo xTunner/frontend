@@ -14,21 +14,24 @@
 
     font-size: @baseFontSize;
 
-    width: 155px;
     height: 36px;
-    padding: 4px 6px;
+    padding: 4px 1em;
     line-height: 1;
 
     cursor: pointer;
     white-space: nowrap;
 
     color: @grayDark;
-    border: none;
+    border: 1px solid transparent;
     border-radius: 3px;
     background-color: @grayLightest;
     font-weight: 500;
 
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &.fixed {
+      width: 155px;
+    }
 
     &:hover {
       background-color: darken(@grayLightest, 19%);
@@ -128,6 +131,7 @@
   .icon-button-styles() {
     width: 30px;
     height: 30px;
+    padding: 4px 6px;
 
     // OVERRIDE--ICON-STYLE
     i {
@@ -135,16 +139,31 @@
       color: inherit;
     }
 
-    &:active {
-      i {
-        color: @whiten;
-      }
-    }
-
     &[disabled] {
       i {
         color: inherit;
       }
+    }
+
+    &:hover {
+      background-color: darken(@grayLightest, 19%);
+    }
+
+    &:focus {
+      outline: none;
+      border: 1px solid darken(@grayLightest, 56%);
+    }
+
+    &:active {
+      background-color: darken(@grayLightest, 38%);
+      outline: none;
+      color: @white;
+    }
+
+    &[disabled] {
+      color: @grayLight;
+      background-color: @grayLightest;
+      cursor: not-allowed;
     }
   }
 

@@ -49,21 +49,20 @@
         font-size: @fontSizeSmaller;
         font-weight: 500;
 
-        &:focus:not(.disabled) {
-          border-color: @blueLight;
-          outline: none;
-          box-shadow: 0 0 4px 0 rgba(29, 132, 148, 0.8);
+        &:hover:not(.disabled) {
+          background-color: darken(@grayLightest, 19%);
         }
 
-        &:focus:not(.disabled),
-        &:hover:not(.disabled) {
-          background-color: @grayLighter;
+        &:focus:not(.disabled) {
+          outline: none;
+          border: 1px solid darken(@grayLightest, 56%);
         }
 
         &:active:not(.disabled) {
-          background-color: @grayLight;
+          background-color: darken(@grayLightest, 38%);
           outline: none;
-          color: @whiten;
+          color: @white;
+          cursor: not-allowed;
         }
       }
 
