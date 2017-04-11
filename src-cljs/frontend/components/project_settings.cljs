@@ -335,7 +335,7 @@
 
                (button/link {:kind :primary
                              :href (common/contact-support-a-info owner)}
-                            "Contact us for more.")]
+                            "Contact us for more")]
 
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
