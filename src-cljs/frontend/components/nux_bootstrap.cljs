@@ -54,7 +54,8 @@
                                                              selected-not-building-projects-count
                                                              selected-building-projects-count)]
                                          [:p "We will add your SSH key to all of the new projects, and then build them for the first time."]]
-                                  :actions [(button/button {:on-click close-fn} "Cancel")
+                                  :actions [(button/button {:on-click close-fn
+                                                            :kind :flat} "Cancel")
                                             (button/managed-button {:kind :primary
                                                                     :loading-text "Following..."
                                                                     :failed-text "Failed"

@@ -234,7 +234,8 @@
                                                                                                             (select! owner user))
                                                                                                           (deselect! owner user))}]))}]
                                                             :striped? true})]))]))
-                                  :actions [(button/button {:on-click close-fn} "Cancel")
+                                  :actions [(button/button {:on-click close-fn
+                                                            :kind :flat} "Cancel")
                                             (button/managed-button {:success-text "Sent"
                                                                     :on-click #(do
                                                                                  (raise! owner [:invited-team-members {:invitees (invitees state vcs-users)

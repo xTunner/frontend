@@ -39,7 +39,7 @@
           (let [content
                 (html
                   [:div
-                   [:span 
+                   [:span
                     (str "We couldn't detect the settings for your project! "
                          "Please make sure you have a circle.yml configuration "
                          "file in place, and check our doc about ")
@@ -60,14 +60,14 @@
         (modal/modal-dialog
           {:title "We couldnt determine the test settings for your project"
            :body (html
-                   [:span 
+                   [:span
                     (str "We're sorry about that! Please make sure you have a "
                          "circle.yml configuration file in place, and check "
                          "our doc about ")
                     [:a (setup-docs-link-props track-fn)
                         "manual build setup"]
                     "."])
-           :actions [(button/button {:kind :primary 
-                                     :on-click close-fn} 
+           :actions [(button/button {:kind :primary
+                                     :on-click close-fn}
                                     "Got it")]
            :close-fn close-fn})))))

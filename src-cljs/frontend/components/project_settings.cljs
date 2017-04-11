@@ -64,7 +64,8 @@
           (let [close-fn #(om/set-state! owner :show-modal? false)]
             (modal/modal-dialog {:title "Are you sure?"
                                  :body confirmation-question
-                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                 :actions [(button/button {:on-click close-fn
+                                                           :kind :flat} "Cancel")
                                            (button/button {:kind :primary
                                                            :on-click remove-fn}
                                                           "Remove")]
@@ -1091,7 +1092,8 @@
                                                          :required true
                                                          :value private-key
                                                          :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}))
-                    :actions [(button/button {:on-click close-fn} "Cancel")
+                    :actions [(button/button {:on-click close-fn
+                                              :kind :flat} "Cancel")
                               (button/managed-button
                                {:failed-text "Failed"
                                 :success-text "Saved"
@@ -1409,7 +1411,8 @@
                                                                                                                    %)
                                                                                      :label "Token Label"}))])
                                        :close-fn close-fn
-                                       :actions [(button/button {:on-click close-fn} "Cancel")
+                                       :actions [(button/button {:on-click close-fn
+                                                                 :kind :flat} "Cancel")
                                                  (button/managed-button
                                                   {:failed-text  "Failed"
                                                    :success-text "Added"
@@ -1621,7 +1624,8 @@
                          (om/build form/text-field {:label "JIRA base hostname"
                                                     :value (:base_url credentials)
                                                     :on-change #(utils/edit-input owner (jira-input-path :base_url) %)}))])
-      :actions [(button/button {:on-click close-fn} "Cancel")
+      :actions [(button/button {:on-click close-fn
+                                :kind :flat} "Cancel")
                 (button/managed-button
                  {:failed-text "Failed"
                   :success-text "Saved"
@@ -1664,7 +1668,8 @@
                                     :on-change #(utils/edit-input owner
                                                                   (jira-input-path :circle_token)
                                                                   %)}))])
-      :actions [(button/button {:on-click close-fn} "Cancel")
+      :actions [(button/button {:on-click close-fn
+                                :kind :flat} "Cancel")
                 (button/managed-button
                  {:failed-text "Failed"
                   :success-text "Saved"

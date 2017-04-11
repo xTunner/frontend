@@ -109,7 +109,7 @@
   (defcard dialog
     (dialog {:title "Are you sure?"
              :body "Are you sure you want to remove the \"Foo\" Apple Code Signing Key?"
-             :actions [(button/button {} "Cancel")
+             :actions [(button/button {:kind :flat} "Cancel")
                        (button/button {:kind :primary} "Delete")]
              :close-fn identity})
     {}
@@ -150,7 +150,7 @@
          (when (:shown? @state)
            (modal-dialog {:title "Are you sure?"
                           :body "Are you sure you want to remove the \"Foo\" Apple Code Signing Key?"
-                          :actions [(button/button {} "Cancel")
+                          :actions [(button/button {:kind :flat} "Cancel")
                                     (button/button {:kind :primary} "Delete")]
                           :close-fn #(swap! state assoc :shown? false)}))]]))
     {:shown? false}))
