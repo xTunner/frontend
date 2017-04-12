@@ -65,7 +65,8 @@
             (modal/modal-dialog {:title "Are you sure?"
                                  :body confirmation-question
                                  :actions [(button/button {:on-click close-fn
-                                                           :kind :flat} "Cancel")
+                                                           :kind :flat}
+                                                          "Cancel")
                                            (button/button {:kind :primary
                                                            :on-click remove-fn}
                                                           "Remove")]
@@ -546,7 +547,8 @@
                              :actions [(button/button {:on-click #(do (analytics-track/env-vars-modal-dismissed
                                                                         (merge track-properties {:component "cancel"}))
                                                                       (close-fn))
-                                                       :kind :flat} "Cancel")
+                                                       :kind :flat}
+                                                      "Cancel")
                                        (button/managed-button {:failed-text "Failed"
                                                                :success-text "Added"
                                                                :loading-text "Adding..."
@@ -1100,7 +1102,8 @@
                                                          :value private-key
                                                          :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}))
                     :actions [(button/button {:on-click close-fn
-                                              :kind :flat} "Cancel")
+                                              :kind :flat}
+                                             "Cancel")
                               (button/managed-button
                                {:failed-text "Failed"
                                 :success-text "Saved"
@@ -1419,7 +1422,8 @@
                                                                                      :label "Token Label"}))])
                                        :close-fn close-fn
                                        :actions [(button/button {:on-click close-fn
-                                                                 :kind :flat} "Cancel")
+                                                                 :kind :flat}
+                                                                "Cancel")
                                                  (button/managed-button
                                                   {:failed-text  "Failed"
                                                    :success-text "Added"
@@ -1632,7 +1636,8 @@
                                                     :value (:base_url credentials)
                                                     :on-change #(utils/edit-input owner (jira-input-path :base_url) %)}))])
       :actions [(button/button {:on-click close-fn
-                                :kind :flat} "Cancel")
+                                :kind :flat}
+                               "Cancel")
                 (button/managed-button
                  {:failed-text "Failed"
                   :success-text "Saved"
@@ -1676,7 +1681,8 @@
                                                                   (jira-input-path :circle_token)
                                                                   %)}))])
       :actions [(button/button {:on-click close-fn
-                                :kind :flat} "Cancel")
+                                :kind :flat}
+                               "Cancel")
                 (button/managed-button
                  {:failed-text "Failed"
                   :success-text "Saved"

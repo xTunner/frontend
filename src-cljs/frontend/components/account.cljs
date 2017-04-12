@@ -173,7 +173,8 @@
                                           [:li "Keep the private beta, private. Please no tweets, blogs, or other public
                                                     posting, but we do encourage you to talk with your coworkers!"]]]))
                         :actions [(button/button {:on-click close-fn
-                                                  :kind :flat} "Cancel")
+                                                  :kind :flat}
+                                                 "Cancel")
                                   (button/button
                                    {:kind :primary
                                     :on-click #(do

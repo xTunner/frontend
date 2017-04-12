@@ -252,7 +252,8 @@
                                                         (count unfollowed-repos)
                                                         org-name)
                                   :actions [(button/button {:on-click close-fn
-                                                            :kind :flat} "Cancel")
+                                                            :kind :flat}
+                                                           "Cancel")
                                             (button/managed-button {:kind :primary
                                                                     :success-text "Removed"
                                                                     :loading-text "Removing..."
