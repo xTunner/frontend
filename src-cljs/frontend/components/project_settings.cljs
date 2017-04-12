@@ -336,7 +336,7 @@
 
                (button/link {:kind :primary
                              :href (common/contact-support-a-info owner)}
-                            "Contact us for more")]
+                            "Contact Us For More")]
 
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
@@ -356,7 +356,7 @@
                          :href (routes/v1-org-settings-path {:org plan-org-name
                                                              :vcs_type plan-vcs-type
                                                              :_fragment "linux-pricing"})}
-                        "Add a plan")]))]
+                        "Add a Plan")]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
      ;; but only on the tiles between (allowed parallelism and their current parallelism]
@@ -371,7 +371,7 @@
                       :href (routes/v1-org-settings-path {:org plan-org-name
                                                           :vcs_type plan-vcs-type
                                                           :_fragment "linux-pricing"})}
-                     "Upgrade plan")]))))
+                     "Upgrade Plan")]))))
 
 (defn get-offered-parallelism
   "In enterprise, offer whatever their plan's setting is (since they cannot upgrade).
