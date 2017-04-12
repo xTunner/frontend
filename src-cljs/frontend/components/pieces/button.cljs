@@ -173,7 +173,9 @@
 
 
     ## Widths
-    Button widths vary based on button text length and can have a **Fixed** attribute which if set to **true** will make the button fixed width for cases where we want buttons to be consistent."
+    Button widths vary based on button text length and can have a **Fixed**
+    attribute which if set to **true** will make the button fixed width for
+    cases where we want buttons to be consistent."
 
     (button-display
      [;; Primary buttons
@@ -334,7 +336,8 @@
                   (icon/settings))]]))
 
   (defcard bordered-buttons
-    "Buttons with borders are used in the header. This is design debt and will be addressed when we revisit the build/run page header."
+    "Buttons with borders are used in the header. This is design debt and will
+    be addressed when we revisit the build/run page header."
     (button-display
      [
       [(managed-button {:bordered? true
