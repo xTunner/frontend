@@ -336,8 +336,9 @@
                   (icon/settings))]]))
 
   (defcard bordered-buttons
-    "Buttons with borders are used in the header. This is design debt and will
-    be addressed when we revisit the build/run page header."
+    "Buttons with borders are used in the page header. This is design debt
+    [documented in Jira](https://circleci.atlassian.net/browse/CIRCLE-3972)
+    and will be addressed when we revisit the page headers."
     (button-display
      [
       [(managed-button {:bordered? true
