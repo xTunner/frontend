@@ -14,7 +14,7 @@
     (assert backend)
     {:url (str (:proto backend) "://"
                (:host backend)
-               (:uri req)
+               (or (:uri backend) (:uri req))
                (query-string-with-om-build-id req))
      :timeout 120000 ;ms
      :method (:request-method req)
