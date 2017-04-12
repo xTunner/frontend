@@ -43,3 +43,10 @@
 
 (defn project-path [vcs-url]
   (str "/" (vcs/->short-vcs (vcs-type vcs-url)) "/" (project-name vcs-url)))
+
+(defn vcs-url [vcs-type org repo]
+  (let [protocol "https://"
+        host (case (name vcs-type)
+               "github" "github.com"
+               "bitbucket" "bitbucket.org")]
+    (string/join "/" [(str protocol host) org repo])))

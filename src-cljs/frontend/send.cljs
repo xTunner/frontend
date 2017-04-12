@@ -135,14 +135,20 @@
                         (-> % first key (= :project/workflow-runs)))
                   (om-util/join-value expr)))
        ;; Generate fake data for now.
-       (api/get-workflow-status
-        (callback-api-chan
-         (fn [response]
-           (cb (rewrite {(om-util/join-key expr) (assoc (second (om-util/join-key expr))
-                                                        :project/workflow-runs
-                                                        [(adapt-to-run response)])})
-               ui-query)))
-        {})
+       (let [{:as project-id
+              project-name :project/name
+              {org-name :organization/name
+               vcs-type :organization/vcs-type} :project/organization}
+             (second (om-util/join-key expr))]
+         (api/get-project-workflows
+          (callback-api-chan
+           (fn [response]
+             (cb (rewrite {(om-util/join-key expr) (assoc project-id
+                                                          :project/workflow-runs
+                                                          (mapv adapt-to-run
+                                                                response))})
+                 ui-query)))
+          (vcs-url/vcs-url vcs-type org-name project-name)))
 
        (and (om-util/ident? (om-util/join-key expr))
             (= :run/by-id (first (om-util/join-key expr))))
@@ -151,8 +157,7 @@
          (fn [response]
            (cb (rewrite {(om-util/join-key expr) (adapt-to-run response)})
                ui-query)))
-        {:type :get-workflow-status
-         :params {:run/id (second (om-util/join-key expr))}})
+        (second (om-util/join-key expr)))
 
        :else (throw (str "No clause found for " (pr-str expr)))))))
 
