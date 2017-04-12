@@ -340,8 +340,7 @@
     [documented in Jira](https://circleci.atlassian.net/browse/CIRCLE-3972)
     and will be addressed when we revisit the page headers."
     (button-display
-     [
-      [(managed-button {:bordered? true
+     [[(managed-button {:bordered? true
                         :size :small}
                        "Bordered Button")
        (managed-button {:fixed? true
