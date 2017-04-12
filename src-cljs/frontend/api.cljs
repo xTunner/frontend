@@ -76,11 +76,10 @@
 
 (defn get-workflow-status [api-ch run-id]
   (ajax/ajax :post
-             "https://api.circleci.com/query"
+             "/query-api"
              :workflow-status
              api-ch
              :format :transit
-             :with-credentials true
              :params
              {:type :get-workflow-status
               :params {:run/id run-id}}))
@@ -91,7 +90,6 @@
              :workflow-status
              api-ch
              :format :transit
-             :with-credentials true
              :params
              {:type :get-project-workflows
               :params {:vcs-url vcs-url}}))
