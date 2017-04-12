@@ -181,19 +181,19 @@
      [;; Primary buttons
       [(button {:kind :primary
                 :on-click #(js/alert "Clicked!")}
-               "Default")
+               "Primary")
        (button {:disabled? true
                 :kind :primary
                 :on-click #(js/alert "Clicked!")}
-               "Default Disabled")
+               "Primary Disabled")
        (button {:fixed? true
                 :kind :primary
                 :on-click #(js/alert "Clicked!")}
-               "Default Fixed")
+               "Primary Fixed")
        (button {:kind :primary
                 :size :small
                 :on-click #(js/alert "Clicked!")}
-               "Default Small")]
+               "Primary Small")]
 
       ;; Secondary buttons
       [(button {:on-click #(js/alert "Clicked!")}
@@ -281,11 +281,11 @@
      [;; Primary link buttons
       [(link {:kind :primary
               :href "#"}
-             "Default Link")
+             "Primary Link")
        (link {:fixed? true
               :kind :primary
               :href "#"}
-             "Default Link Fixed")
+             "Primary Link Fixed")
        (link {:kind :primary
               :href "#"
               :size :small}
