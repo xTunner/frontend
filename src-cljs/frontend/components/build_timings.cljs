@@ -154,6 +154,13 @@
                         (aget step "index")
                         (aget step "step")))
 
+(defn foreground-actions
+  "filter out background processes whose timing isn't to be represented in timings"
+  [step]
+  (let [actions (aget step "actions")]
+    ;; actions is a js array so use js filter to avoid converting back and forth
+    (.filter actions #(not (aget % "background")))))
+
 (defn draw-containers! [build x-scale step]
   (let [step-start-pos #(scaled-time x-scale % "start_time")
         step-length    #(- (scaled-time x-scale % "end_time")
@@ -161,7 +168,7 @@
         step-duration  #(datetime/as-duration (duration (aget % "start_time") (aget % "end_time")))]
     (-> step
         (.selectAll "rect")
-          (.data #(aget % "actions"))
+          (.data foreground-actions)
         (.enter)
           (.append "a")
             (.attr "href" (partial step-href build))
@@ -191,7 +198,7 @@
   (let [step-start-position #(scaled-time x-scale % "start_time")]
   (-> step
       (.selectAll "line")
-        (.data #(aget % "actions"))
+        (.data foreground-actions)
       (.enter)
         (.append "line")
         (.attr "class" "container-step-start-line")

@@ -155,8 +155,10 @@
 ;; lots of containers. Is there a good way to avoid recalculating this when selecting container pills? (Perhaps caching the calculated value using IWillUpdate / IShouldUpdate?)
 (defn container-utilization-duration
   [actions]
-  (apply + (map action-duration-ms actions)))
-
+  (->> actions
+       (remove :background)
+       (map action-duration-ms)
+       (apply +)))
 
 (defn container-duration-label [{:keys [actions]}]
   (reify
