@@ -236,7 +236,7 @@
                  start
                  (let [end-ms (if stop
                                 (.getTime (js/Date. stop))
-                                (datetime/server-now))
+                                (datetime/now))
                        duration-ms (- end-ms (.getTime (js/Date. start)))]
                    duration-ms))]
         (dom/span nil (formatter it))))))

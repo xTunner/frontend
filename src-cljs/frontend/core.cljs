@@ -100,8 +100,6 @@
            api-data (utils/third value)]
        (swap! state (wrap-api-instrumentation (partial api-con/api-event container message status api-data)
                                               api-data))
-       (when-let [date-header (get-in api-data [:response-headers "Date"])]
-         (datetime/update-server-offset date-header))
        (api-con/post-api-event! container message status api-data previous-state @state comms)))))
 
 (defn ws-handler

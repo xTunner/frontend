@@ -146,7 +146,7 @@
     (let [start (.getTime (js/Date. start_time))
           end (if end_time
                 (.getTime (js/Date. end_time))
-                (datetime/server-now))]
+                (datetime/now))]
       (- end start))
     0))
 
