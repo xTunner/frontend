@@ -134,7 +134,7 @@
   Object
   ;; TODO: Title this page.
   #_(componentDidMount [this]
-    (set-page-title! "Projects"))
+      (set-page-title! "Projects"))
   (render [this]
     (component
       (main-template/template
@@ -143,12 +143,21 @@
         (element :main-content
           (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])
                 first-job (-> run :run/jobs first)
-                first-job-build (:job/build first-job)
+                first-job-build (get-in (om-next/props this)
+                                        (into [:legacy/state]
+                                              state/build-path))
+                first-job-build-id (:job/build first-job)
                 first-job-name (:job/name first-job)]
             (html
              [:div
               (when-not (empty? run)
-                (workflow-page/run-row run))
+                (workflow-page/run-row (assoc run
+                                              :run/commit-sha
+                                              (:vcs_revision first-job-build)
+                                              :run/started-at
+                                              (:start_time first-job-build)
+                                              :run/stopped-at
+                                              (:stop_time first-job-build))))
               [:.jobs-and-output
                [:.jobs
                 [:div.jobs-header
@@ -161,7 +170,7 @@
                  [:.output-title
                   [:span (gstring/format "%s #%s"
                                          first-job-name
-                                         (:build/number first-job-build))]]
+                                         (:build/number first-job-build-id))]]
                  (button/icon {:label (gstring/format "Retry %s"
                                                       first-job-name)
                                :disabled? true}
@@ -171,7 +180,7 @@
                                  :label (gstring/format "Retry %s"
                                                         first-job-name)}
                                 [:span.iconed-button (icon/rebuild) "Retry"])]
-                (when first-job-build
+                (when first-job-build-id
                   (build-legacy build-page (assoc (:legacy/state (om-next/props this))
                                                   :job-build
-                                                  first-job-build)))]]])))}))))
+                                                  first-job-build-id)))]]])))}))))
