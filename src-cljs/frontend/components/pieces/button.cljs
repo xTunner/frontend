@@ -173,8 +173,9 @@
 
 
     ## Widths
-    Button widths vary based on button text length and can have a **Fixed**
-    attribute which if set to **true** will make the button fixed width for
+
+    Button widths vary based on button text length and can have a `fixed?`
+    attribute which if set to `true` will make the button fixed width for
     cases where we want buttons to be consistent."
 
     (button-display
