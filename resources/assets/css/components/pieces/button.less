@@ -30,18 +30,18 @@
 
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-    @darken-var: 10%;
+    @darken: 10%;
 
     &.fixed {
       width: 155px;
     }
 
     &:hover {
-      background-color: darken(@grayLightest, @darken-var);
+      background-color: darken(@grayLightest, @darken);
     }
 
     &:focus {
-      border-color: darken(@grayLightest, @darken-var);
+      border-color: darken(@grayLightest, @darken);
     }
 
     &:active {
@@ -147,11 +147,11 @@
     }
 
     &:hover {
-      background-color: darken(@grayLightest, 10%);
+      background-color: darken(@grayLightest, @darken);
     }
 
     &:focus {
-      border: 1px solid darken(@grayLightest, 10%);
+      border: 1px solid darken(@grayLightest, @darken);
     }
 
     &:active {
