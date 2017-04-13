@@ -91,7 +91,7 @@
                      (config/logging-enabled?)))
 
 (defn mlog [& messages]
-  (when true #_(logging-enabled?)
+  (when (logging-enabled?)
     (.apply (.-log js/console) js/console (clj->js messages))))
 
 (defn mwarn [& messages]
