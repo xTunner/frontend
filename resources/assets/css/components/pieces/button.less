@@ -30,18 +30,19 @@
 
     transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
-    @darken: 10%;
+    @darken-bg: 10%;
+    @darken-border: 26%;
 
     &.fixed {
       width: 155px;
     }
 
     &:hover {
-      background-color: darken(@grayLightest, @darken);
+      background-color: darken(@grayLightest, @darken-bg);
     }
 
     &:focus {
-      border-color: darken(@grayLightest, @darken);
+      border-color: darken(@grayLightest, @darken-border);
     }
 
     &:active {
@@ -111,11 +112,11 @@
       }
 
       &:focus {
-        border-color: darken(@grayLightest, @darken);
+        border-color: darken(@grayLightest, @darken-border);
       }
 
       &:active {
-        background-color: darken(@grayLightest, @darken);
+        background-color: darken(@grayLightest, @darken-bg);
       }
 
       &[disabled] {
@@ -147,11 +148,11 @@
     }
 
     &:hover {
-      background-color: darken(@grayLightest, @darken);
+      background-color: darken(@grayLightest, @darken-bg);
     }
 
     &:focus {
-      border: 1px solid darken(@grayLightest, @darken);
+      border: 1px solid darken(@grayLightest, @darken-border);
     }
 
     &:active {
