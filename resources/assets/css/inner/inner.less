@@ -48,6 +48,10 @@
     //
     // http://stackoverflow.com/questions/7813783/firefox-and-flexbox-when-using-white-space-nowrap-on-child-element-the-flexib#9737602
     height: 0;
+
+    // Explicitly set the z-index of the entire .below-top so the .top dropdowns
+    // will always appear above the .below-top, even children with z-indexes > 1.
+    z-index: 0;
   }
 
   span.strikeout {

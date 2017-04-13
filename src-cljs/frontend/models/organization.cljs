@@ -47,5 +47,5 @@
   "Compares two orgs, returns whether or not they are the same by
   comparing their name and their vcs_type"
   [org-a org-b]
-  (and (= (login org-a) (login org-b)
-          (= (:vcs_type org-a) (:vcs_type org-b)))))
+  (and (= (login org-a) (login org-b))
+       (= (:vcs_type org-a) (:vcs_type org-b))))

@@ -168,33 +168,42 @@
         border: 1px solid @white;
       }
 
-      @dropdown-width: 280px;
+      @dropdown-width: 355px;
 
       .org-button {
-        .flexy(center, space-between, row);
+        .flexy(center);
         width: @dropdown-width;
-        padding: 0 20px;
         border: none;
         border-right: @top-bar-sep-border;
         background: none;
+        padding: 0;
 
+        .avatar {
+          .flexy(center, center);
+          height: 70px;
+          width: 70px;
+        }
 
-        .avatar-and-name-container {
-          .selected-org-icon {
-            height: 40px;
-            width: 40px;
-            border: 3px solid @white;
-          }
-          .selected-org-name {
-            color: @white;
-            font-weight: 500;
-            font-size: @fontSizeMedium;
-            margin-left: 10px;
-          }
+        .org-name {
+          .flexy(center, space-between);
+          width: 284px;
+        }
+
+        .selected-org-icon {
+          height: 40px;
+          width: 40px;
+          border: 1px solid @whiten;
+        }
+        .selected-org-name {
+          color: @white;
+          font-weight: 500;
+          font-size: @fontSizeMedium;
+          margin-left: 1em;
         }
 
         .org-picker-arrow {
           color: @white;
+          padding: 0 40px;
         }
       }
 
@@ -212,12 +221,17 @@
 
         .dropdown-menu {
           left: 0;
+          margin-top: -4px;
+          padding: 0;
+          border: none;
+          border-radius: 0;
+          min-width: 260px;
 
           .org-dropdown-menu__item {
             .flexy(center, space-between, row);
             border-bottom: 1px solid @grayLightest;
-            color: black;
-            padding-left: 9px;
+            color: @grayDarker;
+            padding: 6px 20px 6px 6px;
 
             .vcs-icon, .avatar {
               border-radius: 50%;
@@ -236,7 +250,8 @@
             }
 
             .org-name {
-              margin-left: 16px;
+              margin-left: 34px;
+              font-weight: 500;
             }
 
             .leading-dot {
@@ -249,21 +264,21 @@
             &.selected-org {
               font-weight: bold;
 
-              .leading-dot {
-                color: black;
-              }
+              .leading-dot,
               .vcs-icon a {
-                color: black;
+                color: @grayDarker;
               }
             }
 
             &:hover:not(.switch-org-text) {
-              background-color: @grayLightest;
+              cursor: pointer;
+              background-color: @blueDarkest;
+              color: @whiten;
+              border-bottom: 1px solid @blueDarkest;
 
-              &:not(.selected-org) {
-                .leading-dot {
-                  color: @grayLighter;
-                }
+              .leading-dot,
+              .vcs-icon a {
+                color: @white;
               }
             }
           }

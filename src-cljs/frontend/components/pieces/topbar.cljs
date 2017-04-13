@@ -19,10 +19,12 @@
     {:data-toggle "dropdown"
      :aria-haspopup "true"
      :aria-expanded "false"}
-    [:.avatar-and-name-container
-     [:img.gravatar.selected-org-icon {:src (gh-utils/make-avatar-url selected-org :size 60)}]
-     [:span.selected-org-name (:login selected-org)]]
-    [:i.material-icons.org-picker-arrow "keyboard_arrow_down"]]
+    [:.avatar
+     [:img.gravatar.selected-org-icon {:src (gh-utils/make-avatar-url selected-org :size 60)}]]
+    [:.org-name
+     [:span.selected-org-name (:login selected-org)]
+     [:i.material-icons.org-picker-arrow "keyboard_arrow_down"]]]
+
    [:ul.dropdown-menu.pull-right.animated.slideInDown.nav-items.org-dropdown-menu
     [:li.org-dropdown-menu__item.switch-org-text
      "Switch Organization"]
