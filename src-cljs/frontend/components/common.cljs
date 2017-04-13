@@ -229,11 +229,6 @@
     (did-update [_ _ _]
       (timer/set-updating! owner (not stop)))
 
-    om/IWillUnmount
-    (will-unmount [this]
-      (when (feature/enabled? :build-timer-fix)
-        (timer/set-updating! owner false)))
-
     om/IRender
     (render [_]
       (let [formatter (get opts :formatter datetime/as-duration)
@@ -241,7 +236,7 @@
                  start
                  (let [end-ms (if stop
                                 (.getTime (js/Date. stop))
-                                (datetime/server-now))
+                                (datetime/now))
                        duration-ms (- end-ms (.getTime (js/Date. start)))]
                    duration-ms))]
         (dom/span nil (formatter it))))))

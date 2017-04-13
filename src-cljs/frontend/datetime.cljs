@@ -15,21 +15,6 @@
 (defn unix-timestamp []
   (int (/ (now) 1000)))
 
-(def server-offset (atom nil))
-
-(defn update-server-offset [date-header]
-  (when-let [server-date (.fromRfc822String goog.date.DateTime date-header)]
-    (let [newval (- (.getTime server-date) (now))]
-      (swap! server-offset
-             (fn [oldval]
-               (if oldval
-                 (min oldval newval)
-                 newval))))))
-
-(defn server-now []
-  (+ (now) (or @server-offset 0)))
-
-
 (def full-date-format
   (goog.i18n.DateTimeFormat. date-formats/FULL_DATE))
 
@@ -207,7 +192,7 @@
 (defn as-time-since [date-string]
   (let [time-stamp (.getTime (js/Date. date-string))
         zone-time (time/to-default-time-zone (from-long time-stamp))
-        now (server-now)
+        now (now)
         ago (js/Math.floor (/ (- now time-stamp) 1000))]
     (cond (< ago minute) "just now"
           (< ago hour) (str (int (/ ago minute)) " min ago")
