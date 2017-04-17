@@ -64,7 +64,9 @@
           (let [close-fn #(om/set-state! owner :show-modal? false)]
             (modal/modal-dialog {:title "Are you sure?"
                                  :body confirmation-question
-                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                 :actions [(button/button {:on-click close-fn
+                                                           :kind :flat}
+                                                          "Cancel")
                                            (button/button {:kind :primary
                                                            :on-click remove-fn}
                                                           "Remove")]
@@ -210,8 +212,9 @@
                         "Projects are only tested if they have a follower."]
                        (button/managed-button
                          {:on-click #(raise! owner [:followed-project {:vcs-url vcs-url :project-id project-id}])
+                          :kind :primary
                           :loading-text "Following..."}
-                         "Follow")]))])))]])))))
+                         "Follow Project")]))])))]])))))
 
 
 (defn build-environment [project-data owner]
@@ -330,25 +333,30 @@
               [:div.insufficient-plan
                "Your plan only allows up to "
                (plan-model/max-parallelism plan) "x parallelism."
-               [:a (common/contact-support-a-info owner)
-                "Contact us if you'd like more."]]
+
+               (button/link {:kind :primary
+                             :href (common/contact-support-a-info owner)}
+                            "Contact Us For More")]
 
               (> parallelism (project-model/buildable-parallelism plan project))
               [:div.insufficient-containers
                "Not enough containers for " parallelism "x."
-               [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                        :vcs_type plan-vcs-type
-                                                        :_fragment "linux-pricing"})
-                    :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
-                                                                    :properties {:button-text add-button-text}})}
-                add-button-text]])
+               (button/link {:kind :primary
+                             :href (routes/v1-org-settings-path {:org plan-org-name
+                                                                 :vcs_type plan-vcs-type
+                                                                 :_fragment "linux-pricing"})
+                             :on-click #((om/get-shared owner :track-event) {:event-type :add-more-containers-clicked
+                                                                             :properties {:button-text add-button-text}})}
+                            add-button-text)])
+
         (when (> parallelism (project-model/buildable-parallelism plan project))
           [:div.insufficient-trial
            "Trials only come with " (plan-model/trial-containers plan) " available containers."
-           [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                    :vcs_type plan-vcs-type
-                                                    :_fragment "linux-pricing"})}
-            "Add a plan"]]))]
+           (button/link {:kind :primary
+                         :href (routes/v1-org-settings-path {:org plan-org-name
+                                                             :vcs_type plan-vcs-type
+                                                             :_fragment "linux-pricing"})}
+                        "Add a Plan")]))]
 
      ;; Tell them to upgrade when they're using more parallelism than their plan allows,
      ;; but only on the tiles between (allowed parallelism and their current parallelism]
@@ -359,10 +367,11 @@
         "Unsupported. Upgrade or lower parallelism."
         [:i.fa.fa-question-circle {:title (str "You need " parallelism " containers on your plan to use "
                                                parallelism "x parallelism.")}]
-        [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                 :vcs_type plan-vcs-type
-                                                 :_fragment "linux-pricing"})}
-         "Upgrade"]]))))
+        (button/link {:kind :primary
+                      :href (routes/v1-org-settings-path {:org plan-org-name
+                                                          :vcs_type plan-vcs-type
+                                                          :_fragment "linux-pricing"})}
+                     "Upgrade Plan")]))))
 
 (defn get-offered-parallelism
   "In enterprise, offer whatever their plan's setting is (since they cannot upgrade).
@@ -537,8 +546,9 @@
                                                                    :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
                              :actions [(button/button {:on-click #(do (analytics-track/env-vars-modal-dismissed
                                                                         (merge track-properties {:component "cancel"}))
-                                                                      (close-fn))}
-                                         "Cancel")
+                                                                      (close-fn))
+                                                       :kind :flat}
+                                                      "Cancel")
                                        (button/managed-button {:failed-text "Failed"
                                                                :success-text "Added"
                                                                :loading-text "Adding..."
@@ -572,7 +582,7 @@
             {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                      :kind :primary
-                                     :size :medium}
+                                     :size :small}
                                     "Add Variable")}
             (html
              [:div
@@ -1073,7 +1083,7 @@
             {:title (str "SSH keys for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                      :kind :primary
-                                     :size :medium}
+                                     :size :small}
                                     "Add SSH Key")}
             (html
              [:div
@@ -1091,7 +1101,9 @@
                                                          :required true
                                                          :value private-key
                                                          :on-change #(utils/edit-input owner (conj state/project-data-path :new-ssh-key :private-key) %)}))
-                    :actions [(button/button {:on-click close-fn} "Cancel")
+                    :actions [(button/button {:on-click close-fn
+                                              :kind :flat}
+                                             "Cancel")
                               (button/managed-button
                                {:failed-text "Failed"
                                 :success-text "Saved"
@@ -1383,7 +1395,7 @@
             {:title (str "API tokens for " (vcs-url/project-name (:vcs_url project)))
              :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                      :kind :primary
-                                     :size :medium}
+                                     :size :small}
                                     "Create Token")}
             (html
              [:div
@@ -1409,7 +1421,9 @@
                                                                                                                    %)
                                                                                      :label "Token Label"}))])
                                        :close-fn close-fn
-                                       :actions [(button/button {:on-click close-fn} "Cancel")
+                                       :actions [(button/button {:on-click close-fn
+                                                                 :kind :flat}
+                                                                "Cancel")
                                                  (button/managed-button
                                                   {:failed-text  "Failed"
                                                    :success-text "Added"
@@ -1621,7 +1635,9 @@
                          (om/build form/text-field {:label "JIRA base hostname"
                                                     :value (:base_url credentials)
                                                     :on-change #(utils/edit-input owner (jira-input-path :base_url) %)}))])
-      :actions [(button/button {:on-click close-fn} "Cancel")
+      :actions [(button/button {:on-click close-fn
+                                :kind :flat}
+                               "Cancel")
                 (button/managed-button
                  {:failed-text "Failed"
                   :success-text "Saved"
@@ -1664,7 +1680,9 @@
                                     :on-change #(utils/edit-input owner
                                                                   (jira-input-path :circle_token)
                                                                   %)}))])
-      :actions [(button/button {:on-click close-fn} "Cancel")
+      :actions [(button/button {:on-click close-fn
+                                :kind :flat}
+                               "Cancel")
                 (button/managed-button
                  {:failed-text "Failed"
                   :success-text "Saved"
@@ -1715,6 +1733,7 @@
                      "here"]
                     "."]
                    (button/button {:kind :primary
+                                   :fixed? true
                                    :on-click (fn [_]
                                                (om/set-state! owner :modal :connect)
                                                (track-event "connect"))}
@@ -1728,6 +1747,7 @@
                         "S")
                       "tore your JIRA username, password, and JIRA base hostname to connect JIRA and CircleCI.")]
                  (button/button {:kind :primary
+                                 :fixed? true
                                  :on-click (fn [_]
                                              (om/set-state! owner :modal :basic)
                                              (track-event "basic"))}

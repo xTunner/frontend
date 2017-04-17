@@ -71,7 +71,9 @@
                           (om/build form/text-area {:label "Description"
                                                     :value description
                                                     :on-change #(om/set-state! owner :description (.. % -target -value))})))])
-           :actions [(button/button {:on-click close-fn} "Cancel")
+           :actions [(button/button {:on-click close-fn
+                                     :kind :flat}
+                                    "Cancel")
                      (button/managed-button
                        {:on-click #(raise! owner [:create-jira-issue {:project-name project-name
                                                                       :vcs-type vcs-type

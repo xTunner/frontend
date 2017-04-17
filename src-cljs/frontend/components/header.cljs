@@ -44,7 +44,7 @@
           :failed-text "Failed to follow"
           :success-text "Followed"
           :kind :primary
-          :size :medium}
+          :size :small}
          "Follow Project")))))
 
 (defn show-settings-link? [app]
@@ -199,7 +199,7 @@
                                     "active")}
                       [:a.menu-item {:href "https://circleci.com/about/"} "About Us"]]
                      [:li [:a.menu-item {:href "http://blog.circleci.com"} "Blog"]]))])
-              
+
               (if logged-in?
                 [:ul.nav.navbar-nav.navbar-right.back-to-app
                  [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]

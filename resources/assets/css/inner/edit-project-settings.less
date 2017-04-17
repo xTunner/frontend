@@ -253,6 +253,8 @@
     .insufficient-plan,
     .insufficient-trial,
     .insufficient-minimum {
+      .flexy(column, space-around);
+
       position: absolute;
       top: 0;
       left: 0;
@@ -270,12 +272,7 @@
       transition: all .3s ease-in-out;
       opacity: 0;
       a {
-        .circleButton(@green);
-        font-size: @baseFontSize;
-        display: block;
-        padding: 3px;
         margin-top: 0.5em;
-        text-shadow: none;
       }
       &:empty {
         display: none;
@@ -284,12 +281,11 @@
     .insufficient-plan,
     .insufficient-minimum {
       a {
-        .circleButton();
-        display: block;
-        padding: 3px;
+        height: auto;
         margin-top: 0.5em;
-        text-shadow: none;
-        font-size: @baseFontSize;
+        // this is a hack on a hack to make this look acceptable; don't do this to buttons
+        line-height: 1.2;
+        white-space: normal;
       }
     }
     .insufficient-minimum {

@@ -89,7 +89,8 @@
                                                                                :value (str new-user-token)
                                                                                :on-change #(utils/edit-input owner state/new-user-token-path %)})))
                                  :close-fn close-fn
-                                 :actions [(button/button {:on-click close-fn} "Cancel")
+                                 :actions [(button/button {:on-click close-fn
+                                                           :kind :flat} "Cancel")
                                            (button/managed-button
                                              {:failed-text  "Failed"
                                               :success-text "Added"
@@ -100,7 +101,7 @@
           (card/titled {:title "API Tokens"
                         :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
                                                 :kind :primary
-                                                :size :medium}
+                                                :size :small}
                                                "Create New Token")}
                        [:div
                         [:div.api-item
@@ -171,7 +172,9 @@
                                           [:li "Please give us feedback about new features when we release them"]
                                           [:li "Keep the private beta, private. Please no tweets, blogs, or other public
                                                     posting, but we do encourage you to talk with your coworkers!"]]]))
-                        :actions [(button/button {:on-click close-fn} "Cancel")
+                        :actions [(button/button {:on-click close-fn
+                                                  :kind :flat}
+                                                 "Cancel")
                                   (button/button
                                    {:kind :primary
                                     :on-click #(do

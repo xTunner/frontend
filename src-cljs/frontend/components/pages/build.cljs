@@ -132,9 +132,8 @@
                {:loading-text "Canceling"
                 :failed-text  "Couldn't Cancel"
                 :success-text "Canceled"
-                :kind :secondary
-                :size :medium
-                :bordered? true
+                :kind :flat
+                :size :small
                 :on-click #(raise! owner [:cancel-build-clicked (build-model/build-args build)])}
                "Cancel Build"))
             ;; Rebuild button

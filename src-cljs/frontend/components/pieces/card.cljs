@@ -80,7 +80,7 @@
     (titled
      {:title "Card Title (Generally in Title Case)"
       :action (button/button {:kind :primary
-                              :size :medium}
+                              :size :small}
                              "Action")}
      "Some content.")
     {}

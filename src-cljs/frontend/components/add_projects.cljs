@@ -80,7 +80,7 @@
     (render [_]
       (button/button {:on-click #(raise! owner [:refreshed-user-orgs {}])
                       :kind :primary
-                      :size :medium}
+                      :size :small}
                      "Reload Organizations"))))
 
 (defn- repo-title [repo link?]
@@ -251,7 +251,9 @@
                                   :body (gstring/format "Are you sure you want to unfollow (%s) projects in the %s organization?"
                                                         (count unfollowed-repos)
                                                         org-name)
-                                  :actions [(button/button {:on-click close-fn} "Cancel")
+                                  :actions [(button/button {:on-click close-fn
+                                                            :kind :flat}
+                                                           "Cancel")
                                             (button/managed-button {:kind :primary
                                                                     :success-text "Removed"
                                                                     :loading-text "Removing..."

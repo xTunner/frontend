@@ -11,17 +11,19 @@
   :kind      - The kind of button. One of #{:primary :secondary :danger :flat}.
                (default: :secondary)
   :disabled? - If true, the button is disabled. (default: false)
-  :size      - The size of the button. One of #{:full :medium}.
-               (default: :full)"
-  [{:keys [on-click kind disabled? size]
+  :size      - The size of the button. One of #{:full :small}.
+               (default: :full)
+  :fixed?    - If true, the button is fixed width. (default: false)"
+  [{:keys [on-click kind disabled? size fixed?]
     :or {kind :secondary size :full}}
    content]
   (component
     (html
      [:button {:class (remove nil? [(name kind)
+                                    (when fixed? "fixed")
                                     (case size
                                       :full nil
-                                      :medium "medium")])
+                                      :small "small")])
                :disabled disabled?
                :on-click on-click}
       content])))
@@ -52,19 +54,21 @@
   :on-click      - A function called when the link is clicked.
   :kind          - The kind of button. One of #{:primary :secondary :danger :flat}.
                    (default: :secondary)
-  :size          - The size of the button. One of #{:full :medium}.
+  :size          - The size of the button. One of #{:full :small}.
                    (default: :full)
+  :fixed?        - If true, the button is fixed width. (default: false)
   :target        - Specifies where to display the linked URL."
-  [{:keys [href on-click kind size target]
+  [{:keys [href on-click kind size fixed? target]
     :or {kind :secondary size :full}}
    content]
   (component
     (html
      [:a.exception
       {:class (remove nil? [(name kind)
+                            (when fixed? "fixed")
                             (case size
                               :full nil
-                              :medium "medium")])
+                              :small "small")])
        :href href
        :target target
        :on-click on-click}
@@ -100,8 +104,9 @@
   :kind         - The kind of button. One of #{:primary :secondary :danger :flat}.
                   (default: :secondary)
   :disabled?    - If true, the button is disabled. (default: false)
-  :size         - The size of the button. One of #{:full :medium}.
+  :size         - The size of the button. One of #{:full :small}.
                   (default: :full)
+  :fixed?       - If true, the button is fixed width. (default: false)
   :loading-text - Text to display indicating that the button action is in
                   progress. (default: \"...\")
   :success-text - Text to display indicating that the button action was
@@ -109,7 +114,7 @@
   :failed-text  - Text to display indicating that the button action failed.
                   (default: \"Failed\")
   :bordered?    - (optional) Adds a border to the button."
-  [{:keys [kind disabled? size failed-text success-text loading-text on-click bordered?]
+  [{:keys [kind disabled? size fixed? failed-text success-text loading-text on-click bordered?]
     :or {kind :secondary size :full disabled? false}}
    content]
   (forms/managed-button
@@ -123,18 +128,19 @@
              :disabled disabled?
              :on-click on-click
              :class (remove nil? [(name kind)
+                                  (when fixed? "fixed")
                                   (case size
                                     :full nil
-                                    :medium "medium")
+                                    :small "small")
                                   (when bordered? "with-border")])}
     content]))
 
 (dc/do
   (defn button-display [columns]
     (html
-     [:div {:style {:display "flex"}}
+     [:div {:style {:display "flex" :justify-content "space-between"}}
       (for [column columns]
-        [:div.primary {:style {:margin-right "2em"}}
+        [:div {:style {:margin-right "2em"}}
          (for [button column]
            [:div {:style {:margin-bottom "1em"}}
             button])])]))
@@ -161,9 +167,16 @@
 
     ## Sizes
 
-    The **Full** size button is the default. A **Medium** size is available to
+    The **Full** size button is the default. A **Small** size is available to
     use in table rows, card headers, and anywhere vertical space is at a
-    premium."
+    premium.
+
+
+    ## Widths
+
+    Button widths vary based on button text length and can have a `fixed?`
+    attribute which if set to `true` will make the button fixed width for
+    cases where we want buttons to be consistent."
 
     (button-display
      [;; Primary buttons
@@ -174,10 +187,14 @@
                 :kind :primary
                 :on-click #(js/alert "Clicked!")}
                "Primary Disabled")
-       (button {:kind :primary
-                :size :medium
+       (button {:fixed? true
+                :kind :primary
                 :on-click #(js/alert "Clicked!")}
-               "Primary Medium")]
+               "Primary Fixed")
+       (button {:kind :primary
+                :size :small
+                :on-click #(js/alert "Clicked!")}
+               "Primary Small")]
 
       ;; Secondary buttons
       [(button {:on-click #(js/alert "Clicked!")}
@@ -185,9 +202,12 @@
        (button {:disabled? true
                 :on-click #(js/alert "Clicked!")}
                "Secondary Disabled")
-       (button {:size :medium
+       (button {:fixed? true
                 :on-click #(js/alert "Clicked!")}
-               "Secondary Medium")]
+               "Secondary Fixed")
+       (button {:size :small
+                :on-click #(js/alert "Clicked!")}
+               "Secondary Small")]
 
       ;; Danger buttons
       [(button {:kind :danger
@@ -197,10 +217,14 @@
                 :kind :danger
                 :on-click #(js/alert "Clicked!")}
                "Danger Disabled")
-       (button {:kind :danger
-                :size :medium
+       (button {:fixed? true
+                :kind :danger
                 :on-click #(js/alert "Clicked!")}
-               "Danger Medium")]
+               "Danger Fixed")
+       (button {:kind :danger
+                :size :small
+                :on-click #(js/alert "Clicked!")}
+               "Danger Small")]
 
       ;; Flat buttons
       [(button {:kind :flat
@@ -210,10 +234,14 @@
                 :kind :flat
                 :on-click #(js/alert "Clicked!")}
                "Flat Disabled")
-       (button {:kind :flat
-                :size :medium
+       (button {:fixed? true
+                :kind :flat
                 :on-click #(js/alert "Clicked!")}
-               "Flat Medium")]]))
+               "Flat Fixed")
+       (button {:kind :flat
+                :size :small
+                :on-click #(js/alert "Clicked!")}
+               "Flat Small")]]))
 
   (defcard icon-buttons
     "When horizontal space is at a premium, use an **icon button**. These square
@@ -223,16 +251,17 @@
 
     Icon buttons are only styled as secondary buttons, and should only be used
     where a secondary button would be appropriate. They come in a single size,
-    which matches the Medium size of text buttons."
+    which matches the Small size of text buttons."
 
     (button-display
-     [[(icon {:label "Icon"
+     [;; Icon buttons
+      [(icon {:label "Icon"
               :on-click #(js/alert "Clicked!")}
-             [:i.octicon.octicon-repo-forked])]
-      [(icon {:label "Icon Disabled"
-              :disabled? true
-              :on-click #(js/alert "Clicked!")}
-             [:i.octicon.octicon-repo-forked])]]))
+             [:i.octicon.octicon-repo-forked])
+       (icon {:label "Icon Disabled"
+                     :disabled? true
+                     :on-click #(js/alert "Clicked!")}
+                    [:i.octicon.octicon-repo-forked])]]))
 
   (defcard link-buttons
     "A **link-button** looks like a button, but is actually a link.
@@ -254,35 +283,50 @@
       [(link {:kind :primary
               :href "#"}
              "Primary Link")
+       (link {:fixed? true
+              :kind :primary
+              :href "#"}
+             "Primary Link Fixed")
        (link {:kind :primary
               :href "#"
-              :size :medium}
-             "Medium Primary Link")]
+              :size :small}
+             "Small Primary Link")]
 
       ;; Secondary link buttons
       [(link {:href "#"}
              "Secondary Link")
+       (link {:fixed? true
+              :href "#"}
+             "Secondary Link Fixed")
        (link {:href "#"
-              :size :medium}
-             "Medium Secondary Link")]
+              :size :small}
+             "Small Secondary Link")]
 
       ;; Danger link buttons
       [(link {:kind :danger
               :href "#"}
              "Danger Link")
+       (link {:fixed? true
+              :kind :danger
+              :href "#"}
+             "Danger Link Fixed")
        (link {:kind :danger
               :href "#"
-              :size :medium}
-             "Medium Danger Link")]
+              :size :small}
+             "Small Danger Link")]
 
       ;; Flat buttons
       [(link {:kind :flat
               :href "#"}
              "Flat Link")
+       (link {:fixed? true
+              :kind :flat
+              :href "#"}
+             "Flat Link Fixed")
        (link {:kind :flat
               :href "#"
-              :size :medium}
-             "Medium Flat Link")]]))
+              :size :small}
+             "Small Flat Link")]]))
 
   (defcard icon-link-button
     "A **icon link-button** is a link-button which displays a single icon, like an
@@ -293,14 +337,21 @@
                   (icon/settings))]]))
 
   (defcard bordered-buttons
-    "Buttons with borders are used in the header. This is design debt."
+    "Buttons with borders are used in the page header. This is design debt
+    [documented in Jira](https://circleci.atlassian.net/browse/CIRCLE-3972)
+    and will be addressed when we revisit the page headers."
     (button-display
      [[(managed-button {:bordered? true
-                        :size :medium}
-                       "Bordered Button")]
-      [(icon {:label "Bordered GitHub icon button"
+                        :size :small}
+                       "Bordered Button")
+       (managed-button {:fixed? true
+                        :bordered? true
+                        :size :small}
+                       "Bordered Button Fixed")
+       (icon {:label "Bordered GitHub icon button"
               :bordered? true}
-             (icon/github))]
-      [(icon-link {:label "Bordered Bitbucket icon link-button"
+             (icon/github))
+       (icon-link {:href "#"
+                   :label "Bordered Bitbucket icon link-button"
                    :bordered? true}
                   (icon/bitbucket))]])))
