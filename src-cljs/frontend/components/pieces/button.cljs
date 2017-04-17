@@ -351,6 +351,7 @@
        (icon {:label "Bordered GitHub icon button"
               :bordered? true}
              (icon/github))
-       (icon-link {:label "Bordered Bitbucket icon link-button"
+       (icon-link {:href "#"
+                   :label "Bordered Bitbucket icon link-button"
                    :bordered? true}
                   (icon/bitbucket))]])))
