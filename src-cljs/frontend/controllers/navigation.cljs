@@ -251,7 +251,8 @@
         (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
         (assoc-in state/bitbucket-repos-loading-path (user/bitbucket-authorized? current-user))
         (assoc-in state/crumbs-path [{:type :add-projects}])
-        (assoc-in state/add-projects-selected-org-path nil)
+        (assoc-in state/add-projects-selected-org-path args)
+        (assoc-in [:settings :add-projects :repo-filter-string] "")
         (state-utils/reset-current-org))))
 
 (defmethod post-navigated-to! :add-projects

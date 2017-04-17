@@ -149,6 +149,8 @@
                      current-route (if (= :route/legacy-page compassus-route)
                                      (:navigation-point app)
                                      compassus-route)]
-                 (build-legacy aside/aside-nav {:user user :current-route current-route})))
+                 (build-legacy aside/aside-nav {:user user
+                                                :current-route current-route
+                                                :org (get-in app state/selected-org-path)})))
 
              (factory props)]]))))))

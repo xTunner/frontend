@@ -23,7 +23,6 @@
   ([app route data]
    ;; Note: We always call set-data: if values aren't given, we still want to
    ;; set them to `nil`.
-   (js/console.log "open!" (clj->js [app route data]))
    (compassus/set-route! app route {:tx [`(set-data ~data)]})))
 
 (defn open-to-inner!
@@ -145,7 +144,7 @@
 
 (defn v1-add-projects-path
   [params]
-  (generate-url-str "/add-projects" params))
+  (generate-url-str "/add-projects/:vcs_type/:org" params))
 
 (defn v1-admin-fleet-state-path
   [params]
@@ -187,9 +186,9 @@
   (defroute v1-org-settings #"/(gh|bb)/organizations/([^/]+)/settings"
     [short-vcs-type org _ maybe-fragment]
     (open-to-inner! app nav-ch :org-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
-                                          :org org
-                                          :subpage (keyword (or (:_fragment maybe-fragment)
-                                                                "overview"))}))
+                                              :org org
+                                              :subpage (keyword (or (:_fragment maybe-fragment)
+                                                                    "overview"))}))
 
   (defroute v1-org-dashboard-alternative #"/(gh|bb)/organizations/([^/]+)" [short-vcs-type org params]
     (open-to-inner! app nav-ch :dashboard (merge params
@@ -265,6 +264,10 @@
 
   (defroute v1-add-projects "/add-projects" {:keys [_fragment]}
     (open-to-inner! app nav-ch :add-projects {:tab _fragment}))
+
+  (defroute v1-organization-add-projects "/add-projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name _fragment]}
+    (open-to-inner! app nav-ch :add-projects {:tab _fragment :vcs_url (vcs/->lengthen-vcs short-vcs-type) :login org-name}))
+
   (defroute v1-insights "/build-insights" []
     (open-to-inner! app nav-ch :build-insights {}))
   (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
@@ -315,3 +318,23 @@
         action (or action identity)
         params (merge params query-params {:_fragment fragment})]
     (action params)))
+
+(defn new-org-path
+  "Generate url to current navigation-point for new org
+   Routes that are not org-specic (e.g. landing) return
+    nil. Nil responses are ignored."
+  [{:keys [nav-point current-org]}]
+  (let [org {:org (:login current-org)
+             :vcs_url (:vcs_url current-org)}]
+    (case nav-point
+      :admin-settings nil
+      :add-projects (v1-add-projects-path org)
+      :build-insights "/build-insights" ;; TODO: Update me
+      :error nil
+      :invite-teammates "/team" ;; TODO: Update me
+      :landing nil
+      :logout nil
+      :org-settings (v1-org-settings-path org)
+      :project-insights "/build-insights" ;; TODO: Update me
+      :team "/team" ;; TODO: Update me
+      (v1-dashboard-path {})))) ;; TODO: Update me

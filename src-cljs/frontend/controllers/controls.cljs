@@ -268,7 +268,7 @@
   [target message {:keys [vcs_type login admin]} previous-state current-state comms]
   (let [api-ch (:api comms)]
     (when (and admin
-               (user-model/has-org? (get-in current-state state/user-path) login vcs_type))
+            (user-model/has-org? (get-in current-state state/user-path) login vcs_type))
       (api/get-org-plan login vcs_type api-ch)))
   (utils/scroll-to-id! "project-listing"))
 
@@ -1821,3 +1821,12 @@
 (defmethod control-event :update-org
   [_ _ selected-org state]
   (assoc-in state state/selected-org-path selected-org))
+
+(defmethod post-control-event! :update-org
+  [_ _ _ previous-state current-state comms]
+  (let [current-org (get-in current-state state/selected-org-path)
+        nav-point (get-in current-state state/current-view-path)
+        nav-ch (:nav comms)]
+    (when-let [path (routes/new-org-path {:current-org current-org
+                                          :nav-point nav-point})]
+      (put! nav-ch [:navigate! {:path path}]))))

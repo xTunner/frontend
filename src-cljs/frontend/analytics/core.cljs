@@ -111,6 +111,7 @@
     :revision-link-clicked
     :save-clicked
     :select-plan-clicked
+    :settings-icon-clicked
     :set-up-junit-clicked
     :set-up-junit-impression
     :setup-docs-clicked

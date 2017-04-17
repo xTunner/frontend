@@ -27,23 +27,25 @@
     [:li.org-dropdown-menu__item.switch-org-text
      "Switch Organization"]
     (map (fn [{:as single-org :keys [login vcs_type]}]
-           [:li
-            [:a.org-dropdown-menu__item {:class (when (org/same? single-org selected-org) "selected-org")
-                                         :on-click #(raise! owner [:update-org single-org])}
-             [:span.org-icon-and-name
-              [:span.leading-dot
-               "●"]
-              [:img.avatar {:src (gh-utils/make-avatar-url single-org :size 40)}]
-              [:span.org-name login]]
-             [:span.vcs-icon
-              [:a {:href (str (case vcs_type
-                                "github" (gh-utils/http-endpoint)
-                                "bitbucket" (bb-utils/http-endpoint))
-                           "/" login)
-                   :target "_blank"}
-               (case vcs_type
-                 "github" (icon/github)
-                 "bitbucket" (icon/bitbucket))]]]]) orgs)]])
+           (let [org-same? (org/same? single-org selected-org)]
+             [:li
+              [:a.org-dropdown-menu__item {:class (when org-same? "selected-org")
+                                           :on-click (when-not org-same?
+                                                       #(raise! owner [:update-org single-org]))}
+               [:span.org-icon-and-name
+                [:span.leading-dot
+                 "●"]
+                [:img.avatar {:src (gh-utils/make-avatar-url single-org :size 40)}]
+                [:span.org-name login]]
+               [:span.vcs-icon
+                [:a {:href (str (case vcs_type
+                                  "github" (gh-utils/http-endpoint)
+                                  "bitbucket" (bb-utils/http-endpoint))
+                             "/" login)
+                     :target "_blank"}
+                 (case vcs_type
+                   "github" (icon/github)
+                   "bitbucket" (icon/bitbucket))]]]])) orgs)]])
 
 (defn updates-dropdown []
   [:li.dropdown

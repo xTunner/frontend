@@ -17,6 +17,7 @@
             [frontend.utils :as utils :refer-macros [defrender html]]
             [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.legacy :refer [build-next]]
             [frontend.utils.vcs :as vcs-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -131,10 +132,10 @@
                                         (when (not building-on-circle?)
                                           (om/set-state! owner :building? true)
                                           ((om/get-shared owner :track-event)
-                                            {:event-type :build-project-clicked
-                                             :properties {:project-vcs-url repo-url
-                                                          :repo repo-name
-                                                          :org login}})))
+                                           {:event-type :build-project-clicked
+                                            :properties {:project-vcs-url repo-url
+                                                         :repo repo-name
+                                                         :org login}})))
                            :title (if building-on-circle?
                                     "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
                                     "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project.")
@@ -543,29 +544,37 @@
                  (not (loading-repos-for-vcs-type? user :bitbucket)))
         (inaccessible-orgs-notice followed-inaccessible settings))
       [:h2 "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."]
-      [:p "To kick things off, you'll need to pick some projects to build:"]
+      [:p "To kick things off, you'll need to choose a project to build."]
+      [:p "We'll start a new build for you each time someone pushes a new commit."]
+      [:p "You can also follow a project that's already been added to CircleCI. You'll see your followed projects in "
+       [:a {:href (routes/v1-dashboard-path {})} "Builds"]
+       " and "
+       [:a {:href (routes/v1-insights)} "Insights"]
+       "."]
       [:hr]
       [:div.org-repo-container
-       [:div.app-aside.org-listing
-        (let [orgs (orgs-from-repos user repos)]
-          [:div
-           [:div.overview
-            [:span.big-number "1"]
-            [:div.instruction "Choose an organization that you are a member of."]]
-           (om/build org-picker {:orgs orgs
-                                 :selected-org selected-org
-                                 :user user
-                                 :tab tab})])]
+       (when-not (ld/feature-on? "top-bar-ui-v-1")
+         [:div.app-aside.org-listing
+          (let [orgs (orgs-from-repos user repos)]
+            [:div
+             [:div.overview
+              [:span.big-number "1"]
+              [:div.instruction "Choose an organization that you are a member of."]]
+             (om/build org-picker {:orgs orgs
+                                   :selected-org selected-org
+                                   :user user
+                                   :tab tab})])])
        [:div#project-listing.project-listing
-        [:div.overview
-         [:span.big-number "2"]
-         [:div.instruction
-          [:p "Choose a repo to add to CircleCI. We'll start a new build for you each time someone pushes a new commit."]
-          [:p "You can also follow a project that's already been added to CircleCI. You'll see your followed projects in "
-           [:a {:href (routes/v1-dashboard-path {})} "Builds"]
-           " and "
-           [:a {:href (routes/v1-insights)} "Insights"]
-           "."]]]
+        (when-not (ld/feature-on? "top-bar-ui-v-1")
+          [:div.overview
+           [:span.big-number "2"]
+           [:div.instruction
+            [:p "Choose a repo to add to CircleCI. We'll start a new build for you each time someone pushes a new commit."]
+            [:p "You can also follow a project that's already been added to CircleCI. You'll see your followed projects in "
+             [:a {:href (routes/v1-dashboard-path {})} "Builds"]
+             " and "
+             [:a {:href (routes/v1-insights)} "Insights"]
+             "."]]])
         (om/build repo-lists {:user user
                               :repos repos
                               :selected-org selected-org

@@ -394,7 +394,213 @@
   ((om/get-shared owner :track-event) {:event-type event-name
                                        :properties {:component "left-nav"}}))
 
-(defn aside-nav [{:keys [user current-route]} owner]
+(defn aside-nav-original [{:keys [user current-route owner]}]
+  "Original side-nav, preserved for most users as the top-bar-ui-v-1
+   is implemented. Case-by-case feature flags too cumbersome as routes change"
+  (html
+    [:nav.aside-left-nav
+     [:a.aside-item.logo {:title "Dashboard"
+                          :data-placement "right"
+                          :data-trigger "hover"
+                          :href (routes/v1-dashboard-path {})
+                          :on-click #(aside-nav-clicked owner :logo-clicked)}
+      [:div.logomark
+       (common/ico :logo)]]
+
+     [:a.aside-item {:class (when (= :dashboard current-route) "current")
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :title "Builds"
+                     :href (routes/v1-dashboard-path {})
+                     :on-click #(aside-nav-clicked owner :builds-icon-clicked)}
+      [:i.material-icons "storage"]
+      [:div.nav-label "Builds"]]
+
+     (when (ld/feature-on? "workflows-poc")
+       [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Workflows"
+                       :href (routes/v1-workflow-path :github "circleci" "workflows-poc" "main-workflow")}
+        [:i.material-icons "storage"]
+        [:div.nav-label "Workflows"]])
+
+     [:a.aside-item {:class (when (= :build-insights current-route) "current")
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :title "Insights"
+                     :href "/build-insights"
+                     :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
+      [:i.material-icons "assessment"]
+      [:div.nav-label "Insights"]]
+
+     (if (feature/enabled? :projects-page)
+       [:a.aside-item {:class (when (or (= :route/projects current-route)
+                                      (= :add-projects current-route))
+                                "current")
+                       :title "Projects"
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :href "/projects"
+                       :on-click #(aside-nav-clicked owner :projects-icon-clicked)}
+        [:i.material-icons "book"]
+        [:div.nav-label "Projects"]]
+
+       [:a.aside-item {:class (when (= :add-projects current-route) "current")
+                       :href "/add-projects",
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Projects"
+                       :on-click #(aside-nav-clicked owner :add-project-icon-clicked)}
+        [:i.material-icons "library_add"]
+        [:div.nav-label "Projects"]])
+
+     [:a.aside-item {:class (when (= :team current-route) "current")
+                     :href "/team",
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :title "Team"
+                     :on-click #(aside-nav-clicked owner :team-icon-clicked)}
+      [:i.material-icons "group"]
+      [:div.nav-label "Team"]]
+
+     [:a.aside-item {:class (when (= :route/account current-route) "current")
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :title "Account Settings"
+                     :href "/account"
+                     :on-click #(aside-nav-clicked owner :account-settings-icon-clicked)}
+      [:i.material-icons "settings"]
+      [:div.nav-label "Account Settings"]]
+
+     [:a.aside-item {:title "Documentation"
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :target "_blank"
+                     :href "https://circleci.com/docs/"
+                     :on-click #(aside-nav-clicked owner :docs-icon-clicked)}
+      [:i.material-icons "description"]
+      [:div.nav-label "Docs"]]
+
+     (when-not user/support-eligible?
+       [:a.aside-item (merge (common/contact-support-a-info owner)
+                        {:title "Support"
+                         :data-placement "right"
+                         :data-trigger "hover"
+                         :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"
+                         :on-click #(aside-nav-clicked owner :support-icon-clicked)})
+        [:i.material-icons "chat"]
+        [:div.nav-label "Support"]])
+
+     (when-not (config/enterprise?)
+       [:a.aside-item {:data-placement "right"
+                       :data-trigger "hover"
+                       :title "Changelog"
+                       :target "_blank"
+                       :href "https://circleci.com/changelog/"
+                       :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
+        [:i.material-icons "receipt"]
+        [:div.nav-label "Changelog"]]
+
+
+       [:a.aside-item {:data-placement "right"
+                       :data-trigger "hover"
+                       :title "What's New"
+                       :target "_blank"
+                       :href "https://circleci.com/beta-access/"
+                       :on-click #(aside-nav-clicked owner :beta-icon-clicked)}
+        (icon/engine-new)
+        [:div.nav-label "What's New"]])
+
+     (when (:admin user)
+       [:a.aside-item {:class (when (= :admin-settings current-route) "current")
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Admin"
+                       :href "/admin"
+                       :on-click #(aside-nav-clicked owner :admin-icon-clicked)}
+        [:i.material-icons "build"]
+        [:div.nav-label "Admin"]])
+
+     [:a.aside-item.push-to-bottom {:data-placement "right"
+                                    :data-trigger "hover"
+                                    :title "Log Out"
+                                    :href "/logout"
+                                    :on-click #(aside-nav-clicked owner :logout-icon-clicked)}
+      [:i.material-icons "power_settings_new"]
+      [:div.nav-label "Log Out"]]]))
+
+(defn aside-nav-new [{:keys [current-route org owner]}]
+  "New side nav, to be used in conjunction with the top bar"
+  (html
+    [:nav.aside-left-nav
+     [:a.aside-item {:class (when (= :dashboard current-route) "current")
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :title "Builds"
+                     :href (routes/v1-dashboard-path {})
+                     :on-click #(aside-nav-clicked owner :builds-icon-clicked)}
+      [:i.material-icons "storage"]
+      [:div.nav-label "Builds"]]
+
+     (when (ld/feature-on? "workflows-poc")
+       [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Workflows"
+                       :href (routes/v1-workflow-path :github "circleci" "workflows-poc" "main-workflow")}
+        [:i.material-icons "storage"]
+        [:div.nav-label "Workflows"]])
+
+     [:a.aside-item {:class (when (= :build-insights current-route) "current")
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :title "Insights"
+                     :href "/build-insights"
+                     :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
+      [:i.material-icons "assessment"]
+      [:div.nav-label "Insights"]]
+
+     (if (feature/enabled? :projects-page)
+       [:a.aside-item {:class (when (or (= :route/projects current-route)
+                                      (= :add-projects current-route))
+                                "current")
+                       :title "Projects"
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :href "/projects"
+                       :on-click #(aside-nav-clicked owner :projects-icon-clicked)}
+        [:i.material-icons "book"]
+        [:div.nav-label "Projects"]]
+
+       [:a.aside-item {:class (when (= :add-projects current-route) "current")
+                       :href (routes/v1-add-projects-path org)
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Projects"
+                       :on-click #(aside-nav-clicked owner :add-project-icon-clicked)}
+        [:i.material-icons "library_add"]
+        [:div.nav-label "Projects"]])
+
+     [:a.aside-item {:class (when (= :team current-route) "current")
+                     :href "/team",
+                     :data-placement "right"
+                     :data-trigger "hover"
+                     :title "Team"
+                     :on-click #(aside-nav-clicked owner :team-icon-clicked)}
+      [:i.material-icons "group"]
+      [:div.nav-label "Team"]]
+
+     [:a.aside-item {:data-placement "right"
+                     :data-trigger "hover"
+                     :title "Organization Settings"
+                     :href (routes/v1-org-settings-path org)
+                     :on-click #(aside-nav-clicked owner :settings-icon-clicked)}
+
+      (icon/settings)
+      [:div.nav-label "Settings"]]]))
+
+(defn aside-nav [{:keys [user current-route org]} owner]
   (reify
     om/IDisplayName (display-name [_] "Aside Nav")
     om/IDidMount
@@ -402,151 +608,8 @@
       (utils/tooltip ".aside-item"))
     om/IRender
     (render [_]
-      (let [avatar-url (gh-utils/make-avatar-url user)
-            show-aside-icons? (-> user :projects empty? not)]
-        (html
-          [:nav.aside-left-nav
-           (when (not (ld/feature-on? "top-bar-ui-v-1"))
-             [:a.aside-item.logo {:title "Dashboard"
-                                  :data-placement "right"
-                                  :data-trigger "hover"
-                                  :href (routes/v1-dashboard-path {})
-                                  :on-click #(aside-nav-clicked owner :logo-clicked)}
-              [:div.logomark
-               (common/ico :logo)]])
-
-           (when show-aside-icons?
-             [:a.aside-item {:class (when (= :dashboard current-route) "current")
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Builds"
-                             :href (routes/v1-dashboard-path {})
-                             :on-click #(aside-nav-clicked owner :builds-icon-clicked)}
-              [:i.material-icons "storage"]
-              [:div.nav-label "Builds"]])
-
-           (when (ld/feature-on? "workflows-poc")
-             [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Workflows"
-                             :href (routes/v1-workflow-path :github "circleci" "workflows-poc" "main-workflow")}
-              [:i.material-icons "storage"]
-              [:div.nav-label "Workflows"]])
-
-           (when show-aside-icons?
-             [:a.aside-item {:class (when (= :build-insights current-route) "current")
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Insights"
-                             :href "/build-insights"
-                             :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
-              [:i.material-icons "assessment"]
-              [:div.nav-label "Insights"]])
-
-           (when show-aside-icons?
-             (if (feature/enabled? :projects-page)
-               [:a.aside-item {:class (when (or (= :route/projects current-route)
-                                                (= :add-projects current-route))
-                                        "current")
-                               :title "Projects"
-                               :data-placement "right"
-                               :data-trigger "hover"
-                               :href "/projects"
-                               :on-click #(aside-nav-clicked owner :projects-icon-clicked)}
-                [:i.material-icons "book"]
-                [:div.nav-label "Projects"]]
-
-               [:a.aside-item {:class (when (= :add-projects current-route) "current")
-                               :href "/add-projects",
-                               :data-placement "right"
-                               :data-trigger "hover"
-                               :title "Projects"
-                               :on-click #(aside-nav-clicked owner :add-project-icon-clicked)}
-                [:i.material-icons "library_add"]
-                [:div.nav-label "Projects"]]))
-
-           (when show-aside-icons?
-             [:a.aside-item {:class (when (= :team current-route) "current")
-                             :href "/team",
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Team"
-                             :on-click #(aside-nav-clicked owner :team-icon-clicked)}
-              [:i.material-icons "group"]
-              [:div.nav-label "Team"]])
-
-           (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
-                      show-aside-icons?)
-             [:a.aside-item {:class (when (= :route/account current-route) "current")
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Account Settings"
-                             :href "/account"
-                             :on-click #(aside-nav-clicked owner :account-settings-icon-clicked)}
-              [:i.material-icons "settings"]
-              [:div.nav-label "Account Settings"]])
-
-           (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
-                      show-aside-icons?)
-             [:a.aside-item {:title "Documentation"
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :target "_blank"
-                             :href "https://circleci.com/docs/"
-                             :on-click #(aside-nav-clicked owner :docs-icon-clicked)}
-              [:i.material-icons "description"]
-              [:div.nav-label "Docs"]])
-
-           (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
-                      show-aside-icons?)
-             (when-not user/support-eligible?
-               [:a.aside-item (merge (common/contact-support-a-info owner)
-                                     {:title "Support"
-                                      :data-placement "right"
-                                      :data-trigger "hover"
-                                      :data-bind "tooltip: {title: 'Support', placement: 'right', trigger: 'hover'}"
-                                      :on-click #(aside-nav-clicked owner :support-icon-clicked)})
-                [:i.material-icons "chat"]
-                [:div.nav-label "Support"]]))
-
-           (when (and (not (ld/feature-on? "top-bar-ui-v-1"))
-                      show-aside-icons?)
-             (when-not (config/enterprise?)
-               [:a.aside-item {:data-placement "right"
-                               :data-trigger "hover"
-                               :title "Changelog"
-                               :target "_blank"
-                               :href "https://circleci.com/changelog/"
-                               :on-click #(aside-nav-clicked owner :changelog-icon-clicked)}
-                [:i.material-icons "receipt"]
-                [:div.nav-label "Changelog"]])
-
-
-             [:a.aside-item {:data-placement "right"
-                             :data-trigger "hover"
-                             :title "What's New"
-                             :target "_blank"
-                             :href "https://circleci.com/beta-access/"
-                             :on-click #(aside-nav-clicked owner :beta-icon-clicked)}
-              (icon/engine-new)
-              [:div.nav-label "What's New"]])
-
-           (when (:admin user)
-             [:a.aside-item {:class (when (= :admin-settings current-route) "current")
-                             :data-placement "right"
-                             :data-trigger "hover"
-                             :title "Admin"
-                             :href "/admin"
-                             :on-click #(aside-nav-clicked owner :admin-icon-clicked)}
-              [:i.material-icons "build"]
-              [:div.nav-label "Admin"]])
-
-           (when-not (ld/feature-on? "top-bar-ui-v-1")
-             [:a.aside-item.push-to-bottom {:data-placement "right"
-                                            :data-trigger "hover"
-                                            :title "Log Out"
-                                            :href "/logout"
-                                            :on-click #(aside-nav-clicked owner :logout-icon-clicked)}
-              [:i.material-icons "power_settings_new"]
-              [:div.nav-label "Log Out"]])])))))
+      (let [args {:current-route current-route
+                  :owner owner}]
+        (if (ld/feature-on? "top-bar-ui-v-1")
+          (aside-nav-new (merge args {:org {:org (:login org) :vcs_url (:vcs_url org)}}))
+          (aside-nav-original (merge args {:user user})))))))

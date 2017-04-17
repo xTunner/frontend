@@ -1,6 +1,7 @@
 (ns frontend.components.pages.add-projects
   (:require [frontend.components.add-projects :as add-projects]
             [frontend.components.templates.main :as main-template]
+            [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true]))
 
 (defn page [app owner]
@@ -8,6 +9,7 @@
     om/IRender
     (render [_]
       (main-template/template
-       {:app app
-        :main-content (om/build add-projects/add-projects app)
-        :header-actions (om/build add-projects/add-projects-head-actions app)}))))
+       (merge {:app app
+               :main-content (om/build add-projects/add-projects app)}
+         (when-not (ld/feature-on? "top-bar-ui-v-1")
+           {:header-actions (om/build add-projects/add-projects-head-actions app)}))))))
