@@ -158,6 +158,8 @@
                                               (:body first-job-build)
                                               :run/commit-subject
                                               (:subject first-job-build)
+                                              :run/pull-requests
+                                              (:pull_requests first-job-build)
                                               :run/started-at
                                               (:start_time first-job-build)
                                               :run/stopped-at

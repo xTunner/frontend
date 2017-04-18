@@ -7,6 +7,7 @@
             [frontend.datetime :as datetime]
             [frontend.routes :as routes]
             [frontend.utils :refer-macros [component element html]]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [om.next :as om-next :refer-macros [defui]]))
 
@@ -17,6 +18,25 @@
     :run-status/succeeded :status-class/succeeded
     :run-status/failed :status-class/failed
     :run-status/canceled :status-class/stopped))
+
+(defn run-prs
+  "A om-next compatible version of
+  `frontend.components.builds-table/pull-requests`."
+  [pull-requests]
+  (html
+   (when-let [urls (seq (map :url pull-requests))]
+     [:span.metadata-item.pull-requests {:title "Pull Requests"}
+      (icon/git-pull-request)
+      (interpose
+       ", "
+       (for [url urls
+             ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+             ;; When that happens, this code blows up the page. To work around that,
+             ;; we just skip the PR if its URL is nil.
+             :when url]
+         [:a {:href url}
+          "#"
+          (gh-utils/pull-request-number url)]))])))
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
@@ -40,6 +60,7 @@
                     run/started-at
                     run/stopped-at
                     run/branch-name
+                    run/pull-requests
                     run/commit-sha
                     run/commit-subject
                     run/commit-body]
@@ -87,9 +108,7 @@
                                                            :stop stopped-at})]
                   "-")]]
               [:div.metadata-row.pull-revision
-               [:span.metadata-item.pull-requests {:title "Pull Requests"}
-                (icon/git-pull-request)
-                [:a (str id)]]
+               (run-prs pull-requests)
                [:span.metadata-item.revision
                 [:i.octicon.octicon-git-commit]
                 (when commit-sha
