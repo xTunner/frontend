@@ -12,9 +12,9 @@
 
 (defn- status-class [run-status]
   (case run-status
-    :run-status/waiting :status-class/waiting
+    :run-status/not-run :status-class/waiting
     :run-status/running :status-class/running
-    :run-status/succeeded :status-class/succeeded
+    :run-status/success :status-class/succeeded
     :run-status/failed :status-class/failed
     :run-status/canceled :status-class/stopped))
 
