@@ -63,7 +63,7 @@
               [:div.build-info-header
                [:div.contextual-identifier
                 [:a {:href (routes/v1-run {:run-id id})}
-                 [:span (str run-name " " id)]]]]
+                 [:span run-name]]]]
               [:div.recent-commit-msg
                [:span.recent-log
                 {:title (when commit-body
