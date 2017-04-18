@@ -26,14 +26,12 @@
 
 
 (defn- maybe-add-workflow-response-data [state]
-  (js/console.log "maybe-add-workflow-response-data")
   (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
     (cond-> state
       (= workflow-id "mock-workflow-id")
       (assoc-in state/workflow-path workflow/fake-progress-response))))
 
 (defn- maybe-fetch-workflow-response-data! [state api-ch]
-  (js/console.log "maybe-fetch-workflow-response-data!" (clj->js (get-in state state/navigation-data-path)))
   (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
     (when (= workflow-id "mock-workflow-id")
       (ajax/ajax :post
