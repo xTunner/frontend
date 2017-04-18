@@ -16,23 +16,12 @@
         height: @top-bar-height;
       }
 
-      > .logomark-narrow {
-        .flexy(center, center);
-        .icon-style(@white, (@em * 2));
-        width: 176px;
-        height: @top-bar-height;
-
-        > img {
-          height: 44px;
-        }
-      }
-
       > .navbar-toggler {
         background: inherit;
         border: none;
         padding: 0 2ex;
 
-        i.material-icons {
+        > i.material-icons {
           margin-left: 0;
           font-size: @fontSizeLargest;
           color: @whiten;
@@ -57,6 +46,13 @@
           > button.dropdown-toggle:not(.org-button) {
             border: none;
             background: none;
+
+            > .gravatar {
+              min-width: 28px;
+              height: 28px;
+              border-radius: 50%;
+              border: 1px solid @white;
+            }
           }
 
           > a {
@@ -92,7 +88,7 @@
               color: @white;
               .transition(all .1s ease-in);
 
-              .material-icons {
+              > .material-icons {
                 margin-top: -3px
               }
             }
@@ -105,7 +101,7 @@
               // OVERRIDE--ICON-STYLE
               color: @grayLighter;
 
-              i {
+              > i {
                 color: @grayLighter;
               }
             }
@@ -131,7 +127,7 @@
                 background-color: @blueDarkest;
                 color: @whiten;
 
-                .heading {
+                > .heading {
                   color: @whiten;
                 }
               }
@@ -141,7 +137,7 @@
                 margin-left: 8px;
               }
 
-              .heading {
+              > .heading {
                 font-weight: 600;
                 color: @blueDarkest;
               }
@@ -157,130 +153,135 @@
             }
           }
         }
-      }
 
-      // TODO Note, this should become its own component, since we
-      // reuse it - *a lot*
-      .gravatar {
-        min-width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        border: 1px solid @white;
-      }
+      @dropdown-width: 355px;
 
-      @dropdown-width: 280px;
+        > .org-dropdown {
+          border-radius: 0;
+          padding: 0;
+          width: @dropdown-width;
+          height: @top-bar-height;
 
-      .org-button {
-        .flexy(center, space-between, row);
-        width: @dropdown-width;
-        padding: 0 20px;
-        border: none;
-        border-right: @top-bar-sep-border;
-        background: none;
+          > .dropdown-menu {
+            left: 0;
+            margin-top: -4px;
+            padding: 0;
+            border: none;
+            border-radius: 0;
+            min-width: 260px;
 
+            > li >  .org-dropdown-menu__item {
+              .flexy(center, space-between, row);
+              border-bottom: 1px solid @grayLightest;
+              color: @grayDarker;
+              padding: 6px 20px 6px 6px;
 
-        .avatar-and-name-container {
-          .selected-org-icon {
-            height: 40px;
-            width: 40px;
-            border: 3px solid @white;
-          }
-          .selected-org-name {
-            color: @white;
-            font-weight: 500;
-            font-size: @fontSizeMedium;
-            margin-left: 10px;
-          }
-        }
+              > .org-icon-and-name {
+                > .leading-dot {
+                  padding-right: 5px;
+                  color: transparent;
+                  vertical-align: middle;
+                  transition: color 0.3s ease-in-out;
+                }
 
-        .org-picker-arrow {
-          color: @white;
-        }
-      }
+                > .org-name {
+                  margin-left: 34px;
+                  font-weight: 500;
+                }
 
-      .org-dropdown-menu {
-        border-radius: 0;
-        padding: 0;
-        margin: 0;
-      }
-
-      .org-dropdown {
-        border-radius: 0;
-        padding: 0;
-        width: @dropdown-width;
-        height: @top-bar-height;
-
-        .dropdown-menu {
-          left: 0;
-
-          .org-dropdown-menu__item {
-            .flexy(center, space-between, row);
-            border-bottom: 1px solid @grayLightest;
-            color: black;
-            padding-left: 9px;
-
-            .vcs-icon, .avatar {
-              border-radius: 50%;
-            }
-            .avatar {
-              height: 30px;
-              width: 30px;
-            }
-            .vcs-icon {
-              height: 20px;
-              width: 20px;
-
-              a {
-                color: @grayLighter;
+                > .avatar {
+                  border-radius: 50%;
+                  height: 30px;
+                  width: 30px;
+                }
               }
-            }
 
-            .org-name {
-              margin-left: 16px;
-            }
+              > .vcs-icon {
+                border-radius: 50%;
+                height: 20px;
+                width: 20px;
 
-            .leading-dot {
-              padding-right: 5px;
-              color: transparent;
-              vertical-align: middle;
-              transition: color 0.3s ease-in-out;
-            }
-
-            &.selected-org {
-              font-weight: bold;
-
-              .leading-dot {
-                color: black;
-              }
-              .vcs-icon a {
-                color: black;
-              }
-            }
-
-            &:hover:not(.switch-org-text) {
-              background-color: @grayLightest;
-
-              &:not(.selected-org) {
-                .leading-dot {
+                > a {
                   color: @grayLighter;
+                }
+
+                &:hover > a {
+                  color: @green;
+                }
+              }
+
+              &.selected-org {
+                font-weight: bold;
+
+                > .org-icon-and-name > .leading-dot,
+                > .vcs-icon > a {
+                  color: @grayDarker;
+                }
+              }
+
+              &:hover:not(.switch-org-text) {
+                cursor: pointer;
+                background-color: @blueDarkest;
+                color: @whiten;
+                border-bottom: 1px solid @blueDarkest;
+
+                > .org-icon-and-name > .leading-dot,
+                > .vcs-icon > a {
+                  color: @white;
                 }
               }
             }
+
+            > .switch-org-text {
+              font-size: @fontSizeSmaller;
+              line-height: @baseLineHeight;
+              font-weight: bold;
+              text-transform: uppercase;
+              color: @grayLight;
+              border-bottom: 1px solid @grayLightest;
+              text-indent: 15px;
+            }
           }
 
-          .switch-org-text {
-            font-size: @fontSizeSmaller;
-            line-height: @baseLineHeight;
-            font-weight: bold;
-            text-transform: uppercase;
-            color: @grayLight;
-            text-indent: 15px;
-          }
-        }
+          > .org-button {
+            .flexy(center);
+            width: @dropdown-width;
+            border: none;
+            border-right: @top-bar-sep-border;
+            background: none;
+            padding: 0;
 
-        &:hover {
-          color: currentColor;
-          background-color: @grayDarker;
+            > .avatar {
+              .flexy(center, center);
+              height: 70px;
+              width: 70px;
+            }
+
+            > .org-name {
+              .flexy(center, space-between);
+              width: 284px;
+
+              > .selected-org-name {
+                color: @white;
+                font-weight: 500;
+                font-size: @fontSizeMedium;
+                margin-left: 1em;
+              }
+
+              > .org-picker-arrow {
+                color: @white;
+                padding: 0 40px;
+              }
+            }
+
+            > .avatar > .selected-org-icon {
+              height: 40px;
+              width: 40px;
+              border-radius: 50%;
+              border: 1px solid @whiten;
+
+            }
+          }
         }
       }
     }
