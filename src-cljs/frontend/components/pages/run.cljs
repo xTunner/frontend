@@ -146,6 +146,9 @@
                 first-job-build (get-in (om-next/props this)
                                         (into [:legacy/state]
                                               state/build-path))
+                jobs (cond-> (:run/jobs run)
+                       first-job-build (assoc-in [0 :job/started-at]
+                                                 (:start_time first-job-build)))
                 first-job-build-id (:job/build first-job)
                 first-job-name (:job/name first-job)]
             (html
@@ -170,7 +173,7 @@
                  [:.hr-title
                   [:span "Jobs"]]]
                 (card/collection
-                 (map job (:run/jobs run)))]
+                 (map job jobs))]
                [:.output
                 [:div.output-header
                  [:.output-title

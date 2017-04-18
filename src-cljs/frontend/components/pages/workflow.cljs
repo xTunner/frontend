@@ -51,7 +51,10 @@
      :run/started-at
      :run/stopped-at
      :run/branch-name
-     :run/commit-sha])
+     :run/commit-sha
+     :run/commit-body
+     :run/commit-subject
+     :run/pull-requests])
   Object
   (render [this]
     (component
