@@ -40,7 +40,9 @@
                     run/started-at
                     run/stopped-at
                     run/branch-name
-                    run/commit-sha]
+                    run/commit-sha
+                    run/commit-subject
+                    run/commit-body]
              run-name :run/name}
             (om-next/props this)]
         (card/basic
@@ -63,7 +65,11 @@
                 [:a {:href (routes/v1-run {:run-id id})}
                  [:span (str run-name " " id)]]]]
               [:div.recent-commit-msg
-               [:span.recent-log "This is the thing that triggered the run"]]]
+               [:span.recent-log
+                {:title (when commit-body
+                          commit-body)}
+                (when commit-subject
+                  commit-subject)]]]
              [:div.metadata
               [:div.metadata-row.timing
                [:span.metadata-item.recent-time.start-time

@@ -154,6 +154,10 @@
                 (workflow-page/run-row (assoc run
                                               :run/commit-sha
                                               (:vcs_revision first-job-build)
+                                              :run/commit-body
+                                              (:body first-job-build)
+                                              :run/commit-subject
+                                              (:subject first-job-build)
                                               :run/started-at
                                               (:start_time first-job-build)
                                               :run/stopped-at
