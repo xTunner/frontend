@@ -42,7 +42,7 @@
 
 (defn adapt-to-run
   [response]
-  (let [status->run-status {"success" :run-status/success
+  (let [status->run-status {"success" :run-status/succeeded
                             "failed" :run-status/failed
                             "running" :run-status/running
                             "not_run" :run-status/not-run

@@ -14,7 +14,7 @@
   (case run-status
     :run-status/not-run :status-class/waiting
     :run-status/running :status-class/running
-    :run-status/success :status-class/succeeded
+    :run-status/succeeded :status-class/succeeded
     :run-status/failed :status-class/failed
     :run-status/canceled :status-class/stopped))
 
