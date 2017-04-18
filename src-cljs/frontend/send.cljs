@@ -28,7 +28,8 @@
     ch))
 
 (defn adapt-to-job [job-response]
-  (let [status->job-run-status {"success" :job-run-status/succeeded
+  (let [status->job-run-status {"fixed" :job-run-status/succeeded
+                                "success" :job-run-status/succeeded
                                 "failed" :job-run-status/failed
                                 "canceled" :job-run-status/canceled
                                 "running" :job-run-status/running
