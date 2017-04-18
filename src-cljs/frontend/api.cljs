@@ -86,7 +86,7 @@
 
 (defn get-project-workflows [api-ch vcs-url]
   (ajax/ajax :post
-             "https://api.circleci.com/query"
+             "/query-api"
              :workflow-status
              api-ch
              :format :transit
