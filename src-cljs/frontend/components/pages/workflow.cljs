@@ -83,10 +83,11 @@
               [:div.metadata-row.pull-revision
                [:span.metadata-item.pull-requests {:title "Pull Requests"}
                 (icon/git-pull-request)
-                [:a id]]
+                [:a (str id)]]
                [:span.metadata-item.revision
                 [:i.octicon.octicon-git-commit]
-                [:a (subs commit-sha 0 7)]]]]
+                (when commit-sha
+                 [:a (subs commit-sha 0 7)])]]]
              [:div.actions
               (button/icon {:label "Stop this workflow"
                             :disabled? true}
