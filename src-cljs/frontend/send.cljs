@@ -42,17 +42,22 @@
 
 (defn adapt-to-run
   [response]
-  {:run/id (:workflow/id response)
-   :run/name (:workflow/name response)
-   :run/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
-                 :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
-                                        :organization/vcs-type "github"}}
-   :run/status :run-status/succeeded
-   :run/started-at (:workflow/created-at response)
-   :run/stopped-at nil  ;; FIXME
-   :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
-   :run/commit-sha (get-in response [:workflow/trigger-resource :data :vcs_revision])
-   :run/jobs (mapv adapt-to-job (:workflow/jobs response))})
+  (let [status->run-status {"success" :run-status/success
+                            "failed" :run-status/failed
+                            "running" :run-status/running
+                            "not_run" :run-status/not-run
+                            "canceled" :run-status/canceled}]
+   {:run/id (:workflow/id response)
+    :run/name (:workflow/name response)
+    :run/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
+                  :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
+                                         :organization/vcs-type "github"}}
+    :run/status (status->run-status (:workflow/status response))
+    :run/started-at (:workflow/created-at response)
+    :run/stopped-at nil ;; FIXME
+    :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
+    :run/commit-sha (get-in response [:workflow/trigger-resource :data :vcs_revision])
+    :run/jobs (mapv adapt-to-job (:workflow/jobs response))}))
 
 (defmulti send* key)
 
