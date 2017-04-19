@@ -52,10 +52,10 @@
      :run/started-at
      :run/stopped-at
      :run/branch-name
-     :run/commit-sha
-     :run/commit-body
-     :run/commit-subject
-     :run/pull-requests])
+     {:run/trigger-info [:trigger-info/vcs-revision
+                         :trigger-info/subject
+                         :trigger-info/body
+                         {:trigger-info/pull-requests [:pull-request/url]}]}])
   Object
   (render [this]
     (component
@@ -63,13 +63,13 @@
                     run/status
                     run/started-at
                     run/stopped-at
-                    run/branch-name
-                    run/pull-requests
-                    run/commit-sha
-                    run/commit-subject
-                    run/commit-body]
+                    run/trigger-info]
              run-name :run/name}
             (om-next/props this)
+            {commit-sha :trigger-info/vcs-revision
+             commit-body :trigger-info/body
+             commit-subject :trigger-info/subject
+             pull-requests :trigger-info/pull-requests} trigger-info
             run-status-class (status-class status)]
         (card/basic
          (element :content
@@ -108,7 +108,9 @@
                [:span.metadata-item.recent-time.duration
                 [:i.material-icons "timer"]
                 (if stopped-at
-                  [:span {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}
+                  [:span {:title (str "Duration: "
+                                      (datetime/as-duration (- (.getTime stopped-at)
+                                                               (.getTime started-at))))}
                    (build-legacy common/updating-duration {:start started-at
                                                            :stop stopped-at})]
                   "-")]]

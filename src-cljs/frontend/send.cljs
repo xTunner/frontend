@@ -33,33 +33,40 @@
                                 "failed" :job-run-status/failed
                                 "canceled" :job-run-status/canceled
                                 "running" :job-run-status/running
-                                "waiting" :job-run-status/waiting
-                                "not_running" :job-run-status/not-running}]
-    {:job/id (:job/id job-response)
-     :job/status (status->job-run-status (:job/status job-response))
-     :job/started-at (js/Date.) ;; FIXME
-     :job/stopped-at (js/Date.) ;; FIXME
-     :job/name (:job/name job-response)
-     :job/build (:job/build job-response)}))
+                                "waiting" :job-run-status/waiting}]
+    (update job-response :job/status status->job-run-status)))
+
+(defn- compute-run-stop-time [jobs]
+  (some->> jobs
+           (keep (comp time-coerce/from-date :job/stopped-at))
+           not-empty
+           time/latest
+           time-coerce/to-date))
+
+(def ^:private status->run-status {"success" :run-status/succeeded
+                                   "failed" :run-status/failed
+                                   "running" :run-status/running
+                                   "not_run" :run-status/not-run
+                                   "canceled" :run-status/canceled})
 
 (defn adapt-to-run
   [response]
-  (let [status->run-status {"success" :run-status/succeeded
-                            "failed" :run-status/failed
-                            "running" :run-status/running
-                            "not_run" :run-status/not-run
-                            "canceled" :run-status/canceled}]
-   {:run/id (:workflow/id response)
-    :run/name (:workflow/name response)
-    :run/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
-                  :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
-                                         :organization/vcs-type "github"}}
-    :run/status (status->run-status (:workflow/status response))
-    :run/started-at (:workflow/created-at response)
-    :run/stopped-at nil ;; FIXME
-    :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
-    :run/commit-sha (get-in response [:workflow/trigger-resource :data :vcs_revision])
-    :run/jobs (mapv adapt-to-job (:workflow/jobs response))}))
+  (let [run-status (-> response :workflow/status status->run-status)
+        jobs (mapv adapt-to-job (:workflow/jobs response))]
+    {:run/id (:workflow/id response)
+     :run/name (:workflow/name response)
+     :run/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
+                   :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
+                                          :organization/vcs-type "github"}}
+     :run/status run-status
+     :run/started-at (:workflow/created-at response)
+     :run/stopped-at (if (#{:run-status/running :run-status/not-run} run-status)
+                       nil
+                       (compute-run-stop-time jobs))
+     :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
+     :run/commit-sha (get-in response [:workflow/trigger-resource :data :vcs_revision])
+     :run/jobs jobs
+     :run/trigger-info (:workflow/trigger-info response)}))
 
 (defmulti send* key)
 
