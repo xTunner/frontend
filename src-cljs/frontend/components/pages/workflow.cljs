@@ -1,5 +1,6 @@
 (ns frontend.components.pages.workflow
-  (:require [frontend.components.common :as common]
+  (:require [clojure.string :as string]
+            [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
@@ -68,21 +69,22 @@
                     run/commit-subject
                     run/commit-body]
              run-name :run/name}
-            (om-next/props this)]
+            (om-next/props this)
+            run-status-class (status-class status)]
         (card/basic
          (element :content
            (html
             [:div
-             [:div.status {:class (name status)}
+             [:div.status {:class (name run-status-class)}
               [:a.exception {:href (routes/v1-run {:run-id id})}
-               [:span.status-icon {:class (name status)}
+               [:span.status-icon {:class (name run-status-class)}
                 (case (status-class status)
                   :status-class/failed (icon/status-failed)
                   :status-class/stopped (icon/status-canceled)
                   :status-class/succeeded (icon/status-passed)
                   :status-class/running (icon/status-running)
                   :status-class/waiting (icon/status-queued))]
-               [:.status-string (name status)]]]
+               [:.status-string (string/replace (name status) #"-" " ")]]]
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier
