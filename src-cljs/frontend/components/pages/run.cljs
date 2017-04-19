@@ -19,7 +19,8 @@
 
 (defn- status-class [run-status]
   (case run-status
-    :job-run-status/waiting :status-class/waiting
+    (:job-run-status/waiting
+     :job-run-status/not-running) :status-class/waiting
     :job-run-status/running :status-class/running
     :job-run-status/succeeded :status-class/succeeded
     :job-run-status/failed :status-class/failed
