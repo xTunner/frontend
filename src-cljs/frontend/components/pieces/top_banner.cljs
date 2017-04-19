@@ -65,7 +65,7 @@
                          :owner nil})]))
   (defcard green-banner-dismissable
     (om/build banner {:banner-type "success"
-                      :content [:span "Some inner content for a card!"]
+                      :content [:span "Some inner content for a banner!"]
                       :impression-event-type nil
                       :dismiss-fn #(.log js/console "Faux dimissal function.")
                       :owner nil})))
