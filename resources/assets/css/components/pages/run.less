@@ -1,10 +1,12 @@
 .ns("frontend.components.pages.run", {
-  .ui("JobRun", {}, {
+  .ui("Job", {}, {
     .el("content", {
       margin: -15px;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      background-color: @whiten;
 
       &.selected {
+        background-color: @white;
         box-shadow: 0 3px 6px 0 rgba(0,0,0,0.23), 0 3px 6px 0 rgba(0,0,0,0.16);
 
         &:hover {
@@ -24,6 +26,7 @@
 
           .metadata-row {
             .flexy(row, flex-end);
+            margin-top: 0;
             padding-left: 0;
             padding-right: 0;
 
@@ -117,7 +120,6 @@
         > .jobs {
           margin-right: 20px;
 
-          flex: 1;
           transform: translate3d(0,0,0);
           transition: transform .3s;
 
@@ -180,6 +182,7 @@
         }
 
         > .output {
+          flex: 1;
 
           .output-header {
             .flexy(center, space-between);
