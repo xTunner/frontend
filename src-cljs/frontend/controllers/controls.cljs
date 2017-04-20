@@ -353,7 +353,17 @@
             (.play scroller))))
       (let [container (get-in current-state (state/container-path container-id))
             last-action (-> container :actions last)
-            vcs-url (:vcs_url (get-in current-state state/build-path))]
+            build (get-in current-state state/build-path)
+            vcs-url (:vcs_url build)
+            current-tab (or (get-in current-state state/navigation-tab-path)
+                            (build-utils/default-tab build (get-in current-state state/project-scopes-path)))]
+        (put! (:nav comms) [:navigate! {:path (routes/v1-build-path (:vcs_type build)
+                                                                    (:username build)
+                                                                    (:reponame build)
+                                                                    nil
+                                                                    (:build_num build)
+                                                                    current-tab
+                                                                    container-id)}])
         (api/get-action-steps {:vcs-url vcs-url
                                :build-num (:build_num (get-in current-state state/build-path))
                                :project-name (vcs-url/project-name vcs-url)

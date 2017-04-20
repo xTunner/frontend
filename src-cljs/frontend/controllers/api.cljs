@@ -445,18 +445,29 @@
                                           (vec old-tests))))
           (assoc-in state/tests-parse-errors-path exceptions)))))
 
+(defn- same-build-page?
+  "Helper function for the :action-steps events to tell if the
+  result returned is from the same build page as the one the user
+  is currently on."
+  [{:keys [build args state]}]
+  (let [build (get-in state state/build-path)
+        {:keys [build-num project-name new-container-id]} (:context args)]
+    (and (= build-num (:build_num build))
+         (= project-name (vcs-url/project-name (:vcs_url build)))
+         (= new-container-id (get-in state state/current-container-path)))))
+
 (defmethod api-event [:action-steps :success]
   [target message status args state]
   (let [build (get-in state state/build-path)
         {:keys [build-num project-name new-container-id]} (:context args)]
-    (if-not (and (= build-num (:build_num build))
-                 (= project-name (vcs-url/project-name (:vcs_url build))))
+    (if-not (same-build-page? {:build build
+                               :args args
+                               :state state})
       state
       (let [build (assoc build :steps (:resp args))]
         (-> state
             (assoc-in state/build-path build)
-            (assoc-in state/containers-path (vec (build-model/containers build)))
-            (assoc-in state/current-container-path new-container-id))))))
+            (assoc-in state/containers-path (vec (build-model/containers build))))))))
 
 (defn update-pusher-subscriptions
   [state comms old-index new-index]
@@ -475,8 +486,9 @@
   (let [{:keys [build-num project-name old-container-id new-container-id]} (:context args)
         build (get-in current-state state/build-path)
         vcs-url (:vcs_url build)]
-    (when (and (= build-num (:build_num build))
-               (= project-name (vcs-url/project-name vcs-url)))
+    (when (same-build-page? {:build build
+                             :args args
+                             :state current-state})
       (fetch-visible-output current-state comms build-num vcs-url)
       (update-pusher-subscriptions current-state comms old-container-id new-container-id)
       (frontend.favicon/set-color! (build-model/favicon-color build)))))

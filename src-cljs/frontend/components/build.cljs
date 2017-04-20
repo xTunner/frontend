@@ -225,13 +225,8 @@
                             nil)
              {:keys [vcs_type username reponame build_num]} build]
          [:a.container-selector.exception
-          {:href (routes/v1-build-path vcs_type username
-                                       reponame nil build_num
-                                       (or current-tab (build-utils/default-tab build scopes))
-                                       container-id)
-           :on-click #(when (not= container-id selected-container-id)
-                        (when (#{:status-class/running :status-class/waiting} status-class)
-                          (raise! owner [:container-selected {:container-id container-id}]))
+          {:on-click #(when (not= container-id selected-container-id)
+                        (raise! owner [:container-selected {:container-id container-id}])
                         ((om/get-shared owner :track-event) {:event-type :container-selected
                                                              :properties {:old-container-id selected-container-id
                                                                           :new-container-id container-id}}))
