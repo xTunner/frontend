@@ -33,7 +33,8 @@
                                 "failed" :job-run-status/failed
                                 "canceled" :job-run-status/canceled
                                 "running" :job-run-status/running
-                                "waiting" :job-run-status/waiting}]
+                                "waiting" :job-run-status/waiting
+                                "not_running" :job-run-status/not-running}]
     {:job/id (:job/id job-response)
      :job/status (status->job-run-status (:job/status job-response))
      :job/started-at (js/Date.) ;; FIXME
