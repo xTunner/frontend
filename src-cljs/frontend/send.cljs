@@ -27,14 +27,16 @@
           (recur))))
     ch))
 
+(defn- job-run-status [job-status-str]
+  (case job-status-str
+    ("fixed" "success") :job-run-status/succeeded
+    "failed" :job-run-status/failed
+    ("canceled" "not_running") :job-run-status/canceled
+    "running" :job-run-status/running
+    ("waiting" "queued") :job-run-status/waiting))
+
 (defn adapt-to-job [job-response]
-  (let [status->job-run-status {"fixed" :job-run-status/succeeded
-                                "success" :job-run-status/succeeded
-                                "failed" :job-run-status/failed
-                                "canceled" :job-run-status/canceled
-                                "running" :job-run-status/running
-                                "waiting" :job-run-status/waiting}]
-    (update job-response :job/status status->job-run-status)))
+  (update job-response :job/status job-run-status))
 
 (defn- compute-run-stop-time [jobs]
   (some->> jobs
@@ -43,24 +45,26 @@
            time/latest
            time-coerce/to-date))
 
-(def ^:private status->run-status {"success" :run-status/succeeded
-                                   "failed" :run-status/failed
-                                   "running" :run-status/running
-                                   "not_run" :run-status/not-run
-                                   "canceled" :run-status/canceled})
+(defn- run-status [run-status-str]
+  (case run-status-str
+    "success" :run-status/succeeded
+    "failed" :run-status/failed
+    "running" :run-status/running
+    "not_run" :run-status/not-run
+    "canceled" :run-status/canceled))
 
 (defn adapt-to-run
   [response]
-  (let [run-status (-> response :workflow/status status->run-status)
+  (let [status (-> response :workflow/status run-status)
         jobs (mapv adapt-to-job (:workflow/jobs response))]
     {:run/id (:workflow/id response)
      :run/name (:workflow/name response)
      :run/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
                    :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
                                           :organization/vcs-type "github"}}
-     :run/status run-status
+     :run/status status
      :run/started-at (:workflow/created-at response)
-     :run/stopped-at (if (#{:run-status/running :run-status/not-run} run-status)
+     :run/stopped-at (if (#{:run-status/running :run-status/not-run} status)
                        nil
                        (compute-run-stop-time jobs))
      :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
