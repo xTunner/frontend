@@ -24,7 +24,8 @@
     :job-run-status/running :status-class/running
     :job-run-status/succeeded :status-class/succeeded
     :job-run-status/failed :status-class/failed
-    :job-run-status/canceled :status-class/stopped))
+    (:job-run-status/canceled
+     :job-run-status/not-run) :status-class/stopped))
 
 (defui ^:once Job
   static om-next/Ident

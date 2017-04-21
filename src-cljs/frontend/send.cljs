@@ -31,9 +31,10 @@
   (case job-status-str
     ("fixed" "success") :job-run-status/succeeded
     "failed" :job-run-status/failed
-    ("canceled" "not_running") :job-run-status/canceled
+    "canceled" :job-run-status/canceled
+    "not_run" :job-run-status/not-run
     "running" :job-run-status/running
-    ("waiting" "queued") :job-run-status/waiting))
+    ("waiting" "queued" "not_running") :job-run-status/waiting))
 
 (defn adapt-to-job [job-response]
   (update job-response :job/status job-run-status))
