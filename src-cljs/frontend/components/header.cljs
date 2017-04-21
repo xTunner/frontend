@@ -47,6 +47,19 @@
           :size :small}
          "Follow Project")))))
 
+(defn show-workflows-link? [app]
+  (let [repo (get-in app [:navigation-data :repo])
+        workflows-enabled? (get-in app (conj state/feature-flags-path
+                                             :workflows))]
+    (boolean (and repo workflows-enabled?))))
+
+(defn workflows-link [app]
+  (let [{:keys [vcs_type org repo]} (:navigation-data app)]
+    (html
+     [:a.header-settings-link
+      {:href (routes/v1-workflow-path vcs_type org repo)}
+      "Workflows"])))
+
 (defn show-settings-link? [app]
   (and
     (:read-settings (get-in app state/page-scopes-path))
@@ -365,6 +378,9 @@
             (om/build page-header/header {:crumbs crumbs
                                           :logged-out? (not (:name user))
                                           :actions (cond-> []
+                                                     (show-workflows-link? app)
+                                                     (conj (workflows-link app))
+                                                     
                                                      (show-settings-link? app)
                                                      (conj (settings-link app owner))
 
