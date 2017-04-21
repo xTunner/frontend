@@ -69,6 +69,7 @@ experimental:
               source ~/.bashrc
               set -ex
 
+              ssh-add -D
               script/deploy.sh
               if [[ "${CIRCLE_BRANCH}" == "master" ]]
               then
