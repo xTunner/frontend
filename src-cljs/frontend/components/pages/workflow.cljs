@@ -55,6 +55,7 @@
      {:run/trigger-info [:trigger-info/vcs-revision
                          :trigger-info/subject
                          :trigger-info/body
+                         :trigger-info/branch
                          {:trigger-info/pull-requests [:pull-request/url]}]}])
   Object
   (render [this]
@@ -69,7 +70,8 @@
             {commit-sha :trigger-info/vcs-revision
              commit-body :trigger-info/body
              commit-subject :trigger-info/subject
-             pull-requests :trigger-info/pull-requests} trigger-info
+             pull-requests :trigger-info/pull-requests
+             branch :trigger-info/branch} trigger-info
             run-status-class (status-class status)]
         (card/basic
          (element :content
@@ -89,7 +91,7 @@
               [:div.build-info-header
                [:div.contextual-identifier
                 [:a {:href (routes/v1-run {:run-id id})}
-                 [:span run-name]]]]
+                 [:span  branch " / " run-name]]]]
               [:div.recent-commit-msg
                [:span.recent-log
                 {:title (when commit-body

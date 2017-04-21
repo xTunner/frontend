@@ -60,16 +60,11 @@
         jobs (mapv adapt-to-job (:workflow/jobs response))]
     {:run/id (:workflow/id response)
      :run/name (:workflow/name response)
-     :run/project {:project/name (get-in response [:workflow/trigger-resource :data :reponame])
-                   :project/organization {:organization/name (get-in response [:workflow/trigger-resource :data :username])
-                                          :organization/vcs-type "github"}}
      :run/status status
      :run/started-at (:workflow/created-at response)
      :run/stopped-at (if (#{:run-status/running :run-status/not-run} status)
                        nil
                        (compute-run-stop-time jobs))
-     :run/branch-name (get-in response [:workflow/trigger-resource :data :branch])
-     :run/commit-sha (get-in response [:workflow/trigger-resource :data :vcs_revision])
      :run/jobs jobs
      :run/trigger-info (:workflow/trigger-info response)}))
 
