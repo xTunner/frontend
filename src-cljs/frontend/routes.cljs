@@ -266,7 +266,7 @@
     (open-to-inner! app nav-ch :add-projects {:tab _fragment}))
 
   (defroute v1-organization-add-projects "/add-projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name _fragment]}
-    (open-to-inner! app nav-ch :add-projects {:tab _fragment :vcs_url (vcs/->lengthen-vcs short-vcs-type) :login org-name}))
+    (open-to-inner! app nav-ch :add-projects {:tab _fragment :vcs_type (vcs/->lengthen-vcs short-vcs-type) :login org-name}))
 
   (defroute v1-insights "/build-insights" []
     (open-to-inner! app nav-ch :build-insights {}))

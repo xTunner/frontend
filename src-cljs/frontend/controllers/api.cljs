@@ -106,7 +106,6 @@
   [target message status args previous-state current-state comms]
   (mlog "No post-api for: " [message status]))
 
-
 (defmethod api-event [:projects :success]
   [target message status {:keys [resp]} {:keys [navigation-point] :as current-state}]
   (let [new-projects (map (fn [project] (update project :scopes #(set (map keyword %)))) resp)
@@ -398,7 +397,11 @@
 
 (defmethod api-event [:organizations :success]
   [target message status {orgs :resp} state]
-  (assoc-in state state/user-organizations-path orgs))
+  (let [selected-org (or (state-utils/complete-org-path orgs (get-in state state/selected-org-path))
+                         (first orgs))]
+    (-> state
+      (assoc-in state/user-organizations-path orgs)
+      (assoc-in state/selected-org-path selected-org))))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]
@@ -544,9 +547,9 @@
   [target message status {:keys [resp context]} state]
   (cond-> state
     (= (:project-name context)
-             (str (get-in state [:navigation-data :org])
-                  "/"
-                  (get-in state [:navigation-data :repo])))
+      (str (get-in state [:navigation-data :org])
+           "/"
+           (get-in state [:navigation-data :repo])))
     (add-project-settings-flash (:flash context) status)))
 
 ;; TODO: add project settings API failed handler here. Also, make sure
@@ -828,7 +831,10 @@
 
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
-  (let [{:keys [org-name vcs-type]} context]
+  (let [{:keys [org-name vcs-type]} context
+        org {:login org-name
+             :vcs_type vcs-type}
+        state (state-utils/change-selected-org state org)]
     (if-not (org-selectable? state org-name vcs-type)
       state
       (-> state

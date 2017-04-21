@@ -297,7 +297,6 @@
     (when (ld/feature-on? "top-bar-ui-v-1")
       (api/get-orgs (:api comms) :include-user? true))))
 
-
 (defn ^:export toggle-admin []
   (swap! (om-next/app-state (compassus/get-reconciler application))
          update-in [:legacy/state :current-user :admin] not))

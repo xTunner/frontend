@@ -14,6 +14,7 @@
             [frontend.stefon :as stefon]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.docs :as doc-utils]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
@@ -239,7 +240,8 @@
 
 (defmethod navigated-to :add-projects
   [history-imp navigation-point args state]
-  (let [current-user (get-in state state/user-path)]
+  (let [current-user (get-in state state/user-path)
+        org (not-empty (select-keys args [:login :vcs_type]))]
     (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
@@ -249,22 +251,39 @@
         (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
         (assoc-in state/bitbucket-repos-loading-path (user/bitbucket-authorized? current-user))
         (assoc-in state/crumbs-path [{:type :add-projects}])
-        (assoc-in state/add-projects-selected-org-path args)
+        (assoc-in state/add-projects-selected-org-path org)
         (assoc-in [:settings :add-projects :repo-filter-string] "")
-        (state-utils/reset-current-org))))
+        (state-utils/reset-current-org)
+        (state-utils/change-selected-org org))))
 
-(defmethod post-navigated-to! :add-projects
-  [history-imp navigation-point _ previous-state current-state comms]
-  (let [api-ch (:api comms)
-        load-gh-repos? (get-in current-state state/github-repos-loading-path)
+(defn- nav-to-selected-org
+  [selected-org nav-ch]
+  (put! nav-ch
+    [:navigate! {:path (->> selected-org
+                            :vcs_type
+                            vcs/->short-vcs
+                            (assoc selected-org :short-vcs-type)
+                            routes/v1-organization-add-projects)}]))
+
+(defn load-repos
+  [current-state api-ch]
+  (let [load-gh-repos? (get-in current-state state/github-repos-loading-path)
         load-bb-repos? (get-in current-state state/bitbucket-repos-loading-path)]
-    ;; load orgs, collaborators, and repos.
-    (api/get-orgs api-ch :include-user? true)
     (when load-gh-repos?
       (api/get-github-repos api-ch))
     (when load-bb-repos?
-      (api/get-bitbucket-repos api-ch)))
-  (set-page-title! "Add projects"))
+      (api/get-bitbucket-repos api-ch))))
+
+(defmethod post-navigated-to! :add-projects
+  [history-imp navigation-point _ previous-state current-state comms]
+  (let [api-ch (:api comms)]
+    (if (ld/feature-on? "top-bar-ui-v-1")
+      (when-not (get-in current-state state/add-projects-selected-org-path)
+        (nav-to-selected-org (get-in current-state state/selected-org-path) (:nav comms)))
+      ;; load orgs, collaborators, and repos.
+      (api/get-orgs api-ch :include-user? true))
+    (load-repos current-state api-ch)
+    (set-page-title! "Add projects")))
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]

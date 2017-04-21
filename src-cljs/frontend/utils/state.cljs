@@ -3,6 +3,7 @@
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.seq :refer [find-index]]
             [frontend.models.plan :as plan]
+            [frontend.models.organization :as org]
             [clojure.string :as string]))
 
 (defn set-dashboard-crumbs [state {:keys [org repo branch vcs_type]}]
@@ -100,3 +101,29 @@
   matches the provided build-id."
   (when-let [builds (seq (get-in state state/usage-queue-path))]
     (find-index #(= parts (build-parts %)) builds)))
+
+(defn complete-org-path
+  "Replace partial org map with complete org info (including avatar key, etc.)"
+  [user-orgs org]
+  (->> user-orgs
+       (filter #(org/same? org %))
+       first))
+
+(defn change-selected-org
+  "Returns updated state map with the provided org as the selected-org.
+
+   If possible, the provided org map is updated with information from user-organizations-path
+   to ensure that a complete selected-org-path (including avatar_url, admin) is maintained.
+
+   The `api-event [:organizations :success]` event checks to see if a partial org (only
+   :login and :vcs_type keys in map) is stored in selected-org-path, and updates that
+   information to a complete url
+
+   Conditional logic can be removed after launchdarkly top-bar-ui-v-1 flag is applied to all
+     Until then, org will not always be supplied"
+  [state org]
+  (cond-> state
+    org (assoc-in state/selected-org-path
+          (if-let [user-orgs (get-in state state/user-organizations-path)]
+            (complete-org-path user-orgs org)
+            org))))
