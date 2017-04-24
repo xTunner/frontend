@@ -194,26 +194,6 @@
         state-utils/reset-dismissed-osx-usage-level
         maybe-add-workflow-response-data))))
 
-(defmethod navigated-to :route/workflow
-  [history-imp
-   navigation-point
-   {:keys [vcs_type org repo] :as args}
-   state]
-  (assoc-in state
-            state/crumbs-path
-            [{:type :dashboard}
-             {:type :org
-              :username org
-              :vcs_type vcs_type}
-             {:type :project
-              :username org
-              :project repo
-              :vcs_type vcs_type}
-             {:type :project-workflows
-              :username org
-              :project repo
-              :vcs_type vcs_type}]))
-
 (defn initialize-pusher-subscriptions
   "Subscribe to pusher channels for initial messaging. This subscribes
   us to build messages (`update`, `add-messages` and `test-results`),
