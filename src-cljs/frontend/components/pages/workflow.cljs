@@ -25,7 +25,7 @@
   `frontend.components.builds-table/pull-requests`."
   [pull-requests]
   (html
-   (when-let [urls (seq (map :url pull-requests))]
+   (when-let [urls (seq (map :pull-request/url pull-requests))]
      [:span.metadata-item.pull-requests {:title "Pull Requests"}
       (icon/git-pull-request)
       (interpose
