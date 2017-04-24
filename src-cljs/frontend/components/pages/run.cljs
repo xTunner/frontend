@@ -2,8 +2,8 @@
   (:require [frontend.components.build-head :as old-build-head]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
-            [frontend.components.pieces.button :as button]
             [frontend.components.pages.workflow :as workflow-page]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.status :as status]
@@ -115,17 +115,17 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     {:app/route-data [{:route-data/run
-                        ;; FIXME Merging two queries like this is a bad idea.
-                        ;; The best solution people have right now is
-                        ;; placeholder keys in the query, which requires
-                        ;; reworking the parser. We'll probably want to do that,
-                        ;; but this is the fast way to get something on the
-                        ;; screen for a prototype.
-                        (into (om-next/get-query workflow-page/RunRow)
-                              [{:run/jobs (into [:job/build
-                                                 :job/name]
-                                                (om-next/get-query Job))}])}]}])
+     `{(:run-for-row {:< :route-params/run})
+       ~(om-next/get-query workflow-page/RunRow)}
+     `{(:run-for-jobs {:< :route-params/run})
+       ^{:component ~workflow-page/RunRow}
+       [{(:jobs-for-jobs {:< :run/jobs}) ~(om-next/get-query Job)}
+        ;; NB: We need the :component metadata and :job/id here to make sure the
+        ;; merger constructs the ident successfully to merge properly. This
+        ;; reflects a shortcoming in Bodhi.
+        {(:jobs-for-first {:< :run/jobs}) ^{:component ~Job} [:job/id
+                                                              :job/build
+                                                              :job/name]}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -143,9 +143,15 @@
        {:app (:legacy/state (om-next/props this))
         :main-content
         (element :main-content
-          (let [run (get-in (om-next/props this) [:app/route-data :route-data/run])
-                jobs (:run/jobs run)
-                first-job (first jobs)
+          (let [run (:run-for-row (om-next/props this))
+                first-job (-> (om-next/props this) :run-for-jobs :jobs-for-first first)
+                first-job-build (get-in (om-next/props this)
+                                        (into [:legacy/state]
+                                              state/build-path))
+                jobs (cond-> (-> (om-next/props this) :run-for-jobs :jobs-for-jobs)
+                       first-job-build (assoc-in [0 :job/started-at]
+                                                 (:start_time first-job-build)))
+
                 first-job-build-id (:job/build first-job)
                 first-job-name (:job/name first-job)]
             (html

@@ -17,13 +17,13 @@
   app   - The Compassus application.
   route - The route keyword to navigate to.
   data  - (optional) Route data for the `set-data mutation, including:
-          :subpage    - (optional) The subpage route keyword to navigate to.
-          :route-data - (optional) Additional route data gleaned from the URL."
+          :subpage      - (optional) The subpage route keyword to navigate to.
+          :route-params - (optional) Additional route data gleaned from the URL."
   ([app route] (open! app route {}))
   ([app route data]
    ;; Note: We always call set-data: if values aren't given, we still want to
    ;; set them to `nil`.
-   (compassus/set-route! app route {:tx [`(set-data ~data)]})))
+   (compassus/set-route! app route {:tx [`(route-params/set ~data)]})))
 
 (defn open-to-inner!
   "Navigate to a legacy route. As pages move from legacy to Om Next, their
@@ -247,14 +247,14 @@
     [short-vcs-type org-name project-name]
     (open! app
            :route/workflow
-           {:route-data
+           {:route-params
             {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
              :organization/name org-name
              :project/name project-name}}))
 
   (defroute v1-run "/workflow-run/:run-id"
     [run-id]
-    (open! app :route/run {:route-data {:run/id (uuid run-id)}}))
+    (open! app :route/run {:route-params {:run/id (uuid run-id)}}))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
@@ -279,7 +279,7 @@
   (defroute v1-account-subpage "/account/:subpage" [subpage]
     (open! app :route/account {:subpage (keyword subpage)}))
   (defroute v1-organization-projects "/projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
-    (open! app :route/projects {:route-data
+    (open! app :route/projects {:route-params
                                 {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
                                  :organization/name org-name}}))
   (defroute v1-projects "/projects" []

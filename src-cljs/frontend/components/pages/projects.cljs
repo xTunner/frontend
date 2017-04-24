@@ -6,20 +6,18 @@
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.org-picker :as org-picker]
-            [frontend.components.pieces.table :as table]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
             [frontend.routes :as routes]
-            [frontend.state :as state]
             [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
             [frontend.utils.function-query :as fq :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]))
 
 (defn- table
@@ -63,7 +61,7 @@
 
                              {:header "Team"
                               :type #{:right :shrink}
-                              :cell-fn (comp count :project/followers)}
+                              :cell-fn :project/follower-count}
 
                              {:header "Settings"
                               :type :shrink
@@ -125,7 +123,7 @@
   (query [this]
     [:organization/vcs-type
      :organization/name
-     {:organization/projects (fq/merge [{:project/followers []}]
+     {:organization/projects (fq/merge [:project/follower-count]
                                        (fq/get table :projects))}
      {:organization/plan (fq/get table :plan)}])
   Object
@@ -143,7 +141,7 @@
                                  name]))}
                      (if projects
                        (if-let [projects-with-followers
-                                (seq (filter #(seq (:project/followers %)) projects))]
+                                (seq (remove #(zero? (:project/follower-count %)) projects))]
                          (table this projects-with-followers plan)
                          (no-projects-available name))
                        (spinner)))))))
@@ -161,14 +159,15 @@
      {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
                          :user/login
                          :user/bitbucket-authorized?]}
-     {:app/route-data [{:route-data/organization (into (om-next/get-query OrgProjects)
-                                                       [:organization/name])}]}])
+
+     `{(:org-for-projects {:< :route-params/organization}) ~(om-next/get-query OrgProjects)}
+     `{(:org-for-analytics {:< :route-params/organization}) [:organization/name]}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
       {:user (get-in props [:app/current-user :user/login])
        :view :projects
-       :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
+       :org (get-in props [:org-for-analytics :organization/name])}))
   Object
   (componentDidMount [this]
     (set-page-title! "Projects"))
@@ -182,7 +181,7 @@
         (element :main-content
           (let [current-user (:app/current-user (om-next/props this))
                 orgs (get-in (om-next/props this) [:app/current-user :user/organizations])
-                selected-org (get-in (om-next/props this) [:app/route-data :route-data/organization])]
+                selected-org (:org-for-projects (om-next/props this))]
             (html
              [:div
               [:.sidebar

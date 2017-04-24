@@ -68,7 +68,6 @@
      :run/status
      :run/started-at
      :run/stopped-at
-     :run/branch-name
      {:run/trigger-info [:trigger-info/vcs-revision
                          :trigger-info/subject
                          :trigger-info/body
@@ -156,9 +155,16 @@
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
 (defui ^:once WorkflowRuns
+  static om-next/Ident
+  (ident [this props]
+    [:project/by-org-and-name (merge (select-keys props [:project/name])
+                                     (select-keys (:project/organization props)
+                                                  [:organization/vcs-type :organization/name]))])
   static om-next/IQuery
   (query [this]
-    [{:project/workflow-runs (om-next/get-query RunRow)}])
+    [:project/name
+     {:project/organization [:organization/vcs-type :organization/name]}
+     {:project/workflow-runs (om-next/get-query RunRow)}])
   Object
   (render [this]
     (component
@@ -185,11 +191,10 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     {:app/route-data [{:route-data/workflow
-                        (into [:project/name
-                               {:project/organization [:organization/vcs-type
-                                                       :organization/name]}]
-                              (om-next/get-query WorkflowRuns))}]}])
+     {:route-params/organization [:organization/vcs-type
+                                  :organization/name]}
+     `{(:project-for-crumb {:< :route-params/project}) [:project/name]}
+     `{(:project-for-runs {:< :route-params/project}) ~(om-next/get-query WorkflowRuns)}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -202,24 +207,24 @@
   #_(componentDidMount [this]
       (set-page-title! "Projects"))
   (render [this]
-    (let [{{{:as route-data
-             project-name :project/name
-             {org-name :organization/name
-              vcs-type :organization/vcs-type} :project/organization} :route-data/workflow} :app/route-data}
+    (let [{{org-name :organization/name
+            vcs-type :organization/vcs-type} :route-params/organization
+           {project-name :project/name} :project-for-crumb}
           (om-next/props this)]
-     (main-template/template
-      {:app (:legacy/state (om-next/props this))
-       :crumbs [{:type :dashboard}
-                {:type :org
-                 :username org-name
-                 :vcs_type vcs-type}
-                {:type :project
-                 :username org-name
-                 :project project-name
-                 :vcs_type vcs-type}
-                {:type :project-workflows
-                 :username org-name
-                 :project project-name
-                 :vcs_type vcs-type}]
-       :header-actions (settings-link vcs-type org-name project-name)
-       :main-content (workflow-runs route-data)}))))
+      (main-template/template
+       {:app (:legacy/state (om-next/props this))
+        :crumbs [{:type :dashboard}
+                 {:type :org
+                  :username org-name
+                  :vcs_type vcs-type}
+                 {:type :project
+                  :username org-name
+                  :project project-name
+                  :vcs_type vcs-type}
+                 {:type :project-workflows
+                  :username org-name
+                  :project project-name
+                  :vcs_type vcs-type}]
+        :header-actions (settings-link vcs-type org-name project-name)
+        :main-content (when-let [project (:project-for-runs (om-next/props this))]
+                        (workflow-runs project))}))))

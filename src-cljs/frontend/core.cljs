@@ -1,5 +1,9 @@
 (ns frontend.core
-  (:require [cljs.core.async :as async :refer [chan]]
+  (:require [bodhi.aliasing :as aliasing]
+            [bodhi.core :as bodhi]
+            [bodhi.default-db :as default-db]
+            [bodhi.param-indexing :as param-indexing]
+            [cljs.core.async :as async :refer [chan]]
             [compassus.core :as compassus]
             [figwheel.client.utils :as figwheel-utils]
             [frontend.analytics.core :as analytics]
@@ -14,7 +18,6 @@
             [frontend.controllers.errors :as errors-con]
             [frontend.controllers.navigation :as nav-con]
             [frontend.controllers.ws :as ws-con]
-            [frontend.datetime :as datetime]
             [frontend.history :as history]
             [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.parser :as parser]
@@ -29,7 +32,6 @@
             goog.dom
             [goog.events :as gevents]
             [om.next :as om-next]
-            [om.util :as om-util]
             [schema.core :as s :include-macros true])
   (:require-macros
    [cljs.core.async.macros :as am :refer [alt! go]]
@@ -183,26 +185,13 @@
     (doseq [c (descendant-components root-component)]
       (.forceUpdate c))))
 
-;; Note: the fact that we need this probably indicates we're not using Om Next
-;; quite right yet.
-(defn- move-route-data-idents-to-root
-  "Merge helper. Turns
-
-  {:app/route-data {[:some/ident 123] {:some \"data\"}}}
-
-  into
-
-  {:app/route-data {}
-   [:some/ident 123] {:some \"data\"}}"
-  [data]
-  (if (contains? data :app/route-data)
-    (let [route-data-ident-pairs (filter (comp om-util/ident? key) (:app/route-data data))]
-      (-> data
-          ;; Remove each ident from :app/route-data
-          (update :app/route-data #(apply dissoc % (map key route-data-ident-pairs)))
-          ;; Insert that ident data at the root of the response
-          (into route-data-ident-pairs)))
-    data))
+(defn- compassus-page-queuing-merge
+  "Merge middleware. Queues the entire Compassus page to re-read after merge. A
+  subtler approach may be possible in the future, but for now, this works."
+  [next-merge]
+  (fn [env]
+    (-> (next-merge env)
+        (update :keys conj :compassus.core/route-data))))
 
 (defn ^:export setup! []
   (let [legacy-state (initial-state)
@@ -229,9 +218,7 @@
                                                                   (mapv
                                                                    #(hash-map :identity/type (:type %)
                                                                               :identity/login (:login %))
-                                                                   legacy-format-identites))})
-                          :organization/by-vcs-type-and-name {}
-                          :project/by-org-and-name {}})
+                                                                   legacy-format-identites))})})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a
         ;; normal atom but which presents only the legacy state.
@@ -251,8 +238,12 @@
                           ;; https://github.com/omcljs/om/issues/781
                           :merge-tree #(utils/deep-merge %1 %2)
 
-                          :merge (fn [reconciler state res query]
-                                   (om-next/default-merge reconciler state (move-route-data-idents-to-root res) query))
+                          :merge (bodhi/merge-fn
+                                  (-> bodhi/basic-merge
+                                      default-db/merge
+                                      param-indexing/merge
+                                      aliasing/merge
+                                      compassus-page-queuing-merge))
 
                           :shared {:comms comms
                                    :timer-atom (timer/initialize)
