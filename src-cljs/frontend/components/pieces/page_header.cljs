@@ -54,6 +54,14 @@
                         :path (routes/v1-dashboard-path {})
                         :track-event-type :breadcrumb-workflows-dashboard-clicked}))
 
+(defmethod crumb :project-workflows
+  [{:keys [username project vcs_type]}]
+  (om/build crumb-node
+            {:name "Workflows"
+             :path (routes/v1-workflow-path vcs_type
+                                            username
+                                            project)}))
+
 (defmethod crumb :project
   [{:keys [vcs_type username project active owner logged-out?]}]
   (om/build crumb-node {:name project

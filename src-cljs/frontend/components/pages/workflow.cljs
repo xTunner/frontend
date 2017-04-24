@@ -145,10 +145,7 @@
 (defui ^:once WorkflowRuns
   static om-next/IQuery
   (query [this]
-    [:project/name
-     {:project/organization [:organization/vcs-type
-                             :organization/name]}
-     {:project/workflow-runs (om-next/get-query RunRow)}])
+    [{:project/workflow-runs (om-next/get-query RunRow)}])
   Object
   (render [this]
     (component
@@ -163,7 +160,11 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     {:app/route-data [{:route-data/workflow (om-next/get-query WorkflowRuns)}]}])
+     {:app/route-data [{:route-data/workflow
+                        (into [:project/name
+                               {:project/organization [:organization/vcs-type
+                                                       :organization/name]}]
+                              (om-next/get-query WorkflowRuns))}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -176,6 +177,23 @@
   #_(componentDidMount [this]
       (set-page-title! "Projects"))
   (render [this]
-    (main-template/template
-     {:app (:legacy/state (om-next/props this))
-      :main-content (workflow-runs (get-in (om-next/props this) [:app/route-data :route-data/workflow]))})))
+    (let [{{{:as route-data
+             project-name :project/name
+             {org-name :organization/name
+              vcs-type :organization/vcs-type} :project/organization} :route-data/workflow} :app/route-data}
+          (om-next/props this)]
+     (main-template/template
+      {:app (:legacy/state (om-next/props this))
+       :crumbs [{:type :dashboard}
+                {:type :org
+                 :username org-name
+                 :vcs_type vcs-type}
+                {:type :project
+                 :username org-name
+                 :project project-name
+                 :vcs_type vcs-type}
+                {:type :project-workflows
+                 :username org-name
+                 :project project-name
+                 :vcs_type vcs-type}]
+       :main-content (workflow-runs route-data)}))))
