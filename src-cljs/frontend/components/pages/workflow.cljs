@@ -11,6 +11,7 @@
             [frontend.utils :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
+            [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next :refer-macros [defui]]))
 
 (defn- status-class [run-status]
@@ -42,14 +43,17 @@
 
 (defn- commit-link
   "Om Next compatible version of `frontend.components.builds-table/commits`."
-  [sha]
+  [vcs-type org repo sha]
   (html
-   (when sha
+   (when (and vcs-type org repo sha)
      (let [pretty-sha (build-model/github-revision {:vcs_revision sha})]
        [:span.metadata-item.revision
         [:i.octicon.octicon-git-commit]
         [:a {:title pretty-sha
-             :href (build-model/commit-url {:vcs_revision sha})}
+             :href (build-model/commit-url {:vcs_revision sha
+                                            :vcs_url (vcs-url/vcs-url vcs-type
+                                                                      org
+                                                                      repo)})}
          pretty-sha]]))))
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
@@ -69,7 +73,10 @@
                          :trigger-info/subject
                          :trigger-info/body
                          :trigger-info/branch
-                         {:trigger-info/pull-requests [:pull-request/url]}]}])
+                         {:trigger-info/pull-requests [:pull-request/url]}]}
+     {:run/project [:project/name
+                    {:project/organization [:organization/name
+                                            :organization/vcs-type]}]}])
   Object
   (render [this]
     (component
@@ -78,7 +85,10 @@
                     run/started-at
                     run/stopped-at
                     run/trigger-info]
-             run-name :run/name}
+             run-name :run/name
+             {project-name :project/name
+              {org-name :organization/name
+               vcs-type :organization/vcs-type} :project/organization} :run/project}
             (om-next/props this)
             {commit-sha :trigger-info/vcs-revision
              commit-body :trigger-info/body
@@ -131,7 +141,10 @@
                   "-")]]
               [:div.metadata-row.pull-revision
                (run-prs pull-requests)
-               (commit-link commit-sha)]]
+               (commit-link vcs-type
+                            org-name
+                            project-name
+                            commit-sha)]]
              [:div.actions
               (button/icon {:label "Stop this workflow"
                             :disabled? true}

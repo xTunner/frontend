@@ -57,7 +57,12 @@
 (defn adapt-to-run
   [response]
   (let [status (-> response :workflow/status run-status)
-        jobs (mapv adapt-to-job (:workflow/jobs response))]
+        jobs (mapv adapt-to-job (:workflow/jobs response))
+        {:keys [build/vcs-type build/org build/repo]} (get-in response
+                                                              [:workflow/jobs
+                                                               0
+                                                               :job/build])]
+
     {:run/id (:workflow/id response)
      :run/name (:workflow/name response)
      :run/status status
@@ -66,7 +71,10 @@
                        nil
                        (compute-run-stop-time jobs))
      :run/jobs jobs
-     :run/trigger-info (:workflow/trigger-info response)}))
+     :run/trigger-info (:workflow/trigger-info response)
+     :run/project {:project/name repo
+                   :project/organization {:organization/vcs-type vcs-type
+                                          :organization/name org}}}))
 
 (defmulti send* key)
 
