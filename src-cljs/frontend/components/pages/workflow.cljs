@@ -156,6 +156,18 @@
 
 (def workflow-runs (om-next/factory WorkflowRuns))
 
+(defn- settings-link
+  "An Om Next compatible version of frontend.components.header/settings-link"
+  [vcs-type org repo]
+  (html
+   [:div.btn-icon
+    [:a.header-settings-link.project-settings
+     {:href (routes/v1-project-settings-path {:vcs_type vcs-type
+                                              :org org
+                                              :repo repo})
+      :title "Project settings"}
+     [:i.material-icons "settings"]]]))
+
 (defui ^:once Page
   static om-next/IQuery
   (query [this]
@@ -196,4 +208,5 @@
                  :username org-name
                  :project project-name
                  :vcs_type vcs-type}]
+       :header-actions (settings-link vcs-type org-name project-name)
        :main-content (workflow-runs route-data)}))))
