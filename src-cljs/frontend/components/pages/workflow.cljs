@@ -6,6 +6,7 @@
             [frontend.components.pieces.icon :as icon]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
+            [frontend.models.build :as build-model]
             [frontend.routes :as routes]
             [frontend.utils :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
@@ -38,6 +39,18 @@
          [:a {:href url}
           "#"
           (gh-utils/pull-request-number url)]))])))
+
+(defn- commit-link
+  "Om Next compatible version of `frontend.components.builds-table/commits`."
+  [sha]
+  (html
+   (when sha
+     (let [pretty-sha (build-model/github-revision {:vcs_revision sha})]
+       [:span.metadata-item.revision
+        [:i.octicon.octicon-git-commit]
+        [:a {:title pretty-sha
+             :href (build-model/commit-url {:vcs_revision sha})}
+         pretty-sha]]))))
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
@@ -118,10 +131,7 @@
                   "-")]]
               [:div.metadata-row.pull-revision
                (run-prs pull-requests)
-               [:span.metadata-item.revision
-                [:i.octicon.octicon-git-commit]
-                (when commit-sha
-                 [:a (subs commit-sha 0 7)])]]]
+               (commit-link commit-sha)]]
              [:div.actions
               (button/icon {:label "Stop this workflow"
                             :disabled? true}
