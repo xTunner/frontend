@@ -87,8 +87,8 @@
 (defn v1-workflow-path
   "Temporary helper method for v1-build until we figure out how to make
    secretary's render-route work for regexes"
-  ([vcs_type org repo workflow-id]
-   (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows/" workflow-id)))
+  ([vcs_type org repo]
+   (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows")))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to

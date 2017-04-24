@@ -421,7 +421,7 @@
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
-                       :href (routes/v1-workflow-path :github "circleci" "workflows-poc" "main-workflow")}
+                       :href (routes/v1-workflow-path :github "circleci" "workflows-poc")}
         [:i.material-icons "storage"]
         [:div.nav-label "Workflows"]])
 
@@ -548,7 +548,7 @@
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
-                       :href (routes/v1-workflow-path :github "circleci" "workflows-poc" "main-workflow")}
+                       :href (routes/v1-workflow-path :github "circleci" "workflows-poc")}
         [:i.material-icons "storage"]
         [:div.nav-label "Workflows"]])
 
