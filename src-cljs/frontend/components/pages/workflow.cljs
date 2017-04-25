@@ -145,9 +145,6 @@
                             project-name
                             commit-sha)]]
              [:div.actions
-              (button/icon {:label "Stop this workflow"
-                            :disabled? true}
-                           (icon/cancel-circle))
               (button/icon {:label "Retry this workflow"
                             :disabled? true}
                            (icon/rebuild))]])))))))

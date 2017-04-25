@@ -170,16 +170,7 @@
                  [:.output-title
                   [:span (gstring/format "%s #%s"
                                          first-job-name
-                                         (:build/number first-job-build-id))]]
-                 (button/icon {:label (gstring/format "Retry %s"
-                                                      first-job-name)
-                               :disabled? true}
-                              (icon/rebuild))
-                 #_(button/button {:kind :primary
-                                 :size :small
-                                 :label (gstring/format "Retry %s"
-                                                        first-job-name)}
-                                [:span.iconed-button (icon/rebuild) "Retry"])]
+                                         (:build/number first-job-build-id))]]]
                 (when first-job-build-id
                   (build-legacy build-page (assoc (:legacy/state (om-next/props this))
                                                   :job-build
