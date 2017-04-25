@@ -33,6 +33,7 @@
 
                  [org.omcljs/om "1.0.0-alpha47"]
                  [compassus "1.0.0-alpha2"]
+                 [bodhi "0.0.1"]
 
                  [hiccups "0.3.0"]
                  [sablono "0.7.2"]

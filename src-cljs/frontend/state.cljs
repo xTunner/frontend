@@ -307,13 +307,6 @@
                   (assoc :message message))))
 
 
-;--------- Om Next Paths -----------
+;--------- "Om Next" -----------
 (defn org-ident [vcs-type org-name]
   [:organization/by-vcs-type-and-name [vcs-type org-name]])
-
-(defn org-ident->vcs-type-and-org
-  "Given an org-ident returns a vector of [vcs-type org-name]."
-  [org-ident]
-  (second org-ident))
-
-(def current-org-ident [:current-org-ident])
