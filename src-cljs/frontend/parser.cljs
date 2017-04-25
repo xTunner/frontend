@@ -137,7 +137,18 @@
     (fn [{:keys [run/id]} query]
       `{(:routed-run {:< :circleci/run
                       :run/id ~id})
-        ~query})]})
+        ~query})]
+
+   :route-params/job
+   [[:run-for-routed-job :run/job]
+    (fn [route-params query]
+      `{(:run-for-routed-job
+         ~(-> route-params
+              (select-keys [:run/id])
+              (assoc :< :circleci/run)))
+        [{(:run/job
+            ~(select-keys route-params [:job/name]))
+           ~query}]})]})
 
 (def read (bodhi/read-fn
            (-> bodhi/basic-read

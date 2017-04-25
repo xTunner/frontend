@@ -85,10 +85,12 @@
           build-num (when fragment (str "#" fragment))))))
 
 (defn v1-workflow-path
-  "Temporary helper method for v1-build until we figure out how to make
-   secretary's render-route work for regexes"
   ([vcs_type org repo]
    (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows")))
+
+(defn v1-job-path
+  ([workflow-id job-name]
+   (str "/workflow-run/" workflow-id "/" job-name)))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to
@@ -232,20 +234,7 @@
                                                 :org org
                                                 :repo repo}))))
 
-  (defroute v1-workflow-job #"/(gh|bb)/([^/]+)/([^/]+)/workflows/([^/]+)/jobs/(\d+)"
-    [short-vcs-type org repo workflow-id build-num _ maybe-fragment]
-    ;; normal destructuring for this broke the closure compiler
-    (let [fragment-args (-> maybe-fragment
-                            :_fragment
-                            parse-build-page-fragment
-                            (select-keys [:tab :action-id :container-id]))]
-      (open-to-inner! app nav-ch :build (merge fragment-args
-                                               {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
-                                                :project-name (str org "/" repo)
-                                                :workflow-id workflow-id
-                                                :build-num (js/parseInt build-num)
-                                                :org org
-                                                :repo repo}))))
+  
 
   (defroute v1-workflow #"/(gh|bb)/([^/]+)/([^/]+)/workflows"
     [short-vcs-type org-name project-name]
@@ -259,6 +248,11 @@
   (defroute v1-run "/workflow-run/:run-id"
     [run-id]
     (open! app :route/run {:route-params {:run/id (uuid run-id)}}))
+
+  (defroute v1-job "/workflow-run/:run-id/:job-name"
+    [run-id job-name]
+    (open! app :route/run {:route-params {:run/id (uuid run-id)
+                                          :job/name job-name}}))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)

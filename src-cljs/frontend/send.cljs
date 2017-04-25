@@ -53,13 +53,18 @@
 (defn adapt-to-run
   [response]
   (let [status (-> response :workflow/status run-status)
-        jobs (mapv adapt-to-job (:workflow/jobs response))
+        run-id (:workflow/id response)
+        jobs (mapv (fn [job-response]
+                     (-> job-response
+                         adapt-to-job
+                         (assoc-in [:job/run :run/id] run-id)))
+                   (:workflow/jobs response))
         {:keys [build/vcs-type build/org build/repo]} (get-in response
                                                               [:workflow/jobs
                                                                0
                                                                :job/build])]
 
-    {:run/id (:workflow/id response)
+    {:run/id run-id
      :run/name (:workflow/name response)
      :run/status status
      :run/started-at (:workflow/created-at response)
@@ -183,6 +188,25 @@
                   query)))
            (vcs-url/vcs-url vcs-type org-name project-name)))
 
+        ;; :route/job
+        (let [{:keys [key children]} ast]
+          (and (= :circleci/run key)
+               (= 1 (count children))
+               (= :run/job (:key (first children)))
+               (= [:job/build :job/name]
+                  (:query (first children)))))
+        (let [job-ast (first (:children ast))
+              job-name (:job/name (:params job-ast))]
+          (api/get-workflow-status
+           (callback-api-chan
+            (fn [response]
+              (cb {:circleci/run {:run/job (->> response
+                                                adapt-to-run
+                                                :run/jobs
+                                                (filter #(= job-name (:job/name %)))
+                                                first)}}
+                  query)))
+           (:run/id (:params ast))))
         ;; Also :route/workflow (but a separate expression for breadcrumbs, which
         ;; doesn't actually need to hit the server)
         (and (= :circleci/organization (:key ast))
@@ -235,7 +259,8 @@
                                       :job/status
                                       :job/started-at
                                       :job/stopped-at
-                                      :job/name]}
+                                      :job/name
+                                      {:job/run [:run/id]}]}
                      {:< :run/jobs})
                     ({:jobs-for-first [:job/id
                                        :job/build
@@ -252,7 +277,8 @@
                                                                                     :job/status
                                                                                     :job/started-at
                                                                                     :job/stopped-at
-                                                                                    :job/name])
+                                                                                    :job/name
+                                                                                    :job/run])
                                                                    (:run/jobs run))
                                               :jobs-for-first (mapv #(select-keys % [:job/id
                                                                                      :job/build

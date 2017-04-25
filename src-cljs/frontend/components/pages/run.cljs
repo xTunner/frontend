@@ -15,7 +15,8 @@
             [frontend.utils.legacy :refer [build-legacy]]
             [goog.string :as gstring]
             [om.core :as om]
-            [om.next :as om-next :refer-macros [defui]]))
+            [om.next :as om-next :refer-macros [defui]]
+            [frontend.routes :as routes]))
 
 (defn- status-class [run-status]
   (case run-status
@@ -37,7 +38,8 @@
      :job/status
      :job/started-at
      :job/stopped-at
-     :job/name])
+     :job/name
+     {:job/run [:run/id]}])
   Object
   (render [this]
     (component
@@ -45,7 +47,8 @@
                     job/status
                     job/started-at
                     job/stopped-at]
-             job-name :job/name}
+             job-name :job/name
+             {run-id :run/id} :job/run}
             (om-next/props this)]
         (card/basic
          (element :content
@@ -55,11 +58,13 @@
               [:div.status-heading
                [:div.status-name
                 [:span.job-status (status/icon (status-class status))]
-                [:span.job-name job-name]]
+                [:a
+                 {:href (routes/v1-job-path run-id job-name)}
+                 [:span.job-name job-name]]]
                [:div.status-actions
                 (button/icon {:label "Retry job-name"
-                             :disabled? true}
-                            [:i.material-icons "more_vert"])]]
+                              :disabled? true}
+                             [:i.material-icons "more_vert"])]]
               [:div.metadata
                [:div.metadata-row.timing
                 [:span.metadata-item.recent-time.start-time
@@ -125,7 +130,8 @@
         ;; reflects a shortcoming in Bodhi.
         {(:jobs-for-first {:< :run/jobs}) ^{:component ~Job} [:job/id
                                                               :job/build
-                                                              :job/name]}]}])
+                                                              :job/name]}]}
+     `{:route-params/job [:job/build :job/name]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -144,16 +150,19 @@
         :main-content
         (element :main-content
           (let [run (:run-for-row (om-next/props this))
-                first-job (-> (om-next/props this) :run-for-jobs :jobs-for-first first)
-                first-job-build (get-in (om-next/props this)
+                selected-job (or (:route-params/job (om-next/props this))
+                                 (-> (om-next/props this)
+                                     :run-for-jobs
+                                     :jobs-for-first
+                                     first))
+                selected-job-build (get-in (om-next/props this)
                                         (into [:legacy/state]
                                               state/build-path))
                 jobs (cond-> (-> (om-next/props this) :run-for-jobs :jobs-for-jobs)
-                       first-job-build (assoc-in [0 :job/started-at]
-                                                 (:start_time first-job-build)))
-
-                first-job-build-id (:job/build first-job)
-                first-job-name (:job/name first-job)]
+                       selected-job-build (assoc-in [0 :job/started-at]
+                                                 (:start_time selected-job-build)))
+                selected-job-build-id (:job/build selected-job)
+                selected-job-name (:job/name selected-job)]
             (html
              [:div
               (when-not (empty? run)
@@ -169,9 +178,9 @@
                 [:div.output-header
                  [:.output-title
                   [:span (gstring/format "%s #%s"
-                                         first-job-name
-                                         (:build/number first-job-build-id))]]]
-                (when first-job-build-id
+                                         selected-job-name
+                                         (:build/number selected-job-build-id))]]]
+                (when selected-job-build-id
                   (build-legacy build-page (assoc (:legacy/state (om-next/props this))
                                                   :job-build
-                                                  first-job-build-id)))]]])))}))))
+                                                  selected-job-build-id)))]]])))}))))

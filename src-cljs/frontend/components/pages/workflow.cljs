@@ -62,9 +62,10 @@
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
-  static om-next/Ident
-  (ident [this props]
-    [:run/by-id (:run/id props)])
+  ;; NOTE: this is commented out until bodhi handles queries for components with idents first
+  ;; static om-next/Ident
+  ;; (ident [this props]
+  ;;   [:run/by-id (:run/id props)])
   static om-next/IQuery
   (query [this]
     [:run/id
