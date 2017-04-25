@@ -84,21 +84,31 @@
 
 (def job (om-next/factory Job {:keyfn :job/id}))
 
+(defn- fetch-build [owner
+                    {:keys [:build/vcs-type :build/org :build/repo :build/number]}]
+  (let [build-url (gstring/format "/api/v1.1/project/%s/%s/%s/%s"
+                                  (name vcs-type)
+                                  org
+                                  repo
+                                  number)]
+    (ajax/ajax :get build-url
+               :build-fetch
+               (om/get-shared owner [:comms :api])
+               :context {:project-name (gstring/format "%s/%s" org repo)
+                         :build-num number})))
+
 (defn- build-page [app owner]
   (reify
     om/IWillMount
     (will-mount [_]
-      (let [{:keys [:build/vcs-type :build/org :build/repo :build/number]} (:job-build app)
-            build-url (gstring/format "/api/v1.1/project/%s/%s/%s/%s"
-                                      (name vcs-type)
-                                      org
-                                      repo
-                                      number)]
-        (ajax/ajax :get build-url
-                   :build-fetch
-                   (om/get-shared owner [:comms :api])
-                   :context {:project-name (gstring/format "%s/%s" org repo)
-                             :build-num number})))
+      (when-let [build-spec (:job-build app)]
+        (fetch-build owner build-spec)))
+    om/IWillUpdate
+    (will-update [this next-props _next-state]
+      (let [previous-build-spec (-> owner om/get-props :job-build)
+            current-build-spec (:job-build next-props)]
+        (when (not= previous-build-spec current-build-spec)
+         (fetch-build owner current-build-spec))))
     om/IRender
     (render [_]
       (html
