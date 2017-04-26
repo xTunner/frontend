@@ -9,14 +9,14 @@
             [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer-macros [component element html]]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.legacy :refer [build-legacy]]
             [goog.string :as gstring]
             [om.core :as om]
-            [om.next :as om-next :refer-macros [defui]]
-            [frontend.routes :as routes]))
+            [om.next :as om-next :refer-macros [defui]]))
 
 (defn- status-class [run-status]
   (case run-status
@@ -58,8 +58,7 @@
               [:div.status-heading
                [:div.status-name
                 [:span.job-status (status/icon (status-class status))]
-                [:a
-                 {:href (routes/v1-job-path run-id job-name)}
+                [:a {:href (routes/v1-job-path run-id job-name)}
                  [:span.job-name job-name]]]
                [:div.status-actions
                 (button/icon {:label "Retry job-name"
@@ -141,7 +140,7 @@
         {(:jobs-for-first {:< :run/jobs}) ^{:component ~Job} [:job/id
                                                               :job/build
                                                               :job/name]}]}
-     `{:route-params/job [:job/build :job/name]}])
+     {:route-params/job [:job/build :job/name]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]

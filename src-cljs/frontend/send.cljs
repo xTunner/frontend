@@ -188,7 +188,7 @@
                   query)))
            (vcs-url/vcs-url vcs-type org-name project-name)))
 
-        ;; :route/job
+        ;; :route/run
         (let [{:keys [key children]} ast]
           (and (= :circleci/run key)
                (= 1 (count children))

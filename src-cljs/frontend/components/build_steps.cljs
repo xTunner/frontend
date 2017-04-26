@@ -217,7 +217,6 @@
                                (set! (.-scrollTop body) (+ (.-scrollTop body) (aget e "deltaY")))))
                  :class (str "selected_" selected-container-id)}
            (om/build container-view
-                     {:container (and containers
-                                      (containers selected-container-id))
+                     {:container (get containers selected-container-id)
                       :non-parallel-actions non-parallel-actions}
                      {:opts {:uses-parallelism? (< 1 (count containers))}})])))))
