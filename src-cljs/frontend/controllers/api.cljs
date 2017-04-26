@@ -1164,7 +1164,13 @@
 
 (defmethod api-event [:org-settings-normalized :success]
   [_ _ _ {:keys [resp]} state]
-  (update-in state [:organization/by-vcs-type-and-name [(:vcs_type resp) (:name resp)]] merge resp))
+  (let [{:keys [name vcs_type]} resp
+        org {:login name
+             :vcs_type vcs_type}
+        state (state-utils/change-selected-org state org)]
+    (-> state
+      (update-in state/org-data-path merge resp)
+      (update-in [:organization/by-vcs-type-and-name [vcs_type name]] merge resp))))
 
 (defmethod api-event [:org-settings-normalized :failed]
   [_ _ _ {:keys [_ context]} state]

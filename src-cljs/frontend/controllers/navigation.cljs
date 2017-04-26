@@ -327,12 +327,20 @@
 
 (defmethod navigated-to :team
   [history-imp navigation-point args state]
-  (let [current-user (get-in state state/user-path)]
+  (let [current-user (get-in state state/user-path)
+        org (not-empty (select-keys args [:login :vcs_type]))
+        state (state-utils/change-selected-org state org)]
     (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
                state/navigation-data args)
         (assoc-in state/crumbs-path [{:type :team}]))))
+
+(defmethod post-navigated-to! :team
+  [history-imp navigation-point args previous-state current-state comms]
+  (if (ld/feature-on? "top-bar-ui-v-1")
+    (let [selected-org (get-in current-state state/selected-org-path)]
+      (api/get-org-settings-normalized (:login selected-org) (:vcs_type selected-org) (:api comms)))))
 
 (defmethod post-navigated-to! :invite-teammates
   [history-imp navigation-point args previous-state current-state comms]

@@ -13,8 +13,10 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.models.user :as user]
+            [frontend.state :as state]
             [frontend.utils :as utils :refer [valid-email? prettify-vcs_type] :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.legacy :refer [build-next]]
             [goog.string :as gstr]
             [inflections.core :as inflections]
@@ -252,48 +254,55 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:selected-org-ident nil
+      {:selected-org-ident (if (ld/feature-on? "top-bar-ui-v-1")
+                             (organization-ident (get-in app state/selected-org-path))
+                             nil)
        :show-invite-modal? nil})
-
     om/IWillMount
     (will-mount [_]
-      (api/get-orgs (om/get-shared owner [:comms :api]) :include-user? true))
-
+      (when-not (ld/feature-on? "top-bar-ui-v-1")
+        (api/get-orgs (om/get-shared owner [:comms :api]) :include-user? true)))
     ;; Emulate Om Next queries: Treat :selected-org-ident like a query param,
     ;; and when it changes, re-read the query. That is, in this case, fetch from
     ;; the API.
     om/IWillUpdate
     (will-update [_ _ {:keys [selected-org-ident]}]
-      (let [[_ [vcs-type name]] selected-org-ident
-            api-chan (om/get-shared owner [:comms :api])]
-        (when (not= (:selected-org-ident (om/get-render-state owner))
-                    selected-org-ident)
-          (api/get-org-settings-normalized name vcs-type api-chan))))
+      (when-not (ld/feature-on? "top-bar-ui-v-1")
+        (let [[_ [vcs-type name]] selected-org-ident
+              api-chan (om/get-shared owner [:comms :api])]
+          (when (not= (:selected-org-ident (om/get-render-state owner))
+                  selected-org-ident)
+            (api/get-org-settings-normalized name vcs-type api-chan)))))
 
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident show-invite-modal?]}]
       (component
        (let [user (:current-user app)
-             selected-org (when selected-org-ident (get-in app selected-org-ident))
-             available-orgs (filter :org (:organizations user))
-             api-chan (om/get-shared owner [:comms :api])]
+             selected-org-ident (if (ld/feature-on? "top-bar-ui-v-1")
+                                  (organization-ident (get-in app state/selected-org-path))
+                                  selected-org-ident)
+             selected-org (if (ld/feature-on? "top-bar-ui-v-1")
+                            (legacy-org->modern-org (get-in app state/org-data-path))
+                            (when selected-org-ident (get-in app selected-org-ident)))
+             available-orgs (filter :org (:organizations user))]
          (html
           [:div
-           [:.sidebar
-            (card/basic
-             (if available-orgs
-               (build-next
-                org-picker/picker
-                {:orgs (map legacy-org->modern-org available-orgs)
-                 :selected-org (legacy-org->modern-org selected-org)
-                 :on-org-click (fn [modern-org]
-                                 (let [{:keys [login vcs_type] :as org} (modern-org->legacy-org modern-org)]
-                                   (om/set-state! owner :selected-org-ident (organization-ident org))
-                                   ((om/get-shared owner :track-event) {:event-type :org-clicked
-                                                                        :properties {:view :team
-                                                                                     :login login
-                                                                                     :vcs_type vcs_type}})))})
-               (spinner)))]
+           (when-not (ld/feature-on? "top-bar-ui-v-1")
+             [:.sidebar
+              (card/basic
+                (if available-orgs
+                  (build-next
+                    org-picker/picker
+                    {:orgs (map legacy-org->modern-org available-orgs)
+                     :selected-org (legacy-org->modern-org selected-org)
+                     :on-org-click (fn [modern-org]
+                                     (let [{:keys [login vcs_type] :as org} (modern-org->legacy-org modern-org)]
+                                       (om/set-state! owner :selected-org-ident (organization-ident org))
+                                       ((om/get-shared owner :track-event) {:event-type :org-clicked
+                                                                            :properties {:view :team
+                                                                                         :login login
+                                                                                         :vcs_type vcs_type}})))})
+                  (spinner)))])
            [:.main
             (om/build invite-teammates-modal {:selected-org (select-keys selected-org [:name :vcs_type :vcs-users])
                                               :close-fn #(om/set-state! owner :show-invite-modal? false)

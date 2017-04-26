@@ -146,6 +146,10 @@
   [params]
   (generate-url-str "/add-projects/:vcs_type/:org" params))
 
+(defn v1-team-path
+  [params]
+  (generate-url-str "/team/:vcs_type/:org" params))
+
 (defn v1-admin-fleet-state-path
   [params]
   (generate-url-str "/admin/fleet-state" params))
@@ -286,6 +290,8 @@
     (open! app :route/projects))
   (defroute v1-team "/team" []
     (open-to-inner! app nav-ch :team {}))
+  (defroute v1-organization-team "/team/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name]}
+    (open-to-inner! app nav-ch :team {:vcs_type (vcs/->lengthen-vcs short-vcs-type) :login org-name}))
   (defroute v1-logout "/logout" []
     (logout! nav-ch))
 
@@ -333,10 +339,10 @@
       :add-projects (v1-add-projects-path org)
       :build-insights "/build-insights" ;; TODO: Update me
       :error nil
-      :invite-teammates "/team" ;; TODO: Update me
+      :invite-teammates (v1-team-path org)
       :landing nil
       :logout nil
       :org-settings (v1-org-settings-path org)
       :project-insights "/build-insights" ;; TODO: Update me
-      :team "/team" ;; TODO: Update me
+      :team (v1-team-path org)
       (v1-dashboard-path {})))) ;; TODO: Update me

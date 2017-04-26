@@ -583,7 +583,7 @@
         [:div.nav-label "Projects"]])
 
      [:a.aside-item {:class (when (= :team current-route) "current")
-                     :href "/team",
+                     :href (routes/v1-team-path org)
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Team"
