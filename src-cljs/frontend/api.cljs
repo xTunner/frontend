@@ -77,7 +77,7 @@
 (defn get-workflow-status [api-ch run-id]
   (ajax/ajax :post
              "/query-api"
-             :workflow-status
+             :uncatchable-by-old-controller
              api-ch
              :format :transit
              :params
@@ -87,12 +87,20 @@
 (defn get-project-workflows [api-ch vcs-url]
   (ajax/ajax :post
              "/query-api"
-             :workflow-status
+             :uncatchable-by-old-controller
              api-ch
              :format :transit
              :params
              {:type :get-project-workflows
               :params {:vcs-url vcs-url}}))
+
+(defn request-retry-run [api-ch run-id]
+  (ajax/ajax :post
+             "/query-api"
+             :uncatchable-by-old-controller
+             api-ch
+             :format :transit
+             :params `(run/retry {:run/id ~run-id})))
 
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"

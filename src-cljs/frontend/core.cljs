@@ -240,7 +240,12 @@
 
                           :merge (bodhi/merge-fn
                                   (-> bodhi/basic-merge
-                                      default-db/merge
+                                      ;; TODO: re-enable normalization
+                                      ;; by uncommenting
+                                      ;; `default-db/merge` when bodhi
+                                      ;; basic-merge can work with it
+                                      
+                                      ;; default-db/merge
                                       param-indexing/merge
                                       aliasing/merge
                                       compassus-page-queuing-merge))
