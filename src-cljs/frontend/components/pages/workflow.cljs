@@ -1,5 +1,7 @@
 (ns frontend.components.pages.workflow
   (:require [clojure.string :as string]
+            [frontend.api :as api]
+            [frontend.components.aside :as aside]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
@@ -8,10 +10,12 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
+            [frontend.state :as state]
             [frontend.utils :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs-url :as vcs-url]
+            [om.core :as om]
             [om.next :as om-next :refer-macros [defui]]))
 
 (defn- status-class [run-status]
@@ -187,6 +191,23 @@
       :title "Project settings"}
      [:i.material-icons "settings"]]]))
 
+(defn- legacy-branch-picker
+  "Wraps the branch picker in a legacy component which can load the project data
+  on mount."
+  [app owner]
+  (reify
+    om/IWillMount
+    (will-mount [_]
+      (let [projects-loaded? (seq (get-in app state/projects-path))
+            current-user (get-in app state/user-path)]
+        (when (and (not projects-loaded?)
+                   (not (empty? current-user)))
+          (api/get-projects (om/get-shared owner [:comms :api])))))
+
+    om/IRender
+    (render [_]
+      (om/build aside/branch-activity-list app))))
+
 (defui ^:once Page
   static om-next/IQuery
   (query [this]
@@ -226,5 +247,6 @@
                   :project project-name
                   :vcs_type vcs-type}]
         :header-actions (settings-link vcs-type org-name project-name)
+        :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
         :main-content (when-let [project (:project-for-runs (om-next/props this))]
                         (workflow-runs project))}))))
