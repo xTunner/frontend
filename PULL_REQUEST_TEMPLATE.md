@@ -8,7 +8,7 @@ What was overarching product goal of this PR, any pertinent history of changes
   * Especially if the reasoning is not immediately obvious
 * Notable changes implemented in PR
 
-**Ticket:** [please link to the actual ticket](https://jira.atlassian.com/secure/Dashboard.jspa)
+**Ticket:** [CIRCLE-XXXX](https://circleci.atlassian.net/browse/CIRCLE-XXXX)
 
 **Before**
 Image or [gif](https://giphy.com/apps/giphycapture)
