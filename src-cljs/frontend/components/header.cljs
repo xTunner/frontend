@@ -389,10 +389,11 @@
 
                                                      (show-follow-project-button? app)
                                                      (conj (html [:.follow-project (om/build follow-project-button project)])))
-                                          :platform (when-let [platform (->> state/build-data-path
-                                                                             (get-in app)
-                                                                             :build
-                                                                             :platform)]
+                                          :platform (when-let [platform (and (= :build (:navigation-point app))
+                                                                             (->> state/build-data-path
+                                                                                  (get-in app)
+                                                                                  :build
+                                                                                  :platform))]
                                                       platform)}))])))))
 
 (defn header [{:keys [app crumbs actions] :as props} owner]

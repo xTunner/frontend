@@ -129,6 +129,12 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
+     `{(:run-for-crumbs {:< :route-params/run})
+       ^{:component ~workflow-page/RunRow}
+       [:run/id
+        {:run/project [:project/name
+                       {:project/organization [:organization/vcs-type
+                                               :organization/name]}]}]}
      `{(:run-for-row {:< :route-params/run})
        ~(om-next/get-query workflow-page/RunRow)}
      `{(:run-for-jobs {:< :route-params/run})
@@ -153,43 +159,62 @@
   #_(componentDidMount [this]
       (set-page-title! "Projects"))
   (render [this]
-    (component
-      (main-template/template
-       {:app (:legacy/state (om-next/props this))
-        :main-content
-        (element :main-content
-          (let [run (:run-for-row (om-next/props this))
-                selected-job (or (:route-params/job (om-next/props this))
-                                 (-> (om-next/props this)
-                                     :run-for-jobs
-                                     :jobs-for-first
-                                     first))
-                selected-job-build (get-in (om-next/props this)
-                                        (into [:legacy/state]
-                                              state/build-path))
-                jobs (cond-> (-> (om-next/props this) :run-for-jobs :jobs-for-jobs)
-                       selected-job-build (assoc-in [0 :job/started-at]
-                                                 (:start_time selected-job-build)))
-                selected-job-build-id (:job/build selected-job)
-                selected-job-name (:job/name selected-job)]
-            (html
-             [:div
-              (when-not (empty? run)
-                (workflow-page/run-row run))
-              [:.jobs-and-output
-               [:.jobs
-                [:div.jobs-header
-                 [:.hr-title
-                  [:span "Jobs"]]]
-                (card/collection
-                 (map job jobs))]
-               [:.output
-                [:div.output-header
-                 [:.output-title
-                  [:span (gstring/format "%s #%s"
-                                         selected-job-name
-                                         (:build/number selected-job-build-id))]]]
-                (when selected-job-build-id
-                  (build-legacy build-page (assoc (:legacy/state (om-next/props this))
-                                                  :job-build
-                                                  selected-job-build-id)))]]])))}))))
+    (let [{{project-name :project/name
+            {org-name :organization/name
+             vcs-type :organization/vcs-type} :project/organization} :run/project
+           id :run/id}
+          (:run-for-crumbs (om-next/props this))]
+      (component
+        (main-template/template
+         {:app (:legacy/state (om-next/props this))
+          :crumbs [{:type :dashboard}
+                   {:type :org
+                    :username org-name
+                    :vcs_type vcs-type}
+                   {:type :project
+                    :username org-name
+                    :project project-name
+                    :vcs_type vcs-type}
+                   {:type :project-workflows
+                    :username org-name
+                    :project project-name
+                    :vcs_type vcs-type}
+                   {:type :workflow-run
+                    :run/id id}]
+          :main-content
+          (element :main-content
+            (let [run (:run-for-row (om-next/props this))
+                  selected-job (or (:route-params/job (om-next/props this))
+                                   (-> (om-next/props this)
+                                       :run-for-jobs
+                                       :jobs-for-first
+                                       first))
+                  selected-job-build (get-in (om-next/props this)
+                                             (into [:legacy/state]
+                                                   state/build-path))
+                  jobs (cond-> (-> (om-next/props this) :run-for-jobs :jobs-for-jobs)
+                         selected-job-build (assoc-in [0 :job/started-at]
+                                                      (:start_time selected-job-build)))
+                  selected-job-build-id (:job/build selected-job)
+                  selected-job-name (:job/name selected-job)]
+              (html
+               [:div
+                (when-not (empty? run)
+                  (workflow-page/run-row run))
+                [:.jobs-and-output
+                 [:.jobs
+                  [:div.jobs-header
+                   [:.hr-title
+                    [:span "Jobs"]]]
+                  (card/collection
+                   (map job jobs))]
+                 [:.output
+                  [:div.output-header
+                   [:.output-title
+                    [:span (gstring/format "%s #%s"
+                                           selected-job-name
+                                           (:build/number selected-job-build-id))]]]
+                  (when selected-job-build-id
+                    (build-legacy build-page (assoc (:legacy/state (om-next/props this))
+                                                    :job-build
+                                                    selected-job-build-id)))]]])))})))))
