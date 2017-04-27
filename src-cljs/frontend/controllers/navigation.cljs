@@ -9,6 +9,7 @@
             [frontend.models.feature :as feature]
             [frontend.models.user :as user]
             [frontend.models.build :as build-model]
+            [frontend.models.organization :as org]
             [frontend.pusher :as pusher]
             [frontend.state :as state]
             [frontend.stefon :as stefon]
@@ -94,15 +95,21 @@
 
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
-  (-> state
-      state-utils/clear-page-state
-      (assoc state/current-view navigation-point
-             state/navigation-data args
-             state/recent-builds nil)
-      (state-utils/set-dashboard-crumbs args)
-      state-utils/reset-current-build
-      state-utils/reset-current-project
-      maybe-add-workflow-response-data))
+  (let [org (if (ld/feature-on? "top-bar-ui-v-1")
+              (not-empty {:login (org/name args)       ;; Existing dashboard routing uses "org" instead of "login"
+                          :vcs_type (:vcs_type args)}) ;; All other org-centric routing locations now use "login"
+              {})  ;; Force state to update with a 'nil' value when NOT in org-centric UI
+        state (assoc-in state state/selected-org-path org)]
+    (-> state
+        state-utils/clear-page-state
+        (assoc state/current-view navigation-point
+               state/navigation-data args
+               state/recent-builds nil)
+        (state-utils/set-dashboard-crumbs args)
+        state-utils/reset-current-build
+        state-utils/reset-current-project
+        (state-utils/change-selected-org org)
+        maybe-add-workflow-response-data)))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state comms]

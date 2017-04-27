@@ -15,6 +15,7 @@
             [frontend.components.pieces.topbar :as topbar]
             [frontend.components.statuspage :as statuspage]
             [frontend.config :as config]
+            [frontend.models.organization :as org]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.launchdarkly :as ld]
@@ -111,7 +112,7 @@
               orgs (get-in app state/user-organizations-path)
               ;; use the first org in the org list as the default
               selected-org (or (get-in app state/selected-org-path)
-                               (first orgs))
+                               (org/default orgs))
               admin? (if (config/enterprise?)
                        (get-in app [:current-user :dev-admin])
                        (get-in app [:current-user :admin]))
@@ -151,6 +152,6 @@
                                      compassus-route)]
                  (build-legacy aside/aside-nav {:user user
                                                 :current-route current-route
-                                                :org (get-in app state/selected-org-path)})))
+                                                :org selected-org})))
 
              (factory props)]]))))))

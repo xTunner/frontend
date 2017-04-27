@@ -114,6 +114,11 @@
       (str url "#" new-fragment)
       url)))
 
+(defn v1-organization-dashboard-path
+  "Generate URL string from params."
+  [params]
+  (generate-url-str "/:vcs_type/:org" params))
+
 (defn v1-org-settings-path
   "Generate URL string from params."
   [params]
@@ -339,6 +344,7 @@
       :admin-settings nil
       :add-projects (v1-add-projects-path org)
       :build-insights (v1-organization-insights-path org)
+      :dashboard (v1-organization-dashboard-path org)
       :error nil
       :invite-teammates (v1-team-path org)
       :landing nil
@@ -346,4 +352,4 @@
       :org-settings (v1-org-settings-path org)
       :project-insights (v1-organization-insights-path org)
       :team (v1-team-path org)
-      (v1-dashboard-path {})))) ;; TODO: Update me
+      (v1-organization-dashboard-path org))))

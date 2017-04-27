@@ -538,7 +538,7 @@
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Builds"
-                     :href (routes/v1-dashboard-path {})
+                     :href (routes/v1-organization-dashboard-path org)
                      :on-click #(aside-nav-clicked owner :builds-icon-clicked)}
       [:i.material-icons "storage"]
       [:div.nav-label "Builds"]]

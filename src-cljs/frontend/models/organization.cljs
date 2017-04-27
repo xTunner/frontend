@@ -1,7 +1,8 @@
 (ns frontend.models.organization
   (:require [frontend.config :as config]
             [frontend.utils :as util]
-            [clojure.string :as string]))
+            [clojure.string :as string])
+  (:refer-clojure :exclude [name]))
 
 (defn projects-by-follower
   "Returns a map of users logins to projects they follow."
@@ -34,18 +35,21 @@
   [[vcs_type username]]
   (str (util/prettify-vcs_type vcs_type)
        "/"
-       (name username)))
+       (clojure.core/name username)))
 
-(defn login
+(def name
   "Takes an org, returns its name.
   Not named 'name' because it conflicts with clojure.core/name"
-  [org]
-  (or (:login org)
-      (:name org)))
+  (some-fn :login :name :org))
 
 (defn same?
   "Compares two orgs, returns whether or not they are the same by
   comparing their name and their vcs_type"
   [org-a org-b]
-  (and (= (login org-a) (login org-b))
+  (and (= (name org-a) (name org-b))
        (= (:vcs_type org-a) (:vcs_type org-b))))
+
+(defn default
+  "Takes a list of orgs and returns a default value"
+  [orgs]
+  (first orgs))

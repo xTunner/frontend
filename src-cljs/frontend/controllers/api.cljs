@@ -8,6 +8,7 @@
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
+            [frontend.models.organization :as org]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -19,6 +20,7 @@
             [frontend.favicon]
             [frontend.elevio :as elevio]
             [frontend.utils.ajax :as ajax]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.state :as state-utils]
             [frontend.utils.map :as map-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -398,10 +400,23 @@
 (defmethod api-event [:organizations :success]
   [target message status {orgs :resp} state]
   (let [selected-org (or (state-utils/complete-org-path orgs (get-in state state/selected-org-path))
-                         (first orgs))]
+                         (org/default orgs))]
     (-> state
       (assoc-in state/user-organizations-path orgs)
       (assoc-in state/selected-org-path selected-org))))
+
+(defmethod post-api-event! [:organizations :success]
+  [target message status args previous-state current-state comms]
+  (when (ld/feature-on? "top-bar-ui-v-1")
+    (let [previous-org (get-in previous-state state/selected-org-path)
+          current-org (get-in current-state state/selected-org-path)
+          nav-point (get-in current-state state/current-view-path)]
+      (when (and (= nav-point :dashboard)
+                 (not= previous-org current-org))
+        ;; If org not provided in the url, we need to capture a user's
+        ;; default org before we can navigate to it.
+        (put! (:nav comms) [:navigate! {:path (routes/new-org-path {:current-org current-org
+                                                                    :nav-point nav-point})}])))))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]
