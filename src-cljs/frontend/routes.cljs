@@ -339,7 +339,7 @@
     nil. Nil responses are ignored."
   [{:keys [nav-point current-org]}]
   (let [org {:org (:login current-org)
-             :vcs_url (:vcs_url current-org)}]
+             :vcs_type (:vcs_type current-org)}]
     (case nav-point
       :admin-settings nil
       :add-projects (v1-add-projects-path org)
