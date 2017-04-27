@@ -1,15 +1,12 @@
 (ns frontend.routes
-  (:require [clojure.string :as str]
-            [goog.string :as gstring]
+  (:require [clojure.set :as set]
+            [clojure.string :as str]
             [compassus.core :as compassus]
             [frontend.async :refer [put!]]
             [frontend.config :as config]
             [frontend.utils.vcs :as vcs]
-            [secretary.core :as sec :refer-macros [defroute]]
-            [om.next :as om-next])
-  (:require-macros
-   [cljs.core.async.macros :as am :refer [alt! go go-loop]]
-   [frontend.utils :refer [inspect]]))
+            [goog.string :as gstring]
+            [secretary.core :as sec :refer-macros [defroute]]))
 
 (defn open!
   "Navigate to a (non-legacy) route.
@@ -87,6 +84,10 @@
 (defn v1-project-workflows-path
   ([vcs_type org repo]
    (str "/" (vcs/->short-vcs vcs_type) "/" org  "/workflows/" repo)))
+
+(defn v1-run-path
+  ([workflow-id]
+   (str "/workflow-run/" workflow-id)))
 
 (defn v1-job-path
   ([workflow-id job-name]
@@ -252,9 +253,17 @@
                                                 :org org
                                                 :repo repo}))))
 
-  (defroute v1-run "/workflow-run/:run-id"
-    [run-id]
-    (open! app :route/run {:route-params {:run/id (uuid run-id)}}))
+  (defroute v1-run #"/workflow-run/([^/]+)"
+    [run-id _ maybe-fragment]
+    (let [fragment-args (-> maybe-fragment
+                            :_fragment
+                            parse-build-page-fragment
+                            (select-keys [:tab :action-id :container-id])
+                            (set/rename-keys {:tab :route-params/tab
+                                              :action-id :route-params/action-id
+                                              :container-id :route-params/container-id}))]
+      (open! app :route/run {:route-params (assoc fragment-args
+                                                  :run/id (uuid run-id))})))
 
   (defroute v1-job "/workflow-run/:run-id/:job-name"
     [run-id job-name]
