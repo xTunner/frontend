@@ -233,6 +233,24 @@
         (let [{:keys [key query]} ast]
           (and (= :circleci/run key)
                (= [:run/id
+                   {:run/project [:project/name
+                                  {:project/organization [:organization/vcs-type
+                                                          :organization/name]}]}]
+                  query)))
+        (let [id (:run/id (:params ast))]
+          (api/get-workflow-status
+           (callback-api-chan
+            (fn [response]
+              (let [build (-> response :workflow/jobs first :job/build)]
+                (cb {:circleci/run {:run/id id
+                                    :run/project {:project/name (:build/repo build)
+                                                  :project/organization {:organization/vcs-type (:build/vcs-type build)
+                                                                         :organization/name (:build/org build)}}}}
+                    query))))
+           id))
+        (let [{:keys [key query]} ast]
+          (and (= :circleci/run key)
+               (= [:run/id
                    :run/name
                    :run/status
                    :run/started-at

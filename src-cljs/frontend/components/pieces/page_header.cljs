@@ -62,6 +62,12 @@
                                             username
                                             project)}))
 
+(defmethod crumb :workflow-run
+  [{:keys [run/id]}]
+  (om/build crumb-node
+            {:name (str id)
+             :path (routes/v1-run {:run-id id})}))
+
 (defmethod crumb :project
   [{:keys [vcs_type username project active owner logged-out?]}]
   (om/build crumb-node {:name project
