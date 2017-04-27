@@ -9,10 +9,12 @@
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.organization :as org]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer [unexterned-prop] :refer-macros [defrender html]]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.events :as gevents]
             [goog.string :as gstring]
@@ -544,7 +546,15 @@
        (om/build-all project-insights sorted-projects)]])))
 
 (defrender build-insights [state owner]
-  (let [projects (get-in state state/projects-path)
+  (let [selected-org-login (:login (get-in state state/selected-org-path))
+        selected-org-vcs-type (:vcs_type (get-in state state/selected-org-path))
+        projects (if (ld/feature-on? "top-bar-ui-v-1")
+                   (filter #(and (= selected-org-login
+                                    (:username %))
+                                 (= selected-org-vcs-type
+                                    (:vcs_type %)))
+                         (get-in state state/projects-path))
+                   (get-in state state/projects-path))
         plans (get-in state state/user-plans-path)
         navigation-data (:navigation-data state)
         decorate (partial decorate-project default-plot-info plans)]

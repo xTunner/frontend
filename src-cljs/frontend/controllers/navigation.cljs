@@ -287,11 +287,13 @@
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
-  (-> state
+  (let [org (not-empty (select-keys args [:login :vcs_type]))]
+    (-> state
       (assoc state/current-view navigation-point
              state/navigation-data args)
       state-utils/clear-page-state
-      (assoc-in state/crumbs-path [{:type :build-insights}])))
+      (state-utils/change-selected-org org)
+      (assoc-in state/crumbs-path [{:type :build-insights}]))))
 
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point _ previous-state current-state comms]

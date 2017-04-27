@@ -144,6 +144,10 @@
   [params]
   (generate-url-str "/build-insights/:vcs_type/:org/:repo/:branch" params))
 
+(defn v1-organization-insights-path
+  [params]
+  (generate-url-str "/build-insights/:vcs_type/:org" params))
+
 (defn v1-add-projects-path
   [params]
   (generate-url-str "/add-projects/:vcs_type/:org" params))
@@ -270,6 +274,9 @@
 
   (defroute v1-insights "/build-insights" []
     (open-to-inner! app nav-ch :build-insights {}))
+  (defroute v1-organization-insights "/build-insights/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name _fragment]}
+    (open-to-inner! app nav-ch :build-insights {:vcs_type (vcs/->lengthen-vcs short-vcs-type) :login org-name}))
+
   (defroute v1-insights-project #"/build-insights/(gh|bb)/([^/]+)/([^/]+)/([^/]+)" [short-vcs-type org repo branch]
     (open-to-inner! app nav-ch :project-insights {:org org :repo repo :branch branch :vcs_type (vcs/->lengthen-vcs short-vcs-type)}))
   (defroute v1-account "/account" []
@@ -331,12 +338,12 @@
     (case nav-point
       :admin-settings nil
       :add-projects (v1-add-projects-path org)
-      :build-insights "/build-insights" ;; TODO: Update me
+      :build-insights (v1-organization-insights-path org)
       :error nil
       :invite-teammates (v1-team-path org)
       :landing nil
       :logout nil
       :org-settings (v1-org-settings-path org)
-      :project-insights "/build-insights" ;; TODO: Update me
+      :project-insights (v1-organization-insights-path org)
       :team (v1-team-path org)
       (v1-dashboard-path {})))) ;; TODO: Update me
