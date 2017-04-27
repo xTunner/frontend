@@ -210,10 +210,10 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     {:route-params/organization [:organization/vcs-type
+     {:routed-entity/organization [:organization/vcs-type
                                   :organization/name]}
-     `{(:project-for-crumb {:< :route-params/project}) [:project/name]}
-     `{(:project-for-runs {:< :route-params/project}) ~(om-next/get-query WorkflowRuns)}])
+     `{(:project-for-crumb {:< :routed-entity/project}) [:project/name]}
+     `{(:project-for-runs {:< :routed-entity/project}) ~(om-next/get-query WorkflowRuns)}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -227,7 +227,7 @@
       (set-page-title! "Projects"))
   (render [this]
     (let [{{org-name :organization/name
-            vcs-type :organization/vcs-type} :route-params/organization
+            vcs-type :organization/vcs-type} :routed-entity/organization
            {project-name :project/name} :project-for-crumb}
           (om-next/props this)]
       (main-template/template
