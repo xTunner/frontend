@@ -98,7 +98,7 @@
 
       (next-read env))))
 
-;; Describes the mapping from :route-params/* keys, which refer to entities
+;; Describes the mapping from :routed-entity/* keys, which refer to entities
 ;; specified by route params, to the queries that actually read those entities.
 ;; In the given functions, the first parameter is the subquery to be read from
 ;; that entity, and the second is the map of route params set by the routes. The
@@ -107,11 +107,11 @@
 ;;
 ;; Note that we always alias (`:<`) the outermost expression we return in these,
 ;; in case the key is already used elsewhere in the same query. For instance, if
-;; we use `:route-params/organization` and `:route-params/project` on the same
+;; we use `:routed-entity/organization` and `:routed-entity/project` on the same
 ;; page and didn't alias the expression, we'd have two expressions reading
 ;; `:circleci/organization` in the same place, which would break.
 (def ^:private routed-data-query-map
-  {:route-params/organization
+  {:routed-entity/organization
    [[:routed-organization]
     (fn [{:keys [organization/vcs-type
                  organization/name]} query]
@@ -121,7 +121,7 @@
                                  :organization/name ~name})
           ~query}))]
 
-   :route-params/project
+   :routed-entity/project
    [[:org-for-routed-project :organization/project]
     (fn [route-params query]
       `{(:org-for-routed-project
@@ -132,14 +132,14 @@
            ~(select-keys route-params [:project/name]))
           ~query}]})]
 
-   :route-params/run
+   :routed-entity/run
    [[:routed-run]
     (fn [{:keys [run/id]} query]
       `{(:routed-run {:< :circleci/run
                       :run/id ~id})
         ~query})]
 
-   :route-params/job
+   :routed-entity/job
    [[:run-for-routed-job :run/job]
     (fn [route-params query]
       `{(:run-for-routed-job

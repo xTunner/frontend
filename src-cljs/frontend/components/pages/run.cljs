@@ -129,15 +129,15 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     `{(:run-for-crumbs {:< :route-params/run})
+     `{(:run-for-crumbs {:< :routed-entity/run})
        ^{:component ~workflow-page/RunRow}
        [:run/id
         {:run/project [:project/name
                        {:project/organization [:organization/vcs-type
                                                :organization/name]}]}]}
-     `{(:run-for-row {:< :route-params/run})
+     `{(:run-for-row {:< :routed-entity/run})
        ~(om-next/get-query workflow-page/RunRow)}
-     `{(:run-for-jobs {:< :route-params/run})
+     `{(:run-for-jobs {:< :routed-entity/run})
        ^{:component ~workflow-page/RunRow}
        [{(:jobs-for-jobs {:< :run/jobs}) ~(om-next/get-query Job)}
         ;; NB: We need the :component metadata and :job/id here to make sure the
@@ -146,7 +146,7 @@
         {(:jobs-for-first {:< :run/jobs}) ^{:component ~Job} [:job/id
                                                               :job/build
                                                               :job/name]}]}
-     {:route-params/job [:job/build :job/name]}])
+     {:routed-entity/job [:job/build :job/name]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -184,7 +184,7 @@
           :main-content
           (element :main-content
             (let [run (:run-for-row (om-next/props this))
-                  selected-job (or (:route-params/job (om-next/props this))
+                  selected-job (or (:routed-entity/job (om-next/props this))
                                    (-> (om-next/props this)
                                        :run-for-jobs
                                        :jobs-for-first

@@ -160,8 +160,8 @@
                          :user/login
                          :user/bitbucket-authorized?]}
 
-     `{(:org-for-projects {:< :route-params/organization}) ~(om-next/get-query OrgProjects)}
-     `{(:org-for-analytics {:< :route-params/organization}) [:organization/name]}])
+     `{(:org-for-projects {:< :routed-entity/organization}) ~(om-next/get-query OrgProjects)}
+     `{(:org-for-analytics {:< :routed-entity/organization}) [:organization/name]}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
