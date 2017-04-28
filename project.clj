@@ -45,15 +45,10 @@
                  ;; Frontend tests
                  [org.clojure/tools.reader "1.0.0-beta3"]
                  [circleci/bond "0.2.9"]
-                 [lein-doo "0.1.6"]
-
-                 ;; For Dirac DevTools
-                 [environ "1.0.1"]]
+                 [lein-doo "0.1.6"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-figwheel "0.5.8"]
-            [cider/cider-nrepl "0.11.0"]
-            [lein-environ "1.0.1"]
+            [lein-figwheel "0.5.10"]
             [lein-doo "0.1.6"]]
 
   ;; Don't include these dependencies transitively. These are foundational
@@ -83,7 +78,8 @@
   :clean-targets ^{:protect false} [:target-path "resources/public/cljs/"]
 
   :figwheel {:css-dirs ["resources/assets/css"]
-             :nrepl-port 7888}
+             :nrepl-port 7888
+             :nrepl-host "localhost"}
 
   :doo {:build "dev-test"
         :alias {:default [:chrome]}
@@ -174,19 +170,9 @@
                                                          "src-cljs/js/prismjs-externs.js"
                                                          "src-cljs/js/bootstrap-externs.js"]
                                                :source-map "resources/public/cljs/production/frontend.js.map"}}}})
-  :profiles {:devtools {:repl-options {:port 8230
-                                       :nrepl-middleware [dirac.nrepl.middleware/dirac-repl]
-                                       :init (do
-                                               (require 'dirac.agent)
-                                               (dirac.agent/boot!))}
-                        :env {:devtools "true"}
-                        :cljsbuild {:builds {:dev {:source-paths ["devtools"]}
-                                             :devcards {:source-paths ["devtools"]}}}
-                        :dependencies [[binaryage/devtools "0.7.2"]
-                                       [binaryage/dirac "0.6.1"]]}
-             :dev {:source-paths ["src-cljs" "test-cljs"]
+  :profiles {:dev {:source-paths ["src-cljs" "test-cljs"]
                    :repl-options {:port 8230
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
-                   :dependencies [[figwheel-sidecar "0.5.8"]
+                   :dependencies [[figwheel-sidecar "0.5.10"]
                                   [com.cemerick/piggieback "0.2.1"]
-                                  [org.clojure/tools.nrepl "0.2.12"]]}})
+                                  [org.clojure/tools.nrepl "0.2.13"]]}})
