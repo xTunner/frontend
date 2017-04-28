@@ -35,12 +35,10 @@
             [schema.core :as s :include-macros true])
   (:require-macros
    [cljs.core.async.macros :as am :refer [alt! go]]
-   [frontend.devtools :refer [require-devtools!]]
    [frontend.utils :refer [swallow-errors]]))
 
 (when config/client-dev?
   (enable-console-print!)
-  (require-devtools!)
   (s/set-fn-validation! true))
 
 (defn initial-state
