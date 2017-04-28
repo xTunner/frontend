@@ -49,7 +49,8 @@
                     job/stopped-at]
              job-name :job/name
              {run-id :run/id} :job/run}
-            (om-next/props this)]
+            (om-next/props this)
+            {:keys [selected?]} (om-next/get-computed this)]
         (card/basic
          (element :content
            (html
@@ -58,8 +59,10 @@
               [:div.status-heading
                [:div.status-name
                 [:span.job-status (status/icon (status-class status))]
-                [:a {:href (routes/v1-job-path run-id job-name)}
-                 [:span.job-name job-name]]]
+                (if selected?
+                  [:span.job-name job-name]
+                  [:a {:href (routes/v1-job-path run-id job-name)}
+                   [:span.job-name job-name]])]
                [:div.status-actions
                 (button/icon {:label "Retry job-name"
                               :disabled? true}
@@ -207,7 +210,12 @@
                    [:.hr-title
                     [:span "Jobs"]]]
                   (card/collection
-                   (map job jobs))]
+                   (map (fn [job-data]
+                          (job (om-next/computed
+                                job-data
+                                {:selected? (= (:job/name job-data)
+                                               (:job/name selected-job))})))
+                        jobs))]
                  [:.output
                   [:div.output-header
                    [:.output-title
