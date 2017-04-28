@@ -319,7 +319,8 @@
         add-button-text "Add More"]
     (list
      [:div.parallelism-upgrades
-      (if-not (plan-model/in-trial? plan)
+      (if-not (and (plan-model/in-trial? plan)
+                   (not (plan-model/in-student-trial? plan)))
         (cond (and (project-model/osx? project)
                    (> parallelism 1))
               ;; OS X projects should not use parallelism. We don't have the
@@ -437,7 +438,8 @@
             plan (get-in data state/project-plan-path)]
         (html
           [:section
-           (when (plan-model/in-trial? plan)
+           (when (and (plan-model/in-trial? plan)
+                      (not (plan-model/in-student-trial? plan)))
              (om/build trial-activation-banner data))
            [:article
             [:legend (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
