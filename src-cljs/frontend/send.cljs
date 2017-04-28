@@ -8,6 +8,8 @@
             [om.next.impl.parser :as om-parser])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
 
+(def ^:private ms-until-retried-run-retrieved 3000)
+
 (defn- callback-api-chan
   "Returns a channel which can be used with the API functions. Calls cb with the
   response data when the API call succeeds. Ignores failures.
@@ -87,6 +89,65 @@
        #(cb (rename-keys %1 {aliased-from (:key ast)}) %2)]
       [expr cb])))
 
+(defn- merge-workflow-runs
+  [{vcs-type :organization/vcs-type
+    org-name :organization/name
+    project-name :project/name}
+   merge-fn
+   query]
+  (api/get-project-workflows
+   (callback-api-chan
+    (fn [response]
+      (let [novelty {:circleci/organization
+                     {:organization/project
+                      {:project/name project-name
+                       :project/organization {:organization/vcs-type vcs-type
+                                              :organization/name org-name}
+                       :project/workflow-runs (mapv adapt-to-run response)}}}]
+        (merge-fn novelty query))))
+   (vcs-url/vcs-url vcs-type org-name project-name)))
+
+(defn- request-run-retry-from-api-service
+  [id]
+  (api/request-retry-run (callback-api-chan (fn [_response] nil)) id))
+
+(defn- send-retry-run
+  [{:keys [params]} merge-fn query]
+  (let [{:keys [run/id]} params]
+    (request-run-retry-from-api-service id)))
+
+(defn- retry-run-expression?
+  [expression]
+  (= 'run/retry (first expression)))
+
+(defn- reread-project-runs-ast? [ast]
+  (let [{:keys [key children]} ast]
+          (and (= :circleci/organization key)
+               (= 1 (count children))
+               (= :organization/project (:key (first children)))
+               (= [{:project/workflow-runs [:run/id
+                                            :run/name
+                                            :run/status
+                                            :run/started-at
+                                            :run/stopped-at
+                                            {:run/trigger-info [:trigger-info/vcs-revision
+                                                                :trigger-info/subject
+                                                                :trigger-info/body
+                                                                :trigger-info/branch
+                                                                {:trigger-info/pull-requests [:pull-request/url]}]}
+                                            {:run/project [:project/name
+                                                           {:project/organization [:organization/name
+                                                                                   :organization/vcs-type]}]}]}]
+                  (:query (first children))))))
+
+(defn- reread-project-runs [ast merge-fn query]
+  (js/setTimeout #(merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
+                                        :organization/name (-> ast :params :organization/name)
+                                        :project/name (-> ast :children first :params :project/name)}
+                                       merge-fn
+                                       query)
+                 ms-until-retried-run-retrieved))
+
 (defmulti send* key)
 
 ;; This implementation is merely a prototype, which does some rudimentary
@@ -97,6 +158,7 @@
     (let [[expr cb] (de-alias-expression expr cb)
           ast (om-parser/expr->ast expr)]
       (cond
+        (retry-run-expression? expr) (send-retry-run ast cb query)
         (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
            expr)
         (let [ch (callback-api-chan
@@ -149,7 +211,6 @@
         (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
           (cb {:circleci/organization {:organization/name name}} query))
 
-
         ;; :route/workflow
         (let [{:keys [key children]} ast]
           (and (= :circleci/organization key)
@@ -172,21 +233,13 @@
                                                            {:project/organization [:organization/name
                                                                                    :organization/vcs-type]}]}]}]
                   (:query (first children)))))
-        (let [project-ast (first (:children ast))
-              vcs-type (:organization/vcs-type (:params ast))
-              org-name (:organization/name (:params ast))
-              project-name (:project/name (:params project-ast))]
-          (api/get-project-workflows
-           (callback-api-chan
-            (fn [response]
-              (cb {:circleci/organization
-                   {:organization/project
-                    {:project/name project-name
-                     :project/organization {:organization/vcs-type vcs-type
-                                            :organization/name name}
-                     :project/workflow-runs (mapv adapt-to-run response)}}}
-                  query)))
-           (vcs-url/vcs-url vcs-type org-name project-name)))
+        (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
+                              :organization/name (-> ast :params :organization/name)
+                              :project/name (-> ast :children first :params :project/name)}
+                             cb
+                             query)
+
+        (reread-project-runs-ast? ast) (reread-project-runs ast cb query)
 
         ;; :route/run
         (let [{:keys [key children]} ast]

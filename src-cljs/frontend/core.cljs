@@ -193,6 +193,39 @@
     (-> (next-merge env)
         (update :keys conj :compassus.core/route-data))))
 
+(defn- patched-basic-merge
+  "A patched version of bodhi/basic-merge. This should be swapped out
+  for bodhi/basic-merge when its handling of unnormalized data is
+  fixed."
+  [{:keys [merge merger state path novelty ast] :as env}]
+  (let [{:keys [key type]} ast]
+    (case type
+      :prop {:keys #{}
+             :next (assoc-in state path novelty)}
+      :join (if (vector? novelty)
+              ;; Note that we use `:merge` here and not `merger`, which would go
+              ;; one level deeper into the query/ast. This is analogous to
+              ;; `basic-read` using `:read` instead of `:parser` when processing
+              ;; vectors.
+              (reduce-kv
+               (fn [result idx novelty']
+                 (bodhi/update-merge-result result
+                                            (merge (-> env
+                                                       (update :path conj idx)
+                                                       (assoc :novelty novelty'
+                                                              :state (:next result))))))
+               {:keys #{}
+                :next (update-in state
+                                 path
+                                 (fn [old-vals]
+                                   (subvec (vec old-vals)
+                                           0
+                                           (min (count novelty)
+                                                ;; `(count nil)` is 0
+                                                (count old-vals)))))}
+               novelty)
+              (merger env)))))
+
 (defn ^:export setup! []
   (let [legacy-state (initial-state)
         comms {:controls (chan)
@@ -239,8 +272,18 @@
                           :merge-tree #(utils/deep-merge %1 %2)
 
                           :merge (bodhi/merge-fn
-                                  (-> bodhi/basic-merge
-                                      default-db/merge
+                                  (-> patched-basic-merge
+                                      
+                                      ;; bodhi/basic-merge
+                                      ;; see docstring for patched-basic-merge
+                                      
+                                      
+                                      ;; TODO: re-enable normalization
+                                      ;; by uncommenting
+                                      ;; `default-db/merge` when bodhi
+                                      ;; basic-merge can work with it
+                                      
+                                      ;; default-db/merge
                                       param-indexing/merge
                                       aliasing/merge
                                       compassus-page-queuing-merge))
