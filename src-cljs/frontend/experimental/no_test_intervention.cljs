@@ -58,7 +58,7 @@
       om/IRender
       (render [_]
         (modal/modal-dialog
-          {:title "We couldnt determine the test settings for your project"
+          {:title "We couldn't determine the test settings for your project"
            :body (html
                    [:span
                     (str "We're sorry about that! Please make sure you have a "
