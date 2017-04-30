@@ -187,7 +187,8 @@
           :main-content
           (element :main-content
             (let [run (:run-for-row (om-next/props this))
-                  selected-job (or (:routed-entity/job (om-next/props this))
+                  selected-job (or (not-empty
+                                    (:routed-entity/job (om-next/props this)))
                                    (-> (om-next/props this)
                                        :run-for-jobs
                                        :jobs-for-first
