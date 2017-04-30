@@ -1,3 +1,3 @@
-web: lein with-profile +devtools run
-figwheel: lein with-profile +devtools figwheel dev devcards
+web: lein run
+figwheel: lein figwheel dev devcards
 nginx: nginx -c `pwd`/etc/nginx.conf
