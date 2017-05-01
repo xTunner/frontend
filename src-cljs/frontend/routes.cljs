@@ -256,16 +256,8 @@
                                                 :repo repo}))))
 
   (defroute v1-run #"/workflow-run/([^/]+)"
-    [run-id _ maybe-fragment]
-    (let [fragment-args (-> maybe-fragment
-                            :_fragment
-                            parse-build-page-fragment
-                            (select-keys [:tab :action-id :container-id])
-                            (set/rename-keys {:tab :route-params/tab
-                                              :action-id :route-params/action-id
-                                              :container-id :route-params/container-id}))]
-      (open! app :route/run {:route-params (assoc fragment-args
-                                                  :run/id (uuid run-id))})))
+    [run-id]
+    (open! app :route/run {:route-params {:run/id (uuid run-id)}}))
 
   (defroute v1-job #"/workflow-run/([^/]+)/([^/]+)"
     [run-id job-name _ maybe-fragment]
