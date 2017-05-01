@@ -40,14 +40,9 @@
                 [:img.avatar {:src (gh-utils/make-avatar-url single-org :size 40)}]
                 [:span.org-name login]]
                [:span.vcs-icon
-                [:a {:href (str (case vcs_type
-                                  "github" (gh-utils/http-endpoint)
-                                  "bitbucket" (bb-utils/http-endpoint))
-                             "/" login)
-                     :target "_blank"}
                  (case vcs_type
                    "github" (icon/github)
-                   "bitbucket" (icon/bitbucket))]]]])) orgs)]])
+                   "bitbucket" (icon/bitbucket))]]])) orgs)]])
 
 (defn updates-dropdown []
   [:li.dropdown
