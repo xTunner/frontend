@@ -588,7 +588,7 @@
                     :let [pname (name k) pval (pr-str v)]]
                 (str pname "=" pval \newline))]]))))
 
-(defn build-sub-head [{:keys [build-data scopes user container-id current-tab project-data ssh-available?] :as data} owner]
+(defn build-sub-head [{:keys [build-data scopes user current-tab project-data ssh-available? tab-href] :as data} owner]
   (reify
     om/IRender
     (render [_]
@@ -649,14 +649,7 @@
                              (seq build-params)
                              (conj {:name :build-parameters :label "Build Parameters"}))
                      :selected-tab-name selected-tab-name
-                     :on-tab-click #(navigate! owner (routes/v1-build-path
-                                                       (vcs-url/vcs-type (:vcs_url build))
-                                                       (:username build)
-                                                       (:reponame build)
-                                                       nil
-                                                       (:build_num build)
-                                                       (name %)
-                                                       container-id))})}
+                     :href tab-href})}
          (html
           [:div.sub-head-content {:class (str "sub-head-" (name selected-tab-name))}
            (case selected-tab-name

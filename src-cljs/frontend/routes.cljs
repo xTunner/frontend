@@ -90,8 +90,10 @@
    (str "/workflow-run/" workflow-id)))
 
 (defn v1-job-path
-  ([workflow-id job-name]
-   (str "/workflow-run/" workflow-id "/" job-name)))
+  ([workflow-id job-name] (v1-job-path workflow-id job-name nil))
+  ([workflow-id job-name {:keys [route-params/tab route-params/container-id route-params/action-id]}]
+   (let [fragment (build-page-fragment tab container-id action-id)]
+     (str "/workflow-run/" workflow-id "/" job-name (when fragment (str "#" fragment))))))
 
 (defn v1-dashboard-path
   "Temporary helper method for v1-*-dashboard until we figure out how to
@@ -265,10 +267,18 @@
       (open! app :route/run {:route-params (assoc fragment-args
                                                   :run/id (uuid run-id))})))
 
-  (defroute v1-job "/workflow-run/:run-id/:job-name"
-    [run-id job-name]
-    (open! app :route/run {:route-params {:run/id (uuid run-id)
-                                          :job/name job-name}}))
+  (defroute v1-job #"/workflow-run/([^/]+)/([^/]+)"
+    [run-id job-name _ maybe-fragment]
+    (let [fragment-args (-> maybe-fragment
+                            :_fragment
+                            parse-build-page-fragment
+                            (select-keys [:tab :action-id :container-id])
+                            (set/rename-keys {:tab :route-params/tab
+                                              :action-id :route-params/action-id
+                                              :container-id :route-params/container-id}))]
+      (open! app :route/run {:route-params (assoc fragment-args
+                                                  :run/id (uuid run-id)
+                                                  :job/name job-name)})))
 
   (defroute v1-project-settings #"/(gh|bb)/([^/]+)/([^/]+)/edit" [short-vcs-type org repo _ maybe-fragment]
     (open-to-inner! app nav-ch :project-settings {:vcs_type (vcs/->lengthen-vcs short-vcs-type)

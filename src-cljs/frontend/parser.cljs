@@ -153,7 +153,6 @@
                                (update :legacy/state dissoc
                                        :navigation-point
                                        :navigation-data
-                                       :current-build-data
                                        :current-org-data
                                        :current-project-data)))
              (analytics/track {:event-type :pageview

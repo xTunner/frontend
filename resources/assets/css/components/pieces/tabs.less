@@ -9,15 +9,18 @@
     > li {
       display: block;
       flex-grow: 1;
-      padding: 15px;
 
       color: @grayDark;
 
       background: @grayLightest;
       border-right: 1px solid @grayLighter;
 
-      > .tab-label {
-        vertical-align: middle;
+      > .content, > a > .content {
+        padding: 15px;
+
+        > .tab-label {
+          vertical-align: middle;
+        }
       }
 
       &:last-child {

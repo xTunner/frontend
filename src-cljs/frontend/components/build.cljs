@@ -463,12 +463,20 @@
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :workflow-data workflow-data
                                               :current-tab (get-in app state/navigation-tab-path)
-                                              :container-id (state/current-container-id app)
                                               :project-data project-data
                                               :user user
                                               :projects (get-in app state/projects-path)
                                               :scopes (get-in app state/project-scopes-path)
-                                              :ssh-available? ssh-available?})
+                                              :ssh-available? ssh-available?
+                                              :tab-href (let [build (:build build-data)]
+                                                          #(routes/v1-build-path
+                                                            (vcs-url/vcs-type (:vcs_url build))
+                                                            (:username build)
+                                                            (:reponame build)
+                                                            nil
+                                                            (:build_num build)
+                                                            (name %)
+                                                            (state/current-container-id app)))})
              [:div.card.col-sm-12
 
               (om/build common/flashes (get-in app state/error-message-path))
