@@ -466,7 +466,8 @@
       (mlog "plan details already loaded for" org)
       (api/get-org-plan org vcs_type api-ch))
     (if (and (= org (get-in current-state state/org-name-path))
-             (= vcs_type (get-in current-state state/org-vcs_type-path)))
+             (= vcs_type (get-in current-state state/org-vcs_type-path))
+             (get-in current-state state/org-plan-path))
       (mlog "organization details already loaded for" org)
       (api/get-org-settings org vcs_type api-ch))
     (condp = subpage

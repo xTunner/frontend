@@ -1,7 +1,5 @@
 (ns frontend.models.user
   (:require [clojure.set :as set]
-            [frontend.datetime :as datetime]
-            [goog.string :as gstring]
             goog.string.format))
 
 (defn missing-scopes [user]
@@ -35,14 +33,6 @@
   (some #(and (= org-name (:login %))
               (= vcs-type (:vcs_type %)))
         organizations))
-
-(defn admin-of-org? [{:keys [organizations]} org-name vcs-type]
-  (->> organizations
-       (filter #(and (= org-name (:login %))
-                     (= vcs-type (:vcs_type %))))
-       first
-       :admin
-       boolean))
 
 (defn github-authorized? [user]
   (-> user :github_oauth_scopes empty? not))

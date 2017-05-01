@@ -556,7 +556,7 @@
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Insights"
-                     :href "/build-insights"
+                     :href (routes/v1-organization-insights-path org)
                      :on-click #(aside-nav-clicked owner :insights-icon-clicked)}
       [:i.material-icons "assessment"]
       [:div.nav-label "Insights"]]

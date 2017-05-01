@@ -105,9 +105,13 @@
 (defn complete-org-path
   "Replace partial org map with complete org info (including avatar key, etc.)"
   [user-orgs org]
-  (->> user-orgs
-       (filter #(org/same? org %))
-       first))
+  (let [org (if (:login org)
+              org
+              (org/default user-orgs))]
+    (or (->> user-orgs
+          (filter #(org/same? org %))
+          first)
+        org))) ;; Needed for CCI admins to view orgs outside their user-orgs
 
 (defn change-selected-org
   "Returns updated state map with the provided org as the selected-org.
