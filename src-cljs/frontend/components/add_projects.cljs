@@ -9,6 +9,7 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -22,6 +23,7 @@
             [frontend.utils.vcs :as vcs-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
+            [inflections.core :as inflections]
             [om.core :as om :include-macros true]))
 
 (def view "add-projects")
@@ -32,11 +34,11 @@
 (defn missing-scopes-notice [current-scopes missing-scopes]
   [:div
    [:div.alert.alert-error
-    "We don't have all of the GitHub OAuth scopes we need to run your tests."
+    "We don't have all of the GitHub OAuth scopes we need to run your tests. "
     [:a {:href (gh-utils/auth-url (concat missing-scopes current-scopes))}
-     (gstring/format "Click to grant Circle the %s %s."
-                     (string/join "and " missing-scopes)
-                     (if (< 1 (count missing-scopes)) "scope" "scopes"))]]])
+     (gstring/format "Click to grant Circle %s: %s."
+                     (inflections/pluralize (count missing-scopes) "missing scope")
+                     (string/join " and " missing-scopes))]]])
 
 (defn select-vcs-type [vcs-type item]
   (case vcs-type
@@ -537,8 +539,9 @@
                                                     (get-in data state/projects-path))]
     (html
      [:div#add-projects
-      (when (seq (user-model/missing-scopes user))
-        (missing-scopes-notice (:github_oauth_scopes user) (user-model/missing-scopes user)))
+      (when (seq (gh-public-scopes/missing-scopes user))
+        (missing-scopes-notice (:github_oauth_scopes user)
+                               (gh-public-scopes/missing-scopes user)))
       (when (and (seq followed-inaccessible)
                  (not (loading-repos-for-vcs-type? user :github))
                  (not (loading-repos-for-vcs-type? user :bitbucket)))
@@ -551,6 +554,8 @@
        " and "
        [:a {:href (routes/v1-insights)} "Insights"]
        "."]
+      (when-not (gh-public-scopes/has-private-scopes? user)
+        (gh-public-scopes/add-private-repos-link))
       [:hr]
       [:div.org-repo-container
        (when-not (ld/feature-on? "top-bar-ui-v-1")

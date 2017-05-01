@@ -8,6 +8,7 @@
             [frontend.components.pieces.top-banner :as top-banner]
             [frontend.components.svg :as svg]
             [frontend.config :as config]
+            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan]
             [frontend.models.project :as project-model]
@@ -218,7 +219,11 @@
                  [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
-                  [:a.login.login-link.menu-item {:href (auth-url)
+                  [:a.login.login-link.menu-item {:href (auth-url
+                                                         :scope
+                                                         (if (gh-public-scopes/in-dev-environment?)
+                                                           gh-public-scopes/github-public-scopes
+                                                           gh-public-scopes/github-private-scopes))
                                                   :on-click #((om/get-shared owner :track-event) {:event-type :login-clicked})
                                                   :title "Log In with Github"}
                    "Log In"]]
@@ -380,7 +385,7 @@
                                           :actions (cond-> []
                                                      (show-workflows-link? app)
                                                      (conj (workflows-link app))
-                                                     
+
                                                      (show-settings-link? app)
                                                      (conj (settings-link app owner))
 

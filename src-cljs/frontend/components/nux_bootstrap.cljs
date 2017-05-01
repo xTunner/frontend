@@ -7,6 +7,7 @@
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.state :as state]
@@ -62,7 +63,7 @@
                                                                     :failed-text "Failed"
                                                                     :success-text "Success!"
                                                                     :on-click #(do ((do-it-fn)
-                                                                                     (close-fn)))}
+                                                                                    (close-fn)))}
                                                                    "Got it!")]
                                   :close-fn close-fn})))]))))
 
@@ -190,7 +191,7 @@
                 (when (and projects-loaded? (> selected-not-building-projects-count 0))
                   [:div.explanation (gstring/format "Add (%s) projects not yet building on CircleCI" selected-not-building-projects-count)])]))))))))
 
-(defn build-empty-state [{:keys [projects-loaded? organizations] :as data} owner]
+(defn build-empty-state [{:keys [current-user projects-loaded? organizations] :as data} owner]
   (reify
     om/IDidMount
     (did-mount [_]
@@ -208,7 +209,10 @@
                    :heading (html [:span (empty-state/important "Welcome to CircleCI!")])
                    :subheading (html
                                  [:div
-                                  "You've joined the ranks of 100,000+ teams who ship better code, faster."])}))
+                                  "You've joined the ranks of 100,000+ teams who ship better code, faster."
+                                  [:br]
+                                  (when-not (gh-public-scopes/has-private-scopes? current-user)
+                                    (gh-public-scopes/add-private-repos-link))])}))
 
               (if organizations
                 (om/build nux-bootstrap-content data)
