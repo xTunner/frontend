@@ -1765,7 +1765,13 @@
 (defmethod jira-installed :basic [project owner]
   (html
    [:div
-    [:p "Connected with JIRA Basic Authentication. To set up JIRA with Atlassian Connect, remove the integration below first."]
+    [:p
+     (str
+      "Connected with JIRA Basic Authentication. "
+      (if (config/jira-connect-enabled?)
+        "To set up JIRA with Atlassian Connect,"
+        "To set up JIRA with different credentials,")
+      " remove the integration below first.")]
     (let [credentials (:jira project)
           linkify (fn [url]
                     (html
@@ -1796,13 +1802,7 @@
 (defmethod jira-installed :connect [project owner]
   (html
    [:div
-    [:p
-     (str
-      "Connected with JIRA Basic Authentication. "
-      (if (config/jira-connect-enabled?)
-        "To set up JIRA with Atlassian Connect,"
-        "To set up JIRA with different credentials,")
-      " remove the integration below first.")]
+    [:p "Connected with Atlassian Connect. To set up JIRA with Basic Authentication, remove the integration below first."]
     (let [credentials (:jira project)
           linkify (fn [url]
                     (html
