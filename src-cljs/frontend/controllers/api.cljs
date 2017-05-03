@@ -408,14 +408,15 @@
 (defmethod post-api-event! [:organizations :success]
   [target message status args previous-state current-state comms]
   (when (ld/feature-on? "top-bar-ui-v-1")
-    (let [previous-org (get-in previous-state state/selected-org-path)
-          current-org (get-in current-state state/selected-org-path)
-          nav-point (get-in current-state state/current-view-path)]
+    (let [nav-point (get-in current-state state/current-view-path)
+          nav-data-path (get-in current-state state/navigation-data-path)]
       (when (and (= nav-point :dashboard)
-                 (not= previous-org current-org))
+                 (= nil (:org nav-data-path)
+                        (:repo nav-data-path)
+                        (:branch nav-data-path)))
         ;; If org not provided in the url, we need to capture a user's
         ;; default org before we can navigate to it.
-        (put! (:nav comms) [:navigate! {:path (routes/new-org-path {:current-org current-org
+        (put! (:nav comms) [:navigate! {:path (routes/new-org-path {:current-org (get-in current-state state/selected-org-path)
                                                                     :nav-point nav-point})}])))))
 
 (defmethod api-event [:tokens :success]
