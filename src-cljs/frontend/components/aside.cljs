@@ -591,7 +591,8 @@
       [:i.material-icons "group"]
       [:div.nav-label "Team"]]
 
-     [:a.aside-item {:data-placement "right"
+     [:a.aside-item {:class (when (= :org-settings current-route) "current")
+                     :data-placement "right"
                      :data-trigger "hover"
                      :title "Organization Settings"
                      :href (routes/v1-org-settings-path org)
