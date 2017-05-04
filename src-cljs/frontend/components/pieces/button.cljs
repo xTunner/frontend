@@ -57,8 +57,9 @@
   :size          - The size of the button. One of #{:full :small}.
                    (default: :full)
   :fixed?        - If true, the button is fixed width. (default: false)
-  :target        - Specifies where to display the linked URL."
-  [{:keys [href on-click kind size fixed? target]
+  :target        - Specifies where to display the linked URL.
+  :bordered? - (optional) Adds a border to the button."
+  [{:keys [href on-click kind size fixed? target bordered?]
     :or {kind :secondary size :full}}
    content]
   (component
@@ -68,7 +69,8 @@
                             (when fixed? "fixed")
                             (case size
                               :full nil
-                              :small "small")])
+                              :small "small")
+                            (when bordered? "with-border")])
        :href href
        :target target
        :on-click on-click}

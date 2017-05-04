@@ -56,6 +56,10 @@
 
     > .actions {
       .flexy(center, space-between);
+
+      >:not(:first-child) {
+        margin-left: 1em;
+      }
     }
 
     @media (max-width: @screen-sm-max) {
