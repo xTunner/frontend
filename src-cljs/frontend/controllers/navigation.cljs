@@ -14,6 +14,7 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils.ajax :as ajax]
+            [frontend.utils.build :as build-utils]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.state :as state-utils]
@@ -228,7 +229,15 @@
   (let [api-ch (:api comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)
-        build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)]
+        build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)
+        container-id (state/current-container-id current-state)
+        container (get-in current-state (state/container-path container-id))
+        last-action (-> container :actions last)
+        build (get-in current-state state/build-path)
+        vcs-url (:vcs_url build)
+        previous-container-id (state/current-container-id previous-state)
+        current-tab (or (get-in current-state state/navigation-tab-path)
+                        (build-utils/default-tab build (get-in current-state state/project-scopes-path)))]
     (mlog (str "post-navigated-to! :build current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
     (when (and (not projects-loaded?)
@@ -242,7 +251,20 @@
                                        {:username username
                                         :project project
                                         :build-num build-num
-                                        :vcs-type vcs_type})))
+                                        :vcs-type vcs_type}))
+    (put! (:nav comms) [:navigate! {:path (routes/v1-build-path (:vcs_type build)
+                                                                (:username build)
+                                                                (:reponame build)
+                                                                nil
+                                                                (:build_num build)
+                                                                current-tab
+                                                                container-id)}])
+    (api/get-action-steps {:vcs-url vcs-url
+                           :build-num (:build_num (get-in current-state state/build-path))
+                           :project-name (vcs-url/project-name vcs-url)
+                           :old-container-id previous-container-id
+                           :new-container-id container-id}
+                          (:api comms)))
   (set-page-title! (str project-name " #" build-num)))
 
 (defmethod navigated-to :add-projects
