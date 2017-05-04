@@ -152,9 +152,7 @@
                                ;; replaced completely on each route change.
                                (update :legacy/state dissoc
                                        :navigation-point
-                                       :navigation-data
-                                       :current-org-data
-                                       :current-project-data)))
+                                       :navigation-data)))
              (analytics/track {:event-type :pageview
                                :navigation-point route
                                :subpage :default
