@@ -546,16 +546,14 @@
                  (not (loading-repos-for-vcs-type? user :github))
                  (not (loading-repos-for-vcs-type? user :bitbucket)))
         (inaccessible-orgs-notice followed-inaccessible settings))
-      [:h2 "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."]
-      [:p "To kick things off, you'll need to choose a project to build."]
-      [:p "We'll start a new build for you each time someone pushes a new commit."]
-      [:p "You can also follow a project that's already been added to CircleCI. You'll see your followed projects in "
-       [:a {:href (routes/v1-dashboard-path {})} "Builds"]
-       " and "
-       [:a {:href (routes/v1-insights)} "Insights"]
-       "."]
-      (when-not (gh-public-scopes/has-private-scopes? user)
-        (gh-public-scopes/add-private-repos-link))
+      [:.text-card
+       (card/basic
+         (html
+           [:div
+            [:h2 "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."]
+            [:p "To kick things off, you'll need to choose a project to build. We'll start a new build for you each time someone pushes a new commit."]
+            [:p (when-not (gh-public-scopes/has-private-scopes? user)
+                  (gh-public-scopes/add-private-repos-link))]]))]
       [:hr]
       [:div.org-repo-container
        (when-not (ld/feature-on? "top-bar-ui-v-1")
