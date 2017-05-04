@@ -41,27 +41,23 @@
 (defn logout! [nav-ch]
   (put! nav-ch [:logout]))
 
-(def tab-names
-  (str/join "|"
-            ["tests" "build-timing" "artifacts" "config"
-             "build-parameters" "usage-queue" "ssh-info"]))
-
 (defn parse-build-page-fragment [fragment]
+  ;; do return any empty strings - return nil instead
   (let [fragment-str (str fragment)
-        url-regex-str (gstring/format
-                        "(%s)((/containers/(\\d+))(/actions/(\\d+))?)?"
-                        tab-names)
-        [_ tab-name _ _ container-num _ action-id]
-        (re-find (re-pattern url-regex-str) fragment-str)
-        container-id (some-> container-num js/parseInt)
-        tab (some-> tab-name keyword)
-        action-id (some-> action-id js/parseInt)]
-    (merge {:tab tab
-            :action-id action-id}
-           ;; don't add :container-id key unless it's specified (for later
-           ;; destructuring with :or)
-           (when container-id
-             {:container-id container-id}))))
+        url-regex-str "([a-zA-Z0-9-]*)((/containers/(\\d+))(/actions/(\\d+))?)?"
+        [_ tab-name _ _ container-num _ action-id] (re-find (re-pattern url-regex-str) fragment-str)
+        container-id (some-> container-num
+                             not-empty
+                             js/parseInt)
+        tab (some-> tab-name
+                    not-empty
+                    keyword)
+        action-id (some-> action-id
+                          not-empty
+                          js/parseInt)]
+    {:tab tab
+     :action-id action-id
+     :container-id container-id}))
 
 (defn build-page-fragment [tab container-id action-id]
   (cond

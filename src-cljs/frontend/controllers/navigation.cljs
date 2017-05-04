@@ -14,6 +14,7 @@
             [frontend.state :as state]
             [frontend.stefon :as stefon]
             [frontend.utils.ajax :as ajax]
+            [frontend.utils.build :as build-utils]
             [frontend.utils.docs :as doc-utils]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.state :as state-utils]
@@ -183,33 +184,28 @@
   [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args}
    state]
   (mlog "navigated-to :build with args " args)
-  (let [maybe-set-container-id (fn [state]
-                                 (if (not (nil? container-id))
-                                   (assoc-in state state/current-container-path container-id)
-                                   state))
-        nav-org {:login org :vcs_type vcs_type}]
-
+  (let [nav-org {:login org :vcs_type vcs_type}]
     (if (and (= :build (state/current-view state))
              (not (state-utils/stale-current-build? state project-name build-num)))
       ;; page didn't change, just switched tabs
       (-> state
-        (assoc-in state/navigation-tab-path tab)
-        (maybe-set-container-id)
-        (assoc-in state/current-action-id-path action-id))
+          (assoc-in state/navigation-tab-path tab)
+          (assoc-in state/current-container-path container-id)
+          (assoc-in state/current-action-id-path action-id))
       ;; navigated to page, load everything
       (-> state
-        state-utils/clear-page-state
-        (state-utils/change-selected-org nav-org)
-        (assoc state/current-view navigation-point
-               state/navigation-data (assoc args :show-settings-link? false)
-               :project-settings-project-name project-name)
-        (add-crumbs args)
-        state-utils/reset-current-build
-        (#(if (state-utils/stale-current-project? % project-name)
-            (state-utils/reset-current-project %)
-            %))
-        state-utils/reset-dismissed-osx-usage-level
-        maybe-add-workflow-response-data))))
+          state-utils/clear-page-state
+          (state-utils/change-selected-org nav-org)
+          (assoc state/current-view navigation-point
+                 state/navigation-data (assoc args :show-settings-link? false)
+                 :project-settings-project-name project-name)
+          (add-crumbs args)
+          state-utils/reset-current-build
+          (#(if (state-utils/stale-current-project? % project-name)
+              (state-utils/reset-current-project %)
+              %))
+          state-utils/reset-dismissed-osx-usage-level
+          maybe-add-workflow-response-data))))
 
 (defn initialize-pusher-subscriptions
   "Subscribe to pusher channels for initial messaging. This subscribes
@@ -238,7 +234,15 @@
   (let [api-ch (:api comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)
-        build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)]
+        build-url (gstring/format "/api/v1.1/project/%s/%s/%s" vcs_type project-name build-num)
+        container-id (state/current-container-id current-state)
+        container (get-in current-state (state/container-path container-id))
+        last-action (-> container :actions last)
+        build (get-in current-state state/build-path)
+        vcs-url (:vcs_url build)
+        previous-container-id (state/current-container-id previous-state)
+        current-tab (or (get-in current-state state/navigation-tab-path)
+                        (build-utils/default-tab build (get-in current-state state/project-scopes-path)))]
     (mlog (str "post-navigated-to! :build current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
     (when (and (not projects-loaded?)
@@ -252,7 +256,13 @@
                                        {:username username
                                         :project project
                                         :build-num build-num
-                                        :vcs-type vcs_type})))
+                                        :vcs-type vcs_type}))
+    (api/get-action-steps {:vcs-url vcs-url
+                           :build-num build-num
+                           :project-name (vcs-url/project-name vcs-url)
+                           :old-container-id previous-container-id
+                           :new-container-id container-id}
+                          (:api comms)))
   (set-page-title! (str project-name " #" build-num)))
 
 (defmethod navigated-to :add-projects

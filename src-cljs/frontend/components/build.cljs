@@ -225,8 +225,14 @@
                             nil)
              {:keys [vcs_type username reponame build_num]} build]
          [:a.container-selector.exception
-          {:on-click #(when (not= container-id selected-container-id)
-                        (raise! owner [:container-selected {:container-id container-id}])
+          {:href (routes/v1-build-path vcs_type
+                                       username
+                                       reponame
+                                       nil
+                                       build_num
+                                       current-tab
+                                       container-id)
+           :on-click #(when (not= container-id selected-container-id)
                         ((om/get-shared owner :track-event) {:event-type :container-selected
                                                              :properties {:old-container-id selected-container-id
                                                                           :new-container-id container-id}}))
@@ -462,7 +468,9 @@
             container-data (get-in app state/container-data-path)
             invite-data (get-in app state/build-invite-data-path)
             project-data (get-in app state/project-data-path)
-            user (get-in app state/user-path)]
+            user (get-in app state/user-path)
+            current-tab (or (get-in app state/navigation-tab-path)
+                            (build-utils/default-tab build (get-in app state/project-scopes-path)))]
         (html
          [:div.build-info-v2
           (if-not build
@@ -473,7 +481,7 @@
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :workflow-data workflow-data
-                                              :current-tab (get-in app state/navigation-tab-path)
+                                              :current-tab current-tab
                                               :project-data project-data
                                               :user user
                                               :projects (get-in app state/projects-path)
@@ -491,7 +499,7 @@
 
               (om/build container-pills {:container-data container-data
                                          :container-id (state/current-container-id app)
-                                         :current-tab (get-in app state/navigation-tab-path)
+                                         :current-tab current-tab
                                          :scopes (get-in app state/project-scopes-path)
                                          :build-running? (build-model/running? build)
                                          :build build

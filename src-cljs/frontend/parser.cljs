@@ -173,17 +173,23 @@
 (defmethod mutate 'route-params/set
   [{:keys [state route] :as env} key {:keys [subpage route-params]}]
   {:action (fn []
-             (swap! state #(-> %
-                               (assoc :app/subpage-route subpage
-                                      :app/route-params route-params)
-                               (assoc-in [:legacy/state :navigation-point] route)
-                               ;; Clean up the legacy state so it doesn't leak
-                               ;; from the previous page. This goes away when
-                               ;; the legacy state dies. In the Om Next world,
-                               ;; all route data is in :app/route-params, and is
-                               ;; replaced completely on each route change.
-                               (update :legacy/state dissoc
-                                       :navigation-data)))
+             (swap! state (fn [state]
+                            (-> state
+                                (assoc :app/subpage-route subpage
+                                       :app/route-params route-params)
+                                ;; the legacy om still uses :navigation-point to tell
+                                ;; if we are navigating to a new page or tabbing, so only
+                                ;; set it to be route when not in old Om
+                                (#(if-not (= route :route/legacy-page)
+                                    (assoc-in % [:legacy/state :navigation-point] route)
+                                    %))
+                                ;; Clean up the legacy state so it doesn't leak
+                                ;; from the previous page. This goes away when
+                                ;; the legacy state dies. In the Om Next world,
+                                ;; all route data is in :app/route-params, and is
+                                ;; replaced completely on each route change.
+                                (update :legacy/state dissoc
+                                        :navigation-data))))
              (analytics/track {:event-type :pageview
                                :navigation-point route
                                :subpage :default
