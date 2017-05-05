@@ -363,6 +363,13 @@
                   (nth nums (dec mid-i)))
                2))))
 
+(defn pass-percent [builds]
+  (-> (map :outcome builds)
+      frequencies
+      (get "success")
+      (/ (count builds))
+      (* 100)
+      (->> (gstring/format "%.1f %%"))))
 
 (defn build-status-bar-chart [{:keys [plot-info builds] :as params} owner]
   (reify
@@ -437,27 +444,30 @@
                 (empty? chartable-builds) [:div.no-builds "No builds to display for this project"]
                 :else
                 (list
-                 [:div.above-info
-                  [:dl
-                   [:dt "median build"]
-                   [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds))) " min"]]
-                  [:dl
-                   [:dt "median queue"]
-                   [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds))) " min"]]
-                  [:dl
-                   [:dt "last build"]
-                   [:dd (om/build common/updating-duration
-                                  {:start (->> chartable-builds
-                                               reverse
-                                               (filter :start_time)
-                                               first
-                                               :start_time)}
-                                  {:opts {:formatter datetime/as-time-since
-                                          :formatter-use-start? true}})]]]
-                 [:div.body-info
-                  (om/build build-status-bar-chart {:plot-info default-plot-info
-                                                    :builds chartable-builds})]
-                 [:div.below-info
+                  [:div.above-info
+                   [:dl
+                    [:dt "median build"]
+                    [:dd (datetime/as-duration (median (map :build_time_millis chartable-builds))) " min"]]
+                   [:dl
+                    [:dt "median queue"]
+                    [:dd (datetime/as-duration (median (map :queued_time_millis chartable-builds))) " min"]]
+                   [:dl
+                    [:dt "last build"]
+                    [:dd (om/build common/updating-duration
+                                   {:start (->> chartable-builds
+                                                reverse
+                                                (filter :start_time)
+                                                first
+                                                :start_time)}
+                                   {:opts {:formatter datetime/as-time-since
+                                           :formatter-use-start? true}})]]]
+                  [:div.body-info
+                   (om/build build-status-bar-chart {:plot-info default-plot-info
+                                                     :builds chartable-builds})]
+                  [:div.below-info
+                   [:dl
+                    [:dt "success rate"]
+                   [:dd (pass-percent chartable-builds)]]
                   [:dl
                    [:dt "parallelism"]
                    [:dd parallel]]]))])))))
