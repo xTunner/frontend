@@ -363,10 +363,10 @@
                   (nth nums (dec mid-i)))
                2))))
 
-(defn fail-percent [builds]
+(defn pass-percent [builds]
   (-> (map :outcome builds)
       frequencies
-      (get "failed")
+      (get "success")
       (/ (count builds))
       (* 100)
       (->> (gstring/format "%.1f %%"))))
@@ -466,8 +466,8 @@
                                                      :builds chartable-builds})]
                   [:div.below-info
                    [:dl
-                    [:dt "failure rate"]
-                   [:dd (fail-percent chartable-builds)]]
+                    [:dt "success rate"]
+                   [:dd (pass-percent chartable-builds)]]
                   [:dl
                    [:dt "parallelism"]
                    [:dd parallel]]]))])))))
