@@ -167,6 +167,10 @@
          [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds))) " min"]]]
        [:div.card.insights-metadata
         [:dl
+         [:dt "failure rate"]
+         [:dd (insights/fail-percent chartable-builds)]]]
+       [:div.card.insights-metadata
+        [:dl
          [:dt "current parallelism"]
          [:dd parallel
           (when (project-model/can-write-settings? project)
