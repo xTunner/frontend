@@ -57,7 +57,7 @@
 (defn workflows-link [app]
   (let [{:keys [vcs_type org repo]} (:navigation-data app)]
     (button/link
-     {:href (routes/v1-workflow-path vcs_type org repo)
+     {:href (routes/v1-project-workflows-path vcs_type org repo)
       :bordered? true
       :size :small}
      "Workflows")))
