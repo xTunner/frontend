@@ -84,9 +84,9 @@
             (str "workflows/" workflow-id "/jobs/"))
           build-num (when fragment (str "#" fragment))))))
 
-(defn v1-workflow-path
+(defn v1-project-workflows-path
   ([vcs_type org repo]
-   (str "/" (vcs/->short-vcs vcs_type) "/" org "/" repo "/workflows")))
+   (str "/" (vcs/->short-vcs vcs_type) "/" org  "/workflows/" repo)))
 
 (defn v1-job-path
   ([workflow-id job-name]
@@ -215,6 +215,15 @@
                                              {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                               :org org})))
 
+  (defroute v1-project-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)"
+    [short-vcs-type org-name project-name]
+    (open! app
+           :route/workflow
+           {:route-params
+            {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+             :organization/name org-name
+             :project/name project-name}}))
+
   (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo params]
     (open-to-inner! app nav-ch :dashboard (merge params
                                              {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
@@ -242,17 +251,6 @@
                                                 :build-num (js/parseInt build-num)
                                                 :org org
                                                 :repo repo}))))
-
-  
-
-  (defroute v1-workflow #"/(gh|bb)/([^/]+)/([^/]+)/workflows"
-    [short-vcs-type org-name project-name]
-    (open! app
-           :route/workflow
-           {:route-params
-            {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-             :organization/name org-name
-             :project/name project-name}}))
 
   (defroute v1-run "/workflow-run/:run-id"
     [run-id]

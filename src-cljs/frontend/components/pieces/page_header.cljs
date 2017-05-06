@@ -58,9 +58,9 @@
   [{:keys [username project vcs_type]}]
   (om/build crumb-node
             {:name "Workflows"
-             :path (routes/v1-workflow-path vcs_type
-                                            username
-                                            project)}))
+             :path (routes/v1-project-workflows-path vcs_type
+                                                     username
+                                                     project)}))
 
 (defmethod crumb :workflow-run
   [{:keys [run/id]}]
@@ -118,7 +118,9 @@
   [{:keys [vcs_type username project workflow-id active]}]
   (om/build crumb-node {:name (str "workflow " workflow-id)
                         :track-event-type :breadcrumb-workflow-clicked
-                        :path (routes/v1-workflow-path vcs_type username project)
+                        :path (routes/v1-project-workflows-path vcs_type
+                                                                username
+                                                                project)
                         :active active}))
 
 (defmethod crumb :org
