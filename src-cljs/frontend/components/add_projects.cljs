@@ -3,6 +3,7 @@
             [clojure.string :as string]
             [frontend.async :refer [navigate! raise!]]
             [frontend.components.forms :refer [managed-button]]
+            [frontend.components.pages.user-settings.integrations :as integrations]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.modal :as modal]
@@ -439,21 +440,6 @@
                                        {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
            (vals follows-by-orgs))]]))
 
-(defn- missing-org-info
-  "A message explaining how to enable organizations which have disallowed CircleCI on GitHub."
-  [owner]
-  (html
-   [:p
-    "Are you missing an organization? You or an admin may need to enable CircleCI for your organization in "
-    [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
-     "GitHub's application permissions"]
-    ". "
-    [:a {:href "javascript:void(0)"
-         :on-click #(raise! owner [:refreshed-user-orgs {}])
-         :class "active"}
-     "Refresh this list"]
-    " after you have updated permissions."]))
-
 (defn- org-picker [{:keys [orgs user selected-org tab]} owner]
   (reify
     om/IDisplayName (display-name [_] "Organization Listing")
@@ -470,8 +456,7 @@
             tab-content (html
                          [:div
                           (when (= "github" selected-vcs-type)
-                            (if github-authorized?
-                              (missing-org-info owner)
+                            (when-not github-authorized?
                               [:div
                                [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
                                (button/link {:href (gh-utils/auth-url)
@@ -566,7 +551,9 @@
              (om/build org-picker {:orgs orgs
                                    :selected-org selected-org
                                    :user user
-                                   :tab tab})])])
+                                   :tab tab})])
+          (when (user-model/github-authorized? user)
+            (integrations/gh-permissions))])
        [:div#project-listing.project-listing
         (when-not (ld/feature-on? "top-bar-ui-v-1")
           [:div.overview

@@ -15,6 +15,13 @@
 (defn- code-identities? [name]
   (contains? #{"GitHub" "Bitbucket"} name))
 
+(defn gh-permissions
+  []
+  [:span.gh-permissions "Are you missing a GitHub organization? "
+   [:a {:href (gh-utils/third-party-app-restrictions-url)
+        :target "_blank"}
+    "Check permissions."]])
+
 (defn- card
   {::fq/queries {:identity [:identity/login]}}
   [c {:keys [name type icon-path auth-url identity]}]
@@ -40,7 +47,9 @@
                      [:p.connection-status
                       (if identity
                         (list "Connected to " (:identity/login identity) ".")
-                        "Not connected.")]])))))
+                        "Not connected.")]
+                     [:p (when (= "GitHub" name)
+                           (gh-permissions))]])))))
 
 (defui Subpage
   static om-next/IQuery
