@@ -532,14 +532,14 @@
                  (not (loading-repos-for-vcs-type? user :bitbucket)))
         (inaccessible-orgs-notice followed-inaccessible settings))
       [:.text-card
-       (card/basic
+       (card/titled
+         {:title "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."}
          (html
            [:div
-            [:h2 "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."]
             [:p "To kick things off, you'll need to choose a project to build. We'll start a new build for you each time someone pushes a new commit."]
             [:p (when-not (gh-public-scopes/has-private-scopes? user)
                   (gh-public-scopes/add-private-repos-link))]]))]
-      [:hr]
+
       [:div.org-repo-container
        (when-not (ld/feature-on? "top-bar-ui-v-1")
          [:div.app-aside.org-listing
