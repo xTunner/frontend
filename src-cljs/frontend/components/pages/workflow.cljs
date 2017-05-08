@@ -169,7 +169,7 @@
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
-(defui ^:once WorkflowRuns
+(defui ^:once ProjectWorkflowRuns
   static om-next/Ident
   (ident [this props]
     [:project/by-org-and-name (merge (select-keys props [:project/name])
@@ -188,7 +188,7 @@
         (card/collection
          (map run-row (:project/workflow-runs (om-next/props this))))]))))
 
-(def workflow-runs (om-next/factory WorkflowRuns))
+(def project-workflow-runs (om-next/factory ProjectWorkflowRuns))
 
 (defn- settings-link
   "An Om Next compatible version of frontend.components.header/settings-link"
@@ -219,14 +219,14 @@
     (render [_]
       (om/build aside/branch-activity-list app))))
 
-(defui ^:once Page
+(defui ^:once ProjectPage
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
      {:routed-entity/organization [:organization/vcs-type
                                   :organization/name]}
      `{(:project-for-crumb {:< :routed-entity/project}) [:project/name]}
-     `{(:project-for-runs {:< :routed-entity/project}) ~(om-next/get-query WorkflowRuns)}])
+     `{(:project-for-runs {:< :routed-entity/project}) ~(om-next/get-query ProjectWorkflowRuns)}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -260,4 +260,4 @@
         :header-actions (settings-link vcs-type org-name project-name)
         :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
         :main-content (when-let [project (:project-for-runs (om-next/props this))]
-                        (workflow-runs project))}))))
+                        (project-workflow-runs project))}))))

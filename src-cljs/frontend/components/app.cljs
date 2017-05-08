@@ -32,7 +32,7 @@
    :route/legacy-page legacy/LegacyPage
    :route/projects projects/Page
    :route/account user-settings/Page
-   :route/workflow workflow/Page
+   :route/project-workflows workflow/ProjectPage
    :route/run run/Page})
 
 (def index-route :route/loading)

@@ -221,7 +221,7 @@
   (defroute v1-project-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)"
     [short-vcs-type org-name project-name]
     (open! app
-           :route/workflow
+           :route/project-workflows
            {:route-params
             {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
              :organization/name org-name
