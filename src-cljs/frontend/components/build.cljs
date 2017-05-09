@@ -414,6 +414,17 @@
   (let [{:keys [build-num container-id action-id]} (get-in target-state state/navigation-data-path)]
     [build-num container-id action-id]))
 
+(defn build-path [build-data tab container-id]
+  (let [build (:build build-data)]
+    (routes/v1-build-path
+     (vcs-url/vcs-type (:vcs_url build))
+     (:username build)
+     (:reponame build)
+     nil
+     (:build_num build)
+     tab
+     container-id)))
+
 (defn build [{:keys [app ssh-available?]} owner]
   (reify
     om/IInitState
@@ -468,15 +479,7 @@
                                               :projects (get-in app state/projects-path)
                                               :scopes (get-in app state/project-scopes-path)
                                               :ssh-available? ssh-available?
-                                              :tab-href (let [build (:build build-data)]
-                                                          #(routes/v1-build-path
-                                                            (vcs-url/vcs-type (:vcs_url build))
-                                                            (:username build)
-                                                            (:reponame build)
-                                                            nil
-                                                            (:build_num build)
-                                                            (name %)
-                                                            (state/current-container-id app)))})
+                                              :tab-href #(build-path build-data % (state/current-container-id app))})
              [:div.card.col-sm-12
 
               (om/build common/flashes (get-in app state/error-message-path))
