@@ -319,58 +319,6 @@
   [target message {:keys [container-id]} state]
   (assoc-in state state/current-container-path container-id))
 
-(defmethod post-control-event! :container-selected
-  [target message {:keys [container-id animate?] :or {animate? true}} previous-state current-state comms]
-  (let [previous-container-id (state/current-container-id previous-state)]
-    ; this function also gets called when the window is resized, the when check is to prevent the component
-    ; from updating in such case.
-    (when (not= previous-container-id container-id)
-      (when-let [parent (goog.dom/getElement "container_parent")]
-        (let [container (goog.dom/getElement (str "container_" container-id))
-              body (.-body js/document)
-              current-scroll-top (.-scrollTop parent)
-              body-scroll-top (.-scrollTop body)
-              current-scroll-left (.-scrollLeft parent)
-              new-scroll-left (int (.-x (goog.style.getContainerOffsetToScrollInto container parent)))]
-          (let [scroller (or (.-scroll_handler parent)
-                             (set! (.-scroll_handler parent)
-                                   ;; Store this on the parent so that we
-                                   ;; don't handle parent scroll while the
-                                   ;; animation is playing
-                                   (goog.fx.dom.Scroll. parent
-                                                        #js [0 0]
-                                                        #js [0 0]
-                                                        (if animate? 250 0))))
-                onEnd (.-onEnd scroller)]
-            (set! (.-startPoint scroller) #js [current-scroll-left 0])
-            (set! (.-endPoint scroller) #js [new-scroll-left 0])
-            ;; Browser find can scroll an absolutely positioned container into view,
-            ;; causing the parent to scroll. But then we set it to relative and there
-            ;; is no longer any overflow, so we need to scroll app-main instead.
-            (set! (.-onEnd scroller) #(do (.call onEnd scroller)
-                                          (set! (.-scrollTop body)
-                                                (+ body-scroll-top current-scroll-top))))
-            (.play scroller))))
-      (let [container (get-in current-state (state/container-path container-id))
-            last-action (-> container :actions last)
-            build (get-in current-state state/build-path)
-            vcs-url (:vcs_url build)
-            current-tab (or (get-in current-state state/navigation-tab-path)
-                            (build-utils/default-tab build (get-in current-state state/project-scopes-path)))]
-        (put! (:nav comms) [:navigate! {:path (routes/v1-build-path (:vcs_type build)
-                                                                    (:username build)
-                                                                    (:reponame build)
-                                                                    nil
-                                                                    (:build_num build)
-                                                                    current-tab
-                                                                    container-id)}])
-        (api/get-action-steps {:vcs-url vcs-url
-                               :build-num (:build_num (get-in current-state state/build-path))
-                               :project-name (vcs-url/project-name vcs-url)
-                               :old-container-id previous-container-id
-                               :new-container-id container-id}
-                              (:api comms))))))
-
 (defmethod control-event :container-paging-offset-changed
   [target message {:keys [paging-offset]} state]
   (assoc-in state state/container-paging-offset-path paging-offset))
