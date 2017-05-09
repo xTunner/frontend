@@ -222,7 +222,8 @@
                          selected-job-build (assoc-in [0 :job/started-at]
                                                       (:start_time selected-job-build)))
                   selected-job-build-id (:job/build selected-job)
-                  selected-job-name (:job/name selected-job)]
+                  selected-job-name (:job/name selected-job)
+                  route-params (:app/route-params (om-next/props this))]
               (html
                [:div
                 (when-not (empty? run)
@@ -246,13 +247,12 @@
                                            selected-job-name
                                            (:build/number selected-job-build-id))]]]
                   (when selected-job-build-id
-                    (let [route-params (:app/route-params (om-next/props this))]
-                      (build-legacy build-page
-                                    {:app (:legacy/state (om-next/props this))
-                                     :job-build selected-job-build-id
-                                     :current-tab (:route-params/tab route-params)
-                                     :tab-href #(routes/v1-job-path
-                                                 id
-                                                 selected-job-name
-                                                 (assoc route-params
-                                                        :route-params/tab %))})))]]])))})))))
+                    (build-legacy build-page
+                                  {:app (:legacy/state (om-next/props this))
+                                   :job-build selected-job-build-id
+                                   :current-tab (:route-params/tab route-params)
+                                   :tab-href #(routes/v1-job-path
+                                               id
+                                               selected-job-name
+                                               (assoc route-params
+                                                      :route-params/tab %))}))]]])))})))))
