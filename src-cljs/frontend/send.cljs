@@ -8,6 +8,13 @@
             [om.next.impl.parser :as om-parser])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
 
+(defn- find-child-by-key [expr-ast key]
+  (if-let [children (:children expr-ast)]
+    (->> children
+         (filter #(= key (:key %)))
+         first)
+    nil))
+
 (def ^:private ms-until-retried-run-retrieved 3000)
 
 (defn- callback-api-chan
@@ -120,25 +127,24 @@
   [expression]
   (= 'run/retry (first expression)))
 
-(defn- reread-project-runs-ast? [ast]
-  (let [{:keys [key children]} ast]
-          (and (= :circleci/organization key)
-               (= 1 (count children))
-               (= :organization/project (:key (first children)))
-               (= [{:project/workflow-runs [:run/id
-                                            :run/name
-                                            :run/status
-                                            :run/started-at
-                                            :run/stopped-at
-                                            {:run/trigger-info [:trigger-info/vcs-revision
-                                                                :trigger-info/subject
-                                                                :trigger-info/body
-                                                                :trigger-info/branch
-                                                                {:trigger-info/pull-requests [:pull-request/url]}]}
-                                            {:run/project [:project/name
-                                                           {:project/organization [:organization/name
-                                                                                   :organization/vcs-type]}]}]}]
-                  (:query (first children))))))
+(defn- reread-project-runs-ast? [{:keys [key children]}]
+  (and (= :circleci/organization key)
+       (= 1 (count children))
+       (= :organization/project (:key (first children)))
+       (= [{:project/workflow-runs [:run/id
+                                    :run/name
+                                    :run/status
+                                    :run/started-at
+                                    :run/stopped-at
+                                    {:run/trigger-info [:trigger-info/vcs-revision
+                                                        :trigger-info/subject
+                                                        :trigger-info/body
+                                                        :trigger-info/branch
+                                                        {:trigger-info/pull-requests [:pull-request/url]}]}
+                                    {:run/project [:project/name
+                                                   {:project/organization [:organization/name
+                                                                           :organization/vcs-type]}]}]}]
+          (:query (first children)))))
 
 (defn- reread-project-runs [ast merge-fn query]
   (js/setTimeout #(merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
@@ -147,6 +153,40 @@
                                        merge-fn
                                        query)
                  ms-until-retried-run-retrieved))
+
+(defn- org-runs-ast?
+  "returns true if the ast is for an expression rendering the org workflows page"
+  [expr-ast]
+  (and (= :circleci/organization (:key expr-ast))
+       (if-let [projects-ast (find-child-by-key expr-ast
+                                                :organization/projects)]
+         (if (find-child-by-key projects-ast :project/workflow-runs)
+           true
+           false)
+         false)))
+
+(defn- get-org-runs
+  "Retrieves workflow runs for and org and merges them into the
+  app. Takes an expression ast, send callback, and query.
+
+  TODO: use the org workflow-runs API when it's available instead of
+  the project workflow-runs API"
+  [{:keys [params]} send-cb query]
+  (api/get-project-workflows
+   (callback-api-chan
+    (fn [resp]
+      (let [runs-by-project (->> resp
+                                 (map adapt-to-run)
+                                 (group-by :run/project))
+            projects (mapv (fn [[project runs]]
+                             (assoc project :project/workflow-runs (vec runs)))
+                           runs-by-project)
+            novelty {:circleci/organization
+                     {:organization/projects projects}}]
+        (send-cb novelty query))))
+   (vcs-url/vcs-url (:organization/vcs-type params)
+                    (:organization/name params)
+                    "workflows-conductor")))
 
 (defmulti send* key)
 
@@ -357,6 +397,9 @@
                                                                     (:run/jobs run))))]
               (cb {:circleci/run run-with-aliases} query))))
          (:run/id (:params ast)))
+
+        ;; :route/org-workflows
+        (org-runs-ast? ast) (get-org-runs ast cb query)
 
         :else (throw (str "No clause found for " (pr-str expr)))))))
 

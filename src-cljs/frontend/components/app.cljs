@@ -33,6 +33,7 @@
    :route/projects projects/Page
    :route/account user-settings/Page
    :route/project-workflows workflow/ProjectPage
+   :route/org-workflows workflow/OrgPage
    :route/run run/Page})
 
 (def index-route :route/loading)
