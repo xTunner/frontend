@@ -118,7 +118,7 @@
            (html
             [:div
              [:div.status {:class (name run-status-class)}
-              [:a.exception {:href (routes/v1-run {:run-id id})}
+              [:a.exception {:href (routes/v1-run-path id)}
                [:span.status-icon {:class (name run-status-class)}
                 (case (status-class status)
                   :status-class/failed (icon/status-failed)
@@ -130,7 +130,7 @@
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier
-                [:a {:href (routes/v1-run {:run-id id})}
+                [:a {:href (routes/v1-run-path id)}
                  [:span  branch " / " run-name]]]]
               [:div.recent-commit-msg
                [:span.recent-log

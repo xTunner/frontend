@@ -7,6 +7,7 @@
             [frontend.analytics.test-track]
             [frontend.components.pages.build.test-head]
             [frontend.components.project.test-common]
+            [frontend.components.test-build]
             [frontend.components.test-insights]
             [frontend.components.test-org-settings]
             [frontend.components.test-statuspage]
@@ -32,5 +33,9 @@
 
 (aset js/window "renderContext" "{}")
 (aset js/window "SVGInjector" (fn [node] node))
+
+(defmethod cljs.test/report [:jx.reporter.karma/karma :begin-test-ns] [m]
+  ;; Noop. Avoid filling up the output with "LOG: 'Testing every.namespace'".
+  nil)
 
 (doo-all-tests)

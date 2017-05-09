@@ -10,19 +10,6 @@
             [om.next :as om-next]
             [om.next.impl.parser :as parser]))
 
-(defn- recalculate-query
-  "Each node of an AST has a :query key which is the query form of
-  its :children. This is a kind of denormalization. If we change the :children,
-  the :query becomes out of date, and Om will use the old :query rather than the
-  new :children. This probably represents an Om bug of some kind.
-
-  As a workaround, any time you change an AST's :children, run it through
-  recalculate-query before returning it."
-  [ast]
-  (-> ast
-      om-next/ast->query
-      parser/expr->ast))
-
 (defn- legacy-state-read
   "Read middleware. Handles reads of :legacy/state. For local reads, it returns
   the entire legacy state without further processing (as queries don't really
@@ -39,35 +26,19 @@
       (next-read env))))
 
 
-(def
-  ^{:private true
-    :doc
-    "Keys under :app/current-user which are fed by the page's renderContext,
-     and shouldn't be fetched from the remote by API"}
-  render-context-keys
-  #{:user/login
+(def ^{:private true} filtered-keys
+  #{:app/route-params
+    ;; These keys only exist in the initial app state, added from the page's
+    ;; renderContext.
+    :user/login
     :user/bitbucket-authorized?})
 
-(defn- current-user-read
-  "Read middleware. Filters remote queries for :app/current-user.
-
-  Some of :app/current-user's data is never fetched by the remote, and only
-  exists in the initial app state, added from the page's renderContext. We
-  exclude those keys here so we don't try to read them remotely."
+(defn- remote-filtered-read
+  "Read middleware. Filters specified keys out of remote queries."
   [next-read]
   (fn [{:keys [ast target state] :as env}]
-    (if (and target (= :app/current-user (:key ast)))
-      {target
-       (let [new-ast
-             (update ast :children
-                     (fn [children]
-                       (into []
-                             (remove #(contains? render-context-keys (:key %)))
-                             children)))]
-         ;; Only include this key in the remote query if there are any children left.
-         (if (seq (:children new-ast))
-           (recalculate-query new-ast)
-           nil))}
+    (if (and target (contains? filtered-keys (:key ast)))
+      {target nil}
       (next-read env))))
 
 (defn- subpage-read
@@ -157,7 +128,7 @@
                (query-mapping/read :app/route-params routed-data-query-map)
                aliasing/read
                subpage-read
-               current-user-read
+               remote-filtered-read
                legacy-state-read)))
 
 (defmulti mutate om-next/dispatch)
@@ -181,10 +152,7 @@
                                ;; replaced completely on each route change.
                                (update :legacy/state dissoc
                                        :navigation-point
-                                       :navigation-data
-                                       :current-build-data
-                                       :current-org-data
-                                       :current-project-data)))
+                                       :navigation-data)))
              (analytics/track {:event-type :pageview
                                :navigation-point route
                                :subpage :default

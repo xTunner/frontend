@@ -1,11 +1,11 @@
 (ns frontend.components.pages.run
-  (:require [frontend.components.build-head :as old-build-head]
+  (:require [clojure.set :as set]
+            [frontend.components.build-head :as old-build-head]
             [frontend.components.build-steps :as build-steps]
             [frontend.components.common :as common]
             [frontend.components.pages.workflow :as workflow-page]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
-            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
@@ -99,12 +99,25 @@
                :context {:project-name (gstring/format "%s/%s" org repo)
                          :build-num number})))
 
-(defn- build-page [app owner]
+(defn- build-matches-spec?
+  "Returns whether a build (using legacy attributes) matches the :build/*
+  attributes of a build spec."
+  [spec build]
+  (let [mapping {:vcs_type :build/vcs-type
+                 :username :build/org
+                 :reponame :build/repo
+                 :build_num :build/number}]
+    (= spec (-> build
+                (select-keys (keys mapping))
+                (set/rename-keys mapping)
+                (update :build/vcs-type keyword)))))
+
+(defn- build-page [{:keys [app job-build current-tab tab-href]} owner]
   (reify
     om/IWillMount
     (will-mount [_]
-      (when-let [build-spec (:job-build app)]
-        (fetch-build owner build-spec)))
+      (when job-build
+        (fetch-build owner job-build)))
     om/IWillUpdate
     (will-update [this next-props _next-state]
       (let [previous-build-spec (-> owner om/get-props :job-build)
@@ -113,26 +126,35 @@
          (fetch-build owner current-build-spec))))
     om/IRender
     (render [_]
-      (html
-       [:div
-         [:div.job-output-tabs (om/build old-build-head/build-sub-head {:build-data (dissoc (get-in app state/build-data-path) :container-data)
-                                                  :current-tab (get-in app state/navigation-tab-path)
-                                                  :container-id (state/current-container-id app)
-                                                  :project-data (get-in app state/project-data-path)
-                                                  :user (get-in app state/user-path)
-                                                  :projects (get-in app state/projects-path)
-                                                  :scopes (get-in app state/project-scopes-path)
-                                                  :ssh-available? false})]
-         [:div.card (om/build build-steps/container-build-steps
-                   (assoc (get-in app state/container-data-path)
-                          :selected-container-id (state/current-container-id app))
-                   {:key :selected-container-id})]]))))
+      (let [app
+            ;; Strip build data from legacy app state if it doesn't match the
+            ;; build spec we're currently after. This happens when old build
+            ;; data is present and new build data hasn't loaded yet.
+            (update-in app state/build-data-path
+                       #(when (build-matches-spec? job-build (:build %)) %))]
+        (html
+         [:div
+          [:div.job-output-tabs (let [build-data (dissoc (get-in app state/build-data-path) :container-data)]
+                                  (om/build old-build-head/build-sub-head
+                                            {:build-data build-data
+                                             :current-tab current-tab
+                                             :project-data (get-in app state/project-data-path)
+                                             :user (get-in app state/user-path)
+                                             :projects (get-in app state/projects-path)
+                                             :scopes (get-in app state/project-scopes-path)
+                                             :ssh-available? false
+                                             :tab-href tab-href}))]
+          [:div.card (om/build build-steps/container-build-steps
+                               (assoc (get-in app state/container-data-path)
+                                      :selected-container-id (state/current-container-id app))
+                               {:key :selected-container-id})]])))))
 
 (defui ^:once Page
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     `{(:run-for-crumbs {:< :routed-entity/run})
+     {:app/route-params [:route-params/tab :route-params/container-id]}
+     `{:routed-entity/run
        ^{:component ~workflow-page/RunRow}
        [:run/id
         {:run/project [:project/name
@@ -166,7 +188,7 @@
             {org-name :organization/name
              vcs-type :organization/vcs-type} :project/organization} :run/project
            id :run/id}
-          (:run-for-crumbs (om-next/props this))]
+          (:routed-entity/run (om-next/props this))]
       (component
         (main-template/template
          {:app (:legacy/state (om-next/props this))
@@ -200,7 +222,8 @@
                          selected-job-build (assoc-in [0 :job/started-at]
                                                       (:start_time selected-job-build)))
                   selected-job-build-id (:job/build selected-job)
-                  selected-job-name (:job/name selected-job)]
+                  selected-job-name (:job/name selected-job)
+                  route-params (:app/route-params (om-next/props this))]
               (html
                [:div
                 (when-not (empty? run)
@@ -224,6 +247,12 @@
                                            selected-job-name
                                            (:build/number selected-job-build-id))]]]
                   (when selected-job-build-id
-                    (build-legacy build-page (assoc (:legacy/state (om-next/props this))
-                                                    :job-build
-                                                    selected-job-build-id)))]]])))})))))
+                    (build-legacy build-page
+                                  {:app (:legacy/state (om-next/props this))
+                                   :job-build selected-job-build-id
+                                   :current-tab (:route-params/tab route-params)
+                                   :tab-href #(routes/v1-job-path
+                                               id
+                                               selected-job-name
+                                               (assoc route-params
+                                                      :route-params/tab %))}))]]])))})))))
