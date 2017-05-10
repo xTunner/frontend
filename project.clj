@@ -92,84 +92,84 @@
                                                (println "WARNING:" (cljs.analyzer/message env s)))
                                              (System/exit 1))))]]
                 `{:builds {:dev {:source-paths ["src-cljs" "test-cljs"]
-                             ;; Port 4444 is proxied (with SSL) to 3449 (the Figwheel server port).
-                             :figwheel {:websocket-url "wss://prod.circlehost:4444/figwheel-ws"}
-                             :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
-                                        :output-dir "resources/public/cljs/out"
-                                        :optimizations :none
-                                        ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
-                                        :recompile-dependents false}}
+                                 ;; Port 4444 is proxied (with SSL) to 3449 (the Figwheel server port).
+                                 :figwheel {:websocket-url "wss://prod.circlehost:4444/figwheel-ws"}
+                                 :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
+                                            :output-dir "resources/public/cljs/out"
+                                            :optimizations :none
+                                            ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
+                                            :recompile-dependents false}}
 
-                       :devcards {:source-paths ["src-cljs" "test-cljs"]
-                                   :figwheel {:devcards true
-                                              :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
-                                              :on-cssload "frontend.core/handle-css-reload"}
-                                   :compiler {:main "frontend.core"
-                                              :asset-path "cljs/devcards-out"
-                                              :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
-                                              :output-dir "resources/public/cljs/devcards-out"
-                                              :optimizations :none
-                                              :recompile-dependents false}}
+                           :devcards {:source-paths ["src-cljs" "test-cljs"]
+                                      :figwheel {:devcards true
+                                                 :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
+                                                 :on-cssload "frontend.core/handle-css-reload"}
+                                      :compiler {:main "frontend.core"
+                                                 :asset-path "cljs/devcards-out"
+                                                 :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
+                                                 :output-dir "resources/public/cljs/devcards-out"
+                                                 :optimizations :none
+                                                 :recompile-dependents false}}
 
-                       ;; This is the build normally used for testing on
-                       ;; development machines. Use it by running lein doo.
-                       :dev-test {:source-paths ["src-cljs" "test-cljs"]
+                           ;; This is the build normally used for testing on
+                           ;; development machines. Use it by running lein doo.
+                           :dev-test {:source-paths ["src-cljs" "test-cljs"]
+                                      :warning-handlers ~warning-handlers
+                                      :compiler {:output-to "resources/public/cljs/dev-test/frontend-dev.js"
+                                                 :output-dir "resources/public/cljs/dev-test"
+                                                 ;; This is the default when we have :optimizations :advanced. It causes some
+                                                 ;; unexpected behavior when using with-redefs, so leaving it on so dev-test
+                                                 ;; and test behave more similarly.
+                                                 :static-fns true
+                                                 :optimizations :none
+                                                 :main frontend.test-runner}}
+
+                           :whitespace {:source-paths ["src-cljs"]
+                                        :warning-handlers ~warning-handlers
+                                        :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
+                                                   :output-dir "resources/public/cljs/whitespace"
+                                                   :optimizations :whitespace
+                                                   :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
+
+                           ;; This build runs the tests
+                           ;; with :optimizations :advanced to catch advanced
+                           ;; compilation bugs. That's too slow to run in
+                           ;; development, so we run this one in CI.
+                           :test {:source-paths ["src-cljs" "test-cljs"]
                                   :warning-handlers ~warning-handlers
-                                  :compiler {:output-to "resources/public/cljs/dev-test/frontend-dev.js"
-                                             :output-dir "resources/public/cljs/dev-test"
-                                             ;; This is the default when we have :optimizations :advanced. It causes some
-                                             ;; unexpected behavior when using with-redefs, so leaving it on so dev-test
-                                             ;; and test behave more similarly.
-                                             :static-fns true
-                                             :optimizations :none
-                                             :main frontend.test-runner}}
+                                  :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
+                                             :output-dir "resources/public/cljs/test"
+                                             :optimizations :advanced
+                                             :main frontend.test-runner
+                                             ;; :advanced uses the minified versions of libraries (:file-min), but the
+                                             ;; minified React doesn't include React.addons.TestUtils.
+                                             :foreign-libs [{:provides ["cljs.react"]
+                                                             :file "cljsjs/development/react-with-addons.inc.js"
+                                                             :file-min "cljsjs/development/react-with-addons.inc.js"}]
+                                             :externs ["test-js/externs.js"
+                                                       "src-cljs/js/pusher-externs.js"
+                                                       "src-cljs/js/ci-externs.js"
+                                                       "src-cljs/js/analytics-externs.js"
+                                                       "src-cljs/js/intercom-jquery-externs.js"
+                                                       "src-cljs/js/d3-externs.js"
+                                                       "src-cljs/js/prismjs-externs.js"]
+                                             :source-map "resources/public/cljs/test/frontend-test.js.map"}}
 
-                       :whitespace {:source-paths ["src-cljs"]
-                                    :warning-handlers ~warning-handlers
-                                    :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
-                                               :output-dir "resources/public/cljs/whitespace"
-                                               :optimizations :whitespace
-                                               :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
-
-                       ;; This build runs the tests
-                       ;; with :optimizations :advanced to catch advanced
-                       ;; compilation bugs. That's too slow to run in
-                       ;; development, so we run this one in CI.
-                       :test {:source-paths ["src-cljs" "test-cljs"]
-                              :warning-handlers ~warning-handlers
-                              :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
-                                         :output-dir "resources/public/cljs/test"
-                                         :optimizations :advanced
-                                         :main frontend.test-runner
-                                         ;; :advanced uses the minified versions of libraries (:file-min), but the
-                                         ;; minified React doesn't include React.addons.TestUtils.
-                                         :foreign-libs [{:provides ["cljs.react"]
-                                                         :file "cljsjs/development/react-with-addons.inc.js"
-                                                         :file-min "cljsjs/development/react-with-addons.inc.js"}]
-                                         :externs ["test-js/externs.js"
-                                                   "src-cljs/js/pusher-externs.js"
-                                                   "src-cljs/js/ci-externs.js"
-                                                   "src-cljs/js/analytics-externs.js"
-                                                   "src-cljs/js/intercom-jquery-externs.js"
-                                                   "src-cljs/js/d3-externs.js"
-                                                   "src-cljs/js/prismjs-externs.js"]
-                                         :source-map "resources/public/cljs/test/frontend-test.js.map"}}
-
-                       :production {:source-paths ["src-cljs"]
-                                    :warning-handlers ~warning-handlers
-                                    :compiler {:pretty-print false
-                                               :output-to "resources/public/cljs/production/frontend.js"
-                                               :output-dir "resources/public/cljs/production"
-                                               :optimizations :advanced
-                                               :closure-defines {frontend.config/DEV false}
-                                               :externs ["src-cljs/js/pusher-externs.js"
-                                                         "src-cljs/js/ci-externs.js"
-                                                         "src-cljs/js/analytics-externs.js"
-                                                         "src-cljs/js/intercom-jquery-externs.js"
-                                                         "src-cljs/js/d3-externs.js"
-                                                         "src-cljs/js/prismjs-externs.js"
-                                                         "src-cljs/js/bootstrap-externs.js"]
-                                               :source-map "resources/public/cljs/production/frontend.js.map"}}}})
+                           :production {:source-paths ["src-cljs"]
+                                        :warning-handlers ~warning-handlers
+                                        :compiler {:pretty-print false
+                                                   :output-to "resources/public/cljs/production/frontend.js"
+                                                   :output-dir "resources/public/cljs/production"
+                                                   :optimizations :advanced
+                                                   :closure-defines {frontend.config/DEV false}
+                                                   :externs ["src-cljs/js/pusher-externs.js"
+                                                             "src-cljs/js/ci-externs.js"
+                                                             "src-cljs/js/analytics-externs.js"
+                                                             "src-cljs/js/intercom-jquery-externs.js"
+                                                             "src-cljs/js/d3-externs.js"
+                                                             "src-cljs/js/prismjs-externs.js"
+                                                             "src-cljs/js/bootstrap-externs.js"]
+                                                   :source-map "resources/public/cljs/production/frontend.js.map"}}}})
   :profiles {:dev {:source-paths ["src-cljs" "test-cljs"]
                    :repl-options {:port 8230
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
