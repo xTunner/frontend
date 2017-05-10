@@ -20,7 +20,7 @@ pom.xml.asc
 karma
 .cljs_rhino_repl
 .repl-1.7.28
-TESTS*
+./TESTS*
 out
 .#*
 .DS_Store
