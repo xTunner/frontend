@@ -12,7 +12,7 @@
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :refer-macros [component element html]]
+            [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs-url :as vcs-url]
@@ -236,9 +236,8 @@
          :view :projects
          :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
   Object
-  ;; TODO: Title this page.
-  #_(componentDidMount [this]
-      (set-page-title! "Projects"))
+  (componentDidMount [this]
+    (set-page-title! "CircleCI"))
   (render [this]
     (let [{{org-name :organization/name
             vcs-type :organization/vcs-type} :routed-entity/organization
@@ -307,9 +306,8 @@
          :view :projects
          :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
   Object
-  ;; TODO: Title this page.
-  #_(componentDidMount [this]
-      (set-page-title! "Projects"))
+  (componentDidMount [this]
+    (set-page-title! "CircleCI"))
   (render [this]
     (let [{{org-name :organization/name
             vcs-type :organization/vcs-type} :org-for-crumb}
