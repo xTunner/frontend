@@ -422,7 +422,7 @@
                        :data-trigger "hover"
                        :title "Workflows"
                        :href (routes/v1-project-workflows-path :github "circleci" "workflows-poc")}
-        [:i.material-icons "storage"]
+        (icon/workflows)
         [:div.nav-label "Workflows"]])
 
      [:a.aside-item {:class (when (= :build-insights current-route) "current")
@@ -549,7 +549,7 @@
                        :data-trigger "hover"
                        :title "Workflows"
                        :href (routes/v1-project-workflows-path :github "circleci" "workflows-poc")}
-        [:i.material-icons "storage"]
+        (icon/workflows)
         [:div.nav-label "Workflows"]])
 
      [:a.aside-item {:class (when (= :build-insights current-route) "current")
