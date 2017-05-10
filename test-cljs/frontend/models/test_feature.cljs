@@ -1,7 +1,7 @@
 (ns frontend.models.test-feature
-  (:require [frontend.models.feature :as feature]
-            [bond.james :as bond]
-            [cljs.test :refer-macros [is deftest testing]]))
+  (:require [bond.james :as bond :include-macros true]
+            [cljs.test :refer-macros [is deftest testing]]
+            [frontend.models.feature :as feature]))
 
 (deftest enabled?-works
   (is (not (feature/enabled? :foo)))
