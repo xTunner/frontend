@@ -170,12 +170,13 @@
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
+(defn run-row-collection [runs]
+  (html
+   [:div
+    (card/collection
+     (map run-row runs))]))
+
 (defui ^:once ProjectWorkflowRuns
-  static om-next/Ident
-  (ident [this props]
-    [:project/by-org-and-name (merge (select-keys props [:project/name])
-                                     (select-keys (:project/organization props)
-                                                  [:organization/vcs-type :organization/name]))])
   static om-next/IQuery
   (query [this]
     [:project/name
@@ -184,10 +185,7 @@
   Object
   (render [this]
     (component
-      (html
-       [:div
-        (card/collection
-         (map run-row (:project/workflow-runs (om-next/props this))))]))))
+      (-> this om-next/props :project/workflow-runs run-row-collection))))
 
 (def project-workflow-runs (om-next/factory ProjectWorkflowRuns))
 
@@ -263,29 +261,15 @@
                         (project-workflow-runs project))}))))
 
 (defui ^:once OrgWorkflowRuns
-  static om-next/Ident
-  (ident [this props]
-    [:organization/by-vcs-type-and-name (select-keys props
-                                                     [:organization/vcs-type
-                                                      :organization/name])])
   static om-next/IQuery
   (query [this]
-    [{:organization/projects [{:project/workflow-runs (om-next/get-query RunRow)}]}
-     :organization/name
-     :organization/vcs-type])
+    [:organization/name
+     :organization/vcs-type
+     {:organization/workflow-runs (om-next/get-query RunRow)}])
   Object
   (render [this]
     (component
-      (html
-       (let [all-runs (->> this
-                           om-next/props
-                           :organization/projects
-                           (map :project/workflow-runs)
-                           (apply concat)
-                           (sort-by (comp #(* -1 %) t-coerce/to-long :run/started-at)))]
-         [:div
-          (card/collection
-           (map run-row all-runs))])))))
+      (-> this om-next/props :organization/workflow-runs run-row-collection))))
 
 (def org-workflow-runs (om-next/factory OrgWorkflowRuns))
 

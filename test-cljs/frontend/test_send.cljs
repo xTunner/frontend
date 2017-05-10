@@ -36,27 +36,27 @@
     (is (= true
            (#'send/org-runs-ast? {:key :circleci/organization
                                   :type :join
+                                  :children [{:key :organization/workflow-runs
+                                              :type :join
+                                              :children [{:type :prop
+                                                          :key :workflow-run/id}]}
+                                             {:key :organization/name
+                                              :type :prop}
+                                             {:key :organization/projects
+                                              :type :join
+                                              :children [{:type :prop
+                                                          :key :project/name}]}]}))))
+  (testing "order of children doesn't matter"
+    (is (= true
+           (#'send/org-runs-ast? {:key :circleci/organization
+                                  :type :join
                                   :children [{:key :organization/name
                                               :type :prop}
                                              {:key :organization/projects
                                               :type :join
                                               :children [{:type :prop
-                                                          :key :project/name}
-                                                         {:type :join
-                                                          :key :project/workflow-runs
-                                                          :children [{:type :prop
-                                                                      :key :run/id}]}]}]}))))
-  (testing "order of children doesn't matter"
-    (is (= true
-           (#'send/org-runs-ast? {:key :circleci/organization
-                                  :type :join
-                                  :children [{:key :organization/projects
-                                              :type :join
-                                              :children [{:type :join
-                                                          :key :project/workflow-runs
-                                                          :children [{:type :prop
-                                                                      :key :run/id}]}
-                                                         {:type :prop
                                                           :key :project/name}]}
-                                             {:key :organization/name
-                                              :type :prop}]})))))
+                                             {:key :organization/workflow-runs
+                                              :type :join
+                                              :children [{:type :prop
+                                                          :key :workflow-run/id}]}]})))))

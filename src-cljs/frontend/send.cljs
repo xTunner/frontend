@@ -157,13 +157,8 @@
 (defn- org-runs-ast?
   "returns true if the ast is for an expression rendering the org workflows page"
   [expr-ast]
-  (and (= :circleci/organization (:key expr-ast))
-       (if-let [projects-ast (find-child-by-key expr-ast
-                                                :organization/projects)]
-         (if (find-child-by-key projects-ast :project/workflow-runs)
-           true
-           false)
-         false)))
+  (boolean (and (= :circleci/organization (:key expr-ast))
+                (find-child-by-key expr-ast :organization/workflow-runs))))
 
 (defn- get-org-runs
   "Retrieves workflow runs for and org and merges them into the
@@ -175,14 +170,8 @@
   (api/get-project-workflows
    (callback-api-chan
     (fn [resp]
-      (let [runs-by-project (->> resp
-                                 (map adapt-to-run)
-                                 (group-by :run/project))
-            projects (mapv (fn [[project runs]]
-                             (assoc project :project/workflow-runs (vec runs)))
-                           runs-by-project)
-            novelty {:circleci/organization
-                     {:organization/projects projects}}]
+      (let [novelty {:circleci/organization
+                     {:organization/workflow-runs (mapv adapt-to-run resp)}}]
         (send-cb novelty query))))
    (vcs-url/vcs-url (:organization/vcs-type params)
                     (:organization/name params)
