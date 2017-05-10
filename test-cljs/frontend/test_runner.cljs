@@ -26,6 +26,7 @@
             [frontend.test-parser]
             [frontend.test-pusher]
             [frontend.test-routes]
+            [frontend.test-send]
             [frontend.utils-test]
             [frontend.utils.test-build]
             [frontend.utils.test-function-query]

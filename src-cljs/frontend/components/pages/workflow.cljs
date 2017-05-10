@@ -1,5 +1,6 @@
 (ns frontend.components.pages.workflow
-  (:require [clojure.string :as string]
+  (:require [cljs-time.coerce :as t-coerce]
+            [clojure.string :as string]
             [frontend.api :as api]
             [frontend.components.aside :as aside]
             [frontend.components.common :as common]
@@ -11,7 +12,7 @@
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :refer-macros [component element html]]
+            [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs-url :as vcs-url]
@@ -169,12 +170,13 @@
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
-(defui ^:once WorkflowRuns
-  static om-next/Ident
-  (ident [this props]
-    [:project/by-org-and-name (merge (select-keys props [:project/name])
-                                     (select-keys (:project/organization props)
-                                                  [:organization/vcs-type :organization/name]))])
+(defn run-row-collection [runs]
+  (html
+   [:div
+    (card/collection
+     (map run-row runs))]))
+
+(defui ^:once ProjectWorkflowRuns
   static om-next/IQuery
   (query [this]
     [:project/name
@@ -183,12 +185,9 @@
   Object
   (render [this]
     (component
-      (html
-       [:div
-        (card/collection
-         (map run-row (:project/workflow-runs (om-next/props this))))]))))
+      (-> this om-next/props :project/workflow-runs run-row-collection))))
 
-(def workflow-runs (om-next/factory WorkflowRuns))
+(def project-workflow-runs (om-next/factory ProjectWorkflowRuns))
 
 (defn- settings-link
   "An Om Next compatible version of frontend.components.header/settings-link"
@@ -219,14 +218,14 @@
     (render [_]
       (om/build aside/branch-activity-list app))))
 
-(defui ^:once Page
+(defui ^:once ProjectPage
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
      {:routed-entity/organization [:organization/vcs-type
-                                  :organization/name]}
+                                   :organization/name]}
      `{(:project-for-crumb {:< :routed-entity/project}) [:project/name]}
-     `{(:project-for-runs {:< :routed-entity/project}) ~(om-next/get-query WorkflowRuns)}])
+     `{(:project-for-runs {:< :routed-entity/project}) ~(om-next/get-query ProjectWorkflowRuns)}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -235,9 +234,8 @@
          :view :projects
          :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
   Object
-  ;; TODO: Title this page.
-  #_(componentDidMount [this]
-      (set-page-title! "Projects"))
+  (componentDidMount [this]
+    (set-page-title! "CircleCI"))
   (render [this]
     (let [{{org-name :organization/name
             vcs-type :organization/vcs-type} :routed-entity/organization
@@ -260,4 +258,53 @@
         :header-actions (settings-link vcs-type org-name project-name)
         :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
         :main-content (when-let [project (:project-for-runs (om-next/props this))]
-                        (workflow-runs project))}))))
+                        (project-workflow-runs project))}))))
+
+(defui ^:once OrgWorkflowRuns
+  static om-next/IQuery
+  (query [this]
+    [:organization/name
+     :organization/vcs-type
+     {:organization/workflow-runs (om-next/get-query RunRow)}])
+  Object
+  (render [this]
+    (component
+      (-> this om-next/props :organization/workflow-runs run-row-collection))))
+
+(def org-workflow-runs (om-next/factory OrgWorkflowRuns))
+
+(defui ^:once OrgPage
+  static om-next/IQuery
+  (query [this]
+    ['{:legacy/state [*]}
+     `{(:org-for-crumb {:< :routed-entity/organization})
+       [:organization/vcs-type
+        :organization/name]}
+     `{(:org-for-runs {:< :routed-entity/organization})
+       ~(om-next/get-query OrgWorkflowRuns)}])
+  ;; TODO: Add the correct analytics properties.
+  #_analytics/Properties
+  #_(properties [this]
+      (let [props (om-next/props this)]
+        {:user (get-in props [:app/current-user :user/login])
+         :view :projects
+         :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
+  Object
+  (componentDidMount [this]
+    (set-page-title! "CircleCI"))
+  (render [this]
+    (let [{{org-name :organization/name
+            vcs-type :organization/vcs-type} :org-for-crumb}
+          (om-next/props this)]
+      (main-template/template
+       {:app (:legacy/state (om-next/props this))
+        :crumbs [{:type :dashboard}
+                 {:type :org
+                  :username org-name
+                  :vcs_type vcs-type}
+                 {:type :org-workflows
+                  :username org-name
+                  :vcs_type vcs-type}]
+        :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
+        :main-content (when-let [org (:org-for-runs (om-next/props this))]
+                        (org-workflow-runs org))}))))
