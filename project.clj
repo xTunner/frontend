@@ -97,6 +97,7 @@
                                  :compiler {:output-to "resources/public/cljs/out/frontend-dev.js"
                                             :output-dir "resources/public/cljs/out"
                                             :optimizations :none
+                                            :parallel-build true
                                             ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
                                             :recompile-dependents false}}
 
@@ -109,6 +110,7 @@
                                                  :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
                                                  :output-dir "resources/public/cljs/devcards-out"
                                                  :optimizations :none
+                                                 :parallel-build true
                                                  :recompile-dependents false}}
 
                            ;; This is the build normally used for testing on
@@ -122,6 +124,7 @@
                                                  ;; and test behave more similarly.
                                                  :static-fns true
                                                  :optimizations :none
+                                                 :parallel-build true
                                                  :main frontend.test-runner}}
 
                            :whitespace {:source-paths ["src-cljs"]
@@ -129,6 +132,7 @@
                                         :compiler {:output-to "resources/public/cljs/whitespace/frontend-whitespace.js"
                                                    :output-dir "resources/public/cljs/whitespace"
                                                    :optimizations :whitespace
+                                                   :parallel-build true
                                                    :source-map "resources/public/cljs/whitespace/frontend-whitespace.js.map"}}
 
                            ;; This build runs the tests
@@ -140,6 +144,7 @@
                                   :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                              :output-dir "resources/public/cljs/test"
                                              :optimizations :advanced
+                                             :parallel-build true
                                              :main frontend.test-runner
                                              ;; :advanced uses the minified versions of libraries (:file-min), but the
                                              ;; minified React doesn't include React.addons.TestUtils.
@@ -161,6 +166,7 @@
                                                    :output-to "resources/public/cljs/production/frontend.js"
                                                    :output-dir "resources/public/cljs/production"
                                                    :optimizations :advanced
+                                                   :parallel-build true
                                                    :closure-defines {frontend.config/DEV false}
                                                    :externs ["src-cljs/js/pusher-externs.js"
                                                              "src-cljs/js/ci-externs.js"
