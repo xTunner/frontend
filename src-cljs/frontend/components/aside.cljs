@@ -390,18 +390,19 @@
                           {:react-key (project-model/id project)
                            :opts {:identities identities}}))])
 
-          [:.add-private-project-card
-           (card/basic
-             (html
-               [:div
-                [:p "Something missing?"]
-                (button/link {:href (gh-public-scopes/add-private-repos-url)
-                              :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
-                                                                              :properties {:component "branch-picker"}})
-                              :kind :secondary}
-                  [:span
-                   [:i.octicon.octicon-mark-github]
-                   "Add private projects"])]))]])))))
+          (when-not (gh-public-scopes/has-private-scopes? user)
+            [:.add-private-project-card
+             (card/basic
+               (html
+                 [:div
+                  [:p "Something missing?"]
+                  (button/link {:href (gh-public-scopes/add-private-repos-url)
+                                :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
+                                                                                :properties {:component "branch-picker"}})
+                                :kind :secondary}
+                    [:span
+                     [:i.octicon.octicon-mark-github]
+                     "Add private projects"])]))])])))))
 
 (defn- aside-nav-clicked
   [owner event-name]
