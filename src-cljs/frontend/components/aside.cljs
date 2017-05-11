@@ -330,14 +330,11 @@
       (let [show-all-branches? (get-in app state/show-all-branches-path)
             expanded-repos (get-in app state/expanded-repos-path)
             sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path false)
-            projects (get-in app state/projects-path)
-            settings (get-in app state/settings-path)
+            selected-org (get-in app state/selected-org-path)
+            projects (cond->> (get-in app state/projects-path)
+                       (ld/feature-on? "top-bar-ui-v-1") (filter #(project-model/belong-to-org? % selected-org)))
             user (get-in app state/user-path)
-            identities (:identities user)
-            recent-projects-filter (if (and sort-branches-by-recency?
-                                            (not show-all-branches?))
-                                     (partial project-model/personal-recent-project? identities)
-                                     identity)]
+            identities (:identities user)]
         (html
          [:div.aside-activity
           [:header

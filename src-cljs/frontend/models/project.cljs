@@ -1,9 +1,11 @@
 (ns frontend.models.project
   (:require [clojure.string :refer [join lower-case split]]
             [frontend.config :as config]
+            [frontend.models.organization :as org]
             [frontend.models.plan :as plan-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.function-query :as fq :include-macros true]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]))
@@ -11,11 +13,15 @@
 (defn project-name [project]
   (let [username (:username project)
         reponame (:reponame project)]
-    (if (and username reponame)
-      (str username "/" reponame)
-      (->> (split (:vcs_url project) #"/")
-           (take-last 2)
-           (join "/")))))
+    (if (ld/feature-on? "top-bar-ui-v-1")
+      (or reponame
+          (->> (split (:vcs_url project) #"/")
+               (take-last 1)))
+      (if (and username reponame)
+        (str username "/" reponame)
+        (->> (split (:vcs_url project) #"/")
+             (take-last 2)
+             (join "/"))))))
 
 (defn vcs-type [project]
   (if-let [vcs-type (:vcs_type project)]
@@ -211,3 +217,9 @@
   (or (:project/parallelism project)
       (:parallel project)
       1))
+
+(defn belong-to-org?
+  "Does this project belong to this org"
+  [project org]
+  (and (= (:vcs_type org) (vcs-type project))
+       (= (org/name org) (org-name project))))
