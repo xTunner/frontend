@@ -2,11 +2,14 @@
   (:require [clojure.string :refer [lower-case]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
+            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as pm]
@@ -15,7 +18,6 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
-            [frontend.utils.github :as gh-utils]
             [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true]))
 
@@ -368,25 +370,38 @@
             [:label {:for "all-branches"}
              "All branches"]]]
 
-          (if sort-branches-by-recency?
-            (om/build branch-list
-                      {:branches (->> projects
-                                      project-model/sort-branches-by-recency
-                                      ;; Arbitrary limit on visible branches.
-                                      (take 100))
-                       :show-all-branches? show-all-branches?
-                       :navigation-data (:navigation-data app)}
-                      {:opts {:identities identities
-                              :show-project? true}})
-            [:ul.projects
-             (for [project (sort project-model/sidebar-sort projects)]
-               (om/build project-aside
-                         {:project project
-                          :show-all-branches? show-all-branches?
-                          :expanded-repos expanded-repos
-                          :navigation-data (:navigation-data app)}
-                         {:react-key (project-model/id project)
-                          :opts {:identities identities}}))])])))))
+           (if sort-branches-by-recency?
+             (om/build branch-list
+                       {:branches (->> projects
+                                       project-model/sort-branches-by-recency
+                                       ;; Arbitrary limit on visible branches.
+                                       (take 100))
+                        :show-all-branches? show-all-branches?
+                        :navigation-data (:navigation-data app)}
+                       {:opts {:identities identities
+                               :show-project? true}})
+             [:ul.projects
+              (for [project (sort project-model/sidebar-sort projects)]
+                (om/build project-aside
+                          {:project project
+                           :show-all-branches? show-all-branches?
+                           :expanded-repos expanded-repos
+                           :navigation-data (:navigation-data app)}
+                          {:react-key (project-model/id project)
+                           :opts {:identities identities}}))])
+
+          [:.add-private-project-card
+           (card/basic
+             (html
+               [:div
+                [:p "Something missing?"]
+                (button/link {:href (gh-public-scopes/add-private-repos-url)
+                              :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
+                                                                              :properties {:component "branch-picker"}})
+                              :kind :secondary}
+                  [:span
+                   [:i.octicon.octicon-mark-github]
+                   "Add private projects"])]))]])))))
 
 (defn- aside-nav-clicked
   [owner event-name]

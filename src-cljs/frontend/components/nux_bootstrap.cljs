@@ -212,7 +212,11 @@
                                   "You've joined the ranks of 100,000+ teams who ship better code, faster."
                                   [:br]
                                   (when-not (gh-public-scopes/has-private-scopes? current-user)
-                                    (gh-public-scopes/add-private-repos-link))])}))
+                                    (button/link {:href (gh-public-scopes/add-private-repos-url)
+                                                  :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
+                                                                                                  :properties {:component "nux"}})
+                                                  :kind :primary}
+                                      "Add private repos"))])}))
 
               (if organizations
                 (om/build nux-bootstrap-content data)

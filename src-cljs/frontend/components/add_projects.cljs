@@ -188,12 +188,11 @@
        (str "No repos found for organization " selected-org-login))
      [:br]
      (when-not has-private-scopes?
-       (button/link {:href (gh-utils/auth-url :scope gh-public-scopes/github-private-scopes)
-                     :on-click #((om/get-shared owner :track-event)
-                                 {:event-type :add-private-repos-clicked
-                                  :properties {:org selected-org-login}})
+       (button/link {:href (gh-public-scopes/add-private-repos-url)
+                     :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
+                                                                     :properties {:component "empty-repo-list"}})
                      :kind :secondary}
-                    "Add Private Github Projects"))]))
+                    "Add Private GitHub Projects"))]))
 
 (defn select-plan-button [{{:keys [login vcs_type]} :selected-org} owner]
   (reify
@@ -546,7 +545,11 @@
            [:div
             [:p "To kick things off, you'll need to choose a project to build. We'll start a new build for you each time someone pushes a new commit."]
             [:p (when-not (gh-public-scopes/has-private-scopes? user)
-                  (gh-public-scopes/add-private-repos-link))]]))]
+                  (button/link {:href (gh-public-scopes/add-private-repos-url)
+                                :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
+                                                                                :properties {:component "add-projects-header-card"}})
+                                :kind :primary}
+                    "Add private repos"))]]))]
 
       [:div.org-repo-container
        (when-not (ld/feature-on? "top-bar-ui-v-1")

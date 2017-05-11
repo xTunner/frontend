@@ -220,13 +220,9 @@
                  [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
-                  [:a.login.login-link.menu-item {:href (auth-url
-                                                         :scope
-                                                         (if (gh-public-scopes/in-dev-environment?)
-                                                           gh-public-scopes/github-public-scopes
-                                                           gh-public-scopes/github-private-scopes))
+                  [:a.login.login-link.menu-item {:href "/vcs-authorize/"
                                                   :on-click #((om/get-shared owner :track-event) {:event-type :login-clicked})
-                                                  :title "Log In with Github"}
+                                                  :title "Log In"}
                    "Log In"]]
                  (when (not (config/enterprise?))
                    [:li
