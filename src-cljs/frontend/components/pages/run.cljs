@@ -192,13 +192,9 @@
       (component
         (main-template/template
          {:app (:legacy/state (om-next/props this))
-          :crumbs [{:type :dashboard}
-                   {:type :org
+          :crumbs [{:type :workflows}
+                   {:type :org-workflows
                     :username org-name
-                    :vcs_type vcs-type}
-                   {:type :project
-                    :username org-name
-                    :project project-name
                     :vcs_type vcs-type}
                    {:type :project-workflows
                     :username org-name
