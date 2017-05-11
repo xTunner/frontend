@@ -179,13 +179,21 @@
                  :on-change #(utils/toggle-input owner [:settings :add-projects :show-forks] %)}]
         "Show Forks"]]])))
 
-(defn empty-repo-list [loading-repos? repo-filter-string selected-org-login]
+(defn empty-repo-list [loading-repos? repo-filter-string selected-org-login has-private-scopes? owner]
   (if loading-repos?
     (spinner)
     [:div.add-repos
      (if repo-filter-string
        (str "No matching repos for organization " selected-org-login)
-       (str "No repos found for organization " selected-org-login))]))
+       (str "No repos found for organization " selected-org-login))
+     [:br]
+     (when-not has-private-scopes?
+       (button/link {:href (gh-utils/auth-url :scope gh-public-scopes/github-private-scopes)
+                     :on-click #((om/get-shared owner :track-event)
+                                 {:event-type :add-private-repos-clicked
+                                  :properties {:org selected-org-login}})
+                     :kind :secondary}
+                    "Add Private Github Projects"))]))
 
 (defn select-plan-button [{{:keys [login vcs_type]} :selected-org} owner]
   (reify
@@ -272,24 +280,24 @@
 
 (defmulti repo-list (fn [{:keys [type]}] type))
 
-(defmethod repo-list :linux [{:keys [repos loading-repos? repo-filter-string selected-org selected-plan settings]} owner]
+(defmethod repo-list :linux [{:keys [user repos loading-repos? repo-filter-string selected-org selected-plan settings]} owner]
   (reify
     om/IRender
     (render [_]
       (html
         (if (empty? repos)
-          (empty-repo-list loading-repos? repo-filter-string (:login selected-org))
+          (empty-repo-list loading-repos? repo-filter-string (:login selected-org) (gh-public-scopes/has-private-scopes? user) owner)
           [:ul.proj-list.list-unstyled
            (for [repo repos]
              (om/build repo-item {:repo repo :settings settings}))])))))
 
-(defmethod repo-list :osx [{:keys [repos loading-repos? repo-filter-string selected-org selected-plan settings]} owner]
+(defmethod repo-list :osx [{:keys [user repos loading-repos? repo-filter-string selected-org selected-plan settings]} owner]
   (reify
     om/IRender
     (render [_]
       (html
-       (if (empty? repos)
-         (empty-repo-list loading-repos? repo-filter-string (:login selected-org))
+        (if (empty? repos)
+         (empty-repo-list loading-repos? repo-filter-string (:login selected-org) (gh-public-scopes/has-private-scopes? user) owner)
          [:ul.proj-list.list-unstyled
           (if (and (:admin selected-org) (not (pm/osx? selected-plan)))
             (om/build no-plan-empty-state {:selected-org selected-org})

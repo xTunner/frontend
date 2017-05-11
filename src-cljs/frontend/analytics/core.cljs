@@ -33,6 +33,7 @@
     :account-settings-icon-clicked
     :add-credentials-clicked
     :add-more-containers-clicked
+    :add-private-repos-clicked
     :add-project-clicked
     :add-project-icon-clicked
     :admin-icon-clicked
