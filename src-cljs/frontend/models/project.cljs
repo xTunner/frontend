@@ -13,15 +13,11 @@
 (defn project-name [project]
   (let [username (:username project)
         reponame (:reponame project)]
-    (if (ld/feature-on? "top-bar-ui-v-1")
-      (or reponame
-          (->> (split (:vcs_url project) #"/")
-               (take-last 1)))
-      (if (and username reponame)
-        (str username "/" reponame)
-        (->> (split (:vcs_url project) #"/")
-             (take-last 2)
-             (join "/"))))))
+    (if (and username reponame)
+      (str username "/" reponame)
+      (->> (split (:vcs_url project) #"/")
+        (take-last 2)
+        (join "/")))))
 
 (defn vcs-type [project]
   (if-let [vcs-type (:vcs_type project)]

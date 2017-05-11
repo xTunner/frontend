@@ -118,7 +118,9 @@
                                                                                                :org org-name
                                                                                                :repo repo-name
                                                                                                :component "branch-picker"}})}
-                 (project-model/project-name project)]
+                 (if (ld/feature-on? "top-bar-ui-v-1")
+                   (project-model/repo-name project)
+                   (project-model/project-name project))]
                 (project-settings-link {:project project} owner)]
 
                (when (expanded-repos vcs-url)
