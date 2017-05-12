@@ -1,12 +1,13 @@
 (ns frontend.components.pages.workflow
-  (:require [cljs-time.coerce :as t-coerce]
-            [clojure.string :as string]
+  (:require [clojure.string :as string]
             [frontend.api :as api]
             [frontend.components.aside :as aside]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
@@ -185,7 +186,15 @@
   Object
   (render [this]
     (component
-      (-> this om-next/props :project/workflow-runs run-row-collection))))
+      (if-let [runs (seq (:project/workflow-runs (om-next/props this)))]
+        (run-row-collection runs)
+        (let [project-name (:project/name (om-next/props this))
+              org-name (:organization/name (:project/organization (om-next/props this)))]
+          (card/basic
+           (empty-state/empty-state
+            {:icon (icon/workflows)
+             :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
+             :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))))
 
 (def project-workflow-runs (om-next/factory ProjectWorkflowRuns))
 
@@ -253,8 +262,9 @@
                   :vcs_type vcs-type}]
         :header-actions (settings-link vcs-type org-name project-name)
         :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
-        :main-content (when-let [project (:project-for-runs (om-next/props this))]
-                        (project-workflow-runs project))}))))
+        :main-content (if-let [project (:project-for-runs (om-next/props this))]
+                        (project-workflow-runs project)
+                        (spinner))}))))
 
 (defui ^:once OrgWorkflowRuns
   static om-next/IQuery
@@ -265,7 +275,14 @@
   Object
   (render [this]
     (component
-      (-> this om-next/props :organization/workflow-runs run-row-collection))))
+      (if-let [runs (seq (:organization/workflow-runs (om-next/props this)))]
+        (run-row-collection runs)
+        (let [org-name (:organization/name (om-next/props this))]
+          (card/basic
+           (empty-state/empty-state
+            {:icon (icon/workflows)
+             :heading (html [:span (empty-state/important org-name) " has no workflows defined yet"])
+             :subheading (str "Add a workflow section to one of " org-name "'s project configs to start running workflows.")})))))))
 
 (def org-workflow-runs (om-next/factory OrgWorkflowRuns))
 
@@ -299,5 +316,6 @@
                   :username org-name
                   :vcs_type vcs-type}]
         :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
-        :main-content (when-let [org (:org-for-runs (om-next/props this))]
-                        (org-workflow-runs org))}))))
+        :main-content (if-let [org (:org-for-runs (om-next/props this))]
+                        (org-workflow-runs org)
+                        (spinner))}))))
