@@ -1,5 +1,6 @@
 (ns frontend.components.header
   (:require [frontend.async :refer [raise!]]
+            [frontend.config :as config]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.license :as license]
@@ -220,7 +221,9 @@
                  [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
-                  [:a.login.login-link.menu-item {:href "/vcs-authorize/"
+                  [:a.login.login-link.menu-item {:href (if config/client-dev?
+                                                          (gh-public-scopes/add-private-repos-url)
+                                                          "/vcs-authorize/")
                                                   :on-click #((om/get-shared owner :track-event) {:event-type :login-clicked})
                                                   :title "Log In"}
                    "Log In"]]
