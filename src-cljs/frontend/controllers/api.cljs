@@ -787,9 +787,13 @@
   [target message status {:keys [resp context]} state]
   (let [{:keys [vcs-type org-name]} context]
     (assoc-in state
-              (conj (state/org-ident vcs-type org-name) :vcs-users)
+              (state/vcs-users-path vcs-type org-name)
               resp)))
 
+(defmethod api-event [:get-org-members :failed]
+  [target message status {:keys [resp context]} state]
+  (let [{:keys [vcs-type org-name]} context]
+    (assoc-in state (state/vcs-users-path vcs-type org-name) {})))
 
 (defmethod api-event [:enable-project :success]
   [target message status {:keys [resp context]} state]

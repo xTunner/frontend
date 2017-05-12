@@ -310,3 +310,6 @@
 ;--------- "Om Next" -----------
 (defn org-ident [vcs-type org-name]
   [:organization/by-vcs-type-and-name [vcs-type org-name]])
+
+(defn vcs-users-path [vcs-type org-name]
+  (conj (org-ident vcs-type org-name) :vcs-users))

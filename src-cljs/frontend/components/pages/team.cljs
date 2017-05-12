@@ -12,6 +12,7 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
+            [frontend.models.organization :as org]
             [frontend.models.user :as user]
             [frontend.state :as state]
             [frontend.utils :as utils :refer [valid-email? prettify-vcs_type] :refer-macros [component element html]]
@@ -51,8 +52,13 @@
                            :project project}))]]
     (assoc user ::follow-count (count (get followings user)))))
 
-(defn- table [{:keys [users projects] :as selected-org}]
-  (let [rows (cond-> users
+(defn- table [{:keys [users projects vcs-users] :as selected-org}]
+  (let [authed-users-login (->> vcs-users
+                                (filter :authorized?)
+                                (map :login)
+                                (into #{}))
+        authed-and-following-users (filter #(contains? authed-users-login (:login %)) users)
+        rows (cond-> authed-and-following-users
                projects (add-follow-counts projects))
         columns (cond-> [{:header "Login"
                           :cell-fn :login}]
@@ -249,6 +255,10 @@
                                                                     :disabled? (zero? count-selected)}
                                                                    (invite-button-text count-selected))]
                                   :close-fn close-fn})))])))))
+(defn- correct-org-selected?
+  [org-in-component-state-ident org-in-app-state]
+  (= org-in-component-state-ident
+     (organization-ident org-in-app-state)))
 
 (defn- main-content [app owner]
   (reify
@@ -260,30 +270,32 @@
        :show-invite-modal? nil})
     om/IWillMount
     (will-mount [_]
-      (when-not (ld/feature-on? "top-bar-ui-v-1")
+      (if (ld/feature-on? "top-bar-ui-v-1")
+        (let [selected-org (get-in app state/selected-org-path)]
+          (api/get-org-members (org/name selected-org) (:vcs_type selected-org) (om/get-shared owner [:comms :api])))
         (api/get-orgs (om/get-shared owner [:comms :api]) :include-user? true)))
     ;; Emulate Om Next queries: Treat :selected-org-ident like a query param,
     ;; and when it changes, re-read the query. That is, in this case, fetch from
     ;; the API.
     om/IWillUpdate
     (will-update [_ _ {:keys [selected-org-ident]}]
-      (when-not (ld/feature-on? "top-bar-ui-v-1")
-        (let [[_ [vcs-type name]] selected-org-ident
-              api-chan (om/get-shared owner [:comms :api])]
+      (let [[_ [vcs-type name]] selected-org-ident
+            api-chan (om/get-shared owner [:comms :api])]
+        (if (ld/feature-on? "top-bar-ui-v-1")
+          (when-not (correct-org-selected? selected-org-ident (get-in app state/selected-org-path))
+            (let [org-in-app-state (get-in app state/selected-org-path)]
+              (om/set-state! owner :selected-org-ident (organization-ident org-in-app-state))
+              (api/get-org-members (org/name org-in-app-state) (:vcs_type org-in-app-state) api-chan)))
           (when (not= (:selected-org-ident (om/get-render-state owner))
                   selected-org-ident)
-            (api/get-org-settings-normalized name vcs-type api-chan)))))
+            (api/get-org-settings-normalized name vcs-type api-chan)
+            (api/get-org-members name vcs-type api-chan)))))
 
     om/IRenderState
     (render-state [_ {:keys [selected-org-ident show-invite-modal?]}]
       (component
        (let [user (:current-user app)
-             selected-org-ident (if (ld/feature-on? "top-bar-ui-v-1")
-                                  (organization-ident (get-in app state/selected-org-path))
-                                  selected-org-ident)
-             selected-org (if (ld/feature-on? "top-bar-ui-v-1")
-                            (legacy-org->modern-org (get-in app state/org-data-path))
-                            (when selected-org-ident (get-in app selected-org-ident)))
+             selected-org (when selected-org-ident (get-in app selected-org-ident))
              available-orgs (filter :org (:organizations user))]
          (html
           [:div
@@ -343,8 +355,8 @@
                       make sure they have the right permissions on %s first."
                       org-name
                       (prettify-vcs_type vcs-type))]
-                   (if (:users selected-org)
-                     (table (select-keys selected-org [:users :projects]))
+                   (if (:vcs-users selected-org)
+                     (table (select-keys selected-org [:users :projects :vcs-users]))
                      (spinner))]))
               (no-org-selected available-orgs (user/bitbucket-authorized? user)))]]))))))
 
