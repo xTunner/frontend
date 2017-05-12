@@ -12,6 +12,7 @@
             [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
+            [frontend.models.organization :as org]
             [frontend.models.plan :as pm]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
@@ -627,5 +628,5 @@
       (let [args {:current-route current-route
                   :owner owner}]
         (if (ld/feature-on? "top-bar-ui-v-1")
-          (aside-nav-new (merge args {:org {:org (:login org) :vcs_url (:vcs_url org)}}))
+          (aside-nav-new (merge args {:org {:org (org/name org) :vcs_type (:vcs_type org)}}))
           (aside-nav-original (merge args {:user user})))))))

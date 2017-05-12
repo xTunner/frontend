@@ -92,15 +92,15 @@
       (.replaceToken history-imp path)
       (.setToken history-imp path))))
 
-
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
   (let [org (if (ld/feature-on? "top-bar-ui-v-1")
-              (not-empty {:login (org/name args)       ;; Existing dashboard routing uses "org" instead of "login"
-                          :vcs_type (:vcs_type args)}) ;; All other org-centric routing locations now use "login"
-              {})  ;; Force state to update with a 'nil' value when NOT in org-centric UI
-        state (assoc-in state state/selected-org-path org)]
+              (or (get-in state state/selected-org-path)
+                  {:login (org/name args) :vcs_type (:vcs-type args)})
+              {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
     (-> state
+        (assoc-in state/selected-org-path org)
+        (state-utils/change-selected-org org)
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
                state/navigation-data args
