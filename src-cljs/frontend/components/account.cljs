@@ -137,13 +137,7 @@
     options are available on the project settings under the \"Clear
     Caches\" heading. This is different from the clear cache button
     when retrying a build which only clears the cache for retried
-    build."}
-
-   {:id "projects-page"
-    :name "Projects Page"
-    :description "The Projects Page helps give a quick overview of
-    which projects you have building on CircleCI.  Access it by
-    clicking on the \"Projects\" item in the left navigation bar."}])
+    build."}])
 
 (defn beta-programs [app owner]
   (reify
