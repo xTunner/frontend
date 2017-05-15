@@ -1,85 +1,170 @@
-experimental:
-  picard:
-    version: 0.1
-    executorType: docker
-    containerInfo:
+version: 2.0
+jobs:
+  clojure_dependencies:
+    docker:
       - image: circleci/build-image:trusty-latest
+    working_directory: /home/ubuntu/frontend          
+    steps:    
+      - checkout
+      - restore_cache:
+          keys:
+            - v2-dependency-jars-{{ checksum "project.clj" }}
+      - run:
+          name: download dependencies
+          command: lein deps
+      - save_cache:
+          key: v2-dependency-jars-{{ checksum "project.clj" }}
+          paths:
+            - /home/ubuntu/.m2
 
-    stages:
-      build:
-        parallel: 1
-        workDir: /home/ubuntu/frontend
+  npm_bower_dependencies:
+    docker:
+      - image: circleci/build-image:trusty-latest
+    working_directory: /home/ubuntu/frontend          
+    steps:    
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+      - run:
+          name: download dependencies
+          command: |
+            source ~/.bashrc
+            set -exu
+            npm install
+            node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
+            [[ -d resources/components ]] || node_modules/bower/bin/bower install
+      - save_cache:
+          key: v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+          paths:
+            - /home/ubuntu/frontend/node_modules
+            - /home/ubuntu/.cache/bower
+          
+  clojure_test:
+    docker:
+      - image: circleci/build-image:trusty-latest
         environment:
           CIRCLE_TEST_REPORTS: /tmp/test-reports
           CIRCLE_ARTIFACTS: /tmp/artifacts
+    working_directory: /home/ubuntu/frontend          
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v2-dependency-jars-{{ checksum "project.clj" }}
+      - run:
+          name: lein test
+          command: lein test
 
-        steps:
-          - type: checkout
-          - type: add-ssh-keys
-          - type: shell
-            shell: /bin/bash
-            command: Xvfb :99 -screen 0 1280x1024x24
-            background: true
+  cljs_test:
+    docker:
+      - image: circleci/build-image:trusty-latest
+        environment:
+          CIRCLE_TEST_REPORTS: /tmp/test-reports
+          CIRCLE_ARTIFACTS: /tmp/artifacts
+    working_directory: /home/ubuntu/frontend          
+    steps:
+      - checkout
+      - run:
+          command: Xvfb :99 -screen 0 1280x1024x24
+          background: true
+      - restore_cache:
+          keys:
+            - v2-dependency-jars-{{ checksum "project.clj" }}
+      - restore_cache:
+          keys:
+            - v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+      - run:
+          name: compile test code and run tests
+          command: |
+            source ~/.bashrc
+            lein do cljsbuild once test, doo chrome test once
+          
+  build:
+    docker:
+      - image: circleci/build-image:trusty-latest
+    working_directory: /home/ubuntu/frontend          
+    steps:    
+      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-production-js-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v2-dependency-jars-{{ checksum "project.clj" }}
+      - restore_cache:
+          keys:
+            - v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+      - run:
+          name: bower install
+          command: |
+            source ~/.bashrc
+            node_modules/bower/bin/bower install            
+      - run:
+          name: precompile assets
+          command: |
+            source ~/.bashrc
+            lein do cljsbuild once whitespace production, run -m frontend.tasks.http/precompile-assets
+      - save_cache:
+          key: v1-production-assets-{{ checksum ".circle-sha" }}
+          paths:
+            - /home/ubuntu/frontend/resources/public
 
-          - type: cache-restore
-            key: v2-dependency-jars-{{ checksum "project.clj" }}
-          - type: cache-restore
-            key: v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+  deploy:
+    docker:
+      - image: circleci/build-image:trusty-latest
+    working_directory: /home/ubuntu/frontend
+    steps:
+      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-production-assets-{{ checksum ".circle-sha" }}
+      - add-ssh-keys
+      - run:
+          name: deploy and trigger integration tests
+          command: |
+            set -ex
+            ssh-add -D
+            script/deploy.sh
+            if [[ "${CIRCLE_BRANCH}" == "master" ]]
+            then
+            curl https://api.rollbar.com/api/1/deploy/ \
+            --form access_token=$ROLLBAR_ACCESS_TOKEN \
+            --form environment=production \
+            --form revision=$CIRCLE_SHA1 \
+            --form local_username=$CIRCLE_USERNAME
+            fi
 
-          - type: shell
-            name: download dependencies
-            command: |
-              source ~/.bashrc
-              set -exu
-              lein deps
-              npm install
-              node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
-              [[ -d resources/components ]] || node_modules/bower/bin/bower install
+workflows:
+  version: 2
 
-          - type: cache-save
-            key: v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
-            paths:
-              - /home/ubuntu/frontend/node_modules
-              - /home/ubuntu/.cache/bower
-
-          - type: shell
-            name: precompile assets
-            command: |
-              source ~/.bashrc
-              set -exu
-              lein cljsbuild once whitespace test production
-              lein run -m frontend.tasks.http/precompile-assets
-
-          - type: cache-save
-            key: v2-dependency-jars-{{ checksum "project.clj" }}
-            paths:
-              - /home/ubuntu/.m2
-
-          - type: shell
-            name: run test
-            command: |
-              source ~/.bashrc
-              set -exu
-              lein test
-              lein doo chrome test once
-
-          - type: shell
-            name: deploy and trigger integration tests
-            command: |
-              source ~/.bashrc
-              set -ex
-
-              ssh-add -D
-              script/deploy.sh
-              if [[ "${CIRCLE_BRANCH}" == "master" ]]
-              then
-                  curl https://api.rollbar.com/api/1/deploy/ \
-                       --form access_token=$ROLLBAR_ACCESS_TOKEN \
-                       --form environment=production \
-                       --form revision=$CIRCLE_SHA1 \
-                       --form local_username=$CIRCLE_USERNAME
-              fi
-
+  build_test_deploy:
+    jobs:
+      - clojure_dependencies
+      - npm_bower_dependencies
+      - clojure_test:
+          requires:
+            - clojure_dependencies
+      - cljs_test:
+          requires:
+            - clojure_dependencies
+            - npm_bower_dependencies
+      - build:
+          requires:
+            - clojure_dependencies
+            - npm_bower_dependencies
+      - deploy:
+          requires:
+            - build
+            - cljs_test
+            - clojure_test
+      
 dependencies:
   cache_directories:
     - "~/.cache/bower"
