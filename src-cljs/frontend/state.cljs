@@ -24,7 +24,8 @@
                              :selected-org {:login nil
                                             :type :org}
                              :show-forks true}
-              :browser-settings {:expanded-repos #{}}}
+              :browser-settings {:expanded-repos #{}
+                                 :show-all-builds true}}
    :selected-home-technology-tab nil
    :modal-video-id nil
    :builds-per-page 30
