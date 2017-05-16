@@ -594,8 +594,7 @@
                        :title "Organization Settings"
                        :href (routes/v1-org-settings-path org)
                        :on-click #(aside-nav-clicked owner :settings-icon-clicked)}
-
-        (icon/settings)
+        (icon/org-settings)
         [:div.nav-label "Settings"]])]))
 
 (defn aside-nav [{:keys [user current-route org]} owner]
