@@ -99,6 +99,12 @@
   (and (config/enterprise?)
        (= "blocked" (get-in app [:enterprise :site-status :status]))))
 
+(defn- current-route [app owner]
+  (let [compassus-route (compassus/current-route owner)]
+    (if (= :route/legacy-page compassus-route)
+      (:navigation-point app)
+      compassus-route)))
+
 (defui ^:once Wrapper
   static om-next/IQuery
   (query [this]
@@ -120,7 +126,9 @@
               show-inspector? (get-in app state/show-inspector-path)
               ;; :landing is still used by Enterprise. It and :error are
               ;; still "outer" pages.
-              outer? (contains? #{:landing :error} (:navigation-point app))]
+              outer? (contains? #{:landing :error} (:navigation-point app))
+              current-route (current-route app owner)
+              inner-with-user? (and (not outer?) user)]
           (html
            [:div {:class (if outer? "outer" "inner")
                   :on-click utils/disable-natural-form-submission}
@@ -135,10 +143,12 @@
 
             [:.top
              [:.bar
-              (when (ld/feature-on? "top-bar-ui-v-1")
+              (when (and (ld/feature-on? "top-bar-ui-v-1")
+                         inner-with-user?)
                 (build-legacy topbar/topbar {:user user
                                              :selected-org selected-org
-                                             :orgs orgs}))]
+                                             :orgs orgs
+                                             :current-route current-route}))]
              [:.flash-presenter
               (flash/presenter {:display-timeout 2000
                                 :notification
@@ -146,13 +156,9 @@
                                   (flash/flash-notification {:react-key number} message))})]]
 
             [:.below-top
-             (when (and (not outer?) user)
-               (let [compassus-route (compassus/current-route owner)
-                     current-route (if (= :route/legacy-page compassus-route)
-                                     (:navigation-point app)
-                                     compassus-route)]
-                 (build-legacy aside/aside-nav {:user user
-                                                :current-route current-route
-                                                :org selected-org})))
+             (when inner-with-user?
+               (build-legacy aside/aside-nav {:user user
+                                              :current-route current-route
+                                              :org selected-org}))
 
              (factory props)]]))))))

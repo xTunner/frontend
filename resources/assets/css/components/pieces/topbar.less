@@ -35,6 +35,18 @@
         padding-left: 0;
 
         &.collapsing-nav {
+          &.disable {
+            pointer-events: none;
+            
+            > .org-dropdown > .dropdown-toggle {
+                > .org-name > .selected-org-name,
+                > .org-name > .org-picker-arrow,
+                > .avatar > .gravatar {
+                    opacity: 0.5;
+                }
+            }
+          }
+
           @media (max-width: @screen-sm-min) {
             display: none;
           }

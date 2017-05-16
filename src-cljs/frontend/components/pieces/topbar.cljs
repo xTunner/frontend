@@ -106,13 +106,17 @@
       [:li [:a {:href "/admin"} [:div.heading "Admin"]]])
     [:li [:a {:href "/logout/"} [:div.heading "Log out"]]]]])
 
+(defn- disable-org-picker?
+  [current-route]
+  (contains? #{:route/account :admin-settings} current-route))
+
 (defn topbar
   "A bar which sits at the top of the screen and provides navigation and context.
 
   :user - The current user. We display their avatar in the bar.
   :orgs - all the orgs that the user is a part of
   :selected-org - The currently selected organization in the top bar."
-  [{:keys [user orgs selected-org]} owner]
+  [{:keys [user orgs selected-org current-route]} owner]
   (reify
     om/IRender
     (render [_]
@@ -120,7 +124,7 @@
         (html
           [:div
            [:div.navs-container
-            [:ul.nav-items.collapsing-nav
+            [:ul.nav-items.collapsing-nav {:class (when (disable-org-picker? current-route) "disable")}
               (orgs-dropdown-selector orgs selected-org owner)]
 
             [:a.logomark {:href "/dashboard"
