@@ -587,15 +587,16 @@
       [:i.material-icons "group"]
       [:div.nav-label "Team"]]
 
-     [:a.aside-item {:class (when (= :org-settings current-route) "current")
-                     :data-placement "right"
-                     :data-trigger "hover"
-                     :title "Organization Settings"
-                     :href (routes/v1-org-settings-path org)
-                     :on-click #(aside-nav-clicked owner :settings-icon-clicked)}
+     (when (:admin? org)
+       [:a.aside-item {:class (when (= :org-settings current-route) "current")
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Organization Settings"
+                       :href (routes/v1-org-settings-path org)
+                       :on-click #(aside-nav-clicked owner :settings-icon-clicked)}
 
-      (icon/settings)
-      [:div.nav-label "Settings"]]]))
+        (icon/settings)
+        [:div.nav-label "Settings"]])]))
 
 (defn aside-nav [{:keys [user current-route org]} owner]
   (reify
@@ -608,5 +609,7 @@
       (let [args {:current-route current-route
                   :owner owner}]
         (if (ld/feature-on? "top-bar-ui-v-1")
-          (aside-nav-new (merge args {:org {:org (org/name org) :vcs_type (:vcs_type org)}}))
+          (aside-nav-new (merge args {:org {:org (org/name org)
+                                            :vcs_type (:vcs_type org)
+                                            :admin? (:admin org)}}))
           (aside-nav-original (merge args {:user user})))))))

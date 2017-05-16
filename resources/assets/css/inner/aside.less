@@ -7,6 +7,7 @@
 @em: @baseFontSize;
 @aside-transition-speed: 200ms;
 @border-width: 1px;
+@aside-color: @gray;
 
 .inner {
   .app-main {
@@ -24,7 +25,7 @@
   .flex(0 0 auto);
 
   width: @aside-nav-width;
-  background: @gray;
+  background: @aside-color;
   overflow: visible;
 
   a {
@@ -43,7 +44,7 @@
 
     &.aside-item.current {
       background-color: @whiteBackground;
-      color: @grayDark;
+      color: @aside-color;
       border-right: 1px solid @grayLighter;
 
       i {
