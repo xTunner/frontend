@@ -50,6 +50,7 @@
             > .gravatar {
               min-width: 28px;
               height: 28px;
+              background-color: @white;
               border-radius: 50%;
               border: 1px solid @white;
             }
@@ -96,20 +97,11 @@
             > .nav-label {
               vertical-align: middle;
             }
-
-            &:hover {
-              // OVERRIDE--ICON-STYLE
-              color: @grayLighter;
-
-              > i {
-                color: @grayLighter;
-              }
-            }
           }
 
           > .dropdown-menu:not(.org-dropdown-menu) {
             // Bootstrap Overrides
-            margin-top: -4px;
+            margin-top: 0;
             padding: 0;
             border: none;
             margin-right: 1em;
@@ -125,11 +117,7 @@
 
               &:hover {
                 background-color: @blueDarkest;
-                color: @whiten;
-
-                > .heading {
-                  color: @whiten;
-                }
+                color: @white;
               }
 
               > &.has-icon i {
@@ -139,7 +127,6 @@
 
               > .heading {
                 font-weight: 600;
-                color: @blueDarkest;
               }
             }
           }
@@ -164,7 +151,7 @@
 
           > .dropdown-menu {
             left: 0;
-            margin-top: -4px;
+            margin-top: 0;
             padding: 0;
             border: none;
             border-radius: 0;
@@ -191,6 +178,7 @@
 
                 > .avatar {
                   border-radius: 50%;
+                  background-color: @white;
                   height: 30px;
                   width: 30px;
                 }
@@ -201,10 +189,6 @@
                 height: 20px;
                 width: 20px;
                 color: @grayLighter;
-
-                &:hover > a {
-                  color: @green;
-                }
               }
 
               &.selected-org {
@@ -223,8 +207,12 @@
                 border-bottom: 1px solid @blueDarkest;
 
                 > .org-icon-and-name > .leading-dot,
-                > .vcs-icon > a {
+                > .vcs-icon {
                   color: @white;
+                }
+
+                > .org-icon-and-name > .avatar {
+                  background-color: @white;
                 }
               }
             }
@@ -276,7 +264,7 @@
               width: 40px;
               border-radius: 50%;
               border: 1px solid @whiten;
-
+              background-color: @white;
             }
           }
         }
