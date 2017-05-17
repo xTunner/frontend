@@ -43,7 +43,8 @@
                     [:div
                      [:p (if (code-identities? name)
                            (str "Build and deploy your " name " repositories.")
-                           (str "Sign in with " name "."))]
+                           (when-not identity
+                             (str "Sign in with " name ".")))]
                      [:p.connection-status
                       (if identity
                         (list "Connected to " (:identity/login identity) ".")
@@ -60,7 +61,7 @@
   (render [this]
     (let [{[github-identity] "github"
            [bitbucket-identity] "bitbucket"
-           [gmail-identity] "gmail"}
+           [google-identity] "google"}
           (group-by :identity/type
                     (-> (om-next/props this) :app/current-user :user/identities))]
       (html
@@ -82,7 +83,7 @@
                                    :type "google"
                                    :icon-path (common/icon-path "brand-google")
                                    :auth-url (google/auth-url)
-                                   :identity gmail-identity})))))]))))
+                                   :identity google-identity})))))]))))
 
 (dc/do
   (defcard github-card-disconnected
