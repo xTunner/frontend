@@ -2,15 +2,41 @@
   (:require [clojure.set :as set]
             goog.string.format))
 
-(defn missing-scopes [user]
-  (let [current-scopes (set (:github_oauth_scopes user))]
+(defn current-scopes [user]
+  (-> user :github_oauth_scopes set))
+
+(defn missing-public-scopes [user]
+  (let [current-scopes (current-scopes user)]
+    (set/union
+      (when (empty? (set/intersection current-scopes #{"user" "user:email"}))
+        #{"user:email"})
+      (when (empty? (set/intersection current-scopes #{"repo" "public_repo"}))
+        #{"public_repo"})
+      (when (empty? (set/intersection current-scopes #{"repo" "user" "read:org"}))
+        #{"read:org"}))))
+
+(defn missing-private-scopes [user]
+  (let [current-scopes (current-scopes user)]
     (set/union (when (empty? (set/intersection current-scopes #{"user" "user:email"}))
                  #{"user:email"})
                (when-not (contains? current-scopes "repo")
                  #{"repo"}))))
 
+(defn has-public-scopes? [user]
+  (empty? (missing-public-scopes user)))
+
+(defn has-private-scopes? [user]
+  (empty? (missing-private-scopes user)))
+
+(defn missing-scopes [user]
+  (if (or (has-public-scopes? user)
+          (has-private-scopes? user))
+    ;; if just missing private scopes, that can be added with add-private-repos
+    #{}
+    (missing-public-scopes user)))
+
 (defn public-key-scope? [user]
-  (some #{"admin:public_key"} (:github_oauth_scopes user)))
+  (-> user current-scopes (get "admin:public_key") boolean))
 
 (defn unkeyword
   "Converts a keyword in to a string without the leading colon. See server-side function of the same name."
@@ -35,7 +61,7 @@
         organizations))
 
 (defn github-authorized? [user]
-  (-> user :github_oauth_scopes empty? not))
+  (-> user current-scopes empty? not))
 
 (defn bitbucket-authorized? [user]
   (let [check-fn (some-fn :user/bitbucket-authorized? :bitbucket_authorized)]

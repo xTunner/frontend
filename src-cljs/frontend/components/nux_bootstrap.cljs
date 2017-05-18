@@ -7,9 +7,9 @@
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.spinner :refer [spinner]]
-            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
+            [frontend.models.user :as user-model]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
@@ -211,8 +211,8 @@
                                  [:div
                                   "You've joined the ranks of 100,000+ teams who ship better code, faster."
                                   [:br]
-                                  (when-not (gh-public-scopes/has-private-scopes? current-user)
-                                    (button/link {:href (gh-public-scopes/add-private-repos-url)
+                                  (when-not (user-model/has-private-scopes? current-user)
+                                    (button/link {:href (gh-utils/auth-url)
                                                   :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
                                                                                                   :properties {:component "nux"}})
                                                   :kind :primary}

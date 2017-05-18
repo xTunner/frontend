@@ -9,7 +9,6 @@
             [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
-            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.organization :as org]
@@ -19,6 +18,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
+            [frontend.utils.github :as gh-utils]
             [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true]))
 
@@ -391,13 +391,13 @@
                           {:react-key (project-model/id project)
                            :opts {:identities identities}}))])
 
-          (when-not (gh-public-scopes/has-private-scopes? user)
+          (when-not (user/has-private-scopes? user)
             [:.add-private-project-card
              (card/basic
                (html
                  [:div
                   [:p "Something missing?"]
-                  (button/link {:href (gh-public-scopes/add-private-repos-url)
+                  (button/link {:href (gh-utils/auth-url)
                                 :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
                                                                                 :properties {:component "branch-picker"}})
                                 :kind :secondary}

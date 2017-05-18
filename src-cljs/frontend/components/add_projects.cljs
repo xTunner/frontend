@@ -10,7 +10,6 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.pieces.spinner :refer [spinner]]
-            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -188,7 +187,7 @@
        (str "No repos found for organization " selected-org-login))
      [:br]
      (when-not has-private-scopes?
-       (button/link {:href (gh-public-scopes/add-private-repos-url)
+       (button/link {:href (gh-utils/auth-url)
                      :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
                                                                      :properties {:component "empty-repo-list"}})
                      :kind :secondary}
@@ -285,7 +284,7 @@
     (render [_]
       (html
         (if (empty? repos)
-          (empty-repo-list loading-repos? repo-filter-string (:login selected-org) (gh-public-scopes/has-private-scopes? user) owner)
+          (empty-repo-list loading-repos? repo-filter-string (:login selected-org) (user-model/has-private-scopes? user) owner)
           [:ul.proj-list.list-unstyled
            (for [repo repos]
              (om/build repo-item {:repo repo :settings settings}))])))))
@@ -296,7 +295,7 @@
     (render [_]
       (html
         (if (empty? repos)
-         (empty-repo-list loading-repos? repo-filter-string (:login selected-org) (gh-public-scopes/has-private-scopes? user) owner)
+         (empty-repo-list loading-repos? repo-filter-string (:login selected-org) (user-model/has-private-scopes? user) owner)
          [:ul.proj-list.list-unstyled
           (if (and (:admin selected-org) (not (pm/osx? selected-plan)))
             (om/build no-plan-empty-state {:selected-org selected-org})
@@ -531,9 +530,9 @@
                                                     (get-in data state/projects-path))]
     (html
      [:div#add-projects
-      (when (seq (gh-public-scopes/missing-scopes user))
-        (missing-scopes-notice (:github_oauth_scopes user)
-                               (gh-public-scopes/missing-scopes user)))
+      (when (seq (user-model/missing-scopes user))
+        (missing-scopes-notice (user-model/current-scopes user)
+                               (user-model/missing-scopes user)))
       (when (and (seq followed-inaccessible)
                  (not (loading-repos-for-vcs-type? user :github))
                  (not (loading-repos-for-vcs-type? user :bitbucket)))
@@ -544,8 +543,8 @@
          (html
            [:div
             [:p "To kick things off, you'll need to choose a project to build. We'll start a new build for you each time someone pushes a new commit."]
-            [:p (when-not (gh-public-scopes/has-private-scopes? user)
-                  (button/link {:href (gh-public-scopes/add-private-repos-url)
+            [:p (when-not (user-model/has-private-scopes? user)
+                  (button/link {:href (gh-utils/auth-url)
                                 :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
                                                                                 :properties {:component "add-projects-header-card"}})
                                 :kind :primary}

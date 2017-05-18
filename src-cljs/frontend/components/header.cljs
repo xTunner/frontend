@@ -9,7 +9,6 @@
             [frontend.components.pieces.top-banner :as top-banner]
             [frontend.components.svg :as svg]
             [frontend.config :as config]
-            [frontend.experimental.github-public-scopes :as gh-public-scopes]
             [frontend.models.feature :as feature]
             [frontend.models.plan :as plan]
             [frontend.models.project :as project-model]
@@ -222,7 +221,7 @@
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
                   [:a.login.login-link.menu-item {:href (if config/client-dev?
-                                                          (gh-public-scopes/add-private-repos-url)
+                                                          (auth-url)
                                                           "/vcs-authorize/")
                                                   :on-click #((om/get-shared owner :track-event) {:event-type :login-clicked})
                                                   :title "Log In"}
