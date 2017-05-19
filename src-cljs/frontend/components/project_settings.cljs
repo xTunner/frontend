@@ -708,7 +708,13 @@
                             :title "Code Signing Support"
                             :blurb [:p
                                     "Enable automatic importing of code-signing identities and provisioning "
-                                    "profiles into the system keychain to simplify the code-signing process."]})]]])))))
+                                    "profiles into the system keychain to simplify the code-signing process."]})
+            (describe-flag {:flag :auto-transition
+                            :title "Automated transition to 2.0 platform"
+                            :blurb [:p
+                                    "This enables running builds on our 2.0 platform even if they are only configured for the 1.0 platform. "
+                                    "It is available and turned on by default for projects we expect it to work for. "
+                                    "You can turn it off if it is not working well for you. "]})]]])))))
 
 (defn dependencies [project-data owner]
   (reify
