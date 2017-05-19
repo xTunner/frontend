@@ -167,15 +167,14 @@
   TODO: use the org workflow-runs API when it's available instead of
   the project workflow-runs API"
   [{:keys [params]} send-cb query]
-  (api/get-project-workflows
+  (api/get-org-workflows
    (callback-api-chan
     (fn [resp]
       (let [novelty {:circleci/organization
                      {:organization/workflow-runs (mapv adapt-to-run resp)}}]
         (send-cb novelty query))))
-   (vcs-url/vcs-url (:organization/vcs-type params)
-                    (:organization/name params)
-                    "workflows-conductor")))
+   (:organization/name params)
+   (:organization/vcs-type params)))
 
 (defmulti send* key)
 
