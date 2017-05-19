@@ -62,6 +62,15 @@
                                                      username
                                                      project)}))
 
+(defmethod crumb :branch-workflows
+  [{:keys [username project vcs_type branch]}]
+  (om/build crumb-node
+            {:name branch
+             :path (routes/v1-project-branch-workflows-path vcs_type
+                                                            username
+                                                            project
+                                                            branch)}))
+
 (defmethod crumb :org-workflows
   [{:keys [username vcs_type]}]
   (om/build crumb-node

@@ -2,27 +2,6 @@
   (:require [clojure.test :refer-macros [deftest testing is]]
             [frontend.send :as send]))
 
-(deftest find-child-by-key-works
-  (testing "returns `nil` when ast has no children"
-    (is (nil? (#'send/find-child-by-key {:type :prop :key :foo} :some-key))))
-  (testing "returns first matching expr-ast when ast's children contains child with key"
-      (let [expr-ast {:key :child-foo :type :prop}]
-        (is (= expr-ast
-               (#'send/find-child-by-key {:key :parent
-                                          :type :join
-                                          :children [{:type :prop :key :child-bar}
-                                                     expr-ast
-                                                     (assoc expr-ast
-                                                            :type :join
-                                                            :children [])]}
-                                         (:key expr-ast))))))
-  (testing "returns `nil` when ast does not contain child with key"
-    (is (nil? (#'send/find-child-by-key {:key :parent
-                                         :type :join
-                                         :children [{:type :prop :key :a-child}
-                                                    {:type :prop :key :another-child}]}
-                                        :some-child)))))
-
 (deftest org-runs-ast?-works
   (testing "returns false when ast doesn't ask for an org's workflow-runs"
     (is (= false
@@ -60,3 +39,121 @@
                                               :type :join
                                               :children [{:type :prop
                                                           :key :workflow-run/id}]}]})))))
+
+(deftest branch-crumbs-ast?-works
+  (let [example-ast {:type :join
+                     :key :circleci/organization
+                     :children
+                     [{:type :join
+                       :key :organization/project
+                       :children
+                       [{:type :join
+                         :key :project/branch
+                         :children
+                         [{:type :prop
+                           :key :branch/name}]}]}]}]
+    (testing "returns true when ast asks for routed branch's name"
+      (is (= true (#'send/branch-crumb-ast? example-ast))))
+    (testing "returns false when ast has the wrong key"
+      (is (= false
+             (#'send/branch-crumb-ast? (assoc example-ast :key :some-key)))))
+    (testing "returns false when ast asks for additional branch data"
+      (is (= false
+             (#'send/branch-crumb-ast?
+              (-> example-ast
+                  (update-in [:children 0 :children 0 :children]
+                             conj
+                             {:type :join
+                              :key :branch/workflow-runs
+                              :children []}))))))
+    (testing "returns false when ast asks for additional project data"
+      (is (= false
+             (#'send/branch-crumb-ast? (update-in example-ast
+                                                  [:children 0 :children]
+                                                  conj
+                                                  {:type :prop
+                                                   :key :project/name})))))
+    (testing "returns false when ast asks for additional org data"
+      (is (= false
+             (#'send/branch-crumb-ast? (update example-ast
+                                               :children
+                                               conj
+                                               {:type :prop
+                                                :key :organization/vcs-type})))))
+    (testing "returns false when ast doesn't ask for branch name"
+      (is (= false
+             (#'send/branch-runs-ast?
+              (assoc-in example-ast
+                        [:children 0 :children 0 :children 0]
+                        {:type :join
+                         :key :branch/workflow-runs
+                         :children []}))))
+      (is (= false
+             (#'send/branch-runs-ast?
+              (update-in example-ast
+                         [:children 0 :children]
+                         pop)))))))
+
+(deftest branch-runs-ast?-works
+  (let [example-ast {:type :join
+                     :key :circleci/organization
+                     :children
+                     [{:type :join
+                       :key :organization/project
+                       :children
+                       [{:type :join
+                         :key :project/branch
+                         :children
+                         [{:type :join
+                           :key :branch/workflow-runs
+                           :children []}
+                          {:type :join
+                           :key :branch/project
+                           :children
+                           [{:type :prop
+                             :key :project/name}
+                            {:type :join
+                             :key :project/organization
+                             :children
+                             [{:type :prop
+                               :key :organization/name}]}]}]}]}]}]
+    (testing "returns true when ast asks for branch runs"
+      (is (= true (#'send/branch-runs-ast? example-ast))))
+    (testing "returns false when ast has the wrong key"
+      (is (= false
+             (#'send/branch-runs-ast?
+              (assoc example-ast :key :some-other-key)))))
+    (testing "returns false when ast asks for additional branch data"
+      (is (= false
+             (#'send/branch-runs-ast?
+              (update-in example-ast
+                         [:children 0 :children 0 :children]
+                         conj
+                         {:type :prop
+                          :key :branch/name})))))
+    (testing "returns false when ast asks for additional project data"
+      (is (= false
+             (#'send/branch-crumb-ast? (update-in example-ast
+                                                  [:children 0 :children]
+                                                  conj
+                                                  {:type :prop
+                                                   :key :project/name})))))
+    (testing "returns false when ast asks for additional org data"
+      (is (= false
+             (#'send/branch-crumb-ast? (update example-ast
+                                               :children
+                                               conj
+                                               {:type :prop
+                                                :key :organization/vcs-type})))))
+    (testing "returns false when ast doesn't ask for branch runs"
+      (is (= false
+             (#'send/branch-runs-ast?
+              (assoc-in example-ast
+                        [:children 0 :children 0 :children 0]
+                        {:type :prop
+                         :key :branch/name}))))
+      (is (= false
+             (#'send/branch-runs-ast?
+              (update-in example-ast
+                         [:children 0 :children]
+                         pop)))))))

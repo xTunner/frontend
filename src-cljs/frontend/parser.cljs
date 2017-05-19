@@ -103,6 +103,20 @@
            ~(select-keys route-params [:project/name]))
           ~query}]})]
 
+   :routed-entity/branch
+   [[:org-for-routed-project :organization/project :project/branch]
+    (fn [route-params query]
+      (when (:branch/name route-params)
+        `{(:org-for-routed-project
+           ~(-> route-params
+                (select-keys [:organization/vcs-type :organization/name])
+                (assoc :< :circleci/organization)))
+          [{(:organization/project
+              ~(select-keys route-params [:project/name]))
+            [{(:project/branch
+                ~(select-keys route-params [:branch/name]))
+               ~query}]}]}))]
+
    :routed-entity/run
    [[:routed-run]
     (fn [{:keys [run/id]} query]

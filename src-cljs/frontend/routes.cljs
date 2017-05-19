@@ -84,6 +84,12 @@
 (defn v1-project-workflows-path [vcs_type org repo]
   (str "/" (vcs/->short-vcs vcs_type) "/" org  "/workflows/" repo))
 
+(defn v1-project-branch-workflows-path
+  [vcs_type org repo branch]
+  (str (v1-project-workflows-path vcs_type org repo)
+       "/tree/"
+       (gstring/urlEncode branch)))
+
 (defn v1-run-path
   [workflow-id]
   (str "/workflow-run/" workflow-id))
@@ -228,6 +234,16 @@
             {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
              :organization/name org-name
              :project/name project-name}}))
+
+  (defroute v1-project-branch-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)/tree/([^/]+)"
+    [short-vcs-type org-name project-name branch]
+    (open! app
+           :route/project-branch-workflows
+           {:route-params
+            {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+             :organization/name org-name
+             :project/name project-name
+             :branch/name (gstring/urlDecode branch)}}))
 
   (defroute v1-org-workflows #"/(gh|bb)/([^/]+)/workflows"
     [short-vcs-type org-name]
