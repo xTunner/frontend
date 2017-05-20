@@ -152,7 +152,10 @@
   "returns true if the ast is for an expression rendering the org workflows page"
   [expr-ast]
   (boolean (and (= :circleci/organization (:key expr-ast))
-                (expr-ast/get expr-ast :organization/workflow-runs))))
+                (expr-ast/has-children? expr-ast
+                                        #{:organization/workflow-runs
+                                          :organization/name
+                                          :organization/vcs-type}))))
 
 (defn- get-org-runs
   "Retrieves workflow runs for and org and merges them into the
