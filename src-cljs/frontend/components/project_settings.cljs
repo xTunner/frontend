@@ -1,13 +1,14 @@
 (ns frontend.components.project-settings
-  (:require [cljs-time.core :as time]
+  (:require [ajax.core :as clj-ajax]
+            [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [clojure.string :as string]
             [frontend.analytics.track :as analytics-track]
+            [frontend.api :as api]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
-            [frontend.components.pages.user-settings.heroku :as heroku]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.dropdown :as dropdown]
@@ -26,6 +27,7 @@
             [frontend.models.user :as user-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
+            [frontend.utils.ajax :as ajax]
             [frontend.utils :as utils :refer-macros [component element html]]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
@@ -512,20 +514,25 @@
             [:hr]
             (clear-cache-button "source" project-data owner)]]]]))))
 
-(defn env-vars-modal
+(defn- add-env-vars-modal
   [{:keys [close-fn project-id project]} owner]
   (let [inputs (inputs/get-inputs-from-app-state owner)
         new-env-var-name (:new-env-var-name inputs)
         new-env-var-value (:new-env-var-value inputs)
-        track-properties {:project-id project-id
-                          :owner owner}
-        success-fn (fn [] (do (analytics-track/env-vars-created track-properties)
+        track-modal-dismissed (fn [{:keys [component]}]
+                                ((om/get-shared owner :track-event) {:event-type :add-env-vars-modal-dismissed
+                                                                     :properties {:component component
+                                                                                  :project-id project-id}}))
+        track-env-vars-added (fn []
+                                ((om/get-shared owner :track-event) {:event-type :env-vars-added
+                                                                     :properties {:project-id project-id}}))
+        success-fn (fn [] (do (track-env-vars-added)
                               (close-fn)))]
     (reify
       om/IDidMount
       (did-mount [_]
-        ((om/get-shared owner :track-event) {:event-type :env-vars-modal-impression
-                                             :properties (dissoc track-properties :owner)}))
+        ((om/get-shared owner :track-event) {:event-type :add-env-vars-modal-impression
+                                             :properties {:project-id project-id}}))
       om/IRender
       (render [_]
         (modal/modal-dialog {:title "Add an Environment Variable"
@@ -546,8 +553,7 @@
                                                                    :value new-env-var-value
                                                                    :auto-complete "off"
                                                                    :on-change #(utils/edit-input owner (conj state/inputs-path :new-env-var-value) %)}))])
-                             :actions [(button/button {:on-click #(do (analytics-track/env-vars-modal-dismissed
-                                                                        (merge track-properties {:component "cancel"}))
+                             :actions [(button/button {:on-click #(do (track-modal-dismissed {:component "cancel"})
                                                                       (close-fn))
                                                        :kind :flat}
                                                       "Cancel")
@@ -559,33 +565,180 @@
                                                                                          {:project-id project-id
                                                                                           :on-success success-fn}])}
                                          "Add Variable")]
-                             :close-fn #(do (analytics-track/env-vars-modal-dismissed
-                                              (merge track-properties {:component "close-x"}))
+                             :close-fn #(do (track-modal-dismissed {:component "close-x"})
                                             (close-fn))})))))
 
-(defn env-vars [project-data owner]
+(defn- import-env-vars-modal
+  [{:keys [close-fn project-id project projects]} owner]
+  (let [track-properties {:project-id project-id
+                          :component "import-env-vars-modal"
+                          :owner owner}
+        set-selected-project (fn [vcs-url]
+                               (om/set-state! owner {:selected-project {:vcs-url vcs-url :env-vars nil}})
+                               (-> {:method :get
+                                    :uri (gstring/format "/api/v1.1/project/%s/%s/envvar"
+                                                         (vcs-url/vcs-type vcs-url)
+                                                         (vcs-url/project-name vcs-url))
+                                    :handler (fn [{:keys [resp]}]
+                                               (om/set-state!
+                                                 owner
+                                                 {:selected-project {:vcs-url vcs-url
+                                                                     :env-vars (->> resp
+                                                                                    (map (fn [{:keys [name] :as env-var}]
+                                                                                           [name (assoc env-var
+                                                                                                        :checked
+                                                                                                        false)]))
+                                                                                    (into (sorted-map)))}}))}
+                                   ajax/ajax-opts
+                                   clj-ajax/ajax-request))
+        track-modal-dismissed (fn [{:keys [component]}]
+                                ((om/get-shared owner :track-event) {:event-type :import-env-vars-modal-dismissed
+                                                                     :properties {:component component
+                                                                                  :project-id project-id}}))
+        track-env-vars-imported (fn []
+                                  ((om/get-shared owner :track-event) {:event-type :env-vars-imported
+                                                                       :properties {:project-id project-id}}))
+        success-fn (fn [] (do (track-env-vars-imported)
+                              (close-fn)))
+        vcs-url (:vcs_url project)]
+    (reify
+      om/IDidMount
+      (did-mount [_]
+        (let [vcs-url (->> projects
+                           first
+                           :vcs_url)]
+          (set-selected-project vcs-url)
+          ((om/get-shared owner :track-event) {:event-type :import-env-vars-modal-impression
+                                               :properties {:project-id project-id}})))
+      om/IRenderState
+      (render-state [_ {:keys [selected-project] :as state}]
+        (let [env-vars-map (:env-vars selected-project)
+              env-vars (vals env-vars-map)
+              selected-vcs-url (:vcs-url selected-project)
+              handle-checkbox-click-fn (fn [item]
+                                         #(om/set-state!
+                                            owner
+                                            (assoc-in state
+                                                      [:selected-project :env-vars (:name item) :checked]
+                                                      (not (:checked item)))))
+              handle-deselect-all #(om/set-state!
+                                     owner
+                                     (assoc-in state
+                                               [:selected-project :env-vars]
+                                               (->> env-vars-map
+                                                    (map (fn [[key value]]
+                                                           [key (assoc value :checked false)]))
+                                                    (into (sorted-map)))))
+
+              modal-import-on-click #(raise! owner
+                                             [:import-env-vars {:src-project-vcs-url selected-vcs-url
+                                                                :dest-project-vcs-url vcs-url
+                                                                :env-vars (->> env-vars
+                                                                               (filter :checked)
+                                                                               (map :name))
+                                                                :on-success success-fn}])]
+          (modal/modal-dialog
+            {:title "Import an Environment Variable"
+             :body
+             (component
+              (html
+               [:.import-envvars
+                [:p
+                 (gstring/format "You can import environment variables from any project that belong to %s."
+                                 (vcs-url/org-name vcs-url))]
+                [:div
+                 (if-not selected-project
+                   (spinner)
+                   (form/form
+                     {}
+                     (dropdown/dropdown {:options (map (fn [proj]
+                                                         (let [proj-vcs-url (:vcs_url proj)]
+                                                           [proj-vcs-url (vcs-url/repo-name proj-vcs-url)]))
+                                                       projects)
+                                         :on-change set-selected-project
+                                         :name "project"
+                                         :value selected-vcs-url})
+                     (cond
+                       (nil? env-vars-map)
+                       (spinner)
+
+                       (empty? env-vars-map)
+                       "This project has no environment variable."
+
+                       env-vars-map
+                       (html
+                        [:.env-vars-table-container
+                         (om/build
+                          table/table
+                          {:rows env-vars
+                           :key-fn :name
+                           :columns [{:header "Name"
+                                      :cell-fn :name}
+                                     {:header "Value"
+                                      :cell-fn :value}
+                                     {:header [:a
+                                               {:href "javaScript:void(0)" :on-click handle-deselect-all}
+                                               "Deselect all"]
+                                      :type #{:shrink :right}
+                                      :cell-fn
+                                      (fn [item]
+                                        (html
+                                          [:.checkbox
+                                           [:label
+                                            [:input {:type "checkbox"
+                                                     :checked (:checked item)
+                                                     :name "select to import checkbox"
+                                                     :on-click (handle-checkbox-click-fn item)}]]]))}]})]))))]]))
+             :actions [(button/button {:on-click #(do (track-modal-dismissed {:component "cancel"})
+                                                      (close-fn))
+                                       :kind :flat}
+                                      "Cancel")
+                       (button/managed-button {:failed-text "Failed"
+                                               :success-text "Imported"
+                                               :loading-text "Importing..."
+                                               :kind :primary
+                                               :on-click modal-import-on-click}
+                                              "Import")]
+             :close-fn #(do (track-modal-dismissed {:component "close-x"})
+                            (close-fn))}))))))
+
+(defn env-vars [{:keys [project-data projects]} owner]
   (reify
     om/IInitState
     (init-state [_]
-      {:show-modal? false})
+      {:show-modal nil})
+    om/IDidMount
+    (did-mount [_]
+      (let [project (:project project-data)]
+        (api/get-org-settings-normalized (project-model/org-name project)
+                                         (project-model/vcs-type project)
+                                         (om/get-shared owner [:comms :api]))))
     om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
+    (render-state [_ {:keys [show-modal]}]
       (let [project (:project project-data)
             project-id (project-model/id project)
-            close-fn #(om/set-state! owner :show-modal? false)]
+            close-fn #(om/set-state! owner :show-modal nil)
+            other-projects (filter #(not= (project-model/id %) project-id)
+                                   projects)]
         (html
          ;; The :section and :article here are artifacts of the legacy styling
          ;; of the settings pages, and should go away as the structure of the
          ;; settings pages is addressed.
-         [:section
+         [:section.envvars
           [:article
            [:legend "Environment Variables"]
            (card/titled
-            {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
-             :action (button/button {:on-click #(om/set-state! owner :show-modal? true)
-                                     :kind :primary
-                                     :size :small}
-                                    "Add Variable")}
+             {:title (str "Environment Variables for " (vcs-url/project-name (:vcs_url project)))
+              :action [(when (feature/enabled? :import-env-vars)
+                         (button/button {:on-click #(om/set-state! owner :show-modal :import-env-vars)
+                                         :kind :primary
+                                         :size :small
+                                         :disabled? (empty? other-projects)}
+                                        "Import Variable(s)"))
+                       (button/button {:on-click #(om/set-state! owner :show-modal :add-env-var)
+                                       :kind :primary
+                                       :size :small}
+                                      "Add Variable")]}
             (html
              [:div
               [:p
@@ -593,8 +746,16 @@
                "The values can be any bash expression and can reference other variables, such as setting "
                [:code "M2_MAVEN"] " to " [:code "${HOME}/.m2)"] "."]
 
-              (when show-modal?
-                (om/build env-vars-modal {:close-fn close-fn :project-id project-id :project project}))
+              (case show-modal
+                :import-env-vars (om/build import-env-vars-modal
+                                           {:close-fn close-fn
+                                            :project-id project-id
+                                            :project project
+                                            :projects other-projects})
+                :add-env-var (om/build add-env-vars-modal {:close-fn close-fn
+                                                           :project-id project-id
+                                                           :project project})
+                nil)
               (when-let [env-vars-entries (->> (:envvars project-data)
                                                (sort-by key)
                                                seq)]
@@ -2273,6 +2434,7 @@
     om/IRender
     (render [_]
       (let [project-data (get-in data state/project-data-path)
+            projects (get-in data state/org-projects-path)
             user (:current-user data)
             subpage (-> data :navigation-data :subpage)
             error-message (get-in data state/error-message-path)]
@@ -2288,7 +2450,8 @@
              (case subpage
                :build-environment (om/build build-environment project-data)
                :parallel-builds (om/build parallel-builds data)
-               :env-vars (om/build env-vars project-data)
+               :env-vars (om/build env-vars {:project-data project-data
+                                             :projects projects})
                :advanced-settings (om/build advance project-data)
                :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
                                      (config/enterprise?))

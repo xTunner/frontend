@@ -1,9 +1,9 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
-            [cognitect.transit :as transit]
             [frontend.api :as api]
             [frontend.api.path :as api-path]
             [frontend.async :refer [put! raise!]]
+            [frontend.components.forms :as forms]
             [frontend.components.forms :refer [release-button!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
@@ -24,15 +24,9 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.map :as map-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
             [om.core :as om :include-macros true]
-            [goog.string :as gstring]
-            [clojure.set :as set]
-            [cljs-time.core :as time]
-            [cljs-time.format :as timef]
-            [frontend.datetime :as datetime]
-            [frontend.components.forms :as forms]))
+            [goog.string :as gstring]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
 ;; result will be pushed into the api-channel
@@ -674,6 +668,24 @@
   [target message status {:keys [context]} previous-state current-state comms]
   ((:on-success context)))
 
+(defmethod api-event [:import-env-vars :success]
+  [target message status {:keys [resp context]} state]
+  (when (= (:dest-vcs-url context) (:vcs_url (get-in state state/project-path)))
+    (if-not (-> resp :unauthorized-projects seq)
+      (state/add-flash-notification state "You’ve successfully imported your environment variables.")
+      (state/add-flash-notification state "Oh no! We weren't able to import your variables! Please check that you have the permissions to do so."))))
+
+(defmethod post-api-event! [:import-env-vars :success]
+  [target message status {:keys [context]} previous-state current-state comms]
+  (let [vcs-url (:dest-vcs-url context)
+        vcs-type (vcs-url/vcs-type vcs-url)
+        project-name (vcs-url/project-name vcs-url)]
+    (ajax/ajax :get
+               (gstring/format "/api/v1.1/project/%s/%s/envvar" vcs-type project-name)
+               :project-envvar
+               (:api comms)
+               :context {:project-name project-name})
+    ((:on-success context))))
 
 (defmethod api-event [:delete-env-var :success]
   [target message status {:keys [resp context]} state]

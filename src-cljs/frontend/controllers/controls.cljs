@@ -708,6 +708,20 @@
                  :context {:project-id project-id
                            :on-success on-success})))
 
+(defmethod post-control-event! :import-env-vars
+  [target message {:keys [src-project-vcs-url dest-project-vcs-url env-vars on-success]} previous-state current-state comms]
+  (let [api-ch (:api comms)
+        vcs-type (vcs-url/vcs-type src-project-vcs-url)
+        project-name (vcs-url/project-name src-project-vcs-url)]
+    (button-ajax :post
+      (gstring/format "/api/v1.1/project/%s/%s/info/export-environment" vcs-type project-name)
+      :import-env-vars
+      api-ch
+      :params {:projects [dest-project-vcs-url]
+               :env-vars env-vars}
+      :context {:dest-vcs-url dest-project-vcs-url
+                :src-vcs-url src-project-vcs-url
+                :on-success on-success})))
 
 (defmethod post-control-event! :deleted-env-var
   [target message {:keys [project-id env-var-name]} previous-state current-state comms]
@@ -771,7 +785,7 @@
            status (:status api-result)
            steps-changed (steps-changed test-steps inputs)
            track-properties (merge {:outcome status
-                                    :start-build (boolean start-build?)} 
+                                    :start-build (boolean start-build?)}
                                    steps-changed)]
        (analytics/track {:event-type :test-commands-saved
                          :current-state current-state
