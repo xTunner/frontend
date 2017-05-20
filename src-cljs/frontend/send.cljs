@@ -383,9 +383,13 @@
                (= 1 (count children))
                (= :organization/project (:key (first children)))
                (= '[:project/name] (:query (first children)))))
-        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-          (cb {:circleci/organization {:organization/vcs-type vcs-type
-                                       :organization/name name}}
+        (let [project-name (-> ast
+                               (expr-ast/get :organization/project)
+                               :params
+                               :project/name)]
+          (cb {:circleci/organization
+               {:organization/project
+                {:project/name project-name}}}
               query))
 
 
