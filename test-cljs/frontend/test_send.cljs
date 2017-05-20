@@ -149,3 +149,150 @@
               (update-in example-ast
                          [:children 0 :children]
                          pop)))))))
+
+(deftest project-runs-ast?-works
+  (let [example-ast {:type :join
+                     :key :circleci/organization
+                     :children
+                     [{:type :join
+                       :key :organization/project
+                       :children
+                       [{:type :prop
+                         :key :project/name}
+                        {:type :join
+                         :key :project/organization
+                         :children
+                         [{:type :prop
+                           :key :organization/name}
+                          {:type :prop
+                           :key :organization/vcs-type}]}
+                        {:type :join
+                         :key :project/workflow-runs
+                         :children []}]}]}]
+    (testing "returns true when ast asks for project runs"
+      (is (= true
+             (#'send/project-runs-ast? example-ast))))
+    (testing "returns false when ast has wrong key"
+      (is (= false
+             (#'send/project-runs-ast?
+              (assoc example-ast :key :some-other-key)))))
+    (testing "returns false when ast asks for additional org data"
+      (is (= false
+             (#'send/project-runs-ast?
+              (update example-ast
+                      :children
+                      conj
+                      {:type :prop
+                       :key :organization/vcs-type}))))
+      (is (= false
+             (#'send/project-runs-ast?
+              (update-in example-ast
+                         [:children 0 :children 1 :children]
+                         conj
+                         {:type :join
+                          :key :organization/projects
+                          :children []})))))
+    (testing "returns false when ast doesn't ask for runs"
+      (is (= false
+             (#'send/project-runs-ast?
+              (update-in example-ast
+                         [:children 0 :children]
+                         pop)))))
+    (testing "returns false when ast doesn't ask for project info"
+      (is (= false
+             (#'send/project-runs-ast?
+              (update-in example-ast
+                         [:children 0 :children]
+                         (fn [children]
+                           (remove #(= :project/organization
+                                       (:key %))
+                                   children))))))
+      (is (= false
+             (#'send/project-runs-ast?
+              (update-in example-ast
+                         [:children 0 :children]
+                         (fn [children]
+                           (remove #(= :project/name
+                                       (:key %))
+                                   children)))))))))
+
+(deftest project-crumb-ast?-works
+  (let [example {:type :join
+                 :key :circleci/organization
+                 :children
+                 [{:type :join
+                   :key :organization/project
+                   :children
+                   [{:type :prop
+                     :key :project/name}]}]}]
+    (testing "returns true when ast asks for project name"
+      (is (= true
+             (#'send/project-crumb-ast? example))))
+    (testing "returns false when ast asks for additional org info"
+      (is (= false
+             (#'send/project-crumb-ast?
+              (update example
+                      :children
+                      conj
+                      {:type :prop
+                       :key :organization/vcs-type})))))
+    (testing "returns false when ast asks for additional project info"
+      (is (= false
+             (#'send/project-crumb-ast? (update-in example
+                                                   [:children 0 :children]
+                                                   conj
+                                                   {:type :join
+                                                    :key :project/workflow-runs
+                                                    :children []})))))
+    (testing "returns false when ast has wrong key"
+      (is (= false
+             (#'send/project-crumb-ast?
+              (assoc example :key :some-other-key)))))
+    (testing "returns false when ast does not ask for project name"
+      (is (= false
+             (#'send/project-crumb-ast? (update-in example
+                                                   [:children 0 :children]
+                                                   pop)))))))
+
+(deftest run-page-crumbs-ast?-works
+  (let [example {:type :join
+                 :key :circleci/run
+                 :children
+                 [{:type :prop
+                   :key :run/id}
+                  {:type :join
+                   :key :run/project
+                   :children
+                   [{:type :prop
+                     :key :project/name}
+                    {:type :join
+                     :key :project/organization
+                     :children
+                     [{:type :prop
+                       :key :organization/vcs-type}
+                      {:type :prop
+                       :key :organization/name}]}]}
+                  {:type :join
+                   :key :run/trigger-info
+                   :children
+                   [{:type :prop
+                     :key :trigger-info/branch}]}]}]
+    (testing "returns true when ast is for run-page crumbs"
+      (is (= true
+             (#'send/run-page-crumbs-ast? example))))
+    (testing "returns false when ast has wrong key"
+      (is (= false
+             (#'send/run-page-crumbs-ast?
+              (assoc example :key :circleci/organization)))))
+    (testing "returns false when ast asks for extra run info"
+      (is (= false
+             (#'send/run-page-crumbs-ast?
+              (update example
+                      :children
+                      conj
+                      {:type :prop
+                       :key :run/started-at})))))
+    (testing "returns false when ast asks for less run info"
+      (is (= false
+             (#'send/run-page-crumbs-ast?
+              (update example :children pop)))))))
