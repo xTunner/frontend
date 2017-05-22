@@ -536,11 +536,15 @@
       [:i.material-icons "power_settings_new"]
       [:div.nav-label "Log Out"]]]))
 
+(def insights-subpages #{:build-insights :project-insights})
+(def dashboard-subpages #{:dashboard :build})
+
 (defn aside-nav-new [{:keys [current-route org owner]}]
   "New side nav, to be used in conjunction with the top bar"
   (html
     [:nav.aside-left-nav
-     [:a.aside-item {:class (when (= :dashboard current-route) "current")
+     [:a.aside-item {:class (when (dashboard-subpages current-route)
+                              "current")
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Builds"
@@ -558,7 +562,8 @@
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 
-     [:a.aside-item {:class (when (= :build-insights current-route) "current")
+     [:a.aside-item {:class (when (insights-subpages current-route)
+                              "current")
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Insights"
