@@ -585,7 +585,14 @@
                                                                                            [name (assoc env-var
                                                                                                         :checked
                                                                                                         false)]))
-                                                                                    (into (sorted-map)))}}))}
+                                                                                    (into (sorted-map)))}}))
+                                    :error-handler (fn [{:keys [resp]}]
+                                                     (om/set-state!
+                                                       owner
+                                                       {:selected-project {:vcs-url vcs-url
+                                                                           :env-vars []}})
+                                                     ((om/get-shared owner :track-event) {:event-type :env-vars-fetch-failed
+                                                                                          :properties {:project-id project-id}}))}
                                    ajax/ajax-opts
                                    clj-ajax/ajax-request))
         track-modal-dismissed (fn [{:keys [component]}]
@@ -597,7 +604,8 @@
                                                                        :properties {:project-id project-id}}))
         success-fn (fn [] (do (track-env-vars-imported)
                               (close-fn)))
-        vcs-url (:vcs_url project)]
+        vcs-url (:vcs_url project)
+        org-name (vcs-url/org-name vcs-url)]
     (reify
       om/IDidMount
       (did-mount [_]
@@ -612,27 +620,31 @@
         (let [env-vars-map (:env-vars selected-project)
               env-vars (vals env-vars-map)
               selected-vcs-url (:vcs-url selected-project)
+              selected-repo-name (vcs-url/repo-name selected-vcs-url)
               handle-checkbox-click-fn (fn [item]
                                          #(om/set-state!
                                             owner
                                             (assoc-in state
                                                       [:selected-project :env-vars (:name item) :checked]
                                                       (not (:checked item)))))
-              handle-deselect-all #(om/set-state!
-                                     owner
-                                     (assoc-in state
-                                               [:selected-project :env-vars]
-                                               (->> env-vars-map
-                                                    (map (fn [[key value]]
-                                                           [key (assoc value :checked false)]))
-                                                    (into (sorted-map)))))
-
+              selected-env-vars (->> env-vars
+                                     (filter :checked)
+                                     (map :name))
+              any-deselected? (not= (count selected-env-vars)
+                                    (count env-vars))
+              handle-bulk-select-fn (fn [any-deselected?]
+                                      #(om/set-state!
+                                         owner
+                                         (assoc-in state
+                                                   [:selected-project :env-vars]
+                                                   (->> env-vars-map
+                                                        (map (fn [[key value]]
+                                                               [key (assoc value :checked any-deselected?)]))
+                                                        (into (sorted-map))))))
               modal-import-on-click #(raise! owner
                                              [:import-env-vars {:src-project-vcs-url selected-vcs-url
                                                                 :dest-project-vcs-url vcs-url
-                                                                :env-vars (->> env-vars
-                                                                               (filter :checked)
-                                                                               (map :name))
+                                                                :env-vars selected-env-vars
                                                                 :on-success success-fn}])]
           (modal/modal-dialog
             {:title "Import an Environment Variable"
@@ -642,7 +654,7 @@
                [:.import-envvars
                 [:p
                  (gstring/format "You can import environment variables from any project that belong to %s."
-                                 (vcs-url/org-name vcs-url))]
+                                 org-name)]
                 [:div
                  (if-not selected-project
                    (spinner)
@@ -660,7 +672,16 @@
                        (spinner)
 
                        (empty? env-vars-map)
-                       "This project has no environment variable."
+                       (html [:span
+                              "This project has no environment variables. This may be because your user permissions. Check the "
+                              [:a {:href (routes/v1-project-settings-path {:org org-name
+                                                                           :repo selected-repo-name})
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :project-settings-clicked
+                                                                                   :properties {:org org-name
+                                                                                                :repo selected-repo-name
+                                                                                                :project-vcs-url selected-vcs-url}})}
+                               "project's settings"]
+                              " and/or reach out to a VCS provider admin withing your organization."])
 
                        env-vars-map
                        (html
@@ -674,8 +695,10 @@
                                      {:header "Value"
                                       :cell-fn :value}
                                      {:header [:a
-                                               {:href "javaScript:void(0)" :on-click handle-deselect-all}
-                                               "Deselect all"]
+                                               {:href "javaScript:void(0)" :on-click (handle-bulk-select-fn any-deselected?)}
+                                               (if any-deselected?
+                                                 "Select all"
+                                                 "Deselect all")]
                                       :type #{:shrink :right}
                                       :cell-fn
                                       (fn [item]
@@ -694,6 +717,7 @@
                                                :success-text "Imported"
                                                :loading-text "Importing..."
                                                :kind :primary
+                                               :disabled? (= (count selected-env-vars) 0)
                                                :on-click modal-import-on-click}
                                               "Import")]
              :close-fn #(do (track-modal-dismissed {:component "close-x"})

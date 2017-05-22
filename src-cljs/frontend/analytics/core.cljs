@@ -77,6 +77,7 @@
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
     :env-vars-added
+    :env-vars-fetch-failed
     :env-vars-imported
     :expand-repo-toggled
     :follow-and-build-projects-clicked
