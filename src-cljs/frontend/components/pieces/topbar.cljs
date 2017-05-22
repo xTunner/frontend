@@ -104,7 +104,7 @@
     [:li [:a {:href "/account"} [:div.heading "User settings"]]]
     (when (:admin user)
       [:li [:a {:href "/admin"} [:div.heading "Admin"]]])
-    [:li [:a {:href "/logout/"} [:div.heading "Log out"]]]]])
+    [:li [:a {:href "/logout"} [:div.heading "Log out"]]]]])
 
 (defn- disable-org-picker?
   [current-route]
