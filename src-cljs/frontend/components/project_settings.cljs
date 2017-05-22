@@ -570,10 +570,7 @@
 
 (defn- import-env-vars-modal
   [{:keys [close-fn project-id project projects]} owner]
-  (let [track-properties {:project-id project-id
-                          :component "import-env-vars-modal"
-                          :owner owner}
-        set-selected-project (fn [vcs-url]
+  (let [set-selected-project (fn [vcs-url]
                                (om/set-state! owner {:selected-project {:vcs-url vcs-url :env-vars nil}})
                                (-> {:method :get
                                     :uri (gstring/format "/api/v1.1/project/%s/%s/envvar"
@@ -718,8 +715,9 @@
       (let [project (:project project-data)
             project-id (project-model/id project)
             close-fn #(om/set-state! owner :show-modal nil)
-            other-projects (filter #(not= (project-model/id %) project-id)
-                                   projects)]
+            other-projects (->> projects
+                                (filter #(not= (project-model/id %) project-id))
+                                (sort-by (comp string/lower-case project-model/project-name)))]
         (html
          ;; The :section and :article here are artifacts of the legacy styling
          ;; of the settings pages, and should go away as the structure of the
