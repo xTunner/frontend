@@ -119,7 +119,7 @@
               (assoc :< :circleci/run)))
         [{(:run/job
             ~(select-keys route-params [:job/name]))
-           ~query}]})]})
+          ~query}]})]})
 
 (def read (bodhi/read-fn
            (-> bodhi/basic-read
@@ -144,14 +144,13 @@
              (swap! state #(-> %
                                (assoc :app/subpage-route subpage
                                       :app/route-params route-params)
-
+                               (assoc-in [:legacy/state :navigation-point] route)
                                ;; Clean up the legacy state so it doesn't leak
                                ;; from the previous page. This goes away when
                                ;; the legacy state dies. In the Om Next world,
                                ;; all route data is in :app/route-params, and is
                                ;; replaced completely on each route change.
                                (update :legacy/state dissoc
-                                       :navigation-point
                                        :navigation-data)))
              (analytics/track {:event-type :pageview
                                :navigation-point route

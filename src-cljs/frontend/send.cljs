@@ -197,6 +197,28 @@
                      (cb {:app/current-user {:user/organizations (vec orgs)}} query)))]
           (api/get-orgs ch :include-user? true))
 
+        (and (= :circleci/organization (:key ast))
+          (= '[:organization/vcs-type
+               :organization/name
+               :organization/avatar-url
+               :organization/current-user-is-admin?]
+            (:query ast)))
+        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
+          (api/get-orgs
+            (callback-api-chan
+              #(let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
+                                                   (and (= vcs_type vcs-type)
+                                                        (= login name)))
+                                           %))
+
+                     avatar-url (:avatar_url selected-org)
+                     admin (:admin selected-org)]
+                 (cb {:circleci/organization {:organization/name name
+                                              :organization/vcs-type vcs-type
+                                              :organization/avatar-url avatar-url
+                                              :organization/current-user-is-admin? admin}} query)))
+            :include-user? true))
+
         ;; :route/projects
         (and (= :circleci/organization (:key ast))
              (= '[:organization/vcs-type

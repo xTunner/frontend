@@ -108,7 +108,8 @@
 (defui ^:once Wrapper
   static om-next/IQuery
   (query [this]
-    '[{:legacy/state [*]}])
+    '[{:legacy/state [*]}
+      {:routed-entity/organization [:organization/vcs-type :organization/name :organization/avatar-url :organization/current-user-is-admin?]}])
   Object
   (render [this]
     (let [app (:legacy/state (om-next/props this))
@@ -118,7 +119,10 @@
         (let [user (get-in app state/user-path)
               orgs (get-in app state/user-organizations-path)
               ;; use the first org in the org list as the default
-              selected-org (or (get-in app state/selected-org-path)
+              current-route (current-route app owner)
+              selected-org (or (some-> (:routed-entity/organization (om-next/props this))
+                                       org/modern-org->legacy-org)
+                               (get-in app state/selected-org-path)
                                (org/default orgs))
               admin? (if (config/enterprise?)
                        (get-in app [:current-user :dev-admin])
@@ -127,7 +131,6 @@
               ;; :landing is still used by Enterprise. It and :error are
               ;; still "outer" pages.
               outer? (contains? #{:landing :error} (:navigation-point app))
-              current-route (current-route app owner)
               inner-with-user? (and (not outer?) user)]
           (html
            [:div {:class (if outer? "outer" "inner")

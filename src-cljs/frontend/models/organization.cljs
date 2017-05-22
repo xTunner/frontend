@@ -1,5 +1,6 @@
 (ns frontend.models.organization
-  (:require [frontend.config :as config]
+  (:require [clojure.set :as set]
+            [frontend.config :as config]
             [frontend.utils :as util]
             [clojure.string :as string])
   (:refer-clojure :exclude [name]))
@@ -53,3 +54,23 @@
   "Takes a list of orgs and returns a default value"
   [orgs]
   (first orgs))
+
+(def ^:private legacy-org-keys->modern-org-keys
+  "These keys are wanted in the Team page and Project page contexts.
+   Due to variation in legacy-key context, check usability in
+   case-by-case basis."
+  {:login :organization/name
+   :vcs_type :organization/vcs-type
+   :avatar_url :organization/avatar-url
+   :admin :organization/current-user-is-admin?})
+
+(defn legacy-org->modern-org
+  "Converts an org with legacy keys to the modern equivalent, suitable for
+  our Om Next components."
+  [org]
+  (set/rename-keys org legacy-org-keys->modern-org-keys))
+
+(defn modern-org->legacy-org
+  "Inverse of legacy-org->modern-org."
+  [org]
+  (set/rename-keys org (set/map-invert legacy-org-keys->modern-org-keys)))

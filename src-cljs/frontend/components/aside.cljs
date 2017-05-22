@@ -573,7 +573,7 @@
                      :title "Projects"
                      :data-placement "right"
                      :data-trigger "hover"
-                     :href "/projects"
+                     :href (routes/v1-organization-projects-path org)
                      :on-click #(aside-nav-clicked owner :projects-icon-clicked)}
       [:i.material-icons "book"]
       [:div.nav-label "Projects"]]
