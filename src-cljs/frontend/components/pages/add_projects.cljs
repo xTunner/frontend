@@ -1,5 +1,6 @@
 (ns frontend.components.pages.add-projects
-  (:require [frontend.components.add-projects :as add-projects]
+  (:require [frontend.async :refer [raise!]]
+            [frontend.components.add-projects :as add-projects]
             [frontend.components.pieces.button :as button]
             [frontend.components.templates.main :as main-template]
             [frontend.utils.launchdarkly :as ld]
