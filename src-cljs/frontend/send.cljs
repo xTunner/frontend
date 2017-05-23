@@ -4,16 +4,10 @@
             [cljs.core.async :refer [chan]]
             [clojure.set :refer [rename-keys]]
             [frontend.api :as api]
+            [frontend.utils.expr-ast :as expr-ast]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next.impl.parser :as om-parser])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
-
-(defn- find-child-by-key [expr-ast key]
-  (if-let [children (:children expr-ast)]
-    (->> children
-         (filter #(= key (:key %)))
-         first)
-    nil))
 
 (def ^:private ms-until-retried-run-retrieved 3000)
 
@@ -158,7 +152,10 @@
   "returns true if the ast is for an expression rendering the org workflows page"
   [expr-ast]
   (boolean (and (= :circleci/organization (:key expr-ast))
-                (find-child-by-key expr-ast :organization/workflow-runs))))
+                (expr-ast/has-children? expr-ast
+                                        #{:organization/workflow-runs
+                                          :organization/name
+                                          :organization/vcs-type}))))
 
 (defn- get-org-runs
   "Retrieves workflow runs for and org and merges them into the
@@ -176,6 +173,147 @@
    (:organization/name params)
    (:organization/vcs-type params)))
 
+(defn- branch-crumb-ast?
+  "returns true if the ast is for an expression rendering the branch
+  breadcrumb"
+  [expr-ast]
+  (boolean
+   (and (= :circleci/organization
+           (:key expr-ast))
+        (expr-ast/has-children? expr-ast
+                                #{:organization/project})
+        (-> expr-ast
+            (expr-ast/get :organization/project)
+            (expr-ast/has-children? #{:project/branch}))
+        (-> expr-ast
+            (expr-ast/get-in [:organization/project :project/branch])
+            (expr-ast/has-children? #{:branch/name})))))
+
+(defn- get-branch-name [cb expr-ast query]
+  (let [branch-name (-> expr-ast
+                        (expr-ast/get-in [:organization/project :project/branch])
+                        :params
+                        :branch/name)
+        novelty {:circleci/organization
+                 {:organization/project
+                  {:project/branch
+                   {:branch/name branch-name}}}}]
+    (cb novelty query)))
+
+(defn- branch-runs-ast?
+  "returns true if the ast is for an expression rendering the branch
+  workflow-runs page"
+  [expr-ast]
+  (boolean
+   (and (= :circleci/organization (:key expr-ast))
+        (expr-ast/has-children? expr-ast
+                                #{:organization/project})
+        (-> expr-ast
+            (expr-ast/get :organization/project)
+            (expr-ast/has-children? #{:project/branch}))
+        (-> expr-ast
+            (expr-ast/get-in [:organization/project :project/branch])
+            (expr-ast/has-children? #{:branch/workflow-runs :branch/project}))
+        (-> expr-ast
+            (expr-ast/get-in [:organization/project
+                              :project/branch
+                              :branch/project])
+            (expr-ast/has-children? #{:project/organization :project/name}))
+        (-> expr-ast
+            (expr-ast/get-in [:organization/project
+                              :project/branch
+                              :branch/project
+                              :project/organization])
+            (expr-ast/has-children? #{:organization/name})))))
+
+(defn- get-branch-runs [cb expr-ast query]
+  (let [vcs-type (-> expr-ast :params :organization/vcs-type)
+        org-name (-> expr-ast :params :organization/name)
+        repo-name (-> expr-ast
+                      (expr-ast/get-in [:organization/project])
+                      :params
+                      :project/name)
+        branch-name (-> expr-ast
+                        (expr-ast/get-in [:organization/project :project/branch])
+                        :params
+                        :branch/name)]
+    (api/get-project-workflows
+     (callback-api-chan
+      (fn [response]
+        (let [runs (->> response
+                        (filter #(-> %
+                                     :workflow/trigger-info
+                                     :trigger-info/branch
+                                     (= branch-name)))
+                        (mapv adapt-to-run))
+              novelty {:circleci/organization
+                       {:organization/project
+                        {:project/branch
+                         {:branch/workflow-runs (vec runs)}}}}]
+          (cb novelty query))))
+     (vcs-url/vcs-url vcs-type org-name repo-name))))
+
+(defn- project-runs-ast? [expr-ast]
+  (and (= :circleci/organization
+          (:key expr-ast))
+       (expr-ast/has-children? expr-ast #{:organization/project})
+       (-> expr-ast
+           (expr-ast/get :organization/project)
+           (expr-ast/has-children? #{:project/name :project/workflow-runs :project/organization}))
+       (-> expr-ast
+           (expr-ast/get-in [:organization/project :project/organization])
+           (expr-ast/has-children? #{:organization/vcs-type :organization/name}))))
+
+(defn- project-crumb-ast? [expr-ast]
+  (and (= :circleci/organization
+          (:key expr-ast))
+       (expr-ast/has-children? expr-ast #{:organization/project})
+       (-> expr-ast
+           (expr-ast/get :organization/project)
+           (expr-ast/has-children? #{:project/name}))))
+
+(defn- get-project-name [cb expr-ast query]
+  (let [project-name (-> expr-ast
+                         (expr-ast/get :organization/project)
+                         :params
+                         :project/name)
+        novelty {:circleci/organization
+                 {:organization/project
+                  {:project/name project-name}}}]
+    (cb novelty query)))
+
+(defn- run-page-crumbs-ast? [expr-ast]
+  (and (= :circleci/run (:key expr-ast))
+       (expr-ast/has-children? expr-ast #{:run/id :run/project :run/trigger-info})
+       (-> expr-ast
+           (expr-ast/get :run/project)
+           (expr-ast/has-children? #{:project/name :project/organization}))
+       (-> expr-ast
+           (expr-ast/get-in [:run/project :project/organization])
+           (expr-ast/has-children? #{:organization/vcs-type :organization/name}))
+       (-> expr-ast
+           (expr-ast/get :run/trigger-info)
+           (expr-ast/has-children? #{:trigger-info/branch}))))
+
+(defn- get-run-page-crumbs [cb expr-ast query]
+  (let [id (:run/id (:params expr-ast))]
+    (api/get-workflow-status
+     (callback-api-chan
+      (fn [response]
+        (let [build (-> response :workflow/jobs first :job/build)
+              branch (-> response :workflow/trigger-info :trigger-info/branch)
+              novelty {:circleci/run
+                       {:run/id id
+                        :run/project
+                        {:project/name (:build/repo build)
+                         :project/organization
+                         {:organization/vcs-type (:build/vcs-type build)
+                          :organization/name (:build/org build)}}
+                        :run/trigger-info
+                        {:trigger-info/branch branch}}}]
+          (cb novelty query))))
+     id)))
+
 (defmulti send* key)
 
 ;; This implementation is merely a prototype, which does some rudimentary
@@ -186,6 +324,8 @@
     (let [[expr cb] (de-alias-expression expr cb)
           ast (om-parser/expr->ast expr)]
       (cond
+        (branch-crumb-ast? ast) (get-branch-name cb ast query)
+        (branch-runs-ast? ast) (get-branch-runs cb ast query)
         (retry-run-expression? expr) (send-retry-run ast cb query)
         (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
            expr)
@@ -262,27 +402,7 @@
           (cb {:circleci/organization {:organization/name name}} query))
 
         ;; :route/workflow
-        (let [{:keys [key children]} ast]
-          (and (= :circleci/organization key)
-               (= 1 (count children))
-               (= :organization/project (:key (first children)))
-               (= [:project/name
-                   {:project/organization [:organization/vcs-type
-                                           :organization/name]}
-                   {:project/workflow-runs [:run/id
-                                            :run/name
-                                            :run/status
-                                            :run/started-at
-                                            :run/stopped-at
-                                            {:run/trigger-info [:trigger-info/vcs-revision
-                                                                :trigger-info/subject
-                                                                :trigger-info/body
-                                                                :trigger-info/branch
-                                                                {:trigger-info/pull-requests [:pull-request/url]}]}
-                                            {:run/project [:project/name
-                                                           {:project/organization [:organization/name
-                                                                                   :organization/vcs-type]}]}]}]
-                  (:query (first children)))))
+        (project-runs-ast? ast)
         (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
                               :organization/name (-> ast :params :organization/name)
                               :project/name (-> ast :children first :params :project/name)}
@@ -321,36 +441,12 @@
 
         ;; Also :route/workflow (but *another( expression for breadcrumbs, which
         ;; doesn't actually need to hit the server)
-        (let [{:keys [key children]} ast]
-          (and (= :circleci/organization key)
-               (= 1 (count children))
-               (= :organization/project (:key (first children)))
-               (= '[:project/name] (:query (first children)))))
-        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-          (cb {:circleci/organization {:organization/vcs-type vcs-type
-                                       :organization/name name}}
-              query))
+        (project-crumb-ast? ast) (get-project-name cb ast query)
 
-
-        ;; :route/run
-        (let [{:keys [key query]} ast]
-          (and (= :circleci/run key)
-               (= [:run/id
-                   {:run/project [:project/name
-                                  {:project/organization [:organization/vcs-type
-                                                          :organization/name]}]}]
-                  query)))
-        (let [id (:run/id (:params ast))]
-          (api/get-workflow-status
-           (callback-api-chan
-            (fn [response]
-              (let [build (-> response :workflow/jobs first :job/build)]
-                (cb {:circleci/run {:run/id id
-                                    :run/project {:project/name (:build/repo build)
-                                                  :project/organization {:organization/vcs-type (:build/vcs-type build)
-                                                                         :organization/name (:build/org build)}}}}
-                    query))))
-           id))
+        ;; :route/run crumbs
+        (run-page-crumbs-ast? ast) (get-run-page-crumbs cb ast query)
+        
+        ;; :route/run RunRow
         (let [{:keys [key query]} ast]
           (and (= :circleci/run key)
                (= [:run/id
