@@ -49,7 +49,7 @@
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.10"]
-            [lein-doo "0.1.6"]]
+            [lein-doo "0.1.7"]]
 
   ;; Don't include these dependencies transitively. These are foundational
   ;; dependencies that lots of our direct dependencies depend on. We want to
