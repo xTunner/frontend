@@ -121,10 +121,36 @@
             ~(select-keys route-params [:job/name]))
            ~query}]})]})
 
+(defn- forgiving-subvec
+  "Like subvec, but doesn't throw if you ask for elements beyond the end of the vector.
+
+  (forgiving-subvec [:a :b] 1 5) ;=> [:b]
+  (forgiving-subvec [:a :b] 4 5) ;=> []"
+  [v offset limit]
+  (subvec v
+          (min (count v) offset)
+          (min (count v) (+ offset limit))))
+
+(defn connection-read [next-read]
+  (fn [{:keys [target] {{:keys [connection/offset connection/limit] :as params} :params} :ast :as env}]
+    (if (and (nil? target) (or offset limit))
+      (do
+        (assert
+         (and offset limit)
+         (str ":connection/offset and :connection/limit must be given together."))
+        (-> env
+            (update-in [:ast :params] dissoc :connection/offset :connection/limit)
+            next-read
+            (update-in [:value :connection/edges] forgiving-subvec offset limit)))
+
+      ;; Until the backend supports offset and limit, strip these.
+      (next-read (update-in env [:ast :params] dissoc :connection/offset :connection/limit)))))
+
 (def read (bodhi/read-fn
            (-> bodhi/basic-read
                default-db/read
                param-indexing/read
+               connection-read
                (query-mapping/read :app/route-params routed-data-query-map)
                aliasing/read
                subpage-read

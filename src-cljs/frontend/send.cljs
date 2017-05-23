@@ -2,6 +2,7 @@
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as time]
             [cljs.core.async :refer [chan]]
+            [cljs.core.match :refer-macros [match]]
             [clojure.set :refer [rename-keys]]
             [frontend.api :as api]
             [frontend.utils.vcs-url :as vcs-url]
@@ -110,7 +111,10 @@
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
-                       :project/workflow-runs (mapv adapt-to-run response)}}}]
+                       :project/workflow-runs {:connection/total-count (count response)
+                                               :connection/edges (->> response
+                                                                      (map adapt-to-run)
+                                                                      (mapv #(hash-map :edge/node %)))}}}}]
         (merge-fn novelty query))))
    (vcs-url/vcs-url vcs-type org-name project-name)))
 
@@ -182,6 +186,13 @@
 ;; This implementation is merely a prototype, which does some rudimentary
 ;; pattern-matching against a few expected cases to decide which APIs to hit. A
 ;; more rigorous implementation will come later.
+;;
+;; Note: Some of these are handled with a simple `cond`, while some use
+;; core.match's `match`. The `match` approach is more flexible and easier to
+;; read; we should migrate the `cond` branches to `match` branches, unless we
+;; move directly to a more sustainable implementation first. The `cond` branches
+;; are only left here because, as of this writing, it doesn't seem worth taking
+;; the time to migrate them yet.
 (defmethod send* :remote [[_ query] cb]
   (doseq [expr query]
     (let [[expr cb] (de-alias-expression expr cb)
@@ -198,41 +209,6 @@
                      (cb {:app/current-user {:user/organizations (vec orgs)}} query)))]
           (api/get-orgs ch :include-user? true))
 
-        ;; :route/projects
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/vcs-type
-                  :organization/name
-                  {:organization/projects [:project/follower-count
-                                           :project/vcs-url
-                                           :project/name
-                                           :project/parallelism
-                                           :project/oss?]}
-                  {:organization/plan [*]}]
-                (:query ast)))
-        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-          (api/get-org-settings
-           name vcs-type
-           (callback-api-chan
-            #(let [projects (for [p (:projects %)]
-                              {:project/vcs-url (:vcs_url p)
-                               :project/name (vcs-url/repo-name (:vcs_url p))
-                               :project/parallelism (:parallel p)
-                               ;; Sometimes the backend returns a map of feature_flags,
-                               ;; and sometimes it returns :oss directly on the project.
-                               :project/oss? (or (:oss p)
-                                                 (get-in p [:feature_flags :oss]))
-                               :project/follower-count (count (:followers p))})]
-               (cb {:circleci/organization {:organization/name name
-                                            :organization/vcs-type vcs-type
-                                            :organization/projects (vec projects)}} query))))
-          (api/get-org-plan
-           name vcs-type
-           (callback-api-chan
-            #(cb {:circleci/organization {:organization/name name
-                                          :organization/vcs-type vcs-type
-                                          :organization/plan %}}
-                 query))))
-
         ;; Also :route/projects (but a separate expression for analytics, which
         ;; doesn't actually need to hit the server)
         (and (= :circleci/organization (:key ast))
@@ -241,33 +217,6 @@
           (cb {:circleci/organization {:organization/name name}} query))
 
         ;; :route/workflow
-        (let [{:keys [key children]} ast]
-          (and (= :circleci/organization key)
-               (= 1 (count children))
-               (= :organization/project (:key (first children)))
-               (= [:project/name
-                   {:project/organization [:organization/vcs-type
-                                           :organization/name]}
-                   {:project/workflow-runs [:run/id
-                                            :run/name
-                                            :run/status
-                                            :run/started-at
-                                            :run/stopped-at
-                                            {:run/trigger-info [:trigger-info/vcs-revision
-                                                                :trigger-info/subject
-                                                                :trigger-info/body
-                                                                :trigger-info/branch
-                                                                {:trigger-info/pull-requests [:pull-request/url]}]}
-                                            {:run/project [:project/name
-                                                           {:project/organization [:organization/name
-                                                                                   :organization/vcs-type]}]}]}]
-                  (:query (first children)))))
-        (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
-                              :organization/name (-> ast :params :organization/name)
-                              :project/name (-> ast :children first :params :project/name)}
-                             cb
-                             query)
-
         (reread-project-runs-ast? ast) (reread-project-runs ast cb query)
 
         ;; :route/run
@@ -390,7 +339,88 @@
         ;; :route/org-workflows
         (org-runs-ast? ast) (get-org-runs ast cb query)
 
-        :else (throw (str "No clause found for " (pr-str expr)))))))
+        :else
+        (match ast
+          ;; :route/projects
+          {:type :join
+           :key :circleci/organization
+           :params {:organization/vcs-type org-vcs-type
+                    :organization/name org-name}
+           :children [{:type :prop :key :organization/vcs-type}
+                      {:type :prop :key :organization/name}
+                      {:type :join :key :organization/projects
+                       :children [{:type :prop :key :project/follower-count}
+                                  {:type :prop :key :project/vcs-url}
+                                  {:type :prop :key :project/name}
+                                  {:type :prop :key :project/parallelism}
+                                  {:type :prop :key :project/oss?}]}
+                      {:type :join :key :organization/plan
+                       :children [{:key '*}]}]}
+          (api/get-org-settings
+           org-name org-vcs-type
+           (callback-api-chan
+            #(let [projects (for [p (:projects %)]
+                              {:project/vcs-url (:vcs_url p)
+                               :project/name (vcs-url/repo-name (:vcs_url p))
+                               :project/parallelism (:parallel p)
+                               ;; Sometimes the backend returns a map of feature_flags,
+                               ;; and sometimes it returns :oss directly on the project.
+                               :project/oss? (or (:oss p)
+                                                 (get-in p [:feature_flags :oss]))
+                               :project/follower-count (count (:followers p))})]
+               (cb {:circleci/organization {:organization/name org-name
+                                            :organization/vcs-type org-vcs-type
+                                            :organization/projects (vec projects)}} query))))
+
+
+          ;; :route/workflow
+          {:type :join
+           :key :circleci/organization
+           :params {:organization/vcs-type org-vcs-type
+                    :organization/name org-name}
+           :children [{:type :join
+                       :key :organization/project
+                       :params {:project/name project-name}
+                       :children [{:type :prop :key :project/name}
+                                  {:type :join
+                                   :key :project/organization
+                                   :children [{:type :prop :key :organization/vcs-type}
+                                              {:type :prop :key :organization/name}]}
+                                  {:type :join
+                                   :key :project/workflow-runs
+                                   ;; :params {:connection/limit _
+                                   ;;          :connection/offset _}
+                                   :children [{:type :prop :key :connection/total-count}
+                                              {:type :join
+                                               :key :connection/edges
+                                               :children [{:type :join
+                                                           :key :edge/node
+                                                           :children [{:type :prop :key :run/id}
+                                                                      {:type :prop :key :run/name}
+                                                                      {:type :prop :key :run/status}
+                                                                      {:type :prop :key :run/started-at}
+                                                                      {:type :prop :key :run/stopped-at}
+                                                                      {:type :join
+                                                                       :key :run/trigger-info
+                                                                       :children [{:type :prop :key :trigger-info/vcs-revision}
+                                                                                  {:type :prop :key :trigger-info/subject}
+                                                                                  {:type :prop :key :trigger-info/body}
+                                                                                  {:type :prop :key :trigger-info/branch}
+                                                                                  {:type :join
+                                                                                   :key :trigger-info/pull-requests
+                                                                                   :children [{:type :prop :key :pull-request/url}]}]}
+                                                                      {:type :join
+                                                                       :key :run/project
+                                                                       :children [{:type :prop :key :project/name}
+                                                                                  {:type :join
+                                                                                   :key :project/organization
+                                                                                   :children [{:type :prop :key :organization/name}
+                                                                                              {:type :prop :key :organization/vcs-type}]}]}]}]}]}]}]}
+          (merge-workflow-runs {:organization/vcs-type org-vcs-type
+                                :organization/name org-name
+                                :project/name project-name}
+                               cb
+                               query))))))
 
 (defn send [remotes cb]
   (doseq [remote-entry remotes]

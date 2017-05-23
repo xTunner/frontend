@@ -182,11 +182,13 @@
   (query [this]
     [:project/name
      {:project/organization [:organization/vcs-type :organization/name]}
-     {:project/workflow-runs (om-next/get-query RunRow)}])
+     `{(:project/workflow-runs {:connection/offset 1 :connection/limit 5})
+       [:connection/total-count
+        {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}])
   Object
   (render [this]
     (component
-      (if-let [runs (seq (:project/workflow-runs (om-next/props this)))]
+      (if-let [runs (seq (map :edge/node (get-in (om-next/props this) [:project/workflow-runs :connection/edges])))]
         (run-row-collection runs)
         (let [project-name (:project/name (om-next/props this))
               org-name (:organization/name (:project/organization (om-next/props this)))]
