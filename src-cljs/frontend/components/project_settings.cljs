@@ -713,7 +713,7 @@
                                                       (close-fn))
                                        :kind :flat}
                                       "Cancel")
-                       (button/managed-button {:failed-text "Failed"
+                       (button/managed-button {:failed-text "Permission Denied"
                                                :success-text "Imported"
                                                :loading-text "Importing..."
                                                :kind :primary
