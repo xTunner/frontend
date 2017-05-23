@@ -595,11 +595,14 @@
 
 (defmethod api-event [:project-envvar :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (:project-settings-project-name state))
-    state
-    (assoc-in state
-              state/project-envvars-path
-              (into {} (map (juxt :name :value)) resp))))
+  (let [{:keys [project-name on-success]} context]
+    (if-not (= project-name (:project-settings-project-name state))
+      state
+      (-> state
+          (assoc-in state/project-envvars-path
+                    (into {} (map (juxt :name :value)) resp))
+          (cond->
+            on-success (on-success state))))))
 
 
 (defmethod api-event [:update-project-parallelism :success]
@@ -668,13 +671,6 @@
   [target message status {:keys [context]} previous-state current-state comms]
   ((:on-success context)))
 
-(defmethod api-event [:import-env-vars :success]
-  [target message status {:keys [resp context]} state]
-  (when (= (:dest-vcs-url context) (:vcs_url (get-in state state/project-path)))
-    (if-not (-> resp :unauthorized-projects seq)
-      (state/add-flash-notification state "You’ve successfully imported your environment variables.")
-      (state/add-flash-notification state "Oh no! We weren't able to import your variables! Please check that you have the permissions to do so."))))
-
 
 (defmethod api-event [:import-env-vars :failed]
   [target message status {:keys [resp context]} state]
@@ -690,7 +686,8 @@
                (gstring/format "/api/v1.1/project/%s/%s/envvar" vcs-type project-name)
                :project-envvar
                (:api comms)
-               :context {:project-name project-name})
+               :context {:project-name project-name
+                         :on-success #(state/add-flash-notification % "You’ve successfully imported your environment variables.")})
     ((:on-success context))))
 
 (defmethod api-event [:delete-env-var :success]
