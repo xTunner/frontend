@@ -675,6 +675,12 @@
       (state/add-flash-notification state "You’ve successfully imported your environment variables.")
       (state/add-flash-notification state "Oh no! We weren't able to import your variables! Please check that you have the permissions to do so."))))
 
+
+(defmethod api-event [:import-env-vars :failed]
+  [target message status {:keys [resp context]} state]
+  (when (= (:dest-vcs-url context) (:vcs_url (get-in state state/project-path)))
+    (state/add-flash-notification state "Sorry! You must have write permissions on both projects to import variables. Please contact an administrator at your organization to proceed.")))
+
 (defmethod post-api-event! [:import-env-vars :success]
   [target message status {:keys [context]} previous-state current-state comms]
   (let [vcs-url (:dest-vcs-url context)
