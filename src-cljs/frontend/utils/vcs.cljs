@@ -1,6 +1,5 @@
 (ns frontend.utils.vcs
-  (:require [frontend.config :as config]
-            [frontend.models.user :as user]))
+  (:require [frontend.config :as config]))
 
 (def bitbucket-possible? (complement config/enterprise?))
 
