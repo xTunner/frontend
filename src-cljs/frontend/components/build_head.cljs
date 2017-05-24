@@ -64,7 +64,7 @@
 
 (defn queued-explanation-text []
   (if (not (enterprise?))
-    " We're sorry; this is our fault. Typically you should only see this when load spikes overwhelm our auto-scaling; waiting to acquire containers should be brief and infrequent."
+    " Queued builds typically happen when load spikes overwhelm our auto-scaling. We actively monitor for this and will work to bring more capacity online."
     [:span
      " Typically, this means you have more builds scheduled to be run than available capacity in the fleet. "
      (if (:admin (utils/current-user))
