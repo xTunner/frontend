@@ -30,6 +30,7 @@
   (case job-status-str
     ("fixed" "success") :job-run-status/succeeded
     "failed" :job-run-status/failed
+    "timedout" :job-run-status/timed-out
     "canceled" :job-run-status/canceled
     "not_run" :job-run-status/not-run
     "running" :job-run-status/running
