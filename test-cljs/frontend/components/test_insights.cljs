@@ -81,11 +81,6 @@
                                :lifecycle "finished",
                                :subject "Merge pull request #5051 from circleci/nginx-upcheck"}]}}])
 
-(deftest can-render-feature-container
-  (testing "Simple render of feature container."
-    (let [test-node (gdom/createDom "div")]
-      (om/root insights/build-insights test-projects-data {:target test-node}))))
-
 (deftest can-render-insights-cards
   (testing "Simple render of cards."
     (let [test-node (gdom/createDom "div")]
