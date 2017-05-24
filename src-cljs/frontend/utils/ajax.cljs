@@ -8,6 +8,55 @@
             [frontend.utils :as utils :include-macros true])
   (:import [goog Uri]))
 
+(defn js->clj-copy
+  "Recursively transforms JavaScript arrays into ClojureScript
+  vectors, and JavaScript objects into ClojureScript maps.  With
+  option ':keywordize-keys true' will convert object fields from
+  strings to keywords.
+
+  This is an exact local copy of the core function so that I can add
+  appropriate logging to debug an issue."
+  ([x] (js->clj x :keywordize-keys false))
+  ([x & opts]
+    (let [{:keys [keywordize-keys]} opts
+          keyfn (if keywordize-keys keyword str)
+          f (fn thisfn [x]
+              (try
+                (cond
+                  (satisfies? IEncodeClojure x)
+                  (-js->clj x (apply array-map opts))
+
+                  (seq? x)
+                  (doall (map thisfn x))
+
+                  (coll? x)
+                  (into (empty x) (map thisfn x))
+
+                  (array? x)
+                  (vec (map thisfn x))
+
+                  (identical? (type x) js/Object)
+                  (into {} (for [k (js-keys x)]
+                             [(keyfn k) (thisfn (aget x k))]))
+
+                  :else x)
+                (catch :default e
+                  (utils/mlog "JS->CLJ EXCEPTION START")
+                  (utils/mlog (str "Exception: " e))
+                  (utils/mlog x)
+                  (utils/mlog
+                    (str "cond statement: "
+                         (cond
+                           (satisfies? IEncodeClojure x) "(satisfies? IEncodeClojure x)"
+                           (seq? x) "(seq? x)"
+                           (coll? x) "(coll? x)"
+                           (array? x) "(array? x)"
+                           (identical? (type x) js/Object) "(identical? (type x) js/Object)"
+                           :else ":else")))
+                  (utils/mlog "JS->CLJ EXCEPTION STOP")
+                  (throw e))))]
+      (f x))))
+
 ;; https://github.com/JulianBirch/cljs-ajax/blob/master/src/ajax/core.cljs
 ;; copy of the default json formatter, but returns a map with json body
 ;; in :resp and extra request metadata: :response-headers, :url, :method, and :request-time
@@ -23,13 +72,13 @@
      :or {start-time (time/now)}}]
      {:read (fn read-json [xhrio]
               (let [json (js/JSON.parse (.getResponseText xhrio))
-                    headers (js->clj (.getResponseHeaders xhrio))
+                    headers (js->clj-copy (.getResponseHeaders xhrio))
                     request-time (try
                                    (time/in-millis (time/interval start-time (time/now)))
                                    (catch :default e
                                      (utils/merror e)
                                      0))]
-                {:resp (js->clj json :keywordize-keys keywords?)
+                {:resp (js->clj-copy json :keywordize-keys keywords?)
                  :response-headers headers
                  :url url
                  :method method

@@ -122,21 +122,8 @@
 
 (defmethod api-event [:projects :failed]
   [target message status args state]
-  (js/console.log (str "PROJECT API FAILED: \n"
-                       "target: " target "\n"
-                       "message: " message "\n"
-                       "status: " status "\n"
-                       "args: " args "\n"))
+  (mlog (str "PROJECT API FAILED: " (:status-text args)))
   state)
-
-
-(defmethod post-api-event! [:projects :failed]
-  [target message status args previous-state current-state comms]
-  (js/console.log (str "PROJECT API FAILED: \n"
-                       "target: " target "\n"
-                       "message: " message "\n"
-                       "status: " status "\n"
-                       "args: " args "\n")))
 
 (defmethod post-api-event! [:projects :success]
   [target message status args previous-state {:keys [navigation-point] :as current-state} comms]
