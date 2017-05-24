@@ -44,54 +44,70 @@
                    "github" (icon/github)
                    "bitbucket" (icon/bitbucket))]]])) orgs)]])
 
+(defn updates-dropdown-list
+  [class-name]
+  [:ul {:class class-name}
+   (when-not (config/enterprise?)
+     [:li [:a.nav-item {:href "https://circleci.com/changelog/"
+                        :target "_blank"}
+           [:div.heading "Changelog"]
+           [:div.description "The latest CircleCI product updates."]]])
+   [:li [:a.nav-item {:href "https://discuss.circleci.com/c/announcements"
+                      :target "_blank"}
+         [:div.heading "Announcements"]
+         [:div.description "Important announcements from CircleCI about upcoming features and updates."]]]])
+
 (defn updates-dropdown []
-  [:li.dropdown
+  [:li.dropdown.updates-menu
    [:button.dropdown-toggle
     {:data-toggle "dropdown"
      :aria-haspopup "true"
      :aria-expanded "false"}
     "Updates" [:i.material-icons "keyboard_arrow_down"]]
-   [:ul.dropdown-menu.pull-right.animated.slideInDown
-    (when-not (config/enterprise?)
-      [:li [:a {:href "https://circleci.com/changelog/"
-                :target "_blank"}
-            [:div.heading "Changelog"]
-            [:div.description "The latest CircleCI product updates."]]])
-    [:li [:a {:href "https://discuss.circleci.com/c/announcements"
-              :target "_blank"}
-          [:div.heading "Announcements"]
-          [:div.description "Important announcements from CircleCI about upcoming features and updates."]]]]])
+   (updates-dropdown-list "dropdown-menu pull-right animated slideInDown")])
+
+(defn support-dropdown-list
+  [owner class-name]
+  [:ul {:class class-name}
+   [:li
+    [:a.nav-item {:href "https://circleci.com/docs/"
+                  :target "_blank"}
+     [:div.heading "Docs"]
+     [:div.description "Read about building, testing, and deploying your software on CircleCI."]]]
+   [:li
+    [:a.nav-item {:href "https://discuss.circleci.com/"
+                  :target "_blank"}
+     [:div.heading "Discuss"]
+     [:div.description "Get help and meet developers talking about testing, continuous integration, and continuous delivery."]]]
+   [:li
+    [:a.nav-item (common/contact-support-a-info owner)
+     [:div.heading "Support"]
+     [:div.description "Send us a message. We are here to help!"]]]
+   [:li
+    [:a.nav-item {:href "https://discuss.circleci.com/c/feature-request"
+                  :target "_blank"}
+     [:div.heading "Suggest a feature"]]]
+   [:li
+    [:a.nav-item {:href "https://discuss.circleci.com/c/bug-reports"
+                  :target "_blank"}
+     [:div.heading "Report an issue"]]]])
 
 (defn support-dropdown [owner]
-  [:li.dropdown
+  [:li.dropdown.support-menu
    [:button.dropdown-toggle
     {:data-toggle "dropdown"
      :aria-haspopup "true"
      :aria-expanded "false"}
     "Support" [:i.material-icons "keyboard_arrow_down"]]
-   [:ul.dropdown-menu.pull-right.animated.slideInDown
-    [:li
-     [:a {:href "https://circleci.com/docs/"
-          :target "_blank"}
-      [:div.heading "Docs"]
-      [:div.description "Read about building, testing, and deploying your software on CircleCI."]]]
-    [:li
-     [:a {:href "https://discuss.circleci.com/"
-          :target "_blank"}
-      [:div.heading "Discuss"]
-      [:div.description "Get help and meet developers talking about testing, continuous integration, and continuous delivery."]]]
-    [:li
-     [:a (common/contact-support-a-info owner)
-      [:div.heading "Support"]
-      [:div.description "Send us a message. We are here to help!"]]]
-    [:li
-     [:a {:href "https://discuss.circleci.com/c/feature-request"
-          :target "_blank"}
-      [:div.heading "Suggest a feature"]]]
-    [:li
-     [:a {:href "https://discuss.circleci.com/c/bug-reports"
-          :target "_blank"}
-      [:div.heading "Report an issue"]]]]])
+   (support-dropdown-list owner "dropdown-menu pull-right animated slideInDown")])
+
+(defn user-dropdown-list
+  [user class-name]
+  [:ul {:class class-name}
+   [:li [:a.nav-item {:href "/account"} [:div.heading "User settings"]]]
+   (when (:admin user)
+     [:li [:a.nav-item {:href "/admin"} [:div.heading "Admin"]]])
+   [:li [:a.nav-item {:href "/logout/"} [:div.heading "Log out"]]]])
 
 (defn user-dropdown [user]
   [:li.dropdown.user-menu
@@ -100,11 +116,25 @@
      :aria-haspopup "true"
      :aria-expanded "false"}
     [:img.gravatar {:src (gh-utils/make-avatar-url user :size 60)}]]
+   (user-dropdown-list user "dropdown-menu pull-right animated slideInDown")])
+
+(defn hamburger-dropdown [user owner]
+  [:li.dropdown.hamburger-menu
+   [:button.dropdown-toggle
+    {:data-toggle "dropdown"
+     :aria-haspopup "true"
+     :aria-expanded "false"}
+    [:i.material-icons "menu"]]
    [:ul.dropdown-menu.pull-right.animated.slideInDown
-    [:li [:a {:href "/account"} [:div.heading "User settings"]]]
-    (when (:admin user)
-      [:li [:a {:href "/admin"} [:div.heading "Admin"]]])
-    [:li [:a {:href "/logout"} [:div.heading "Log out"]]]]])
+     [:li.hamburger-options
+      [:div.heading.hamburger "User"]
+      (user-dropdown-list user "hamburger-list")]
+     [:li.hamburger-options
+      [:div.heading.hamburger "Support"]
+      (support-dropdown-list owner "hamburger-list")]
+     [:li.hamburger-options
+      [:div.heading.hamburger "Updates"]
+      (updates-dropdown-list "hamburger-list")]]])
 
 (defn- disable-org-picker?
   [current-route]
@@ -124,23 +154,17 @@
         (html
           [:div
            [:div.navs-container
-            [:ul.nav-items.collapsing-nav {:class (when (disable-org-picker? current-route) "disable")}
+            [:ul.nav-options.collapsing-nav {:class (when (disable-org-picker? current-route) "disable")}
               (orgs-dropdown-selector orgs selected-org owner)]
 
             [:a.logomark {:href "/dashboard"
                           :aria-label "Dashboard"}
              (common/ico :logo)]
-            [:ul.nav-items.nav-items-left.collapsing-nav
+            [:ul.nav-options
              (updates-dropdown)
              (support-dropdown owner)
-             (user-dropdown user)]
-            [:button.navbar-toggler.hidden-md-up {:type "button"
-                                                  :data-toggle "collapse"
-                                                  :data-target "collapsing-nav"
-                                                  :aria-controls "collapsing-nav"
-                                                  :aria-expanded "false"
-                                                  :aria-label "Toggle navigation"}
-             [:i.material-icons "menu"]]]])))))
+             (user-dropdown user)
+             (hamburger-dropdown user owner)]]])))))
 
 (dc/do
   (defcard topbar

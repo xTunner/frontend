@@ -3,6 +3,7 @@
     .flexy(row);
     background-color: @grayDarker;
     height: @top-bar-height;
+
     @top-bar-sep-border: 1px solid @gray;
 
     > .navs-container {
@@ -14,6 +15,8 @@
         .icon-style(@white, (@em * 2));
         width: 70px;
         height: @top-bar-height;
+        margin-left: 0;
+        margin-right: 1ex;
       }
 
       > .navbar-toggler {
@@ -28,7 +31,7 @@
         }
       }
 
-      > .nav-items {
+      > .nav-options {
         .flexy;
 
         margin-bottom: 0;
@@ -46,13 +49,9 @@
                 }
             }
           }
-
-          @media (max-width: @screen-sm-min) {
-            display: none;
-          }
         }
 
-        > li {
+        > .dropdown {
           .flexy;
 
           > button.dropdown-toggle:not(.org-button) {
@@ -68,18 +67,6 @@
             }
           }
 
-          > a {
-            > i {
-              // OVERRIDE--ICON-STYLE
-              margin-left: 0;
-              margin-right: 1ex;
-              @media (max-width: @screen-md-min) {
-                display: none;
-              }
-            }
-          }
-
-          > a,
           > button.dropdown-toggle:not(.org-button) {
             display: block;
             font-size: @fontSizeSmall;
@@ -92,18 +79,12 @@
 
             .transition(all .1s ease-in);
 
-            @media (max-width: @screen-md-min) {
-              padding: 20px 1em;
-            }
-
-            > i {
+            > .material-icons {
               // OVERRIDE--ICON-STYLE
               color: @white;
               .transition(all .1s ease-in);
 
-              > .material-icons {
-                margin-top: -3px
-              }
+              margin-top: -3px;
             }
 
             > .nav-label {
@@ -114,14 +95,15 @@
           > .dropdown-menu:not(.org-dropdown-menu) {
             // Bootstrap Overrides
             margin-top: 0;
+            margin-right: 0;
             padding: 0;
             border: none;
-            margin-right: 1em;
             border-radius: 0;
             min-width: 260px;
 
-            > li > a {
-              padding: 10px 20px;
+            @li-padding: 10px 20px;
+            .nav-item {
+              padding: @li-padding;
               // OVERRIDE--BOOTSTRAP WHITE-SPACE
               white-space: normal;
               color: @grayDarker;
@@ -141,14 +123,65 @@
                 font-weight: 600;
               }
             }
+            
+            > .hamburger-options {
+              > .hamburger {
+                list-style-type: none;
+                font-weight: 600;
+              }
+
+              > .heading {
+                padding: @li-padding;
+                font-size: @fontSizeSmaller;
+                line-height: @baseLineHeight;
+                font-weight: bold;
+                text-transform: uppercase;
+                color: @grayLight;
+                border-bottom: 1px solid @grayLightest;
+              }
+
+              > .hamburger-list {
+                padding: 0;
+                list-style-type: none;
+
+                .nav-item {
+                  text-decoration: none;
+                  padding: 0;
+
+                  > .heading {
+                    font-weight: 400;
+                    padding: 10px 20px;
+                    color: black;
+                    
+                    &:hover {
+                      background-color: @blueDarkest;
+                      color: @white;
+                    }
+                  }
+
+                  > .description {
+                    display: none;
+                  }
+                }
+              }
+            } 
           }
 
           &.user-menu {
             border-left: @top-bar-sep-border;
+          }
 
+          &.hamburger-menu {
+            @media (min-width: @screen-sm-max) {
+              display: none;
+            }
+          }
+
+          &.user-menu,
+          &.updates-menu,
+          &.support-menu {
             @media (max-width: @screen-sm-max) {
-              padding-left: 0;
-              border-left: none;
+              display: none;
             }
           }
         }
@@ -277,6 +310,25 @@
               border-radius: 50%;
               border: 2px solid @whiten;
               background-color: @whiten;
+            }
+          }
+
+          @media (max-width: @screen-sm-min) {
+            width: @dropdown-width/6;
+
+            > .org-button {
+              border-right: none;
+
+              > .org-name {
+                > .selected-org-name {
+                  display: none;
+                }
+
+                > .org-picker-arrow {
+                  padding-left: 0;
+                  margin-left: -5px;
+                }
+              }
             }
           }
         }
