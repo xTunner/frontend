@@ -23,7 +23,9 @@
      :or {start-time (time/now)}}]
      {:read (fn read-json [xhrio]
               (let [json (js/JSON.parse (.getResponseText xhrio))
+                    _ (js/console.log "JSON PARSED: " json)
                     headers (js->clj (.getResponseHeaders xhrio))
+                    _ (js/console.log (str "HEADERS PARSED: " headers))
                     request-time (try
                                    (time/in-millis (time/interval start-time (time/now)))
                                    (catch :default e
