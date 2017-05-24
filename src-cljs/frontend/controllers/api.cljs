@@ -118,15 +118,25 @@
                                          {})]]
           (merge new-project
                  (select-keys matching-project [:recent-builds :build-timing])))]
-    (js/console.log (str "PROJECT API RESP: " resp))
-    (js/console.log (str "PROJECT API NEW PROJECTS: " new-projects))
-    (js/console.log (str "PROJECT API LOOKUP: " (str old-projects-lookup)))
-    (js/console.log (str "PROJECT API PROCESSED PROJECTS: " processed-new-projects))
     (assoc-in current-state state/projects-path processed-new-projects)))
 
 (defmethod api-event [:projects :failed]
   [target message status args state]
-  (js/console.log "PROJECT API FAILED"))
+  (js/console.log (str "PROJECT API FAILED: \n"
+                       "target: " target "\n"
+                       "message: " message "\n"
+                       "status: " status "\n"
+                       "args: " args "\n"))
+  state)
+
+
+(defmethod post-api-event! [:projects :failed]
+  [target message status args previous-state current-state comms]
+  (js/console.log (str "PROJECT API FAILED: \n"
+                       "target: " target "\n"
+                       "message: " message "\n"
+                       "status: " status "\n"
+                       "args: " args "\n")))
 
 (defmethod post-api-event! [:projects :success]
   [target message status args previous-state {:keys [navigation-point] :as current-state} comms]
