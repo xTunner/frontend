@@ -41,10 +41,10 @@
 
                   :else x)
                 (catch :default e
-                  (js/console.log "JS->CLJ EXCEPTION START")
-                  (js/console.log (str "Exception: " e))
-                  (js/console.log x)
-                  (js/console.log
+                  (utils/mlog "JS->CLJ EXCEPTION START")
+                  (utils/mlog (str "Exception: " e))
+                  (utils/mlog x)
+                  (utils/mlog
                     (str "cond statement: "
                          (cond
                            (satisfies? IEncodeClojure x) "(satisfies? IEncodeClojure x)"
@@ -53,7 +53,7 @@
                            (array? x) "(array? x)"
                            (identical? (type x) js/Object) "(identical? (type x) js/Object)"
                            :else ":else")))
-                  (js/console.log "JS->CLJ EXCEPTION STOP")
+                  (utils/mlog "JS->CLJ EXCEPTION STOP")
                   (throw e))))]
       (f x))))
 

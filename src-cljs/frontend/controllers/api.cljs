@@ -128,7 +128,7 @@
 
 (defmethod api-event [:projects :failed]
   [target message status args state]
-  (js/console.log (str "PROJECT API FAILED: " (:status-text args)))
+  (mlog (str "PROJECT API FAILED: " (:status-text args)))
   state)
 
 (defmethod post-api-event! [:projects :success]
