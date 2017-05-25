@@ -278,21 +278,27 @@
     });
   });
 
-  .ui("WorkflowRuns", {
-    margin-left: auto;
-    margin-right: auto;
-    width: 1200px;
-    min-width: 512px;
-    padding-top: 16px;
+  .ui("ProjectWorkflowRuns", {
+    > .page-info {
+      margin: 10px 0;
 
-    @media (max-width: @screen-md-max) {
-      width: 66.66%;
-      min-width: 512px;
+      > .run-numbers {
+        font-weight: 500;
+      }
     }
 
-    @media (max-width: @screen-xs-max) {
-      width: 100%;
-      min-width: 100%;
+    > .list-pager {
+      .flexy;
+      .justify-content(space-between);
+      margin: 1em 0;
+
+      > span {
+        color: @grayLighter;
+      }
+
+      > a {
+        color: @blueDarkest;
+      }
     }
   });
 });

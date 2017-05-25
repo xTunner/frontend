@@ -185,6 +185,7 @@
      `{(:routed/page {:page/connection :project/workflow-runs
                       :page/count 4})
        [:connection/total-count
+        :connection/offset
         {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}
      {'[:app/route-params _] [:page/number]}])
   Object
@@ -195,14 +196,27 @@
             {project-name :project/name
              {vcs-type :organization/vcs-type
               org-name :organization/name} :project/organization} props
-            run-edges (get-in props [:routed/page :connection/edges])]
-        (if-let [runs (seq (map :edge/node run-edges))]
+
+            {:keys [connection/total-count
+                    connection/offset
+                    connection/edges]}
+            (:routed/page props)]
+        (if (pos? total-count)
           (html
            [:div
-        (run-row-collection runs)
-            (when (< 1 page-num)
-              [:div [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (dec page-num))} "Prev"]])
-            [:div [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (inc page-num))} "Next"]]])
+            [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
+            (run-row-collection (map :edge/node edges))
+            [:.list-pager
+             (if (< 1 page-num)
+               [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (dec page-num))}
+                "← Newer workflow runs"]
+               [:span
+                "← Newer workflow runs"])
+             (if (> total-count (+ offset (count edges)))
+               [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (inc page-num))}
+                "Older workflow runs →"]
+               [:span
+                "Older workflow runs →"])]])
           (card/basic
            (empty-state/empty-state
             {:icon (icon/workflows)
