@@ -140,6 +140,7 @@
     :team-icon-clicked
     :teammates-invited
     :test-commands-saved
+    :topbar-toggled
     :trial-offer-banner-impression
     :unfollow-projects-clicked
     :update-parallelism-clicked
