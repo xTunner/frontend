@@ -44,43 +44,59 @@
                                                                             :pet/species :pet-species/cat
                                                                             :pet/description "Himalayan"}}]}})]
 
-    (testing "Without an offset or limit, returns all edges."
-      (is (= {:root/pets-connection {:connection/total-count 5
-                                     :connection/edges [{:edge/node {:pet/name "Milo"}}
-                                                        {:edge/node {:pet/name "Otis"}}
-                                                        {:edge/node {:pet/name "Chance"}}
-                                                        {:edge/node {:pet/name "Shadow"}}
-                                                        {:edge/node {:pet/name "Sassy"}}]}}
-             (parser {:state state} '[{:root/pets-connection
-                                       [:connection/total-count
-                                        {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
+    (testing "Locally"
+      (testing "without an offset or limit, returns all edges."
+        (is (= {:root/pets-connection {:connection/total-count 5
+                                       :connection/edges [{:edge/node {:pet/name "Milo"}}
+                                                          {:edge/node {:pet/name "Otis"}}
+                                                          {:edge/node {:pet/name "Chance"}}
+                                                          {:edge/node {:pet/name "Shadow"}}
+                                                          {:edge/node {:pet/name "Sassy"}}]}}
+               (parser {:state state} '[{:root/pets-connection
+                                         [:connection/total-count
+                                          {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
 
-    (testing "With a offset and limit, returns the slice specified."
-      (is (= {:root/pets-connection {:connection/total-count 5
-                                     :connection/edges [{:edge/node {:pet/name "Otis"}}
-                                                        {:edge/node {:pet/name "Chance"}}]}}
-             (parser {:state state} '[{(:root/pets-connection {:connection/offset 1 :connection/limit 2})
-                                       [:connection/total-count
-                                        {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
+      (testing "with a offset and limit, returns the slice specified."
+        (is (= {:root/pets-connection {:connection/total-count 5
+                                       :connection/offset 1
+                                       :connection/limit 2
+                                       :connection/edges [{:edge/node {:pet/name "Otis"}}
+                                                          {:edge/node {:pet/name "Chance"}}]}}
+               (parser {:state state} '[{(:root/pets-connection {:connection/offset 1 :connection/limit 2})
+                                         [:connection/total-count
+                                          :connection/offset
+                                          :connection/limit
+                                          {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
 
-    (testing "With a limit which reaches past the end of the collection, returns as much as exists."
-      (is (= {:root/pets-connection {:connection/total-count 5
-                                     :connection/edges [{:edge/node {:pet/name "Sassy"}}]}}
-             (parser {:state state} '[{(:root/pets-connection {:connection/offset 4 :connection/limit 2})
-                                       [:connection/total-count
-                                        {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
+      (testing "with a limit which reaches past the end of the collection, returns as much as exists."
+        (is (= {:root/pets-connection {:connection/total-count 5
+                                       :connection/edges [{:edge/node {:pet/name "Sassy"}}]}}
+               (parser {:state state} '[{(:root/pets-connection {:connection/offset 4 :connection/limit 2})
+                                         [:connection/total-count
+                                          {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
 
-    (testing "With an offset which starts past the end of the collection, returns no edges."
-      (is (= {:root/pets-connection {:connection/total-count 5
-                                     :connection/edges []}}
-             (parser {:state state} '[{(:root/pets-connection {:connection/offset 6 :connection/limit 2})
-                                       [:connection/total-count
-                                        {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
+      (testing "with an offset which starts past the end of the collection, returns no edges."
+        (is (= {:root/pets-connection {:connection/total-count 5
+                                       :connection/edges []}}
+               (parser {:state state} '[{(:root/pets-connection {:connection/offset 6 :connection/limit 2})
+                                         [:connection/total-count
+                                          {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))
 
-    (testing "With only an offset or a limit, throws."
-      (is (thrown? js/Error (parser {:state state} '[{(:root/pets-connection {:connection/offset 4})
-                                                      [:connection/total-count
-                                                       {:connection/edges [{:edge/node [:pet/name]}]}]}] nil)))
-      (is (thrown? js/Error (parser {:state state} '[{(:root/pets-connection {:connection/limit 2})
-                                                      [:connection/total-count
-                                                       {:connection/edges [{:edge/node [:pet/name]}]}]}] nil))))))
+      (testing "with only an offset or a limit, throws."
+        (is (thrown? js/Error (parser {:state state} '[{(:root/pets-connection {:connection/offset 4})
+                                                        [:connection/total-count
+                                                         {:connection/edges [{:edge/node [:pet/name]}]}]}] nil)))
+        (is (thrown? js/Error (parser {:state state} '[{(:root/pets-connection {:connection/limit 2})
+                                                        [:connection/total-count
+                                                         {:connection/edges [{:edge/node [:pet/name]}]}]}] nil)))))
+
+    (testing "Remotely"
+      (testing "strips all offset and limit stuff, as it's not supported yet."
+        (is (= '[{:root/pets-connection
+                  [:connection/total-count
+                   {:connection/edges [{:edge/node [:pet/name]}]}]}]
+               (parser {:state state} '[{(:root/pets-connection {:connection/offset 1 :connection/limit 2})
+                                         [:connection/total-count
+                                          :connection/offset
+                                          :connection/limit
+                                          {:connection/edges [{:edge/node [:pet/name]}]}]}] :remote)))))))

@@ -111,10 +111,10 @@
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
-                       :project/workflow-runs {:connection/total-count (count response)
-                                               :connection/edges (->> response
-                                                                      (map adapt-to-run)
-                                                                      (mapv #(hash-map :edge/node %)))}}}}]
+                       :routed-page {:connection/total-count (count response)
+                                     :connection/edges (->> response
+                                                            (map adapt-to-run)
+                                                            (mapv #(hash-map :edge/node %)))}}}}]
         (merge-fn novelty query))))
    (vcs-url/vcs-url vcs-type org-name project-name)))
 
@@ -387,9 +387,8 @@
                                    :children [{:type :prop :key :organization/vcs-type}
                                               {:type :prop :key :organization/name}]}
                                   {:type :join
-                                   :key :project/workflow-runs
-                                   ;; :params {:connection/limit _
-                                   ;;          :connection/offset _}
+                                   :key :routed-page
+                                   :params {:< :project/workflow-runs}
                                    :children [{:type :prop :key :connection/total-count}
                                               {:type :join
                                                :key :connection/edges

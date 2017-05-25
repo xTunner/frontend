@@ -182,16 +182,27 @@
   (query [this]
     [:project/name
      {:project/organization [:organization/vcs-type :organization/name]}
-     `{(:project/workflow-runs {:connection/offset 1 :connection/limit 5})
+     `{(:routed/page {:page/connection :project/workflow-runs
+                      :page/count 4})
        [:connection/total-count
-        {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}])
+        {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}
+     {'[:app/route-params _] [:page/number]}])
   Object
   (render [this]
     (component
-      (if-let [runs (seq (map :edge/node (get-in (om-next/props this) [:project/workflow-runs :connection/edges])))]
+      (let [props (om-next/props this)
+            page-num (get-in props ['[:app/route-params _] :page/number])
+            {project-name :project/name
+             {vcs-type :organization/vcs-type
+              org-name :organization/name} :project/organization} props
+            run-edges (get-in props [:routed/page :connection/edges])]
+        (if-let [runs (seq (map :edge/node run-edges))]
+          (html
+           [:div
         (run-row-collection runs)
-        (let [project-name (:project/name (om-next/props this))
-              org-name (:organization/name (:project/organization (om-next/props this)))]
+            (when (< 1 page-num)
+              [:div [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (dec page-num))} "Prev"]])
+            [:div [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (inc page-num))} "Next"]]])
           (card/basic
            (empty-state/empty-state
             {:icon (icon/workflows)
