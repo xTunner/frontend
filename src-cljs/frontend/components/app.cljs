@@ -19,6 +19,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.launchdarkly :as ld]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]))
@@ -123,8 +124,7 @@
               current-route (current-route app owner)
               selected-org (or (some-> (:routed-entity/organization (om-next/props this))
                                        org/modern-org->legacy-org)
-                               (get-in app state/selected-org-path)
-                               (org/default orgs))
+                               (state-utils/selected-or-default-org (get-in app state/selected-org-path) orgs))
               admin? (if (config/enterprise?)
                        (get-in app [:current-user :dev-admin])
                        (get-in app [:current-user :admin]))

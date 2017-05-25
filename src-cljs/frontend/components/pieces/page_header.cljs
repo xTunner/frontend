@@ -1,9 +1,12 @@
 (ns frontend.components.pieces.page-header
-  (:require [devcards.core :as dc :refer-macros [defcard]]
+  (:require [frontend.async :refer [raise!]]
+            [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.components.pieces.popover :as popover]
             [frontend.routes :as routes]
+            [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [component html]]
             [frontend.utils.devcards :refer [iframe]]
             [om.core :as om :include-macros true]))
@@ -217,8 +220,13 @@
   :actions     - (optional) A component (or collection of components) which will be
                  placed on the right of the header. This is where page-wide actions are
                  placed."
-  [{:keys [crumbs actions logged-out? platform]} owner]
-  (let [crumbs-login (map #(assoc % :logged-out? logged-out?) crumbs)]
+  [{:keys [crumbs actions logged-out? platform topbar-beta]} owner]
+  (let [crumbs-login (map #(assoc % :logged-out? logged-out?) crumbs)
+        has-topbar? (ld/feature-on? "top-bar-ui-v-1")
+        toggle-topbar (when-not has-topbar? "top-bar-ui-v-1")
+        toggle-topbar-text (if has-topbar?
+                             "Return to Current UI"
+                             "Try Beta UI!")]
     (reify
       om/IDisplayName (display-name [_] "User Header")
       om/IRender
@@ -233,13 +241,25 @@
                                  (html [:span "This build ran on 2.0. "
                                         (let [href "https://circleci.com/docs/2.0/"]
                                           [:div [:a {:href href
-                                               :target "_blank"
-                                               :on-click #((om/get-shared owner :track-event) {:event-type :beta-link-clicked
-                                                                                               :properties {:href href}})}
+                                                     :target "_blank"
+                                                     :on-click #((om/get-shared owner :track-event) {:event-type :beta-link-clicked
+                                                                                                     :properties {:href href}})}
                                                  "Learn more →"]])])
                                  :placement :bottom}
                                (engine-2)))]
-            [:.actions actions]]))))))
+            [:.actions
+             (when (ld/feature-on? "top-bar-beta-button")
+               [:div.topbar-toggle
+                (button/link {:fixed? true
+                              :kind :primary
+                              :size :small
+                              :href (if has-topbar?
+                                      "/dashboard"
+                                      (routes/new-org-path {:nav-point (:nav-point topbar-beta)
+                                                            :current-org (:org topbar-beta)}))
+                              :on-click #(raise! owner [:preferences-updated {state/user-betas-key [toggle-topbar]}])}
+                  toggle-topbar-text)])
+             actions]]))))))
 
 (dc/do
   (def ^:private crumbs
