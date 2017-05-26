@@ -247,7 +247,7 @@
              :organization/name org-name
              :project/name project-name
              :page/number (let [page (get-in params [:query-params :page])]
-                            (if (re-matches #"\d+" page)
+                            (if (and (string? page) (re-matches #"\d+" page))
                               (js/parseInt page)
                               1))}}))
 
