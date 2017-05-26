@@ -11,6 +11,7 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
+            [frontend.experimental.non-code-empty-state :as non-code-empty-state]
             [frontend.models.organization :as org]
             [frontend.models.user :as user]
             [frontend.state :as state]
@@ -21,6 +22,16 @@
             [goog.string :as gstr]
             [inflections.core :as inflections]
             [om.core :as om :include-macros true]))
+
+(defn- non-code-empty-state []
+  (non-code-empty-state/empty-state-main-page
+    {:name "Team"
+     :icon (icon/team)
+     :subheading "teams sub heading"
+     :footer-heading "Use teams on your projects"
+     :footer-description "To use teams on your projects, you need to add your code and run a build"}
+    [:.teams
+     [:img {:src (utils/cdn-path "/img/empty-state-teams.png")}]]))
 
 (defn- add-follow-counts [users projects]
   (for [user users
@@ -345,5 +356,7 @@
     om/IRender
     (render [_]
       (main-template/template
-       {:app app
-        :main-content (om/build main-content app)}))))
+        {:app app
+         :main-content (if (user/non-code-identity? (:current-user app))
+                         (non-code-empty-state)
+                         (om/build main-content app))}))))
