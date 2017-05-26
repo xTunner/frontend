@@ -238,21 +238,18 @@
                         (expr-ast/get-in [:organization/project :project/branch])
                         :params
                         :branch/name)]
-    (api/get-project-workflows
-     (callback-api-chan
-      (fn [response]
-        (let [runs (->> response
-                        (filter #(-> %
-                                     :workflow/trigger-info
-                                     :trigger-info/branch
-                                     (= branch-name)))
-                        (mapv adapt-to-run))
-              novelty {:circleci/organization
-                       {:organization/project
-                        {:project/branch
-                         {:branch/workflow-runs (vec runs)}}}}]
-          (cb novelty query))))
-     (vcs-url/vcs-url vcs-type org-name repo-name))))
+    (api/get-branch-workflows (callback-api-chan
+                               (fn [response]
+                                 (let [runs (mapv adapt-to-run response)
+                                       novelty {:circleci/organization
+                                                {:organization/project
+                                                 {:project/branch
+                                                  {:branch/workflow-runs (vec runs)}}}}]
+                                   (cb novelty query))))
+                              vcs-type
+                              org-name
+                              repo-name
+                              branch-name)))
 
 (defn- project-runs-ast? [expr-ast]
   (and (= :circleci/organization

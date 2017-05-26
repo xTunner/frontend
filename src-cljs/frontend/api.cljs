@@ -94,6 +94,19 @@
              {:type :get-project-workflows
               :params {:vcs-url vcs-url}}))
 
+(defn get-branch-workflows [api-ch vcs-type org-name repo-name branch-name]
+  (ajax/ajax :post
+             "/query-api"
+             :uncatchable-by-old-controller
+             api-ch
+             :format :transit
+             :params
+             {:type :get-branch-workflows
+              :params {:organization/vcs-type (keyword vcs-type)
+                       :organization/name org-name
+                       :project/name repo-name
+                       :branch/name branch-name}}))
+
 (defn get-org-workflows [api-ch org-name vcs-type]
   (ajax/ajax :post
              "/query-api"
