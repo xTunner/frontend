@@ -103,7 +103,7 @@
              :params
              {:type :get-org-workflows
               :params {:organization/name org-name
-                       :organization/vcs-type vcs-type}}))
+                       :organization/vcs-type (keyword vcs-type)}}))
 
 (defn request-retry-run [api-ch run-id]
   (ajax/ajax :post
