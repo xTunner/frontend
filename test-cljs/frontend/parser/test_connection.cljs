@@ -88,3 +88,79 @@
                                           :connection/offset
                                           :connection/limit
                                           {:connection/edges [{:edge/node [:pet/name]}]}]}] :remote)))))))
+
+
+(deftest merge-works
+  (testing "Leaves other slots nil"
+    (let [merge (bodhi/merge-fn
+                 (-> bodhi/basic-merge
+                     connection/merge))
+          state {}
+          novelty {:root/pets-connection {:connection/total-count 5
+                                          :connection/edges [{:edge/node {:pet/name "Otis"}}
+                                                             {:edge/node {:pet/name "Chance"}}]}}
+          query '[{(:root/pets-connection {:connection/offset 1 :connection/limit 2})
+                   [:connection/total-count
+                    :connection/offset
+                    :connection/limit
+                    {:connection/edges [{:edge/node [:pet/name]}]}]}]]
+      (is (= {:keys #{}
+              :next {:root/pets-connection {:connection/total-count 5
+                                            :connection/edges [nil
+                                                               {:edge/node {:pet/name "Otis"}}
+                                                               {:edge/node {:pet/name "Chance"}}
+                                                               nil
+                                                               nil]}}}
+             (merge {} state novelty query)))))
+
+  (testing "Overwrites the correct slots"
+    (let [merge (bodhi/merge-fn
+                 (-> bodhi/basic-merge
+                     connection/merge))
+          state {:root/pets-connection {:connection/total-count 5
+                                        :connection/edges [nil
+                                                           {:edge/node {:pet/name "Otis"}}
+                                                           {:edge/node {:pet/name "Chance"}}
+                                                           nil
+                                                           nil]}}
+          novelty {:root/pets-connection {:connection/total-count 5
+                                          :connection/edges [{:edge/node {:pet/name "Milo"}}
+                                                             {:edge/node {:pet/name "Otis"}}]}}
+          query '[{(:root/pets-connection {:connection/offset 0 :connection/limit 2})
+                   [:connection/total-count
+                    :connection/offset
+                    :connection/limit
+                    {:connection/edges [{:edge/node [:pet/name]}]}]}]]
+      (is (= {:keys #{}
+              :next {:root/pets-connection {:connection/total-count 5
+                                            :connection/edges [{:edge/node {:pet/name "Milo"}}
+                                                               {:edge/node {:pet/name "Otis"}}
+                                                               {:edge/node {:pet/name "Chance"}}
+                                                               nil
+                                                               nil]}}}
+             (merge {} state novelty query)))))
+
+  (testing "Shortens the edge vector when the total count goes down"
+    (let [merge (bodhi/merge-fn
+                 (-> bodhi/basic-merge
+                     connection/merge))
+          state {:root/pets-connection {:connection/total-count 5
+                                        :connection/edges [nil
+                                                           {:edge/node {:pet/name "Otis"}}
+                                                           {:edge/node {:pet/name "Chance"}}
+                                                           nil
+                                                           nil]}}
+          novelty {:root/pets-connection {:connection/total-count 3
+                                          :connection/edges [{:edge/node {:pet/name "Milo"}}
+                                                             {:edge/node {:pet/name "Otis"}}]}}
+          query '[{(:root/pets-connection {:connection/offset 0 :connection/limit 2})
+                   [:connection/total-count
+                    :connection/offset
+                    :connection/limit
+                    {:connection/edges [{:edge/node [:pet/name]}]}]}]]
+      (is (= {:keys #{}
+              :next {:root/pets-connection {:connection/total-count 3
+                                            :connection/edges [{:edge/node {:pet/name "Milo"}}
+                                                               {:edge/node {:pet/name "Otis"}}
+                                                               {:edge/node {:pet/name "Chance"}}]}}}
+             (merge {} state novelty query))))))

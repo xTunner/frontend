@@ -1,4 +1,5 @@
-(ns frontend.parser.connection)
+(ns frontend.parser.connection
+  (:refer-clojure :exclude [merge]))
 
 (defn- forgiving-subvec
   "Like subvec, but doesn't throw if you ask for elements beyond the end of the vector.
@@ -46,3 +47,25 @@
                        (update :ast #(if (empty? (:params %))
                                        (dissoc % :params)
                                        %))))))))
+
+(defn merge [next-merge]
+  (fn [{:keys [ast path state novelty] {{:keys [connection/offset connection/limit] :as params} :params :keys [key]} :ast :as env}]
+    (let [{:keys [key params]} ast]
+      (if (or offset limit)
+        (do
+          (assert
+           (and offset limit)
+           (str ":connection/offset and :connection/limit must be given together."))
+          (let [total-count (:connection/total-count novelty)
+                novel-edges (:connection/edges novelty)]
+            {:keys #{}
+             :next (-> state
+                       (assoc-in (conj path :connection/total-count) total-count)
+                       (update-in (conj path :connection/edges)
+                                  (fn [edges]
+                                    (let [correct-length-edges (vec (take total-count (concat edges (repeat nil))))]
+                                      (reduce-kv (fn [edges i novel-edge]
+                                                   (assoc edges (+ offset i) novel-edge))
+                                                 correct-length-edges
+                                                 novel-edges)))))}))
+        (next-merge env)))))
