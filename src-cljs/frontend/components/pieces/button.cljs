@@ -11,10 +11,11 @@
   :kind      - The kind of button. One of #{:primary :secondary :danger :flat}.
                (default: :secondary)
   :disabled? - If true, the button is disabled. (default: false)
+  :label     - (optional) This will be used as tooltip text on the button.
   :size      - The size of the button. One of #{:full :small}.
                (default: :full)
   :fixed?    - If true, the button is fixed width. (default: false)"
-  [{:keys [on-click kind disabled? size fixed?]
+  [{:keys [on-click kind disabled? size fixed? label]
     :or {kind :secondary size :full}}
    content]
   (component
@@ -24,6 +25,7 @@
                                     (case size
                                       :full nil
                                       :small "small")])
+               :title label
                :disabled disabled?
                :on-click on-click}
       content])))
@@ -183,10 +185,12 @@
     (button-display
      [;; Primary buttons
       [(button {:kind :primary
+                :label "This is a primary button"
                 :on-click #(js/alert "Clicked!")}
                "Primary")
        (button {:disabled? true
                 :kind :primary
+                :label "This is a primary disabled button"
                 :on-click #(js/alert "Clicked!")}
                "Primary Disabled")
        (button {:fixed? true

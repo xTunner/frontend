@@ -723,7 +723,7 @@
              :close-fn #(do (track-modal-dismissed {:component "close-x"})
                             (close-fn))}))))))
 
-(defn env-vars [{:keys [project-data projects]} owner]
+(defn env-vars [{:keys [project-data projects org-admin?]} owner]
   (reify
     om/IInitState
     (init-state [_]
@@ -741,7 +741,9 @@
             close-fn #(om/set-state! owner :show-modal nil)
             other-projects (->> projects
                                 (filter #(not= (project-model/id %) project-id))
-                                (sort-by (comp string/lower-case project-model/project-name)))]
+                                (sort-by (comp string/lower-case project-model/project-name)))
+            disabled-import-env-vars? (or (empty? other-projects)
+                                          (not org-admin?))]
         (html
          ;; The :section and :article here are artifacts of the legacy styling
          ;; of the settings pages, and should go away as the structure of the
@@ -755,7 +757,9 @@
                          (button/button {:on-click #(om/set-state! owner :show-modal :import-env-vars)
                                          :kind :primary
                                          :size :small
-                                         :disabled? (empty? other-projects)}
+                                         :label (when (not org-admin?)
+                                                  "To use this function, you must be an organization admin on your VCS-provider")
+                                         :disabled? disabled-import-env-vars?}
                                         "Import Variable(s)"))
                        (button/button {:on-click #(om/set-state! owner :show-modal :add-env-var)
                                        :kind :primary
@@ -2473,7 +2477,8 @@
                :build-environment (om/build build-environment project-data)
                :parallel-builds (om/build parallel-builds data)
                :env-vars (om/build env-vars {:project-data project-data
-                                             :projects projects})
+                                             :projects projects
+                                             :org-admin? (get-in data (conj state/org-data-path :admin?))})
                :advanced-settings (om/build advance project-data)
                :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
                                      (config/enterprise?))
