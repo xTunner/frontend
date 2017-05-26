@@ -9,7 +9,8 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
-            [frontend.models.organization :as org]
+            [frontend.data.projects :as test-data]
+            [frontend.experimental.non-code-empty-state :as non-code-empty-state]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
             [frontend.routes :as routes]
@@ -18,7 +19,6 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.launchdarkly :as ld]
             [frontend.utils.legacy :refer [build-legacy]]
-            [frontend.state :as state]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next :refer-macros [defui]]))
@@ -118,6 +118,32 @@
                             :action (add-project-button {:empty-state? true
                                                          :org org})}))
 
+(defn- non-code-ident-empty-state []
+  (non-code-empty-state/empty-state-main-page
+    {:name "Projects"
+     :icon (icon/project)
+     :subheading "projects sub heading"
+     :footer-heading "Use projects on your projects"
+     :footer-description "To use projects on your projects, you need to add your code and run a build"}
+    (card/basic
+      (build-legacy table/table
+                    {:rows (test-data/non-code-identity-table-data)
+                     :key-fn :project/vcs-url
+                     :columns [{:header "Project"
+                                :cell-fn :reponame}
+
+                               {:header "Parallelism"
+                                :type #{:right :shrink}
+                                :cell-fn :parallel}
+
+                               {:header "Team"
+                                :type #{:right :shrink}
+                                :cell-fn :follower-count}
+
+                               {:header "Settings"
+                                :type :shrink
+                                :cell-fn #(table/action-link "Settings" (icon/settings) "#")}]}))))
+
 
 (defui ^:once OrgProjects
   static om-next/Ident
@@ -177,34 +203,39 @@
     (set-page-title! "Projects"))
   (render [this]
     (component
-      (main-template/template
-       {:app (:legacy/state (om-next/props this))
-        :selected-org (:routed-entity/organization (om-next/props this))
-        :crumbs [{:type :projects}]
-        :header-actions (add-project-button {:empty-state? false
-                                             :org (:routed-entity/organization (om-next/props this))})
-        :main-content
-        (element :main-content
-          (let [current-user (:app/current-user (om-next/props this))
-                orgs (get-in (om-next/props this) [:app/current-user :user/organizations])]
-            (html
-             [:div
-              (when-not (ld/feature-on? "top-bar-ui-v-1")
-                [:.sidebar
-                  (card/basic
-                    (if orgs
-                      (org-picker/picker
-                        {:orgs orgs
-                         :selected-org (first (filter #(= (select-keys (:routed-entity/organization (om-next/props this)) [:organization/vcs-type :organization/name])
-                                                         (select-keys % [:organization/vcs-type :organization/name]))
-                                                orgs))
-                         :on-org-click (fn [{:keys [organization/vcs-type organization/name]}]
-                                         (analytics/track! this {:event-type :org-clicked
-                                                                 :properties {:login name
-                                                                              :vcs_type vcs-type}})
-                                         (navigate! this (routes/v1-organization-projects-path {:org name :vcs_type vcs-type})))})
-                      (spinner)))])
-              [:.main
-               (if-let [selected-org (:org-for-projects (om-next/props this))]
-                 (org-projects selected-org)
-                 (no-org-selected orgs (:user/bitbucket-authorized? current-user)))]])))}))))
+      (let [current-user (:app/current-user (om-next/props this))
+            non-code-identity? (user/non-code-identity? current-user)]
+        (main-template/template
+          {:app (:legacy/state (om-next/props this))
+           :selected-org (:routed-entity/organization (om-next/props this))
+           :crumbs [{:type :projects}]
+           :header-actions (when-not non-code-identity?
+                             (add-project-button {:empty-state? false
+                                                  :org (:routed-entity/organization (om-next/props this))}))
+           :main-content
+           (if non-code-identity?
+             (non-code-ident-empty-state)
+             (element
+               :main-content
+               (let [orgs (get-in (om-next/props this) [:app/current-user :user/organizations])]
+                 (html
+                   [:div
+                    (when-not (ld/feature-on? "top-bar-ui-v-1")
+                      [:.sidebar
+                       (card/basic
+                         (if orgs
+                           (org-picker/picker
+                             {:orgs orgs
+                              :selected-org (first (filter #(= (select-keys (:routed-entity/organization (om-next/props this)) [:organization/vcs-type :organization/name])
+                                                               (select-keys % [:organization/vcs-type :organization/name]))
+                                                           orgs))
+                              :on-org-click (fn [{:keys [organization/vcs-type organization/name]}]
+                                              (analytics/track! this {:event-type :org-clicked
+                                                                      :properties {:login name
+                                                                                   :vcs_type vcs-type}})
+                                              (navigate! this (routes/v1-organization-projects-path {:org name :vcs_type vcs-type})))})
+                           (spinner)))])
+                    [:.main
+                     (if-let [selected-org (:org-for-projects (om-next/props this))]
+                       (org-projects selected-org)
+                       (no-org-selected orgs (:user/bitbucket-authorized? current-user)))]]))))})))))
