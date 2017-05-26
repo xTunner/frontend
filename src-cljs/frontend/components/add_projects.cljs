@@ -77,15 +77,6 @@
      "username or organization."]
     [:li "Choose a repo you want to test and we'll do the rest!"]]])
 
-(defn add-projects-head-actions [data owner]
-  (reify
-    om/IRender
-    (render [_]
-      (button/button {:on-click #(raise! owner [:refreshed-user-orgs {}])
-                      :kind :primary
-                      :size :small}
-                     "Reload Organizations"))))
-
 (defn- repo-title [repo link?]
   (let [repo-name (vcs-url/repo-name (:vcs_url repo))
         title (str repo-name (when (:fork repo) " (forked)"))]

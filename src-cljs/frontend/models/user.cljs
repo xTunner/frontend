@@ -67,6 +67,10 @@
   (let [check-fn (some-fn :user/bitbucket-authorized? :bitbucket_authorized)]
     (-> user check-fn boolean)))
 
+(defn non-code-identity? [user]
+  (and (not (github-authorized? user))
+       (not (bitbucket-authorized? user))))
+
 (defn deauthorize-github [user]
   (-> user
       (assoc :github_oauth_scopes nil)))

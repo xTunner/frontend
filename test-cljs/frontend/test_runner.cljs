@@ -29,6 +29,7 @@
             [frontend.test-send]
             [frontend.utils-test]
             [frontend.utils.test-build]
+            [frontend.utils.test-expr-ast]
             [frontend.utils.test-function-query]
             [frontend.utils.test-seq]))
 

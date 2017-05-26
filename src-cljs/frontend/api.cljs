@@ -94,6 +94,17 @@
              {:type :get-project-workflows
               :params {:vcs-url vcs-url}}))
 
+(defn get-org-workflows [api-ch org-name vcs-type]
+  (ajax/ajax :post
+             "/query-api"
+             :uncatchable-by-old-controller
+             api-ch
+             :format :transit
+             :params
+             {:type :get-org-workflows
+              :params {:organization/name org-name
+                       :organization/vcs-type vcs-type}}))
+
 (defn request-retry-run [api-ch run-id]
   (ajax/ajax :post
              "/query-api"

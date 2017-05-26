@@ -363,14 +363,16 @@
                                    (sort-by first))))
               (spinner)))])))))
 
-(defn tests-ad [owner language build-succeeded?]
-  (let [junit-link (case language
-                         "Clojure" "/docs/test-metadata/#test2junit-for-clojure-tests"
-                         "Ruby" "/docs/test-metadata/#rspec"
-                         "JavaScript" "/docs/test-metadata/#js"
-                         "Python" "/docs/test-metadata#python"
-                         "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
-                         "/docs/test-metadata/#metadata-collection-in-custom-test-steps")
+(defn tests-ad [owner language platform build-succeeded?]
+  (let [junit-link (if (= platform "2.0")
+                     "/docs/2.0/configuration-reference/#storetestresults"
+                     (case language
+                       "Clojure" "/docs/test-metadata/#test2junit-for-clojure-tests"
+                       "Ruby" "/docs/test-metadata/#rspec"
+                       "JavaScript" "/docs/test-metadata/#js"
+                       "Python" "/docs/test-metadata#python"
+                       "Java" "/docs/test-metadata#java-junit-results-with-maven-surefire-plugin"
+                       "/docs/test-metadata/#metadata-collection-in-custom-test-steps"))
         track-junit #((om/get-shared owner :track-event) {:event-type :set-up-junit-clicked
                                                           :properties {:language language}})]
     (case (feature/ab-test-treatment :junit-ab-test)
@@ -495,7 +497,8 @@
 
 (defn build-tests-list [{project :project
                          {{:keys [tests exceptions]} :tests-data
-                          {build-status :status} :build
+                          {build-status :status
+                           platform :platform} :build
                           :as data} :build-data}
                         owner]
   (reify
@@ -550,7 +553,7 @@
                                  (:classname slowest)
                                  (:name slowest)
                                  (:run_time slowest))]])]
-               :else (tests-ad owner (:language project) build-succeeded?))))])))))
+               :else (tests-ad owner (:language project) platform build-succeeded?))))])))))
 
 (defn circle-yml-ad []
   [:div

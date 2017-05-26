@@ -311,6 +311,70 @@
                         (project-workflow-runs project)
                         (spinner))}))))
 
+(defui ^:once BranchWorkflowRuns
+  static om-next/IQuery
+  (query [this]
+    [{:branch/project [{:project/organization [:organization/name]}
+                       :project/name]}
+     {:branch/workflow-runs (om-next/get-query RunRow)}])
+  Object
+  (render [this]
+    (component
+      (if-let [runs (-> (om-next/props this) :branch/workflow-runs seq)]
+        (run-row-collection runs)
+        (let [{project-name :project/name
+               {org-name :organization/name} :project/organization}
+              (:branch/project (om-next/props this))]
+          (card/basic
+           (empty-state/empty-state
+            {:icon (icon/workflows)
+             :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
+             :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))))
+
+(def branch-workflow-runs (om-next/factory BranchWorkflowRuns))
+
+(defui ^:once BranchPage
+  static om-next/IQuery
+  (query [this]
+    ['{:legacy/state [*]}
+     {:routed-entity/organization [:organization/vcs-type
+                                   :organization/name]}
+     {:routed-entity/project [:project/name]}
+     `{(:branch-for-crumb {:< :routed-entity/branch})
+       [:branch/name]}
+     `{(:branch-for-runs {:< :routed-entity/branch})
+       ~(om-next/get-query BranchWorkflowRuns)}])
+  Object
+  (componentDidMount [this]
+    (set-page-title! "CircleCI"))
+  (render [this]
+    (let [{{org-name :organization/name
+            vcs-type :organization/vcs-type} :routed-entity/organization
+           {project-name :project/name} :routed-entity/project
+           {branch-name :branch/name} :branch-for-crumb
+           branch-for-runs :branch-for-runs}
+          (om-next/props this)]
+      (main-template/template
+       {:app (:legacy/state (om-next/props this))
+        :crumbs [{:type :workflows}
+                 {:type :org-workflows
+                  :username org-name
+                  :vcs_type vcs-type}
+                 {:type :project-workflows
+                  :username org-name
+                  :project project-name
+                  :vcs_type vcs-type}
+                 {:type :branch-workflows
+                  :username org-name
+                  :project project-name
+                  :vcs_type vcs-type
+                  :branch branch-name}]
+        :header-actions (settings-link vcs-type org-name project-name)
+        :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
+        :main-content (if-let [branch (:branch-for-runs (om-next/props this))]
+                        (branch-workflow-runs branch)
+                        (spinner))}))))
+
 (defui ^:once OrgWorkflowRuns
   static om-next/IQuery
   (query [this]

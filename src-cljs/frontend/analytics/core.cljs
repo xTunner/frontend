@@ -32,6 +32,8 @@
   #{:account-settings-clicked
     :account-settings-icon-clicked
     :add-credentials-clicked
+    :add-env-vars-modal-dismissed
+    :add-env-vars-modal-impression
     :add-more-containers-clicked
     :add-private-repos-clicked
     :add-project-clicked
@@ -74,12 +76,14 @@
     :dependency-commands-saved
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
-    :env-vars-created
-    :env-vars-modal-dismissed
-    :env-vars-modal-impression
+    :env-vars-added
+    :env-vars-fetch-failed
+    :env-vars-imported
     :expand-repo-toggled
     :follow-and-build-projects-clicked
     :follow-project-clicked
+    :import-env-vars-modal-dismissed
+    :import-env-vars-modal-impression
     :insights-bar-clicked
     :insights-icon-clicked
     :invite-teammates-clicked
@@ -136,6 +140,7 @@
     :team-icon-clicked
     :teammates-invited
     :test-commands-saved
+    :topbar-toggled
     :trial-offer-banner-impression
     :unfollow-projects-clicked
     :update-parallelism-clicked

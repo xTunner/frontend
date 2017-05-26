@@ -326,8 +326,7 @@
     (when-let [user (:current-user legacy-state)]
       (subscribe-to-user-channel user (:ws comms)))
     (analytics/init! legacy-state-atom)
-    (when (ld/feature-on? "top-bar-ui-v-1")
-      (api/get-orgs (:api comms) :include-user? true))))
+    (api/get-orgs (:api comms) :include-user? true)))
 
 (defn ^:export toggle-admin []
   (swap! (om-next/app-state (compassus/get-reconciler application))

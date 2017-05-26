@@ -24,7 +24,7 @@
      :job-run-status/not-running) :status-class/waiting
     :job-run-status/running :status-class/running
     :job-run-status/succeeded :status-class/succeeded
-    :job-run-status/failed :status-class/failed
+    (:job-run-status/failed :job-run-status/timed-out) :status-class/failed
     (:job-run-status/canceled
      :job-run-status/not-run) :status-class/stopped))
 
@@ -159,7 +159,8 @@
        [:run/id
         {:run/project [:project/name
                        {:project/organization [:organization/vcs-type
-                                               :organization/name]}]}]}
+                                               :organization/name]}]}
+        {:run/trigger-info [:trigger-info/branch]}]}
      `{(:run-for-row {:< :routed-entity/run})
        ~(om-next/get-query workflow-page/RunRow)}
      `{(:run-for-jobs {:< :routed-entity/run})
@@ -187,6 +188,7 @@
     (let [{{project-name :project/name
             {org-name :organization/name
              vcs-type :organization/vcs-type} :project/organization} :run/project
+           {branch-name :trigger-info/branch} :run/trigger-info
            id :run/id}
           (:routed-entity/run (om-next/props this))]
       (component
@@ -200,6 +202,11 @@
                     :username org-name
                     :project project-name
                     :vcs_type vcs-type}
+                   {:type :branch-workflows
+                    :username org-name
+                    :project project-name
+                    :vcs_type vcs-type
+                    :branch branch-name}
                    {:type :workflow-run
                     :run/id id}]
           :main-content

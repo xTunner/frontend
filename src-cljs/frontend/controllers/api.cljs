@@ -1,9 +1,9 @@
 (ns frontend.controllers.api
   (:require [cljs.core.async :refer [close!]]
-            [cognitect.transit :as transit]
             [frontend.api :as api]
             [frontend.api.path :as api-path]
             [frontend.async :refer [put! raise!]]
+            [frontend.components.forms :as forms]
             [frontend.components.forms :refer [release-button!]]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
@@ -24,15 +24,9 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.map :as map-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.docs :as doc-utils]
             [frontend.utils :as utils :refer [mlog merror]]
             [om.core :as om :include-macros true]
-            [goog.string :as gstring]
-            [clojure.set :as set]
-            [cljs-time.core :as time]
-            [cljs-time.format :as timef]
-            [frontend.datetime :as datetime]
-            [frontend.components.forms :as forms]))
+            [goog.string :as gstring]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the
 ;; result will be pushed into the api-channel
@@ -125,6 +119,11 @@
           (merge new-project
                  (select-keys matching-project [:recent-builds :build-timing])))]
     (assoc-in current-state state/projects-path processed-new-projects)))
+
+(defmethod api-event [:projects :failed]
+  [target message status args state]
+  (mlog (str "PROJECT API FAILED: " (:status-text args)))
+  state)
 
 (defmethod post-api-event! [:projects :success]
   [target message status args previous-state {:keys [navigation-point] :as current-state} comms]
@@ -601,11 +600,14 @@
 
 (defmethod api-event [:project-envvar :success]
   [target message status {:keys [resp context]} state]
-  (if-not (= (:project-name context) (:project-settings-project-name state))
-    state
-    (assoc-in state
-              state/project-envvars-path
-              (into {} (map (juxt :name :value)) resp))))
+  (let [{:keys [project-name on-success]} context]
+    (if-not (= project-name (:project-settings-project-name state))
+      state
+      (-> state
+          (assoc-in state/project-envvars-path
+                    (into {} (map (juxt :name :value)) resp))
+          (cond->
+            on-success (on-success state))))))
 
 
 (defmethod api-event [:update-project-parallelism :success]
@@ -674,6 +676,24 @@
   [target message status {:keys [context]} previous-state current-state comms]
   ((:on-success context)))
 
+
+(defmethod api-event [:import-env-vars :failed]
+  [target message status {:keys [resp context]} state]
+  (when (= (:dest-vcs-url context) (:vcs_url (get-in state state/project-path)))
+    (state/add-flash-notification state "Sorry! You must have write permissions on both projects to import variables. Please contact an administrator at your organization to proceed.")))
+
+(defmethod post-api-event! [:import-env-vars :success]
+  [target message status {:keys [context]} previous-state current-state comms]
+  (let [vcs-url (:dest-vcs-url context)
+        vcs-type (vcs-url/vcs-type vcs-url)
+        project-name (vcs-url/project-name vcs-url)]
+    (ajax/ajax :get
+               (gstring/format "/api/v1.1/project/%s/%s/envvar" vcs-type project-name)
+               :project-envvar
+               (:api comms)
+               :context {:project-name project-name
+                         :on-success #(state/add-flash-notification % "You’ve successfully imported your environment variables.")})
+    ((:on-success context))))
 
 (defmethod api-event [:delete-env-var :success]
   [target message status {:keys [resp context]} state]

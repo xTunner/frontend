@@ -8,6 +8,30 @@
             [frontend.utils :as utils :include-macros true])
   (:import [goog Uri]))
 
+(defn- js->clj*
+  "This is a copy of the native js->clj, but it removes the clojure protocol
+   checks. With advanced compilation turned on, the ISeq protocol will be
+   considered satisfied for any js object with the key 'v'. David Nolen
+   suggested this workaround.
+
+   https://dev.clojure.org/jira/browse/CLJS-2050"
+  ([x] (js->clj* x :keywordize-keys false))
+  ([x & opts]
+    (let [{:keys [keywordize-keys]} opts
+          keyfn (if keywordize-keys keyword str)
+          f (fn thisfn [x]
+              (cond
+                (array? x)
+                (vec (map thisfn x))
+
+                (identical? (type x) js/Object)
+                (into {} (for [k (js-keys x)]
+                           [(keyfn k) (thisfn (aget x k))]))
+
+                :else x)
+              )]
+      (f x))))
+
 ;; https://github.com/JulianBirch/cljs-ajax/blob/master/src/ajax/core.cljs
 ;; copy of the default json formatter, but returns a map with json body
 ;; in :resp and extra request metadata: :response-headers, :url, :method, and :request-time
@@ -23,13 +47,13 @@
      :or {start-time (time/now)}}]
      {:read (fn read-json [xhrio]
               (let [json (js/JSON.parse (.getResponseText xhrio))
-                    headers (js->clj (.getResponseHeaders xhrio))
+                    headers (js->clj* (.getResponseHeaders xhrio))
                     request-time (try
                                    (time/in-millis (time/interval start-time (time/now)))
                                    (catch :default e
                                      (utils/merror e)
                                      0))]
-                {:resp (js->clj json :keywordize-keys keywords?)
+                {:resp (js->clj* json :keywordize-keys keywords?)
                  :response-headers headers
                  :url url
                  :method method

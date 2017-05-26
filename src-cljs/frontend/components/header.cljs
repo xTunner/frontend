@@ -17,6 +17,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :refer [auth-url]]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :refer [format]]
             [om.core :as om :include-macros true]))
@@ -381,6 +382,9 @@
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
                                           :logged-out? (not (:name user))
+                                          :topbar-beta {:org (state-utils/selected-or-default-org (get-in app state/selected-org-path)
+                                                                                                  (get-in app state/user-organizations-path))
+                                                        :nav-point (get-in app state/current-view-path)}
                                           :actions (cond-> []
                                                      (show-workflows-link? app)
                                                      (conj (workflows-link app))

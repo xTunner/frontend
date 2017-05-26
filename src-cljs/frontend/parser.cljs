@@ -105,6 +105,20 @@
            ~(select-keys route-params [:project/name]))
           ~query}]})]
 
+   :routed-entity/branch
+   [[:org-for-routed-project :organization/project :project/branch]
+    (fn [route-params query]
+      (when (:branch/name route-params)
+        `{(:org-for-routed-project
+           ~(-> route-params
+                (select-keys [:organization/vcs-type :organization/name])
+                (assoc :< :circleci/organization)))
+          [{(:organization/project
+              ~(select-keys route-params [:project/name]))
+            [{(:project/branch
+                ~(select-keys route-params [:branch/name]))
+               ~query}]}]}))]
+
    :routed-entity/run
    [[:routed-run]
     (fn [{:keys [run/id]} query]
@@ -120,7 +134,7 @@
               (select-keys [:run/id])
               (assoc :< :circleci/run)))
         [{(:run/job
-            ~(select-keys route-params [:job/name]))
+           ~(select-keys route-params [:job/name]))
           ~query}]})]
 
    :routed/page
@@ -203,14 +217,13 @@
              (swap! state #(-> %
                                (assoc :app/subpage-route subpage
                                       :app/route-params route-params)
-
+                               (assoc-in [:legacy/state :navigation-point] route)
                                ;; Clean up the legacy state so it doesn't leak
                                ;; from the previous page. This goes away when
                                ;; the legacy state dies. In the Om Next world,
                                ;; all route data is in :app/route-params, and is
                                ;; replaced completely on each route change.
                                (update :legacy/state dissoc
-                                       :navigation-point
                                        :navigation-data)))
              (analytics/track {:event-type :pageview
                                :navigation-point route

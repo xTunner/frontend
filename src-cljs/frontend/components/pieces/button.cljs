@@ -261,9 +261,9 @@
               :on-click #(js/alert "Clicked!")}
              [:i.octicon.octicon-repo-forked])
        (icon {:label "Icon Disabled"
-                     :disabled? true
-                     :on-click #(js/alert "Clicked!")}
-                    [:i.octicon.octicon-repo-forked])]]))
+              :disabled? true
+              :on-click #(js/alert "Clicked!")}
+             [:i.octicon.octicon-repo-forked])]]))
 
   (defcard link-buttons
     "A **link-button** looks like a button, but is actually a link.

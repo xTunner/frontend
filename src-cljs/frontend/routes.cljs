@@ -6,6 +6,7 @@
             [frontend.config :as config]
             [frontend.utils.vcs :as vcs]
             [goog.string :as gstring]
+            [om.next :as om-next]
             [secretary.core :as sec :refer-macros [defroute]]))
 
 (defn open!
@@ -20,13 +21,21 @@
   ([app route data]
    ;; Note: We always call set-data: if values aren't given, we still want to
    ;; set them to `nil`.
-   (compassus/set-route! app route {:tx [`(route-params/set ~data)]})))
+   (compassus/set-route!
+    app route
+    {:tx (into [`(route-params/set ~data)]
+               ;; Compassus doesn't re-read the wrapper query on navigation,
+               ;; only the page query. This re-reads the wrapper query too.
+               ;; That's important, because the wrapper query can depend on the
+               ;; route params, which change during navigation. (For instance
+               ;; ,the org picker needs to update to show the current org.)
+               (om-next/transform-reads (compassus/get-reconciler app) [::compassus/mixin-data]))})))
 
 (defn open-to-inner!
   "Navigate to a legacy route. As pages move from legacy to Om Next, their
   routes move from using `open-to-inner!` to using `open!`."
   [app nav-ch navigation-point args]
-  (compassus/set-route! app :route/legacy-page)
+  (open! app :route/legacy-page)
   (put! nav-ch [navigation-point (assoc args :inner? true)]))
 
 (defn logout! [nav-ch]
@@ -86,6 +95,12 @@
   ([vcs_type org repo page]
    (str "/" (vcs/->short-vcs vcs_type) "/" org  "/workflows/" repo
         (when (and page (not= 1 page)) (str "?page=" page)))))
+
+(defn v1-project-branch-workflows-path
+  [vcs_type org repo branch]
+  (str (v1-project-workflows-path vcs_type org repo)
+       "/tree/"
+       (gstring/urlEncode branch)))
 
 (defn v1-run-path
   [workflow-id]
@@ -235,6 +250,16 @@
                             (js/parseInt page)
                             1)}}))
 
+  (defroute v1-project-branch-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)/tree/([^/]+)"
+    [short-vcs-type org-name project-name branch]
+    (open! app
+           :route/project-branch-workflows
+           {:route-params
+            {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+             :organization/name org-name
+             :project/name project-name
+             :branch/name (gstring/urlDecode branch)}}))
+
   (defroute v1-org-workflows #"/(gh|bb)/([^/]+)/workflows"
     [short-vcs-type org-name]
     (open! app
@@ -376,5 +401,6 @@
       :logout nil
       :org-settings (v1-org-settings-path org)
       :project-insights (v1-organization-insights-path org)
+      :route/projects (v1-organization-projects-path org)
       :team (v1-team-path org)
       (v1-organization-dashboard-path org))))

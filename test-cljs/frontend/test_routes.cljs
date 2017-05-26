@@ -21,3 +21,11 @@
 
   (testing "a uri with both anchor and query parameters"
     (is (= ["/page" "abc=123" "here"] (routes/parse-uri "/page?abc=123#here")))))
+
+(deftest v1-project-branch-workflows-path-works
+  (testing "url-encodes branch names"
+    (is (= "/gh/circleci/workflows/frontend-private/tree/frank%2Fbranch-runs-list"
+           (routes/v1-project-branch-workflows-path :github
+                                                    "circleci"
+                                                    "frontend-private"
+                                                    "frank/branch-runs-list")))))

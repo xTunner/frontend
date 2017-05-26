@@ -102,6 +102,11 @@
   (when-let [builds (seq (get-in state state/usage-queue-path))]
     (find-index #(= parts (build-parts %)) builds)))
 
+(defn selected-or-default-org
+  [selected-org orgs]
+  (or selected-org
+    (org/default orgs)))
+
 (defn complete-org-path
   "Replace partial org map with complete org info (including avatar key, etc.)"
   [user-orgs org]

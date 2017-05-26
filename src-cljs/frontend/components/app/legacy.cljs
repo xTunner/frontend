@@ -47,6 +47,7 @@
                                                                        :on-branch? (-> (:navigation-data app)
                                                                                        :branch
                                                                                        boolean)}))
+            :selected-org (get-in app state/selected-org-path)
             :sidebar (case (:navigation-point app)
                        :org-settings (om/build aside/org-settings-menu app)
                        :admin-settings (om/build aside/admin-settings-menu app)

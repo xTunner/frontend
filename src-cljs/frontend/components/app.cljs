@@ -19,6 +19,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.launchdarkly :as ld]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]))
@@ -33,6 +34,7 @@
    :route/projects projects/Page
    :route/account user-settings/Page
    :route/project-workflows workflow/ProjectPage
+   :route/project-branch-workflows workflow/BranchPage
    :route/org-workflows workflow/OrgPage
    :route/run run/Page})
 
@@ -108,7 +110,8 @@
 (defui ^:once Wrapper
   static om-next/IQuery
   (query [this]
-    '[{:legacy/state [*]}])
+    '[{:legacy/state [*]}
+      {:routed-entity/organization [:organization/vcs-type :organization/name :organization/avatar-url :organization/current-user-is-admin?]}])
   Object
   (render [this]
     (let [app (:legacy/state (om-next/props this))
@@ -118,8 +121,10 @@
         (let [user (get-in app state/user-path)
               orgs (get-in app state/user-organizations-path)
               ;; use the first org in the org list as the default
-              selected-org (or (get-in app state/selected-org-path)
-                               (org/default orgs))
+              current-route (current-route app owner)
+              selected-org (or (some-> (:routed-entity/organization (om-next/props this))
+                                       org/modern-org->legacy-org)
+                               (state-utils/selected-or-default-org (get-in app state/selected-org-path) orgs))
               admin? (if (config/enterprise?)
                        (get-in app [:current-user :dev-admin])
                        (get-in app [:current-user :admin]))
@@ -127,7 +132,6 @@
               ;; :landing is still used by Enterprise. It and :error are
               ;; still "outer" pages.
               outer? (contains? #{:landing :error} (:navigation-point app))
-              current-route (current-route app owner)
               inner-with-user? (and (not outer?) user)]
           (html
            [:div {:class (if outer? "outer" "inner")

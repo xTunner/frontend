@@ -92,15 +92,22 @@
       (.replaceToken history-imp path)
       (.setToken history-imp path))))
 
+
+(defn- org-for-topbar
+  "Use org in route when provided, otherwise default to previously selected org"
+  [login vcs_type state]
+  (if (and login vcs_type)
+    {:login login :vcs_type vcs_type}
+    (get-in state state/selected-org-path)))
+
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
-  (let [org (if (ld/feature-on? "top-bar-ui-v-1")
-              (or (get-in state state/selected-org-path)
-                  {:login (org/name args) :vcs_type (:vcs-type args)})
-              {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
+  (let [nav-org (if (ld/feature-on? "top-bar-ui-v-1")
+                  (org-for-topbar (org/name args) (:vcs_type args) state)
+                  {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
     (-> state
-        (assoc-in state/selected-org-path org)
-        (state-utils/change-selected-org org)
+        (assoc-in state/selected-org-path nav-org)
+        (state-utils/change-selected-org nav-org)
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
                state/navigation-data args
@@ -108,7 +115,7 @@
         (state-utils/set-dashboard-crumbs args)
         state-utils/reset-current-build
         state-utils/reset-current-project
-        (state-utils/change-selected-org org)
+        (state-utils/change-selected-org nav-org)
         maybe-add-workflow-response-data)))
 
 (defmethod post-navigated-to! :dashboard
@@ -179,7 +186,9 @@
   (let [maybe-set-container-id (fn [state]
                                  (if (not (nil? container-id))
                                    (assoc-in state state/current-container-path container-id)
-                                   state))]
+                                   state))
+        nav-org {:login org :vcs_type vcs_type}]
+
     (if (and (= :build (state/current-view state))
              (not (state-utils/stale-current-build? state project-name build-num)))
       ;; page didn't change, just switched tabs
@@ -190,6 +199,7 @@
       ;; navigated to page, load everything
       (-> state
         state-utils/clear-page-state
+        (state-utils/change-selected-org nav-org)
         (assoc state/current-view navigation-point
                state/navigation-data (assoc args :show-settings-link? false)
                :project-settings-project-name project-name)
@@ -248,7 +258,7 @@
 (defmethod navigated-to :add-projects
   [history-imp navigation-point args state]
   (let [current-user (get-in state state/user-path)
-        org (not-empty (select-keys args [:login :vcs_type]))]
+        nav-org (not-empty (select-keys args [:login :vcs_type]))]
     (-> state
         state-utils/clear-page-state
         (assoc state/current-view navigation-point
@@ -258,10 +268,10 @@
         (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
         (assoc-in state/bitbucket-repos-loading-path (user/bitbucket-authorized? current-user))
         (assoc-in state/crumbs-path [{:type :add-projects}])
-        (assoc-in state/add-projects-selected-org-path org)
+        (assoc-in state/add-projects-selected-org-path nav-org)
         (assoc-in [:settings :add-projects :repo-filter-string] "")
         (state-utils/reset-current-org)
-        (state-utils/change-selected-org org))))
+        (state-utils/change-selected-org nav-org))))
 
 (defn- nav-to-selected-org
   [selected-org nav-ch]
@@ -294,12 +304,12 @@
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
-  (let [org (not-empty (select-keys args [:login :vcs_type]))]
+  (let [nav-org (not-empty (select-keys args [:login :vcs_type]))]
     (-> state
       (assoc state/current-view navigation-point
              state/navigation-data args)
       state-utils/clear-page-state
-      (state-utils/change-selected-org org)
+      (state-utils/change-selected-org nav-org)
       (assoc-in state/crumbs-path [{:type :build-insights}]))))
 
 (defmethod post-navigated-to! :build-insights

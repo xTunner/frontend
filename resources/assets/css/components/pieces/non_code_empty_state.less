@@ -1,0 +1,53 @@
+.ns("frontend.experimental.non-code-empty-state", {
+  .ui("empty-state-main-page", {
+    margin-top: @main-body-padding;
+  });
+
+  .ui("empty-state-header", {
+    @icon-size: 60px;
+    @icon-inner-size: 25px;
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+
+      .icon-container {
+        margin: 15px 0 10px;
+        height: @icon-size;
+        width: @icon-size;
+        border-radius: 50%;
+        background: @grayLighter;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .icon {
+          color: @grayDark;
+          width: @icon-inner-size;
+          height: @icon-inner-size;
+        }
+      }
+
+      .subheading-text {
+        text-align: center;
+        width: 70%;
+      }
+    }
+  });
+
+  .ui("empty-state-footer", {
+    .ctas {
+      > a {
+        margin-right: 10px;
+      }
+    }
+  });
+
+  // to override #insights .project-block
+  #non-code-insights > .project-block {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+});
