@@ -11,6 +11,7 @@
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
@@ -180,6 +181,7 @@
 (defui ^:once ProjectWorkflowRuns
   static om-next/IQuery
   (query [this]
+    (if (feature/enabled? :workflows-pagination)
     [:project/name
      {:project/organization [:organization/vcs-type :organization/name]}
      `{(:routed/page {:page/connection :project/workflow-runs
@@ -187,9 +189,14 @@
        [:connection/total-count
         :connection/offset
         {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}
-     {'[:app/route-params _] [:page/number]}])
+       {'[:app/route-params _] [:page/number]}]
+
+      [:project/name
+       {:project/organization [:organization/vcs-type :organization/name]}
+       {:project/workflow-runs (om-next/get-query RunRow)}]))
   Object
   (render [this]
+    (if (feature/enabled? :workflows-pagination)
     (component
       (let [props (om-next/props this)
             page-num (get-in props ['[:app/route-params _] :page/number])
@@ -221,7 +228,18 @@
            (empty-state/empty-state
             {:icon (icon/workflows)
              :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
-             :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))))
+               :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))
+
+      (component
+        (if-let [runs (seq (:project/workflow-runs (om-next/props this)))]
+          (run-row-collection runs)
+          (let [project-name (:project/name (om-next/props this))
+                org-name (:organization/name (:project/organization (om-next/props this)))]
+            (card/basic
+             (empty-state/empty-state
+              {:icon (icon/workflows)
+               :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
+               :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")}))))))))
 
 (def project-workflow-runs (om-next/factory ProjectWorkflowRuns))
 

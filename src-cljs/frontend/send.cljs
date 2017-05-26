@@ -111,10 +111,13 @@
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
+                       ;; (feature/enabled? :workflows-pagination)
                        :routed-page {:connection/total-count (count response)
                                      :connection/edges (->> response
                                                             (map adapt-to-run)
-                                                            (mapv #(hash-map :edge/node %)))}}}}]
+                                                            (mapv #(hash-map :edge/node %)))}
+                       ;; (not (feature/enabled? :workflows-pagination))
+                       :project/workflow-runs (mapv adapt-to-run response)}}}]
         (merge-fn novelty query))))
    (vcs-url/vcs-url vcs-type org-name project-name)))
 
@@ -386,6 +389,8 @@
                                    :key :project/organization
                                    :children [{:type :prop :key :organization/vcs-type}
                                               {:type :prop :key :organization/name}]}
+                                  (:or
+                                   ;; (feature/enabled? :workflows-pagination)
                                   {:type :join
                                    :key :routed-page
                                    :params {:< :project/workflow-runs}
@@ -414,7 +419,31 @@
                                                                                   {:type :join
                                                                                    :key :project/organization
                                                                                    :children [{:type :prop :key :organization/name}
-                                                                                              {:type :prop :key :organization/vcs-type}]}]}]}]}]}]}]}
+                                                                                               {:type :prop :key :organization/vcs-type}]}]}]}]}]}
+                                   ;; (not (feature/enabled? :workflows-pagination))
+                                   {:type :join
+                                    :key :project/workflow-runs
+                                    :children [{:type :prop :key :run/id}
+                                               {:type :prop :key :run/name}
+                                               {:type :prop :key :run/status}
+                                               {:type :prop :key :run/started-at}
+                                               {:type :prop :key :run/stopped-at}
+                                               {:type :join
+                                                :key :run/trigger-info
+                                                :children [{:type :prop :key :trigger-info/vcs-revision}
+                                                           {:type :prop :key :trigger-info/subject}
+                                                           {:type :prop :key :trigger-info/body}
+                                                           {:type :prop :key :trigger-info/branch}
+                                                           {:type :join
+                                                            :key :trigger-info/pull-requests
+                                                            :children [{:type :prop :key :pull-request/url}]}]}
+                                               {:type :join
+                                                :key :run/project
+                                                :children [{:type :prop :key :project/name}
+                                                           {:type :join
+                                                            :key :project/organization
+                                                            :children [{:type :prop :key :organization/name}
+                                                                       {:type :prop :key :organization/vcs-type}]}]}]})]}]}
           (merge-workflow-runs {:organization/vcs-type org-vcs-type
                                 :organization/name org-name
                                 :project/name project-name}
