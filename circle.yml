@@ -1,11 +1,29 @@
 version: 2.0
 jobs:
+  checkout_code:
+    docker:
+      - image: circleci/build-image:trusty-latest
+    working_directory: /home/ubuntu/frontend
+    steps:
+      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - save_cache:
+          key: v1-repo-{{ checksum ".circle-sha" }}
+          paths:
+            - /home/ubuntu/frontend
   clojure_dependencies:
     docker:
       - image: circleci/build-image:trusty-latest
     working_directory: /home/ubuntu/frontend          
     steps:    
-      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
       - restore_cache:
           keys:
             - v2-dependency-jars-{{ checksum "project.clj" }}
@@ -22,10 +40,15 @@ jobs:
       - image: circleci/build-image:trusty-latest
     working_directory: /home/ubuntu/frontend          
     steps:    
-      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
           keys:
-            - v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+            - v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
       - run:
           name: download dependencies
           command: |
@@ -35,10 +58,10 @@ jobs:
             node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
             [[ -d resources/components ]] || node_modules/bower/bin/bower install
       - save_cache:
-          key: v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+          key: v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
           paths:
             - /home/ubuntu/frontend/node_modules
-            - /home/ubuntu/.cache/bower
+            - /home/ubuntu/frontend/resources/components
           
   clojure_test:
     docker:
@@ -48,7 +71,12 @@ jobs:
           CIRCLE_ARTIFACTS: /tmp/artifacts
     working_directory: /home/ubuntu/frontend          
     steps:
-      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
       - restore_cache:
           keys:
             - v2-dependency-jars-{{ checksum "project.clj" }}
@@ -64,7 +92,12 @@ jobs:
           CIRCLE_ARTIFACTS: /tmp/artifacts
     working_directory: /home/ubuntu/frontend          
     steps:
-      - checkout
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
       - run:
           command: Xvfb :99 -screen 0 1280x1024x24
           background: true
@@ -78,50 +111,96 @@ jobs:
           name: compile test code and run tests
           command: |
             source ~/.bashrc
-            lein do cljsbuild once test, doo chrome test once
+            lein doo chrome test once
           
-  build:
+  cljsbuild_whitespace:
     docker:
       - image: circleci/build-image:trusty-latest
     working_directory: /home/ubuntu/frontend          
     steps:    
-      - checkout
       - run:
           name: save SHA to a file
           command: echo $CIRCLE_SHA1 > .circle-sha
       - restore_cache:
           keys:
-            - v1-production-js-{{ checksum ".circle-sha" }}
+            - v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v2-dependency-jars-{{ checksum "project.clj" }}
+      - run:
+          name: cljsbuild whitespace
+          command: lein cljsbuild once whitespace
+      - save_cache:
+          key: v1-cljsbuild-whitespace-{{ checksum ".circle-sha" }}
+          paths:
+            - /home/ubuntu/frontend/resources/public/cljs/whitespace
+
+  cljsbuild_production:
+    docker:
+      - image: circleci/build-image:trusty-latest
+    working_directory: /home/ubuntu/frontend          
+    steps:    
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v2-dependency-jars-{{ checksum "project.clj" }}
+      - run:
+          name: cljsbuild production
+          command: lein cljsbuild once production
+      - save_cache:
+          key: v1-cljsbuild-production-{{ checksum ".circle-sha" }}
+          paths:
+            - /home/ubuntu/frontend/resources/public/cljs/production
+            
+  precompile_assets:
+    docker:
+      - image: circleci/build-image:trusty-latest
+    working_directory: /home/ubuntu/frontend          
+    steps:    
+      - run:
+          name: save SHA to a file
+          command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v1-cljsbuild-whitespace-{{ checksum ".circle-sha" }}
+      - restore_cache:
+          keys:
+            - v1-cljsbuild-production-{{ checksum ".circle-sha" }}
       - restore_cache:
           keys:
             - v2-dependency-jars-{{ checksum "project.clj" }}
       - restore_cache:
           keys:
-            - v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
-      - run:
-          name: bower install
-          command: |
-            source ~/.bashrc
-            node_modules/bower/bin/bower install            
+            - v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
       - run:
           name: precompile assets
           command: |
             source ~/.bashrc
-            lein do cljsbuild once whitespace production, run -m frontend.tasks.http/precompile-assets
+            lein run -m frontend.tasks.http/precompile-assets
       - save_cache:
           key: v1-production-assets-{{ checksum ".circle-sha" }}
           paths:
             - /home/ubuntu/frontend/resources/public
-
+            
   deploy:
     docker:
       - image: circleci/build-image:trusty-latest
     working_directory: /home/ubuntu/frontend
     steps:
-      - checkout
       - run:
           name: save SHA to a file
           command: echo $CIRCLE_SHA1 > .circle-sha
+      - restore_cache:
+          keys:
+            - v1-repo-{{ checksum ".circle-sha" }}
       - restore_cache:
           keys:
             - v1-production-assets-{{ checksum ".circle-sha" }}
@@ -146,24 +225,43 @@ workflows:
 
   build_test_deploy:
     jobs:
-      - clojure_dependencies
-      - npm_bower_dependencies
+      - checkout_code
+      - clojure_dependencies:
+          requires:
+            - checkout_code
+      - npm_bower_dependencies:
+          requires:
+            - checkout_code
       - clojure_test:
           requires:
             - clojure_dependencies
+            - checkout_code
       - cljs_test:
           requires:
             - clojure_dependencies
             - npm_bower_dependencies
-      - build:
+            - checkout_code
+      - cljsbuild_whitespace:
+          requires:
+            - clojure_dependencies
+            - checkout_code
+      - cljsbuild_production:
+          requires:
+            - clojure_dependencies
+            - checkout_code
+      - precompile_assets:
           requires:
             - clojure_dependencies
             - npm_bower_dependencies
+            - cljsbuild_whitespace
+            - cljsbuild_production
+            - checkout_code
       - deploy:
           requires:
-            - build
+            - precompile_assets
             - cljs_test
             - clojure_test
+            - checkout_code
       
 dependencies:
   cache_directories:
