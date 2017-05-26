@@ -246,9 +246,10 @@
             {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
              :organization/name org-name
              :project/name project-name
-             :page/number (if-let [page (get-in params [:query-params :page])]
-                            (js/parseInt page)
-                            1)}}))
+             :page/number (let [page (get-in params [:query-params :page])]
+                            (if (re-matches #"\d+" page)
+                              (js/parseInt page)
+                              1))}}))
 
   (defroute v1-project-branch-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)/tree/([^/]+)"
     [short-vcs-type org-name project-name branch]
