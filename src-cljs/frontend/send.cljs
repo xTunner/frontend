@@ -100,18 +100,22 @@
   (api/get-project-workflows
    (callback-api-chan
     (fn [response]
-      (let [novelty {:circleci/organization
+      (let [;; While https://github.com/circleci/api-service/pull/25 rolls out...
+            api-runs (if (contains? response :results)
+                       (:results response)
+                       response)
+            novelty {:circleci/organization
                      {:organization/project
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
                        ;; (feature/enabled? :workflows-pagination)
-                       :routed-page {:connection/total-count (count response)
-                                     :connection/edges (->> response
+                       :routed-page {:connection/total-count (count api-runs)
+                                     :connection/edges (->> api-runs
                                                             (map adapt-to-run)
                                                             (mapv #(hash-map :edge/node %)))}
                        ;; (not (feature/enabled? :workflows-pagination))
-                       :project/workflow-runs (mapv adapt-to-run response)}}}]
+                       :project/workflow-runs (mapv adapt-to-run api-runs)}}}]
         (merge-fn novelty query))))
    (vcs-url/vcs-url vcs-type org-name project-name)))
 
@@ -267,8 +271,8 @@
             (expr-ast/get :organization/project)
             (expr-ast/has-children? #{:project/name :routed-page :project/organization}))
         ;; (not (feature/enabled? :workflows-pagination))
-       (-> expr-ast
-           (expr-ast/get :organization/project)
+        (-> expr-ast
+            (expr-ast/get :organization/project)
             (expr-ast/has-children? #{:project/name :project/workflow-runs :project/organization})))
        (-> expr-ast
            (expr-ast/get-in [:organization/project :project/organization])
@@ -455,7 +459,7 @@
 
         ;; :route/run crumbs
         (run-page-crumbs-ast? ast) (get-run-page-crumbs cb ast query)
-        
+
         ;; :route/run RunRow
         (let [{:keys [key query]} ast]
           (and (= :circleci/run key)
