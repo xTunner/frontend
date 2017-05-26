@@ -105,6 +105,12 @@
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
+                       ;; (feature/enabled? :workflows-pagination)
+                       :routed-page {:connection/total-count (count response)
+                                     :connection/edges (->> response
+                                                            (map adapt-to-run)
+                                                            (mapv #(hash-map :edge/node %)))}
+                       ;; (not (feature/enabled? :workflows-pagination))
                        :project/workflow-runs (mapv adapt-to-run response)}}}]
         (merge-fn novelty query))))
    (vcs-url/vcs-url vcs-type org-name project-name)))
@@ -255,9 +261,15 @@
   (and (= :circleci/organization
           (:key expr-ast))
        (expr-ast/has-children? expr-ast #{:organization/project})
+       (or
+        ;; (feature/enabled? :workflows-pagination)
+        (-> expr-ast
+            (expr-ast/get :organization/project)
+            (expr-ast/has-children? #{:project/name :routed-page :project/organization}))
+        ;; (not (feature/enabled? :workflows-pagination))
        (-> expr-ast
            (expr-ast/get :organization/project)
-           (expr-ast/has-children? #{:project/name :project/workflow-runs :project/organization}))
+            (expr-ast/has-children? #{:project/name :project/workflow-runs :project/organization})))
        (-> expr-ast
            (expr-ast/get-in [:organization/project :project/organization])
            (expr-ast/has-children? #{:organization/vcs-type :organization/name}))))
@@ -336,26 +348,26 @@
           (api/get-orgs ch :include-user? true))
 
         (and (= :circleci/organization (:key ast))
-          (= '[:organization/vcs-type
-               :organization/name
-               :organization/avatar-url
-               :organization/current-user-is-admin?]
-            (:query ast)))
+             (= '[:organization/vcs-type
+                  :organization/name
+                  :organization/avatar-url
+                  :organization/current-user-is-admin?]
+                (:query ast)))
         (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
           (api/get-orgs
-            (callback-api-chan
-              #(let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
-                                                   (and (= vcs_type vcs-type)
-                                                        (= login name)))
-                                           %))
+           (callback-api-chan
+            #(let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
+                                                 (and (= vcs_type vcs-type)
+                                                      (= login name)))
+                                               %))
 
-                     avatar-url (:avatar_url selected-org)
-                     admin (:admin selected-org)]
-                 (cb {:circleci/organization {:organization/name name
-                                              :organization/vcs-type vcs-type
-                                              :organization/avatar-url avatar-url
-                                              :organization/current-user-is-admin? admin}} query)))
-            :include-user? true))
+                   avatar-url (:avatar_url selected-org)
+                   admin (:admin selected-org)]
+               (cb {:circleci/organization {:organization/name name
+                                            :organization/vcs-type vcs-type
+                                            :organization/avatar-url avatar-url
+                                            :organization/current-user-is-admin? admin}} query)))
+           :include-user? true))
 
         ;; :route/projects
         (and (= :circleci/organization (:key ast))
@@ -503,9 +515,7 @@
          (:run/id (:params ast)))
 
         ;; :route/org-workflows
-        (org-runs-ast? ast) (get-org-runs ast cb query)
-
-        :else (throw (str "No clause found for " (pr-str expr)))))))
+        (org-runs-ast? ast) (get-org-runs ast cb query)))))
 
 (defn send [remotes cb]
   (doseq [remote-entry remotes]

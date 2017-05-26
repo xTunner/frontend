@@ -33,7 +33,7 @@
 
                  [org.omcljs/om "1.0.0-alpha47"]
                  [compassus "1.0.0-alpha2"]
-                 [bodhi "0.0.1"]
+                 [bodhi "0.0.2"]
 
                  [hiccups "0.3.0"]
                  [sablono "0.7.2"]
@@ -49,7 +49,7 @@
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.10"]
-            [lein-doo "0.1.6"]]
+            [lein-doo "0.1.7"]]
 
   ;; Don't include these dependencies transitively. These are foundational
   ;; dependencies that lots of our direct dependencies depend on. We want to
@@ -101,11 +101,11 @@
                                             ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
                                             :recompile-dependents false}}
 
-                           :devcards {:source-paths ["src-cljs" "test-cljs"]
+                           :devcards {:source-paths ["src-cljs" "test-cljs" "devcards"]
                                       :figwheel {:devcards true
                                                  :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
                                                  :on-cssload "frontend.core/handle-css-reload"}
-                                      :compiler {:main "frontend.core"
+                                      :compiler {:main "frontend.devcards"
                                                  :asset-path "cljs/devcards-out"
                                                  :output-to "resources/public/cljs/devcards-out/frontend-devcards.js"
                                                  :output-dir "resources/public/cljs/devcards-out"

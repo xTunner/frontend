@@ -90,8 +90,11 @@
             (str "workflows/" workflow-id "/jobs/"))
           build-num (when fragment (str "#" fragment))))))
 
-(defn v1-project-workflows-path [vcs_type org repo]
-  (str "/" (vcs/->short-vcs vcs_type) "/" org  "/workflows/" repo))
+(defn v1-project-workflows-path
+  ([vcs_type org repo] (v1-project-workflows-path vcs_type org repo nil))
+  ([vcs_type org repo page]
+   (str "/" (vcs/->short-vcs vcs_type) "/" org  "/workflows/" repo
+        (when (and page (not= 1 page)) (str "?page=" page)))))
 
 (defn v1-project-branch-workflows-path
   [vcs_type org repo branch]
@@ -236,13 +239,17 @@
                                               :org org})))
 
   (defroute v1-project-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)"
-    [short-vcs-type org-name project-name]
+    [short-vcs-type org-name project-name params]
     (open! app
            :route/project-workflows
            {:route-params
             {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
              :organization/name org-name
-             :project/name project-name}}))
+             :project/name project-name
+             :page/number (let [page (get-in params [:query-params :page])]
+                            (if (re-matches #"\d+" page)
+                              (js/parseInt page)
+                              1))}}))
 
   (defroute v1-project-branch-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)/tree/([^/]+)"
     [short-vcs-type org-name project-name branch]
