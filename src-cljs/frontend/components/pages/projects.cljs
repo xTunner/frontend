@@ -188,7 +188,8 @@
     ['{:legacy/state [*]}
      {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
                          :user/login
-                         :user/bitbucket-authorized?]}
+                         :user/bitbucket-authorized?
+                         :user/github-oauth-scopes]}
 
      `{(:org-for-projects {:< :routed-entity/organization}) ~(om-next/get-query OrgProjects)}
      `{:routed-entity/organization [:organization/name]}])

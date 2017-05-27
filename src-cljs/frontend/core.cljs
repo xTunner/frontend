@@ -241,6 +241,7 @@
                                                                    (aget "current_user"))]
                                               {:user/login (aget rc-user "login")
                                                :user/bitbucket-authorized? (aget rc-user "bitbucket_authorized")
+                                               :user/github-oauth-scopes (aget rc-user "github_oauth_scopes")
                                                :user/identities (let [legacy-format-identites
                                                                       (-> rc-user
                                                                           (aget "identities")
