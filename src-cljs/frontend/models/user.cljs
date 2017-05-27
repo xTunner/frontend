@@ -3,7 +3,9 @@
             goog.string.format))
 
 (defn current-scopes [user]
-  (-> user :github_oauth_scopes set))
+  (let [scopes (or (:user/github-oauth-scopes user)
+                   (:github_oauth_scopes user))]
+    (set scopes)))
 
 (defn missing-public-scopes [user]
   (let [current-scopes (current-scopes user)]
