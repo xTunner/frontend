@@ -1,5 +1,6 @@
 (ns frontend.models.user
   (:require [clojure.set :as set]
+            [frontend.utils.launchdarkly :as ld]
             goog.string.format))
 
 (defn current-scopes [user]
@@ -70,7 +71,8 @@
     (-> user check-fn boolean)))
 
 (defn non-code-identity? [user]
-  (and (not (github-authorized? user))
+  (and (ld/feature-on? "google-login-empty-state")
+       (not (github-authorized? user))
        (not (bitbucket-authorized? user))))
 
 (defn deauthorize-github [user]
