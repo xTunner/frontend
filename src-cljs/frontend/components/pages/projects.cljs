@@ -188,8 +188,8 @@
     ['{:legacy/state [*]}
      {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
                          :user/login
-                         :user/bitbucket-authorized?
-                         :user/github-oauth-scopes]}
+                         :user/bitbucket-authorized?]}
+                         ; :user/github-oauth-scopes]}
 
      `{(:org-for-projects {:< :routed-entity/organization}) ~(om-next/get-query OrgProjects)}
      `{:routed-entity/organization [:organization/name]}])
@@ -204,18 +204,20 @@
     (set-page-title! "Projects"))
   (render [this]
     (component
-      (let [current-user (:app/current-user (om-next/props this))
-            non-code-identity? (user/non-code-identity? current-user)]
+      (let [current-user (:app/current-user (om-next/props this))]
+            ; non-code-identity? (user/non-code-identity? current-user)]
         (main-template/template
           {:app (:legacy/state (om-next/props this))
            :selected-org (:routed-entity/organization (om-next/props this))
            :crumbs [{:type :projects}]
-           :header-actions (when-not non-code-identity?
-                             (add-project-button {:empty-state? false
-                                                  :org (:routed-entity/organization (om-next/props this))}))
+           ; :header-actions (when-not non-code-identity?
+           ;                   (add-project-button {:empty-state? false
+           ;                                        :org (:routed-entity/organization (om-next/props this))}))
+           :header-actions (add-project-button {:empty-state? false
+                                                :org (:routed-entity/organization (om-next/props this))})
            :main-content
-           (if non-code-identity?
-             (non-code-ident-empty-state)
+           ; (if non-code-identity?
+             ; (non-code-ident-empty-state)
              (element
                :main-content
                (let [orgs (get-in (om-next/props this) [:app/current-user :user/organizations])]
@@ -239,4 +241,4 @@
                     [:.main
                      (if-let [selected-org (:org-for-projects (om-next/props this))]
                        (org-projects selected-org)
-                       (no-org-selected orgs (:user/bitbucket-authorized? current-user)))]]))))})))))
+                       (no-org-selected orgs (:user/bitbucket-authorized? current-user)))]])))})))))
