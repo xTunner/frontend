@@ -316,25 +316,37 @@
 (def User
   {:user/name
    (fn [context ast]
-     (let [name (:user/name context)]
-       (doto (async/promise-chan)
-         (put! {:user/name name}))))
+     (doto (async/promise-chan)
+       (put! {:user/name (:user/name context)})))
 
    :user/favorite-color
-   #(doto (async/promise-chan)
-      (put! {:user/favorite-color :color/blue
-             :user/favorite-number 42}))
+   (fn [context ast]
+     (let [c (async/promise-chan)
+           get-user (get-in context [:apis :get-user])]
+       (get-user {:user/name (:user/name context)}
+                 #(put! c %))
+       c))
 
    :user/favorite-number
-   #(doto (async/promise-chan)
-      (put! {:user/favorite-color :color/blue
-             :user/favorite-number 42}))
+   (fn [context ast]
+     (let [c (async/promise-chan)
+           get-user (get-in context [:apis :get-user])]
+       (get-user {:user/name (:user/name context)}
+                 #(put! c %))
+       c))
 
    :user/favorite-fellow-user
-   #(doto (async/promise-chan)
-      (put! {:user/favorite-fellow-user {:user/name "jburnford"
-                                         :user/favorite-color :color/red
-                                         :user/favorite-number 7}}))})
+   (fn [context ast]
+     (let [c (chan)
+           get-user (get-in context [:apis :get-user])]
+       (get-user {:user/name (:user/name context)}
+                 (fn [user]
+                   (-> (resolve* (assoc context :user/name (:user/favorite-fellow-user-name user))
+                                 User
+                                 (:key ast)
+                                 (:children ast))
+                       (async/pipe c))))
+       c))})
 
 
 (def Root
@@ -346,12 +358,22 @@
 (deftest new-thing-works
   (async done
     (go
-      (let [c (resolve {} Root '[{(:root/user {:user/name "nipponfarm"})
+      (let [api-calls (atom [])
+            users {{:user/name "nipponfarm"} {:user/favorite-color :color/blue
+                                              :user/favorite-number 42
+                                              :user/favorite-fellow-user-name "jburnford"}
+                   {:user/name "jburnford"} {:user/favorite-color :color/red
+                                             :user/favorite-number 7}}
+            c (resolve {:apis {:get-user (fn [params cb]
+                                           (swap! api-calls conj [:get-user params])
+                                           (cb (get users params)))}}
+                       Root '[{(:root/user {:user/name "nipponfarm"})
                                [:user/name
                                 :user/favorite-color
                                 :user/favorite-number
-                                {:user/favorite-fellow-user [:user/favorite-color
-                                                             :user/favorite-color]}]}])]
+                                {:user/favorite-fellow-user [:user/name
+                                                             :user/favorite-color
+                                                             :user/favorite-number]}]}])]
         ;; Keeps delivering the same data.
         (is (= (repeat 2 {:root/user {:user/name "nipponfarm"
                                       :user/favorite-color :color/blue
@@ -361,4 +383,10 @@
                                                                   :user/favorite-number 7}}})
                [(<! c)
                 (<! c)]))
+        (is (= [[:get-user {:user/name "nipponfarm"}]
+                [:get-user {:user/name "nipponfarm"}]
+                [:get-user {:user/name "nipponfarm"}]
+                [:get-user {:user/name "jburnford"}]
+                [:get-user {:user/name "jburnford"}]])
+            @api-calls)
         (done)))))
