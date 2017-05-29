@@ -20,7 +20,7 @@
                  ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
                  [ankha "0.1.5.1-64423e"]
                  [org.clojure/clojurescript "1.9.227"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/core.async "0.3.443"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/test.check "0.9.0"]
                  [cljs-ajax "0.3.13" :exclusions [com.cognitect/transit-cljs]]

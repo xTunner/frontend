@@ -1,7 +1,12 @@
 (ns frontend.test-send
-  (:require [clojure.test :refer-macros [testing is]]
-            [frontend.send :as send])
-  (:require-macros [devcards.core :as dc :refer [deftest]]))
+  (:require [clojure.test :refer-macros [testing is async]]
+            [frontend.send :as send]
+
+
+            [cljs.core.async :as async :refer [<! chan close! put!]]
+            [om.next :as om])
+  (:require-macros [devcards.core :as dc :refer [deftest]]
+                   [cljs.core.async.macros :refer [go]]))
 
 (deftest org-runs-ast?-works
   (let [example {:key :circleci/organization
@@ -290,3 +295,58 @@
       (is (= false
              (#'send/run-page-crumbs-ast?
               (update example :children pop)))))))
+
+
+
+
+
+
+
+
+(defn resolve [query]
+  (let [ast (om/query->ast query)]
+    (async/map (fn [user]
+                 {:root/user user})
+               [(async/map :root/user
+                           [(async/map (fn [name color number fellow-user]
+                                         {:root/user {:user/name name
+                                                      :user/favorite-color color
+                                                      :user/favorite-number number
+                                                      :user/favorite-fellow-user fellow-user}})
+                                       (let [name-c
+                                             (doto (async/promise-chan)
+                                               (put! {:user/name "nipponfarm"}))
+                                             color-and-number-chan
+                                             (doto (async/promise-chan)
+                                               (put! {:user/favorite-color :color/blue
+                                                      :user/favorite-number 42}))
+                                             fellow-user-chan
+                                             (doto (async/promise-chan)
+                                               (put! {:user/favorite-fellow-user {:user/name "jburnford"
+                                                                                  :user/favorite-color :color/red
+                                                                                  :user/favorite-number 7}}))]
+                                         [(async/map :user/name [name-c])
+                                          (async/map :user/favorite-color [color-and-number-chan])
+                                          (async/map :user/favorite-number [color-and-number-chan])
+                                          (async/map :user/favorite-fellow-user [fellow-user-chan])]))])])))
+
+
+(deftest new-thing-works
+  (async done
+    (go
+      (let [c (resolve '[{(:root/user {:user/name "nipponfarm"})
+                            [:user/name
+                             :user/favorite-number
+                             :user/favorite-color
+                             {:user/favorite-fellow-user [:user/favorite-color
+                                                          :user/favorite-color]}]}])]
+        ;; Keeps delivering the same data.
+        (is (= (repeat 2 {:root/user {:user/name "nipponfarm"
+                                      :user/favorite-color :color/blue
+                                      :user/favorite-number 42
+                                      :user/favorite-fellow-user {:user/name "jburnford"
+                                                                  :user/favorite-color :color/red
+                                                                  :user/favorite-number 7}}})
+               [(<! c)
+                (<! c)]))
+        (done)))))
