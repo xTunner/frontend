@@ -100,10 +100,7 @@
   (api/get-project-workflows
    (callback-api-chan
     (fn [response]
-      (let [;; While https://github.com/circleci/api-service/pull/25 rolls out...
-            api-runs (if (contains? response :results)
-                       (:results response)
-                       response)
+      (let [api-runs (:results response)
             novelty {:circleci/organization
                      {:organization/project
                       {:project/name project-name
@@ -179,7 +176,9 @@
    (callback-api-chan
     (fn [resp]
       (let [novelty {:circleci/organization
-                     {:organization/workflow-runs (mapv adapt-to-run resp)}}]
+                     {:organization/workflow-runs (->> resp
+                                                       :results
+                                                       (mapv adapt-to-run))}}]
         (send-cb novelty query))))
    (:organization/name params)
    (:organization/vcs-type params)))
@@ -250,7 +249,9 @@
                         :branch/name)]
     (api/get-branch-workflows (callback-api-chan
                                (fn [response]
-                                 (let [runs (mapv adapt-to-run response)
+                                 (let [runs (->> response
+                                                 :results
+                                                 (mapv adapt-to-run))
                                        novelty {:circleci/organization
                                                 {:organization/project
                                                  {:project/branch
