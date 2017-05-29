@@ -298,23 +298,27 @@
 
 
 
-(defn resolve* [mapping key children]
+(defn resolve* [context mapping key children]
   (async/map (fn [& vals]
                {key (into {}
                           (map #(vector (:key %1) %2)
                                children vals))})
-             (map #(async/map (:key %) [((get mapping (:key %)) %)])
+             (map (fn [ast]
+                    (let [result ((get mapping (:key ast)) context ast)]
+                      (async/map (:key ast) [result])))
                   children)))
 
 
-(defn resolve [root-mapping query]
+(defn resolve [context root-mapping query]
   (let [ast (om/query->ast query)]
-    (async/map ::root [(resolve* root-mapping ::root (:children ast))])))
+    (async/map ::root [(resolve* context root-mapping ::root (:children ast))])))
 
 (def User
   {:user/name
-   #(doto (async/promise-chan)
-      (put! {:user/name "nipponfarm"}))
+   (fn [context ast]
+     (let [name (:user/name context)]
+       (doto (async/promise-chan)
+         (put! {:user/name name}))))
 
    :user/favorite-color
    #(doto (async/promise-chan)
@@ -335,13 +339,14 @@
 
 (def Root
   {:root/user
-   #(resolve* User :root/user (:children %))})
+   (fn [context ast]
+     (resolve* (assoc context :user/name (:user/name (:params ast))) User :root/user (:children ast)))})
 
 
 (deftest new-thing-works
   (async done
     (go
-      (let [c (resolve Root '[{(:root/user {:user/name "nipponfarm"})
+      (let [c (resolve {} Root '[{(:root/user {:user/name "nipponfarm"})
                                [:user/name
                                 :user/favorite-color
                                 :user/favorite-number
