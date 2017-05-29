@@ -298,48 +298,55 @@
 
 
 
+(defn resolve* [mapping key children]
+  (async/map (fn [& vals]
+               {key (into {}
+                          (map #(vector (:key %1) %2)
+                               children vals))})
+             (map #(async/map (:key %) [((get mapping (:key %)) %)])
+                  children)))
 
 
-
-
-
-(defn resolve [query]
+(defn resolve [root-mapping query]
   (let [ast (om/query->ast query)]
-    (async/map (fn [user]
-                 {:root/user user})
-               [(async/map :root/user
-                           [(async/map (fn [name color number fellow-user]
-                                         {:root/user {:user/name name
-                                                      :user/favorite-color color
-                                                      :user/favorite-number number
-                                                      :user/favorite-fellow-user fellow-user}})
-                                       (let [name-c
-                                             (doto (async/promise-chan)
-                                               (put! {:user/name "nipponfarm"}))
-                                             color-and-number-chan
-                                             (doto (async/promise-chan)
-                                               (put! {:user/favorite-color :color/blue
-                                                      :user/favorite-number 42}))
-                                             fellow-user-chan
-                                             (doto (async/promise-chan)
-                                               (put! {:user/favorite-fellow-user {:user/name "jburnford"
-                                                                                  :user/favorite-color :color/red
-                                                                                  :user/favorite-number 7}}))]
-                                         [(async/map :user/name [name-c])
-                                          (async/map :user/favorite-color [color-and-number-chan])
-                                          (async/map :user/favorite-number [color-and-number-chan])
-                                          (async/map :user/favorite-fellow-user [fellow-user-chan])]))])])))
+    (async/map ::root [(resolve* root-mapping ::root (:children ast))])))
+
+(def User
+  {:user/name
+   #(doto (async/promise-chan)
+      (put! {:user/name "nipponfarm"}))
+
+   :user/favorite-color
+   #(doto (async/promise-chan)
+      (put! {:user/favorite-color :color/blue
+             :user/favorite-number 42}))
+
+   :user/favorite-number
+   #(doto (async/promise-chan)
+      (put! {:user/favorite-color :color/blue
+             :user/favorite-number 42}))
+
+   :user/favorite-fellow-user
+   #(doto (async/promise-chan)
+      (put! {:user/favorite-fellow-user {:user/name "jburnford"
+                                         :user/favorite-color :color/red
+                                         :user/favorite-number 7}}))})
+
+
+(def Root
+  {:root/user
+   #(resolve* User :root/user (:children %))})
 
 
 (deftest new-thing-works
   (async done
     (go
-      (let [c (resolve '[{(:root/user {:user/name "nipponfarm"})
-                            [:user/name
-                             :user/favorite-number
-                             :user/favorite-color
-                             {:user/favorite-fellow-user [:user/favorite-color
-                                                          :user/favorite-color]}]}])]
+      (let [c (resolve Root '[{(:root/user {:user/name "nipponfarm"})
+                               [:user/name
+                                :user/favorite-color
+                                :user/favorite-number
+                                {:user/favorite-fellow-user [:user/favorite-color
+                                                             :user/favorite-color]}]}])]
         ;; Keeps delivering the same data.
         (is (= (repeat 2 {:root/user {:user/name "nipponfarm"
                                       :user/favorite-color :color/blue
