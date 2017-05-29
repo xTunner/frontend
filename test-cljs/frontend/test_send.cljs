@@ -4,7 +4,8 @@
 
 
             [cljs.core.async :as async :refer [<! chan close! put!]]
-            [om.next :as om])
+            [om.next :as om]
+            [cljs.core.async.impl.protocols :as async-impl])
   (:require-macros [devcards.core :as dc :refer [deftest]]
                    [cljs.core.async.macros :refer [go]]))
 
@@ -298,14 +299,20 @@
 
 
 
+(defn- read-port? [x]
+  (implements? async-impl/ReadPort x))
+
 (defn resolve* [context mapping key children]
   (async/map (fn [& vals]
                {key (into {}
                           (map #(vector (:key %1) %2)
                                children vals))})
              (map (fn [ast]
-                    (let [result ((get mapping (:key ast)) context ast)]
-                      (async/map (:key ast) [result])))
+                    (let [result ((get mapping (:key ast)) context ast)
+                          promise (if (read-port? result)
+                                    result
+                                    (doto (async/promise-chan) (put! result)))]
+                      (async/map (:key ast) [promise])))
                   children)))
 
 
@@ -316,8 +323,7 @@
 (def User
   {:user/name
    (fn [context ast]
-     (doto (async/promise-chan)
-       (put! {:user/name (:user/name context)})))
+     {:user/name (:user/name context)})
 
    :user/favorite-color
    (fn [context ast]
