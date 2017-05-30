@@ -32,6 +32,7 @@
     ;; These keys only exist in the initial app state, added from the page's
     ;; renderContext.
     :user/login
+    :user/github-oauth-scopes
     :user/bitbucket-authorized?})
 
 (defn- remote-filtered-read
