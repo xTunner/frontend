@@ -2463,9 +2463,10 @@
             projects (get-in data state/org-projects-path)
             user (:current-user data)
             subpage (-> data :navigation-data :subpage)
-            error-message (get-in data state/error-message-path)]
+            error-message (get-in data state/error-message-path)
+            proj-vcs-url (get-in project-data [:project :vcs_url])]
         (html
-         (if-not (get-in project-data [:project :vcs_url]) ; wait for project-settings to load
+         (if-not proj-vcs-url ; wait for project-settings to load
            [:div.empty-placeholder (spinner)]
            [:div#project-settings
             ; Temporarly disable top level error messsage for the set of subpages while we
@@ -2478,7 +2479,13 @@
                :parallel-builds (om/build parallel-builds data)
                :env-vars (om/build env-vars {:project-data project-data
                                              :projects projects
-                                             :org-admin? (get-in data (conj state/org-data-path :admin?))})
+                                             :org-admin? (->> user
+                                                              :organizations
+                                                              (filter (fn [org]
+                                                                        (= (:login org)
+                                                                           (vcs-url/org-name proj-vcs-url))))
+                                                              first
+                                                              :admin)})
                :advanced-settings (om/build advance project-data)
                :clear-caches (if (or (feature/enabled? :project-cache-clear-buttons)
                                      (config/enterprise?))
