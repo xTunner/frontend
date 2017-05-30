@@ -240,16 +240,17 @@
 
   (defroute v1-project-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)"
     [short-vcs-type org-name project-name params]
-    (open! app
-           :route/project-workflows
-           {:route-params
-            {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-             :organization/name org-name
-             :project/name project-name
-             :page/number (let [page (get-in params [:query-params :page])]
-                            (if (and (string? page) (re-matches #"\d+" page))
-                              (js/parseInt page)
-                              1))}}))
+    (let [page-str (get-in params [:query-params :page])]
+      (open! app
+             :route/project-workflows
+             {:route-params
+              {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+               :organization/name org-name
+               :project/name project-name
+               :page/number (let [page (js/parseInt page-str)]
+                              (if (js/isNaN page)
+                                1
+                                page))}})))
 
   (defroute v1-project-branch-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)/tree/([^/]+)"
     [short-vcs-type org-name project-name branch]
