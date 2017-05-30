@@ -95,6 +95,8 @@
   [{vcs-type :organization/vcs-type
     org-name :organization/name
     project-name :project/name}
+   offset
+   limit
    merge-fn
    query]
   (api/get-project-workflows
@@ -107,14 +109,15 @@
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
                        ;; (feature/enabled? :workflows-pagination)
-                       :routed-page {:connection/total-count (count api-runs)
+                       :routed-page {:connection/total-count (:total-count response)
                                      :connection/edges (->> api-runs
                                                             (map adapt-to-run)
                                                             (mapv #(hash-map :edge/node %)))}
                        ;; (not (feature/enabled? :workflows-pagination))
                        :project/workflow-runs (mapv adapt-to-run api-runs)}}}]
         (merge-fn novelty query))))
-   (vcs-url/vcs-url vcs-type org-name project-name)))
+   (vcs-url/vcs-url vcs-type org-name project-name)
+   {:offset offset :limit limit}))
 
 (defn- request-run-retry-from-api-service
   [id]
@@ -149,11 +152,15 @@
           (:query (first children)))))
 
 (defn- reread-project-runs [ast merge-fn query]
-  (js/setTimeout #(merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
-                                        :organization/name (-> ast :params :organization/name)
-                                        :project/name (-> ast :children first :params :project/name)}
-                                       merge-fn
-                                       query)
+  (js/setTimeout #(let [{:keys [connection/offset connection/limit]}
+                        (:params (expr-ast/get-in ast [:organization/project :routed-page]))]
+                    (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
+                                          :organization/name (-> ast :params :organization/name)
+                                          :project/name (-> ast :children first :params :project/name)}
+                                         offset
+                                         limit
+                                         merge-fn
+                                         query))
                  ms-until-retried-run-retrieved))
 
 (defn- org-runs-ast?
@@ -418,11 +425,15 @@
 
         ;; :route/workflow
         (project-runs-ast? ast)
-        (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
-                              :organization/name (-> ast :params :organization/name)
-                              :project/name (-> ast :children first :params :project/name)}
-                             cb
-                             query)
+        (let [{:keys [connection/offset connection/limit]}
+              (:params (expr-ast/get-in ast [:organization/project :routed-page]))]
+          (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
+                                :organization/name (-> ast :params :organization/name)
+                                :project/name (-> ast :children first :params :project/name)}
+                               offset
+                               limit
+                               cb
+                               query))
 
         (reread-project-runs-ast? ast) (reread-project-runs ast cb query)
 

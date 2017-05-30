@@ -21,6 +21,7 @@
             [frontend.history :as history]
             [frontend.instrumentation :refer [wrap-api-instrumentation]]
             [frontend.parser :as parser]
+            [frontend.parser.connection :as connection]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.send :as send]
@@ -274,18 +275,19 @@
 
                           :merge (bodhi/merge-fn
                                   (-> patched-basic-merge
-                                      
+
                                       ;; bodhi/basic-merge
                                       ;; see docstring for patched-basic-merge
-                                      
-                                      
+
+
                                       ;; TODO: re-enable normalization
                                       ;; by uncommenting
                                       ;; `default-db/merge` when bodhi
                                       ;; basic-merge can work with it
-                                      
+
                                       ;; default-db/merge
                                       param-indexing/merge
+                                      connection/merge
                                       aliasing/merge
                                       compassus-page-queuing-merge))
 

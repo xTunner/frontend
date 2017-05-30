@@ -84,15 +84,16 @@
              {:type :get-workflow-status
               :params {:run/id run-id}}))
 
-(defn get-project-workflows [api-ch vcs-url]
-  (ajax/ajax :post
-             "/query-api"
-             :uncatchable-by-old-controller
-             api-ch
-             :format :transit
-             :params
-             {:type :get-project-workflows
-              :params {:vcs-url vcs-url}}))
+(defn get-project-workflows [api-ch vcs-url opts]
+   (ajax/ajax :post
+              "/query-api"
+              :uncatchable-by-old-controller
+              api-ch
+              :format :transit
+              :params
+              {:type :get-project-workflows
+               :params {:vcs-url vcs-url
+                        :opts opts}}))
 
 (defn get-branch-workflows [api-ch vcs-type org-name repo-name branch-name]
   (ajax/ajax :post

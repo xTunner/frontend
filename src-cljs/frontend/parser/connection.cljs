@@ -42,11 +42,7 @@
       ;; Until the backend supports offset and limit, strip these.
       (if (#{:connection/offset :connection/limit} key)
         {target nil}
-        (next-read (-> env
-                       (update-in [:ast :params] dissoc :connection/offset :connection/limit)
-                       (update :ast #(if (empty? (:params %))
-                                       (dissoc % :params)
-                                       %))))))))
+        (next-read env)))))
 
 (defn merge [next-merge]
   (fn [{:keys [ast path state novelty] {{:keys [connection/offset connection/limit] :as params} :params :keys [key]} :ast :as env}]

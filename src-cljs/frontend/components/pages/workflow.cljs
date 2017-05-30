@@ -176,7 +176,7 @@
   (html
    [:div
     (card/collection
-     (map run-row runs))]))
+     (map #(when % (run-row %)) runs))]))
 
 (defui ^:once ProjectWorkflowRuns
   static om-next/IQuery
@@ -185,7 +185,7 @@
       [:project/name
        {:project/organization [:organization/vcs-type :organization/name]}
        `{(:routed/page {:page/connection :project/workflow-runs
-                        :page/count 4})
+                        :page/count 30})
          [:connection/total-count
           :connection/offset
           {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}
