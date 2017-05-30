@@ -586,7 +586,7 @@
     (html
      [:div#build-insights
       (cond
-        (user/non-code-identity? (get-in state state/user-path))
+        (not (user/has-code-identity? (get-in state state/user-path)))
         (non-code-empty-state/empty-state-main-page
           {:name "Insights"
            :icon (icon/insights)

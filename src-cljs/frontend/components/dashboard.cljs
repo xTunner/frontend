@@ -1,15 +1,31 @@
 (ns frontend.components.dashboard
   (:require [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
             [frontend.components.nux-bootstrap :as nux-bootstrap]
-            [frontend.models.feature :as feature]
+            [frontend.data.builds :as test-data]
             [frontend.models.plan :as plan-model]
+            [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer-macros [html]]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true]
+            [frontend.experimental.non-code-empty-state :as non-code-empty-state]))
+
+(defn- non-code-identity-empty-dashboard []
+  (non-code-empty-state/empty-state-main-page
+    {:name "Builds"
+     :icon (icon/builds)
+     :subheading "builds sub heading"
+     :footer-heading "Use builds on your projects"
+     :footer-description "To use builds on your projects, you need to add your code and run a build"}
+    (om/build builds-table/builds-table
+              {:builds test-data/builds}
+              {:opts {:show-actions? true
+                      :show-branch? true
+                      :show-project? true}})))
 
 (defn dashboard [data owner]
   (reify
@@ -39,12 +55,15 @@
                 (and (empty? builds)
                      projects
                      (empty? projects))
-                (om/build nux-bootstrap/build-empty-state
-                          {:projects (get-in data state/repos-building-path)
-                           :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
-                                                  (get-in data (state/all-repos-loaded-path :bitbucket)))
-                           :current-user current-user
-                           :organizations (get-in data state/user-organizations-path)})
+
+                (if (not (user/has-code-identity? current-user))
+                  (non-code-identity-empty-dashboard)
+                  (om/build nux-bootstrap/build-empty-state
+                            {:projects (get-in data state/repos-building-path)
+                             :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
+                                                    (get-in data (state/all-repos-loaded-path :bitbucket)))
+                             :current-user current-user
+                             :organizations (get-in data state/user-organizations-path)}))
 
                 :else
                 [:div.dashboard

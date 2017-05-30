@@ -205,16 +205,16 @@
   (render [this]
     (component
       (let [current-user (:app/current-user (om-next/props this))
-            non-code-identity? (user/non-code-identity? current-user)]
+            not-have-code-identity? (not (user/has-code-identity? current-user))]
         (main-template/template
           {:app (:legacy/state (om-next/props this))
            :selected-org (:routed-entity/organization (om-next/props this))
            :crumbs [{:type :projects}]
-           :header-actions (when-not non-code-identity?
+           :header-actions (when-not not-have-code-identity?
                              (add-project-button {:empty-state? false
                                                   :org (:routed-entity/organization (om-next/props this))}))
            :main-content
-           (if non-code-identity?
+           (if not-have-code-identity?
              (non-code-ident-empty-state)
              (element
                :main-content

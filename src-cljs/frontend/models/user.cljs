@@ -70,10 +70,11 @@
   (let [check-fn (some-fn :user/bitbucket-authorized? :bitbucket_authorized)]
     (-> user check-fn boolean)))
 
-(defn non-code-identity? [user]
-  (and (ld/feature-on? "google-login-empty-state")
-       (not (github-authorized? user))
-       (not (bitbucket-authorized? user))))
+(defn has-code-identity? [user]
+  (if (ld/feature-on? "google-login-empty-state")
+    (or (github-authorized? user)
+        (bitbucket-authorized? user))
+    true))
 
 (defn deauthorize-github [user]
   (-> user

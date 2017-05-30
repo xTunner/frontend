@@ -357,6 +357,6 @@
     (render [_]
       (main-template/template
         {:app app
-         :main-content (if (user/non-code-identity? (:current-user app))
+         :main-content (if (not (user/has-code-identity? (:current-user app)))
                          (non-code-empty-state)
                          (om/build main-content app))}))))
