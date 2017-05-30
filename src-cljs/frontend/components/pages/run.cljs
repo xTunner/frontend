@@ -149,6 +149,19 @@
                                       :selected-container-id (state/current-container-id app))
                                {:key :selected-container-id})]])))))
 
+(defn job-cards-row
+  "A set of cards to layout together"
+  [cards]
+   (component
+     (html
+       [:div
+        (for [card cards]
+          ;; Reuse the card's key. Thus, if each card is built with a unique key,
+          ;; each .item will be built with a unique key.
+          [:.item (when-let [react-key (and card (.-key card))]
+                    {:key react-key})
+           card])])))
+
 (defui ^:once Page
   static om-next/IQuery
   (query [this]
@@ -231,18 +244,18 @@
                [:div
                 (when-not (empty? run)
                   (workflow-page/run-row run))
-                [:.jobs-and-output
-                 [:.jobs
-                  [:div.jobs-header
-                   [:.hr-title
-                    [:span "Jobs"]]]
-                  (card/collection
+                [:.jobs
+                 [:div.jobs-header
+                  [:.hr-title
+                   [:span (gstring/format "%s jobs in this workflow" (count jobs))]]]
+                 (job-cards-row
                    (map (fn [job-data]
                           (job (om-next/computed
-                                job-data
-                                {:selected? (= (:job/name job-data)
-                                               (:job/name selected-job))})))
+                                 job-data
+                                 {:selected? (= (:job/name job-data)
+                                                (:job/name selected-job))})))
                         jobs))]
+                [:.jobs-and-output
                  [:.output
                   [:div.output-header
                    [:.output-title

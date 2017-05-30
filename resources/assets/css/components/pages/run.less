@@ -19,12 +19,49 @@
       }
 
       > .job-card-inner {
-        .metadata {
+
+        > .status-heading {
+            .flexy(center, space-between);
+            padding: 8px;
+
+            > .status-name {
+              .flexy(center);
+
+              > .job-status {
+                margin-right: 8px;
+                padding: 8px;
+              }
+            }
+
+            > .status-actions {
+              .flexy(center);
+            }
+
+            // FIXME: need to make this a child selector
+            button {
+              background-color: transparent;
+            }
+
+            // FIXME: need to add ellipsis for all the things
+            // .job-name {
+            //   overflow: hidden;
+            //   white-space: nowrap;
+            //   text-overflow: ellipsis;
+            //   max-width: 168px;
+
+            //   @media (min-width: @screen-md-max) {
+            //     max-width: 100px;
+            //   }
+            // }
+          }
+
+
+        > .metadata {
 
           @build-padding: 12px;
           @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
 
-          .metadata-row {
+          > .metadata-row {
             .flexy(row, flex-end);
             margin-top: 0;
             padding-left: 0;
@@ -37,7 +74,7 @@
               margin-bottom: 0;
             }
 
-            .metadata-item {
+            > .metadata-item {
               .flexy(center);
               .flex(1 0 auto);
 
@@ -80,9 +117,25 @@
     });
   });
 
+  .ui("job-cards-row", {
+    .flexy();
+    display: flex;
+    flex-wrap: wrap;
+
+    padding-bottom: 25px;
+    margin-top: -25px;
+
+    > .item {
+      margin-right: 5px;
+      margin-left: 5px;
+      flex-grow: 1;
+      flex-shrink: 0;
+      margin-bottom: 10px;
+      }
+  });
+
   .ui("Page", {}, {
     .el("main-content", {
-      margin-top: 20px;
       margin-left: auto;
       margin-right: auto;
       width: 1200px;
@@ -90,7 +143,7 @@
       padding-top: 16px;
 
       @media (max-width: 1800px) {
-        width: 66.66%;
+        width: 100%;
         min-width: 512px;
       }
 
@@ -98,6 +151,39 @@
         width: 100%;
         min-width: 100%;
       }
+
+      > .jobs {
+
+        transform: translate3d(0,0,0);
+        transition: transform .3s;
+
+        @media (max-width: @screen-md-max) {
+          margin-right: 0;
+        }
+
+        > .jobs-header > .hr-title {
+          font-weight: 400;
+          font-size: 18px;
+          line-height: 20px;
+          height: auto;
+          margin-top: 40px;
+          margin-bottom: 40px;
+          text-align: left;
+          color: @grayDark;
+          border-bottom: 2px solid;
+          border-color: #ddd;
+
+          > span {
+            position: relative;
+            top: -10px;
+            padding: 2px 10px;
+            border-radius: 2px;
+            background-color: @whiteBackground;
+          }
+        }
+
+}
+
 
       > .jobs-and-output {
         .flexy;
@@ -108,103 +194,36 @@
           align-items: stretch;
         }
 
-        .jobs-header,
-        .output-header {
-          margin-bottom: .5em;
-        }
-
-        .job-output-tabs {
+        > .job-output-tabs {
           margin-bottom: 15px;
-        }
-
-        > .jobs {
-          margin-right: 20px;
-
-          transform: translate3d(0,0,0);
-          transition: transform .3s;
-
-          @media (max-width: @screen-md-max) {
-            margin-right: 0;
-          }
-
-          .hr-title {
-            font-weight: 600;
-            line-height: 20px;
-            height: auto;
-            margin-top: 20px;
-            text-align: center;
-            color: @grayDark;
-            border-top: 1px solid;
-
-            span {
-              position: relative;
-              top: -10px;
-              padding: 2px 10px;
-              text-transform: uppercase;
-              border-radius: 2px;
-              background-color: @whiteBackground;
-            }
-          }
-
-          .status-heading {
-            .flexy(center, space-between);
-            padding: 8px;
-
-            .status-name {
-              .flexy(center);
-              // min-width: 88%;
-            }
-
-            .status-actions {
-              .flexy(center);
-            }
-
-            button {
-              background-color: transparent;
-            }
-
-            .job-status {
-              margin-right: 8px;
-            }
-
-            // FIXME: need to add ellipsis for all the things
-            // .job-name {
-            //   overflow: hidden;
-            //   white-space: nowrap;
-            //   text-overflow: ellipsis;
-            //   max-width: 168px;
-
-            //   @media (min-width: @screen-md-max) {
-            //     max-width: 100px;
-            //   }
-            // }
-          }
         }
 
         > .output {
           flex: 1;
 
-          .output-header {
+          > .output-header {
             .flexy(center, space-between);
-          }
 
-          .output-title {
-            font-weight: 600;
-            line-height: 20px;
-            height: auto;
-            margin-top: 20px;
-            text-align: left;
-            color: @grayDark;
-            border-top: 1px solid transparent;
 
-            span {
-              position: relative;
-              top: -10px;
-              padding: 2px 10px;
+            > .output-title {
+              font-weight: 600;
+              line-height: 20px;
+              height: auto;
+              margin-top: 20px;
+              text-align: left;
+              color: @grayDark;
+              border-top: 1px solid transparent;
+
+
+              > span {
+                position: relative;
+                top: -10px;
+                padding: 2px 10px;
+              }
             }
           }
 
-          button {
+          > button {
             .iconed-button {
               .flexy(center, center);
 
