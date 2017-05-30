@@ -108,13 +108,10 @@
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
-                       ;; (feature/enabled? :workflows-pagination)
                        :routed-page {:connection/total-count (:total-count response)
                                      :connection/edges (->> api-runs
                                                             (map adapt-to-run)
-                                                            (mapv #(hash-map :edge/node %)))}
-                       ;; (not (feature/enabled? :workflows-pagination))
-                       :project/workflow-runs (mapv adapt-to-run api-runs)}}}]
+                                                            (mapv #(hash-map :edge/node %)))}}}}]
         (merge-fn novelty query))))
    (vcs-url/vcs-url vcs-type org-name project-name)
    {:offset offset :limit limit}))
@@ -274,14 +271,9 @@
           (:key expr-ast))
        (expr-ast/has-children? expr-ast #{:organization/project})
        (or
-        ;; (feature/enabled? :workflows-pagination)
         (-> expr-ast
             (expr-ast/get :organization/project)
-            (expr-ast/has-children? #{:project/name :routed-page :project/organization}))
-        ;; (not (feature/enabled? :workflows-pagination))
-        (-> expr-ast
-            (expr-ast/get :organization/project)
-            (expr-ast/has-children? #{:project/name :project/workflow-runs :project/organization})))
+            (expr-ast/has-children? #{:project/name :routed-page :project/organization})))
        (-> expr-ast
            (expr-ast/get-in [:organization/project :project/organization])
            (expr-ast/has-children? #{:organization/vcs-type :organization/name}))))

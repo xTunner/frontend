@@ -203,65 +203,48 @@
 (defui ^:once ProjectWorkflowRuns
   static om-next/IQuery
   (query [this]
-    (if (feature/enabled? :workflows-pagination)
-      [:project/name
-       {:project/organization [:organization/vcs-type :organization/name]}
-       `{(:routed/page {:page/connection :project/workflow-runs
-                        :page/count 30})
-         [:connection/total-count
-          :connection/offset
-          {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}
-       {'[:app/route-params _] [:page/number]}]
-
-      [:project/name
-       {:project/organization [:organization/vcs-type :organization/name]}
-       {:project/workflow-runs (om-next/get-query RunRow)}]))
+    [:project/name
+     {:project/organization [:organization/vcs-type :organization/name]}
+     `{(:routed/page {:page/connection :project/workflow-runs
+                      :page/count 30})
+       [:connection/total-count
+        :connection/offset
+        {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}
+     {'[:app/route-params _] [:page/number]}])
   Object
   (render [this]
-    (if (feature/enabled? :workflows-pagination)
-      (component
-        (let [props (om-next/props this)
-              page-num (get-in props ['[:app/route-params _] :page/number])
-              {project-name :project/name
-               {vcs-type :organization/vcs-type
-                org-name :organization/name} :project/organization} props
+    (component
+      (let [props (om-next/props this)
+            page-num (get-in props ['[:app/route-params _] :page/number])
+            {project-name :project/name
+             {vcs-type :organization/vcs-type
+              org-name :organization/name} :project/organization} props
 
-              {:keys [connection/total-count
-                      connection/offset
-                      connection/edges]}
-              (:routed/page props)]
-          (if (pos? total-count)
-            (html
-             [:div
-              [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
-              (run-row-collection (map :edge/node edges))
-              [:.list-pager
-               (if (< 1 page-num)
-                 [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (dec page-num))}
-                  "← Newer workflow runs"]
-                 [:span
-                  "← Newer workflow runs"])
-               (if (> total-count (+ offset (count edges)))
-                 [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (inc page-num))}
-                  "Older workflow runs →"]
-                 [:span
-                  "Older workflow runs →"])]])
-            (card/basic
-             (empty-state/empty-state
-              {:icon (icon/workflows)
-               :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
-               :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))
-
-      (component
-        (if-let [runs (seq (:project/workflow-runs (om-next/props this)))]
-          (run-row-collection runs)
-          (let [project-name (:project/name (om-next/props this))
-                org-name (:organization/name (:project/organization (om-next/props this)))]
-            (card/basic
-             (empty-state/empty-state
-              {:icon (icon/workflows)
-               :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
-               :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")}))))))))
+            {:keys [connection/total-count
+                    connection/offset
+                    connection/edges]}
+            (:routed/page props)]
+        (if (pos? total-count)
+          (html
+           [:div
+            [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
+            (run-row-collection (map :edge/node edges))
+            [:.list-pager
+             (if (< 1 page-num)
+               [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (dec page-num))}
+                "← Newer workflow runs"]
+               [:span
+                "← Newer workflow runs"])
+             (if (> total-count (+ offset (count edges)))
+               [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (inc page-num))}
+                "Older workflow runs →"]
+               [:span
+                "Older workflow runs →"])]])
+          (card/basic
+           (empty-state/empty-state
+            {:icon (icon/workflows)
+             :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
+             :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))))
 
 (def project-workflow-runs (om-next/factory ProjectWorkflowRuns))
 

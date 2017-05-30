@@ -1,6 +1,7 @@
 (ns frontend.test-send
-  (:require [clojure.test :refer-macros [deftest testing is]]
-            [frontend.send :as send]))
+  (:require [clojure.test :refer-macros [testing is]]
+            [frontend.send :as send])
+  (:require-macros [devcards.core :as dc :refer [deftest]]))
 
 (deftest org-runs-ast?-works
   (let [example {:key :circleci/organization
@@ -167,7 +168,7 @@
                           {:type :prop
                            :key :organization/vcs-type}]}
                         {:type :join
-                         :key :project/workflow-runs
+                         :key :routed-page
                          :children []}]}]}]
     (testing "returns true when ast asks for project runs"
       (is (= true
@@ -242,7 +243,7 @@
                                                    [:children 0 :children]
                                                    conj
                                                    {:type :join
-                                                    :key :project/workflow-runs
+                                                    :key :routed-page
                                                     :children []})))))
     (testing "returns false when ast has wrong key"
       (is (= false
