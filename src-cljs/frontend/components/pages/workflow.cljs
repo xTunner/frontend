@@ -66,15 +66,37 @@
 (defn- transact-run-retry
   [component run-id vcs-type org-name project-name]
   (om-next/transact!
-   ;; TODO: when bodhi props metadata bug is fixed, pass the component
-   ;; instead of the reconciler
+
+   ;; We transact on the reconciler, not the component; otherwise the
+   ;; component's props render as nil for a moment. This is odd.
+   ;;
+   ;; It looks like the transaction drops the run from the app state.
+   ;; Transacting on the component means the component immediately re-reads, so
+   ;; it immediately renders nil. Moments later, the query is read from the
+   ;; server again, delivering new data to the app state, and the component
+   ;; renders with data again.
+   ;;
+   ;; When we transact on the reconciler, we simply avoid rendering the first
+   ;; time, during the window when the run is missing. Of course, it shouldn't
+   ;; be missing in the first place.
+   ;;
+   ;; tl;dr: there's a bug in here, but it's not clear what, and this works fine
+   ;; for now.
    (om-next/get-reconciler component)
-   ;; TODO: when bodhi props metadata bug is fixed, pass the query
-   ;; without transforming reads
+
+   ;; It's not clear why we have to manually transform-reads---Om should do that
+   ;; for us if we give a simple keyword---but it doesn't appear to be doing it,
+   ;; so we do it. This is another bug we're punting on.
    (om-next/transform-reads
     (om-next/get-reconciler component)
     `[(run/retry {:run/id ~run-id})
-      :project/workflow-runs])))
+      ;; We queue the entire page to re-read using :compassus.core/route-data.
+      ;; Ideally we'd know what specifically to re-run, but there are now
+      ;; several keys the new run could show up under. (Aliases also complicate
+      ;; this, and solving that problem is not something we want to spend time
+      ;; on yet.) Re-reading the entire query here seems like a good idea
+      ;; anyhow.
+      :compassus.core/route-data])))
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
