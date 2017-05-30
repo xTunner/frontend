@@ -101,7 +101,7 @@
                                             ;; Speeds up Figwheel cycle, at the risk of dependent namespaces getting out of sync.
                                             :recompile-dependents false}}
 
-                           :devcards {:source-paths ["src-cljs" "test-cljs"]
+                           :devcards {:source-paths ["src-cljs" "test-cljs" "devcards"]
                                       :figwheel {:devcards true
                                                  :websocket-url "wss://prod.circlehost:4444/figwheel-ws"
                                                  :on-cssload "frontend.core/handle-css-reload"}
