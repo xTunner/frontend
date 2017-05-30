@@ -164,4 +164,49 @@
                                               :connection/edges [{:edge/node {:pet/name "Milo"}}
                                                                  {:edge/node {:pet/name "Otis"}}
                                                                  {:edge/node {:pet/name "Chance"}}]}}}
+               (merge {} state novelty query)))))
+
+    (testing "Leaves the state alone when there's no novelty on this key"
+      (let [state {:root/pets-connection {:connection/total-count 5
+                                          :connection/edges [nil
+                                                             {:edge/node {:pet/name "Otis"}}
+                                                             {:edge/node {:pet/name "Chance"}}
+                                                             nil
+                                                             nil]}}
+            novelty {:only 1 :other 2 :data 2}
+            query '[{(:root/pets-connection {:connection/offset 0 :connection/limit 2})
+                     [:connection/total-count
+                      :connection/offset
+                      :connection/limit
+                      {:connection/edges [{:edge/node [:pet/name]}]}]}]]
+        (is (= {:keys #{}
+                :next {:root/pets-connection {:connection/total-count 5
+                                              :connection/edges [nil
+                                                                 {:edge/node {:pet/name "Otis"}}
+                                                                 {:edge/node {:pet/name "Chance"}}
+                                                                 nil
+                                                                 nil]}}}
+               (merge {} state novelty query)))))
+
+    (testing "Recurses on nodes"
+      (let [state {}
+            novelty {:root/pets-connection {:connection/total-count 5
+                                            :connection/edges [{:edge/node {:pet/name "Otis"
+                                                                            :pet/species :pet-species/dog
+                                                                            :pet/description "pug"}}
+                                                               {:edge/node {:pet/name "Chance"
+                                                                            :pet/species :pet-species/dog
+                                                                            :pet/description "American bulldog"}}]}}
+            query '[{(:root/pets-connection {:connection/offset 1 :connection/limit 2})
+                     [:connection/total-count
+                      :connection/offset
+                      :connection/limit
+                      {:connection/edges [{:edge/node [:pet/name]}]}]}]]
+        (is (= {:keys #{}
+                :next {:root/pets-connection {:connection/total-count 5
+                                              :connection/edges [nil
+                                                                 {:edge/node {:pet/name "Otis"}}
+                                                                 {:edge/node {:pet/name "Chance"}}
+                                                                 nil
+                                                                 nil]}}}
                (merge {} state novelty query)))))))

@@ -1,4 +1,5 @@
 (ns frontend.parser.connection
+  (:require [bodhi.core :as bodhi])
   (:refer-clojure :exclude [merge]))
 
 (defn- forgiving-subvec
@@ -44,6 +45,12 @@
         {target nil}
         (next-read env)))))
 
+(defn- pad-or-trim
+  "If coll is larger than size, trims it to size. If smaller, pads it with nil.
+  Returns a vector."
+  [coll size]
+  (vec (take size (concat coll (repeat nil)))))
+
 (defn merge [next-merge]
   (fn [{:keys [ast path state novelty] {{:keys [connection/offset connection/limit] :as params} :params :keys [key]} :ast :as env}]
     (let [{:keys [key params]} ast]
@@ -53,15 +60,18 @@
            (and offset limit)
            (str ":connection/offset and :connection/limit must be given together."))
           (let [total-count (:connection/total-count novelty)
-                novel-edges (:connection/edges novelty)]
-            {:keys #{}
-             :next (-> state
-                       (assoc-in (conj path :connection/total-count) total-count)
-                       (update-in (conj path :connection/edges)
-                                  (fn [edges]
-                                    (let [correct-length-edges (vec (take total-count (concat edges (repeat nil))))]
-                                      (reduce-kv (fn [edges i novel-edge]
-                                                   (assoc edges (+ offset i) novel-edge))
-                                                 correct-length-edges
-                                                 novel-edges)))))}))
+                novel-edges (:connection/edges novelty)
+                result-with-total-count {:keys #{}
+                                         :next (-> state
+                                                   (assoc-in (conj path :connection/total-count) total-count)
+                                                   (update-in (conj path :connection/edges) pad-or-trim total-count))}]
+            (reduce-kv (fn [result i novel-edge]
+                         (bodhi/update-merge-result
+                          result
+                          (next-merge (-> env
+                                          (update :path conj :connection/edges (+ offset i))
+                                          (assoc :novelty novel-edge
+                                                 :state (:next result)
+                                                 :ast (first (filter #(= :connection/edges (:key %)) (:children ast))))))))
+                       result-with-total-count novel-edges)))
         (next-merge env)))))
