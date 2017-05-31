@@ -194,12 +194,6 @@
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
-(defn run-row-collection [runs]
-  (html
-   [:div
-    (card/collection
-     (map #(when % (run-row %)) runs))]))
-
 (defn a-or-span [flag href & children]
   (if flag
     [:a {:href href} children]
@@ -221,7 +215,8 @@
           (html
            [:div
             [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
-            (run-row-collection (map :edge/node edges))
+            (card/collection
+             (map #(when % (run-row (:edge/node %))) edges))
             [:.list-pager
              (a-or-span (pos? offset)
                         prev-page-href
