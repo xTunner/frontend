@@ -225,8 +225,8 @@
         has-topbar? (ld/feature-on? "top-bar-ui-v-1")
         toggle-topbar (when-not has-topbar? "top-bar-ui-v-1")
         toggle-topbar-text (if has-topbar?
-                             "Return to Current UI"
-                             "Try Beta UI")]
+                             "Leave Beta UI"
+                             "Join Beta UI")]
     (reify
       om/IDisplayName (display-name [_] "User Header")
       om/IRender
@@ -250,8 +250,17 @@
              [:.actions
               (when (ld/feature-on? "top-bar-beta-button")
                 [:div.topbar-toggle
+                 (when has-topbar?
+                     [:span.feedback
+                       (button/button {:fixed? true
+                                       :kind :primary
+                                       :size :small
+                                       :on-click #(js/console.log "Button will prompt an email.")}
+                                      "Provide Feedback")])
                  (button/link {:fixed? true
-                               :kind :primary
+                               :kind (if has-topbar?
+                                       :secondary
+                                       :primary)
                                :size :small
                                :href (if has-topbar?
                                        "/dashboard"
