@@ -590,9 +590,9 @@
         (non-code-empty-state/empty-state-main-page
           {:name "Insights"
            :icon (icon/insights)
-           :subheading "CircleCI insights give performance overviews of your projects and offer ideas about how to increase build speeds. Experience insights by clicking on a test project or creating one of your own."
-           :footer-heading "Use insights on your projects"
-           :footer-description "To use insights on your projects, you need to add your code and run a build"}
+           :subheading "An interactive graph of your software builds, highlighting failed and successful builds. This page allows you to monitor your build performance holistically."
+           :demo-heading "Demos"
+           :demo-description "The following graph is shown for demonstration. Click the title link for a larger graph of build performance or click a bar to see details for a single build."}
           [:div#non-code-insights (om/build project-insights {:project test-data/test-project
                                                               :opts {:clickable-header? false}})])
 

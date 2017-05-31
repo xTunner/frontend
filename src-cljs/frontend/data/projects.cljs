@@ -8,27 +8,15 @@
    {:reponame "circleci-demo-java-spring"
     :parallel 6
     :follower-count 50}
-   {:reponame "circleci-demo-php-laravel"
-    :parallel 3
-    :follower-count 20}
-   {:reponame "circleci-demo-python-flask"
-    :parallel 5
-    :follower-count 20}
    {:reponame "circleci-demo-python-django"
     :parallel 5
     :follower-count 20}
-   {:reponame "circleci-demo-elixir-phoenix"
-    :parallel 4
-    :follower-count 20}
    {:reponame "circleci-demo-javascript-express"
     :parallel 3
-    :follower-count 100}
+    :follower-count 25}
    {:reponame "circleci-demo-go"
     :parallel 5
     :follower-count 50}
-   {:reponame "circleci-demo-clojure-luminus"
-    :parallel 5
-    :follower-count 30}
    {:reponame "circleci-demo-docker"
     :parallel 10
     :follower-count 50}])

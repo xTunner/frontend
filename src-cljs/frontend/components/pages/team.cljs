@@ -27,9 +27,9 @@
   (non-code-empty-state/empty-state-main-page
     {:name "Team"
      :icon (icon/team)
-     :subheading "teams sub heading"
-     :footer-heading "Use teams on your projects"
-     :footer-description "To use teams on your projects, you need to add your code and run a build"}
+     :subheading "A list of all of the users that follow CircleCI projects and the number of projects they follow, so you can easily invite teammates to your project."
+     :demo-heading "Demos"
+     :demo-description "The following list of users is shown for demonstration."}
     [:.teams
      [:img {:src (utils/cdn-path "/img/empty-state-teams.png")}]]))
 

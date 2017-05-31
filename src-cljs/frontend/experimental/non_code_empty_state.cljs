@@ -20,14 +20,14 @@
           [:h1 [:b name]]
           [:p.subheading-text subheading]])])))
 
-(defn- empty-state-footer [{:keys [footer-heading footer-description]}]
+(defn- empty-state-footer []
   (component
     (html
       [:div
        (card/basic
          [:div
-          [:h4 [:b footer-heading]]
-          [:p footer-description]
+          [:h4 [:b "Authorize CircleCI to Build"]]
+          [:p "To automate your software builds and tests with CircleCI, connect to your GitHub or Bitbucket code repository."]
           [:.ctas
            (button/link {:href (gh-utils/auth-url)
                          :kind :secondary}
@@ -36,14 +36,24 @@
                          :kind :secondary}
                         "Authorize Bitbucket")]])])))
 
+(defn- demo-warn-card [{:keys [demo-heading demo-description]}]
+  (component
+    (html
+      [:div
+       (card/basic
+         [:div
+          [:h4 [:b demo-heading]]
+          [:div demo-description]])])))
+
 (defn empty-state-main-page [page-info children]
   (component
     (html
       [:div
        (card/collection
          [(empty-state-header page-info)
+          (demo-warn-card page-info)
           children
-          (empty-state-footer page-info)])])))
+          (empty-state-footer)])])))
 
 (dc/do
   (defcard empty-state-header
