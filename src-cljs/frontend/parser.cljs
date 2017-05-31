@@ -141,6 +141,7 @@
    :routed/page
    [[:routed-page]
     (fn [{:keys [page/number]} query {:keys [page/connection page/count]}]
+      (assert number "No page number set in route params.")
       ;; (dec number) because page numbers are 1-indexed.
       (let [offset (* (dec number) count)]
         `{(:routed-page {:< ~connection :connection/offset ~offset :connection/limit ~count})

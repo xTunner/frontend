@@ -95,7 +95,7 @@
               :params {:vcs-url vcs-url
                        :opts opts}}))
 
-(defn get-branch-workflows [api-ch vcs-type org-name repo-name branch-name]
+(defn get-branch-workflows [api-ch vcs-type org-name repo-name branch-name opts]
   (ajax/ajax :post
              "/query-api"
              :uncatchable-by-old-controller
@@ -106,9 +106,10 @@
               :params {:organization/vcs-type (keyword vcs-type)
                        :organization/name org-name
                        :project/name repo-name
-                       :branch/name branch-name}}))
+                       :branch/name branch-name
+                       :opts opts}}))
 
-(defn get-org-workflows [api-ch org-name vcs-type]
+(defn get-org-workflows [api-ch vcs-type org-name opts]
   (ajax/ajax :post
              "/query-api"
              :uncatchable-by-old-controller
@@ -117,7 +118,8 @@
              :params
              {:type :get-org-workflows
               :params {:organization/name org-name
-                       :organization/vcs-type (keyword vcs-type)}}))
+                       :organization/vcs-type (keyword vcs-type)
+                       :opts opts}}))
 
 (defn request-retry-run [api-ch run-id]
   (ajax/ajax :post
