@@ -251,12 +251,13 @@
               (when (ld/feature-on? "top-bar-beta-button")
                 [:div.topbar-toggle
                  (when has-topbar?
-                     [:span.feedback
-                       (button/button {:fixed? true
-                                       :kind :primary
-                                       :size :small
-                                       :on-click #(js/console.log "Button will prompt an email.")}
-                                      "Provide Feedback")])
+                   [:span.feedback
+                     (button/link {:fixed? true
+                                   :kind :primary
+                                   :size :small
+                                   :href "mailto:beta+ui@circleci.com?Subject=Topbar%20UI%20Feedback"
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :topbar-feedback-clicked})}
+                                  "Provide Feedback")])
                  (button/link {:fixed? true
                                :kind (if has-topbar?
                                        :secondary
