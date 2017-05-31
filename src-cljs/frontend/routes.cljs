@@ -106,9 +106,6 @@
   [workflow-id]
   (str "/workflow-run/" workflow-id))
 
-(defn v1-org-workflows-path [vcs_type org]
-  (str "/" (vcs/->short-vcs vcs_type) "/" org  "/workflows"))
-
 (defn v1-job-path
   ([workflow-id job-name] (v1-job-path workflow-id job-name nil))
   ([workflow-id job-name {:keys [route-params/tab route-params/container-id route-params/action-id]}]

@@ -77,9 +77,7 @@
 (defmethod crumb :org-workflows
   [{:keys [username vcs_type]}]
   (om/build crumb-node
-            {:name username
-             :path (routes/v1-org-workflows-path vcs_type
-                                                 username)}))
+            {:name username}))
 
 (defmethod crumb :workflows
   [_]
