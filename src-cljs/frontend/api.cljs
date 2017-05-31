@@ -127,6 +127,14 @@
              :format :transit
              :params `(run/retry {:run/id ~run-id})))
 
+(defn request-cancel-run [api-ch run-id]
+  (ajax/ajax :post
+             "/query-api"
+             :uncatchable-by-old-controller
+             api-ch
+             :format :transit
+             :params `(run/cancel {:run/id ~run-id})))
+
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"
              :user-plans

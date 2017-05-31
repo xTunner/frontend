@@ -98,6 +98,19 @@
       ;; anyhow.
       :compassus.core/route-data])))
 
+(defn- transact-run-cancel
+  [component run-id vcs-type org-name project-name]
+  (om-next/transact!
+   ;; TODO: when bodhi props metadata bug is fixed, pass the component
+   ;; instead of the reconciler
+   (om-next/get-reconciler component)
+   ;; TODO: when bodhi props metadata bug is fixed, pass the query
+   ;; without transforming reads
+   (om-next/transform-reads
+    (om-next/get-reconciler component)
+    `[(run/cancel {:run/id ~run-id})
+      :project/workflow-runs])))
+
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
   ;; NOTE: this is commented out until bodhi handles queries for components with idents first
@@ -152,6 +165,10 @@
                   :status-class/running (icon/status-running)
                   :status-class/waiting (icon/status-queued))]
                [:.status-string (string/replace (name status) #"-" " ")]]]
+             [:div.cancel-button
+              (button/icon {:label "Cancel"
+                            :on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                           (icon/status-canceled))]
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier
