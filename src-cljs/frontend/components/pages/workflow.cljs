@@ -200,6 +200,11 @@
     (card/collection
      (map #(when % (run-row %)) runs))]))
 
+(defn a-or-span [flag href & children]
+  (if flag
+    [:a {:href href} children]
+    [:span children]))
+
 (defui ^:once RunList
   static om-next/IQuery
   (query [this]
@@ -218,16 +223,12 @@
             [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
             (run-row-collection (map :edge/node edges))
             [:.list-pager
-             (if (pos? offset)
-               [:a {:href prev-page-href}
-                "← Newer workflow runs"]
-               [:span
-                "← Newer workflow runs"])
-             (if (> total-count (+ offset (count edges)))
-               [:a {:href next-page-href}
-                "Older workflow runs →"]
-               [:span
-                "Older workflow runs →"])]]))))))
+             (a-or-span (pos? offset)
+                        prev-page-href
+                        "← Newer workflow runs")
+             (a-or-span (> total-count (+ offset (count edges)))
+                        next-page-href
+                        "Older workflow runs →")]]))))))
 
 (def run-list (om-next/factory RunList))
 
