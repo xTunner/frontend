@@ -357,7 +357,6 @@
                      :type "radio"
                      :value "false"
                      :checked (not show-all-branches?)
-                     :react-key "toggle-all-branches-my-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled false])}]
             [:label {:for "my-branches"}
              "My branches"]
@@ -366,7 +365,6 @@
                      :type "radio"
                      :value "true"
                      :checked show-all-branches?
-                     :react-key "toggle-all-branches-all-branches"
                      :on-change #(raise! owner [:show-all-branches-toggled true])}]
             [:label {:for "all-branches"}
              "All branches"]]]
