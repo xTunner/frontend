@@ -76,6 +76,8 @@
     :dependency-commands-saved
     :dismiss-trial-offer-banner-clicked
     :docs-icon-clicked
+    :empty-state-impression
+    :empty-state-auth-button-clicked
     :env-vars-added
     :env-vars-fetch-failed
     :env-vars-imported

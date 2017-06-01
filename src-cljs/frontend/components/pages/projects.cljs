@@ -119,13 +119,14 @@
                                                          :org org})}))
 
 (defn- non-code-ident-empty-state []
-  (non-code-empty-state/empty-state-main-page
+  (build-legacy non-code-empty-state/empty-state-main-page
     {:name "Projects"
      :icon (icon/project)
      :subheading "A list of your software projects with important summary information about each project’s pricing plan, team size, and settings link."
      :demo-heading "Demos"
-     :demo-description "The following list is shown for demonstration. Click the Parallelism link to see the current  number of parallel builds (1x, 2x, 3x) and the total number of containers in use in a demo plan. Click the Settings icon to see the Overview page and the full list of organization, build, test, notification, permission, and continuous deployment settings for each demo project."}
-    (card/basic
+     :demo-description "The following list is shown for demonstration. Click the Parallelism link to see the current  number of parallel builds (1x, 2x, 3x) and the total number of containers in use in a demo plan. Click the Settings icon to see the Overview page and the full list of organization, build, test, notification, permission, and continuous deployment settings for each demo project."
+     :content
+     (card/basic
       (build-legacy table/table
                     {:rows (test-data/non-code-identity-table-data)
                      :key-fn :project/vcs-url
@@ -142,7 +143,7 @@
 
                                {:header "Settings"
                                 :type :shrink
-                                :cell-fn #(table/action-link "Settings" (icon/settings) "#")}]}))))
+                                :cell-fn #(table/action-link "Settings" (icon/settings) "#")}]}))}))
 
 
 (defui ^:once OrgProjects

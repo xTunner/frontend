@@ -15,17 +15,17 @@
             [frontend.experimental.non-code-empty-state :as non-code-empty-state]))
 
 (defn- non-code-identity-empty-dashboard []
-  (non-code-empty-state/empty-state-main-page
+  (om/build non-code-empty-state/empty-state-main-page
     {:name "Builds"
      :icon (icon/builds)
      :subheading "A list of your software builds with corresponding status for monitoring all of the fixes and failures you care about."
      :demo-heading "Demos"
-     :demo-description "The following items are listed for demonstration. Click the link in the second column to see details of the code commit that triggered the demo build, a test summary, a debugging shell, links to artifacts, the build configuration, and build timing across your containers."}
-    (om/build builds-table/builds-table
-              {:builds (test-data/builds)}
-              {:opts {:show-actions? true
-                      :show-branch? true
-                      :show-project? true}})))
+     :demo-description "The following items are listed for demonstration. Click the link in the second column to see details of the code commit that triggered the demo build, a test summary, a debugging shell, links to artifacts, the build configuration, and build timing across your containers."
+     :content (om/build builds-table/builds-table
+                        {:builds (test-data/builds)}
+                        {:opts {:show-actions? true
+                                :show-branch? true
+                                :show-project? true}})}))
 
 (defn dashboard [data owner]
   (reify

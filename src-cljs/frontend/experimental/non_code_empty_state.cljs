@@ -8,7 +8,8 @@
             [frontend.utils :as utils :refer-macros [component html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bitbucket]
-            [frontend.components.pieces.card :as card]))
+            [frontend.components.pieces.card :as card]
+            [om.core :as om :include-macros true]))
 
 (defn- empty-state-header [{:keys [name icon subheading]}]
   (component
@@ -20,22 +21,6 @@
           [:h1 [:b name]]
           [:p.subheading-text subheading]])])))
 
-(defn- empty-state-footer []
-  (component
-    (html
-      [:div
-       (card/basic
-         [:div
-          [:h4 [:b "Authorize CircleCI to Build"]]
-          [:p "To automate your software builds and tests with CircleCI, connect to your GitHub or Bitbucket code repository."]
-          [:.ctas
-           (button/link {:href (gh-utils/auth-url)
-                         :kind :secondary}
-                        "Authorize GitHub")
-           (button/link {:href (bitbucket/auth-url)
-                         :kind :secondary}
-                        "Authorize Bitbucket")]])])))
-
 (defn- demo-warn-card [{:keys [demo-heading demo-description]}]
   (component
     (html
@@ -45,15 +30,46 @@
           [:h4 [:b demo-heading]]
           [:div demo-description]])])))
 
-(defn empty-state-main-page [page-info children]
-  (component
-    (html
-      [:div
-       (card/collection
-         [(empty-state-header page-info)
-          (demo-warn-card page-info)
-          children
-          (empty-state-footer)])])))
+(defn- empty-state-footer [_ owner]
+  (let [track-auth-button-clicked
+        (fn [vcs-type] ((om/get-shared owner :track-event)
+                        {:event-type :empty-state-auth-button-clicked
+                         :properties {:vcs-type vcs-type}}))]
+    (reify
+      om/IRender
+      (render [_]
+        (component
+         (html
+          [:div
+           (card/basic
+             [:div
+              [:h4 [:b "Authorize CircleCI to Build"]]
+              [:p "To automate your software builds and tests with CircleCI, connect to your GitHub or Bitbucket code repository."]
+              [:.ctas
+               (button/link {:href (gh-utils/auth-url)
+                             :kind :secondary
+                             :on-click #(track-auth-button-clicked :github)}
+                            "Authorize GitHub")
+               (button/link {:href (bitbucket/auth-url)
+                             :kind :secondary
+                             :on-click #(track-auth-button-clicked :bitbucket)}
+                            "Authorize Bitbucket")]])]))))))
+
+(defn empty-state-main-page [{:keys [content] :as page-info} owner]
+  (reify
+    om/IDidMount
+    (did-mount [_]
+      ((om/get-shared owner :track-event) {:event-type :empty-state-impression}))
+    om/IRender
+    (render [_]
+      (component
+        (html
+          [:div
+           (card/collection
+             [(empty-state-header page-info)
+              (demo-warn-card page-info)
+              content
+              (om/build empty-state-footer {})])])))))
 
 (dc/do
   (defcard empty-state-header
@@ -62,6 +78,4 @@
                                 :subheading "CircleCI insights give performance overviews of your projects and offer ideas about how to increase build speeds. Experience insights by clicking on a test project or creating one of your own."}))
 
   (defcard empty-state-footer
-           (empty-state-footer {:name "Insights"
-                                :footer-heading "Use insights on your projects"
-                                :footer-description "To use insights on your projects, you need to add your code and run a build"})))
+           (om/build empty-state-footer {})))
