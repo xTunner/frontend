@@ -98,6 +98,19 @@
       ;; anyhow.
       :compassus.core/route-data])))
 
+(defn- transact-run-cancel
+  [component run-id vcs-type org-name project-name]
+  (om-next/transact!
+   ;; TODO: when bodhi props metadata bug is fixed, pass the component
+   ;; instead of the reconciler
+   (om-next/get-reconciler component)
+   ;; TODO: when bodhi props metadata bug is fixed, pass the query
+   ;; without transforming reads
+   (om-next/transform-reads
+    (om-next/get-reconciler component)
+    `[(run/cancel {:run/id ~run-id})
+      :project/workflow-runs])))
+
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
   ;; NOTE: this is commented out until bodhi handles queries for components with idents first
@@ -142,16 +155,21 @@
          (element :content
            (html
             [:div
-             [:div.status {:class (name run-status-class)}
-              [:a.exception {:href (routes/v1-run-path id)}
-               [:span.status-icon {:class (name run-status-class)}
-                (case (status-class status)
-                  :status-class/failed (icon/status-failed)
-                  :status-class/stopped (icon/status-canceled)
-                  :status-class/succeeded (icon/status-passed)
-                  :status-class/running (icon/status-running)
-                  :status-class/waiting (icon/status-queued))]
-               [:.status-string (string/replace (name status) #"-" " ")]]]
+             [:.status-and-button
+              [:div.status {:class (name run-status-class)}
+               [:a.exception {:href (routes/v1-run-path id)}
+                [:span.status-icon {:class (name run-status-class)}
+                 (case (status-class status)
+                   :status-class/failed (icon/status-failed)
+                   :status-class/stopped (icon/status-canceled)
+                   :status-class/succeeded (icon/status-passed)
+                   :status-class/running (icon/status-running)
+                   :status-class/waiting (icon/status-queued))]
+                [:.status-string (string/replace (name status) #"-" " ")]]]
+              (if (feature/enabled? :cancel-below-status)
+                [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                 (icon/status-canceled)
+                 [:span "cancel"]])]
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier

@@ -161,7 +161,11 @@
 (defmulti mutate om-next/dispatch)
 
 (defmethod mutate 'run/retry
-  [_env key params]
+  [_env _key _params]
+  {:remote true})
+
+(defmethod mutate 'run/cancel
+  [_env _key _params]
   {:remote true})
 
 ;; Sets the :app/route-params during navigation.

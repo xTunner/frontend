@@ -116,18 +116,33 @@
    (vcs-url/vcs-url vcs-type org-name project-name)
    {:offset offset :limit limit}))
 
+(def ^:private ignore-response-callback (fn [_response] nil))
+
 (defn- request-run-retry-from-api-service
   [id]
-  (api/request-retry-run (callback-api-chan (fn [_response] nil)) id))
+  (api/request-retry-run (callback-api-chan ignore-response-callback) id))
+
+(defn- request-run-cancel-from-api-service
+  [id]
+  (api/request-cancel-run (callback-api-chan ignore-response-callback) id))
 
 (defn- send-retry-run
   [{:keys [params]} merge-fn query]
   (let [{:keys [run/id]} params]
     (request-run-retry-from-api-service id)))
 
+(defn- send-cancel-run
+  [{:keys [params]} merge-fn query]
+  (let [{:keys [run/id]} params]
+    (request-run-cancel-from-api-service id)))
+
 (defn- retry-run-expression?
   [expression]
   (= 'run/retry (first expression)))
+
+(defn- cancel-run-expression?
+  [expression]
+  (= 'run/cancel (first expression)))
 
 (defn- org-runs-ast?
   "returns true if the ast is for an expression rendering the org workflows page"
@@ -303,11 +318,14 @@
 ;; pattern-matching against a few expected cases to decide which APIs to hit. A
 ;; more rigorous implementation will come later.
 (defmethod send* :remote [[_ query] cb]
-  (if (retry-run-expression? (first query))
+  (if-let [send-fn (cond (retry-run-expression? (first query))
+                      send-retry-run
+                      (cancel-run-expression? (first query))
+                      send-cancel-run)]
     ;; If we're rerunning, give the rerun mutation a chance to take effect on
     ;; the backend before continuing with any reads.
     (do
-      (send-retry-run (om-parser/expr->ast (first query)) cb query)
+      (send-fn (om-parser/expr->ast (first query)) cb query)
       (js/setTimeout #(send* [:remote (rest query)] cb)
                      ms-until-retried-run-retrieved))
     (doseq [expr query]
