@@ -82,6 +82,7 @@
     :env-vars-fetch-failed
     :env-vars-imported
     :expand-repo-toggled
+    :feedback-clicked
     :follow-and-build-projects-clicked
     :follow-project-clicked
     :import-env-vars-modal-dismissed

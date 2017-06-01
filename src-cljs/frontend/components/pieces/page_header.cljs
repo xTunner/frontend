@@ -223,8 +223,8 @@
         has-topbar? (ld/feature-on? "top-bar-ui-v-1")
         toggle-topbar (when-not has-topbar? "top-bar-ui-v-1")
         toggle-topbar-text (if has-topbar?
-                             "Return to Current UI"
-                             "Try Beta UI")]
+                             "Leave Beta UI"
+                             "Join Beta UI")]
     (reify
       om/IDisplayName (display-name [_] "User Header")
       om/IRender
@@ -248,8 +248,22 @@
              [:.actions
               (when (ld/feature-on? "top-bar-beta-button")
                 [:div.topbar-toggle
+                 (when has-topbar?
+                   [:span.feedback
+                     (button/link {:fixed? true
+                                   :kind :primary
+                                   :size :small
+                                   :href "mailto:beta+ui@circleci.com?Subject=Topbar%20UI%20Feedback"
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked
+                                                                                   :properties {:component "topbar"
+                                                                                                :treatment "top-bar-beta"}})}
+
+
+                                  "Provide Feedback")])
                  (button/link {:fixed? true
-                               :kind :primary
+                               :kind (if has-topbar?
+                                       :secondary
+                                       :primary)
                                :size :small
                                :href (if has-topbar?
                                        "/dashboard"
