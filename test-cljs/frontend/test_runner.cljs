@@ -20,6 +20,7 @@
             [frontend.models.test-plan]
             [frontend.models.test-project]
             [frontend.models.test-user]
+            [frontend.parser.test-connection]
             [frontend.test-analytics]
             [frontend.test-datetime]
             [frontend.test-elevio]

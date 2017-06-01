@@ -95,6 +95,8 @@
   [{vcs-type :organization/vcs-type
     org-name :organization/name
     project-name :project/name}
+   offset
+   limit
    merge-fn
    query]
   (api/get-project-workflows
@@ -106,15 +108,13 @@
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
-                       ;; (feature/enabled? :workflows-pagination)
-                       :routed-page {:connection/total-count (count api-runs)
+                       :routed-page {:connection/total-count (:total-count response)
                                      :connection/edges (->> api-runs
                                                             (map adapt-to-run)
-                                                            (mapv #(hash-map :edge/node %)))}
-                       ;; (not (feature/enabled? :workflows-pagination))
-                       :project/workflow-runs (mapv adapt-to-run api-runs)}}}]
+                                                            (mapv #(hash-map :edge/node %)))}}}}]
         (merge-fn novelty query))))
-   (vcs-url/vcs-url vcs-type org-name project-name)))
+   (vcs-url/vcs-url vcs-type org-name project-name)
+   {:offset offset :limit limit}))
 
 (defn- request-run-retry-from-api-service
   [id]
@@ -128,33 +128,6 @@
 (defn- retry-run-expression?
   [expression]
   (= 'run/retry (first expression)))
-
-(defn- reread-project-runs-ast? [{:keys [key children]}]
-  (and (= :circleci/organization key)
-       (= 1 (count children))
-       (= :organization/project (:key (first children)))
-       (= [{:project/workflow-runs [:run/id
-                                    :run/name
-                                    :run/status
-                                    :run/started-at
-                                    :run/stopped-at
-                                    {:run/trigger-info [:trigger-info/vcs-revision
-                                                        :trigger-info/subject
-                                                        :trigger-info/body
-                                                        :trigger-info/branch
-                                                        {:trigger-info/pull-requests [:pull-request/url]}]}
-                                    {:run/project [:project/name
-                                                   {:project/organization [:organization/name
-                                                                           :organization/vcs-type]}]}]}]
-          (:query (first children)))))
-
-(defn- reread-project-runs [ast merge-fn query]
-  (js/setTimeout #(merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
-                                        :organization/name (-> ast :params :organization/name)
-                                        :project/name (-> ast :children first :params :project/name)}
-                                       merge-fn
-                                       query)
-                 ms-until-retried-run-retrieved))
 
 (defn- org-runs-ast?
   "returns true if the ast is for an expression rendering the org workflows page"
@@ -267,14 +240,9 @@
           (:key expr-ast))
        (expr-ast/has-children? expr-ast #{:organization/project})
        (or
-        ;; (feature/enabled? :workflows-pagination)
         (-> expr-ast
             (expr-ast/get :organization/project)
-            (expr-ast/has-children? #{:project/name :routed-page :project/organization}))
-        ;; (not (feature/enabled? :workflows-pagination))
-        (-> expr-ast
-            (expr-ast/get :organization/project)
-            (expr-ast/has-children? #{:project/name :project/workflow-runs :project/organization})))
+            (expr-ast/has-children? #{:project/name :routed-page :project/organization})))
        (-> expr-ast
            (expr-ast/get-in [:organization/project :project/organization])
            (expr-ast/has-children? #{:organization/vcs-type :organization/name}))))
@@ -335,192 +303,203 @@
 ;; pattern-matching against a few expected cases to decide which APIs to hit. A
 ;; more rigorous implementation will come later.
 (defmethod send* :remote [[_ query] cb]
-  (doseq [expr query]
-    (let [[expr cb] (de-alias-expression expr cb)
-          ast (om-parser/expr->ast expr)]
-      (cond
-        (branch-crumb-ast? ast) (get-branch-name cb ast query)
-        (branch-runs-ast? ast) (get-branch-runs cb ast query)
-        (retry-run-expression? expr) (send-retry-run ast cb query)
-        (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
-           expr)
-        (let [ch (callback-api-chan
-                  #(let [orgs (for [api-org %]
-                                {:organization/name (:login api-org)
-                                 :organization/vcs-type (:vcs_type api-org)
-                                 :organization/avatar-url (:avatar_url api-org)})]
-                     (cb {:app/current-user {:user/organizations (vec orgs)}} query)))]
-          (api/get-orgs ch :include-user? true))
+  (if (retry-run-expression? (first query))
+    ;; If we're rerunning, give the rerun mutation a chance to take effect on
+    ;; the backend before continuing with any reads.
+    (do
+      (send-retry-run (om-parser/expr->ast (first query)) cb query)
+      (js/setTimeout #(send* [:remote (rest query)] cb)
+                     ms-until-retried-run-retrieved))
+    (doseq [expr query]
+      (let [[expr cb] (de-alias-expression expr cb)
+            ast (om-parser/expr->ast expr)]
+        (cond
+          (branch-crumb-ast? ast) (get-branch-name cb ast query)
+          (branch-runs-ast? ast) (get-branch-runs cb ast query)
+          (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
+             expr)
+          (let [ch (callback-api-chan
+                    #(let [orgs (for [api-org %]
+                                  {:organization/name (:login api-org)
+                                   :organization/vcs-type (:vcs_type api-org)
+                                   :organization/avatar-url (:avatar_url api-org)})]
+                       (cb {:app/current-user {:user/organizations (vec orgs)}} query)))]
+            (api/get-orgs ch :include-user? true))
 
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/vcs-type
-                  :organization/name
-                  :organization/avatar-url
-                  :organization/current-user-is-admin?]
-                (:query ast)))
-        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-          (api/get-orgs
-           (callback-api-chan
-            #(let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
-                                                 (and (= vcs_type vcs-type)
-                                                      (= login name)))
-                                               %))
+          (and (= :circleci/organization (:key ast))
+               (= '[:organization/vcs-type
+                    :organization/name
+                    :organization/avatar-url
+                    :organization/current-user-is-admin?]
+                  (:query ast)))
+          (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
+            (api/get-orgs
+             (callback-api-chan
+              #(let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
+                                                   (and (= vcs_type vcs-type)
+                                                        (= login name)))
+                                                 %))
 
-                   avatar-url (:avatar_url selected-org)
-                   admin (:admin selected-org)]
-               (cb {:circleci/organization {:organization/name name
+                     avatar-url (:avatar_url selected-org)
+                     admin (:admin selected-org)]
+                 (cb {:circleci/organization {:organization/name name
+                                              :organization/vcs-type vcs-type
+                                              :organization/avatar-url avatar-url
+                                              :organization/current-user-is-admin? admin}} query)))
+             :include-user? true))
+
+          ;; :route/projects
+          (and (= :circleci/organization (:key ast))
+               (= '[:organization/vcs-type
+                    :organization/name
+                    {:organization/projects [:project/follower-count
+                                             :project/vcs-url
+                                             :project/name
+                                             :project/parallelism
+                                             :project/oss?]}
+                    {:organization/plan [*]}]
+                  (:query ast)))
+          (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
+            (api/get-org-settings
+             name vcs-type
+             (callback-api-chan
+              #(let [projects (for [p (:projects %)]
+                                {:project/vcs-url (:vcs_url p)
+                                 :project/name (vcs-url/repo-name (:vcs_url p))
+                                 :project/parallelism (:parallel p)
+                                 ;; Sometimes the backend returns a map of feature_flags,
+                                 ;; and sometimes it returns :oss directly on the project.
+                                 :project/oss? (or (:oss p)
+                                                   (get-in p [:feature_flags :oss]))
+                                 :project/follower-count (count (:followers p))})]
+                 (cb {:circleci/organization {:organization/name name
+                                              :organization/vcs-type vcs-type
+                                              :organization/projects (vec projects)}} query))))
+            (api/get-org-plan
+             name vcs-type
+             (callback-api-chan
+              #(cb {:circleci/organization {:organization/name name
                                             :organization/vcs-type vcs-type
-                                            :organization/avatar-url avatar-url
-                                            :organization/current-user-is-admin? admin}} query)))
-           :include-user? true))
+                                            :organization/plan %}}
+                   query))))
 
-        ;; :route/projects
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/vcs-type
-                  :organization/name
-                  {:organization/projects [:project/follower-count
-                                           :project/vcs-url
-                                           :project/name
-                                           :project/parallelism
-                                           :project/oss?]}
-                  {:organization/plan [*]}]
-                (:query ast)))
-        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-          (api/get-org-settings
-           name vcs-type
-           (callback-api-chan
-            #(let [projects (for [p (:projects %)]
-                              {:project/vcs-url (:vcs_url p)
-                               :project/name (vcs-url/repo-name (:vcs_url p))
-                               :project/parallelism (:parallel p)
-                               ;; Sometimes the backend returns a map of feature_flags,
-                               ;; and sometimes it returns :oss directly on the project.
-                               :project/oss? (or (:oss p)
-                                                 (get-in p [:feature_flags :oss]))
-                               :project/follower-count (count (:followers p))})]
-               (cb {:circleci/organization {:organization/name name
-                                            :organization/vcs-type vcs-type
-                                            :organization/projects (vec projects)}} query))))
-          (api/get-org-plan
-           name vcs-type
-           (callback-api-chan
-            #(cb {:circleci/organization {:organization/name name
-                                          :organization/vcs-type vcs-type
-                                          :organization/plan %}}
-                 query))))
+          ;; Also :route/projects (but a separate expression for analytics, which
+          ;; doesn't actually need to hit the server)
+          (and (= :circleci/organization (:key ast))
+               (= '[:organization/name] (:query ast)))
+          (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
+            (cb {:circleci/organization {:organization/name name}} query))
 
-        ;; Also :route/projects (but a separate expression for analytics, which
-        ;; doesn't actually need to hit the server)
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/name] (:query ast)))
-        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-          (cb {:circleci/organization {:organization/name name}} query))
+          ;; :route/workflow
+          (project-runs-ast? ast)
+          (let [{:keys [connection/offset connection/limit]}
+                (:params (expr-ast/get-in ast [:organization/project :routed-page]))]
+            (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
+                                  :organization/name (-> ast :params :organization/name)
+                                  :project/name (-> ast
+                                                    (expr-ast/get :organization/project)
+                                                    :params
+                                                    :project/name)}
+                                 offset
+                                 limit
+                                 cb
+                                 query))
 
-        ;; :route/workflow
-        (project-runs-ast? ast)
-        (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
-                              :organization/name (-> ast :params :organization/name)
-                              :project/name (-> ast :children first :params :project/name)}
-                             cb
-                             query)
+          ;; :route/run
+          (let [{:keys [key children]} ast]
+            (and (= :circleci/run key)
+                 (= 1 (count children))
+                 (= :run/job (:key (first children)))
+                 (= [:job/build :job/name]
+                    (:query (first children)))))
+          (let [job-ast (first (:children ast))
+                job-name (:job/name (:params job-ast))]
+            (api/get-workflow-status
+             (callback-api-chan
+              (fn [response]
+                (cb {:circleci/run {:run/job (->> response
+                                                  adapt-to-run
+                                                  :run/jobs
+                                                  (filter #(= job-name (:job/name %)))
+                                                  first)}}
+                    query)))
+             (:run/id (:params ast))))
+          ;; Also :route/workflow (but a separate expression for breadcrumbs, which
+          ;; doesn't actually need to hit the server)
+          (and (= :circleci/organization (:key ast))
+               (= '[:organization/vcs-type :organization/name] (:query ast)))
+          (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
+            (cb {:circleci/organization {:organization/vcs-type vcs-type
+                                         :organization/name name}}
+                query))
 
-        (reread-project-runs-ast? ast) (reread-project-runs ast cb query)
+          ;; Also :route/workflow (but *another( expression for breadcrumbs, which
+          ;; doesn't actually need to hit the server)
+          (project-crumb-ast? ast) (get-project-name cb ast query)
 
-        ;; :route/run
-        (let [{:keys [key children]} ast]
-          (and (= :circleci/run key)
-               (= 1 (count children))
-               (= :run/job (:key (first children)))
-               (= [:job/build :job/name]
-                  (:query (first children)))))
-        (let [job-ast (first (:children ast))
-              job-name (:job/name (:params job-ast))]
+          ;; :route/run crumbs
+          (run-page-crumbs-ast? ast) (get-run-page-crumbs cb ast query)
+
+          ;; :route/run RunRow
+          (let [{:keys [key query]} ast]
+            (and (= :circleci/run key)
+                 (= [:run/id
+                     :run/name
+                     :run/status
+                     :run/started-at
+                     :run/stopped-at
+                     {:run/trigger-info [:trigger-info/vcs-revision
+                                         :trigger-info/subject
+                                         :trigger-info/body
+                                         :trigger-info/branch
+                                         {:trigger-info/pull-requests [:pull-request/url]}]}
+                     {:run/project [:project/name
+                                    {:project/organization [:organization/name
+                                                            :organization/vcs-type]}]}]
+                    query)))
           (api/get-workflow-status
            (callback-api-chan
             (fn [response]
-              (cb {:circleci/run {:run/job (->> response
-                                                adapt-to-run
-                                                :run/jobs
-                                                (filter #(= job-name (:job/name %)))
-                                                first)}}
+              (cb {:circleci/run (-> (adapt-to-run response)
+                                     (dissoc :run/jobs))}
                   query)))
-           (:run/id (:params ast))))
-        ;; Also :route/workflow (but a separate expression for breadcrumbs, which
-        ;; doesn't actually need to hit the server)
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/vcs-type :organization/name] (:query ast)))
-        (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-          (cb {:circleci/organization {:organization/vcs-type vcs-type
-                                       :organization/name name}}
-              query))
+           (:run/id (:params ast)))
+          (let [{:keys [key query]} ast]
+            (and (= :circleci/run key)
+                 (= '[({:jobs-for-jobs [:job/id
+                                        :job/status
+                                        :job/started-at
+                                        :job/stopped-at
+                                        :job/name
+                                        {:job/run [:run/id]}]}
+                       {:< :run/jobs})
+                      ({:jobs-for-first [:job/id
+                                         :job/build
+                                         :job/name]}
+                       {:< :run/jobs})]
+                    query)))
+          (api/get-workflow-status
+           (callback-api-chan
+            (fn [response]
+              (let [run (adapt-to-run response)
+                    run-with-aliases (-> run
+                                         (dissoc :run/jobs)
+                                         (assoc :jobs-for-jobs (mapv #(select-keys % [:job/id
+                                                                                      :job/status
+                                                                                      :job/started-at
+                                                                                      :job/stopped-at
+                                                                                      :job/name
+                                                                                      :job/run])
+                                                                     (:run/jobs run))
+                                                :jobs-for-first (mapv #(select-keys % [:job/id
+                                                                                       :job/build
+                                                                                       :job/name])
+                                                                      (:run/jobs run))))]
+                (cb {:circleci/run run-with-aliases} query))))
+           (:run/id (:params ast)))
 
-        ;; Also :route/workflow (but *another( expression for breadcrumbs, which
-        ;; doesn't actually need to hit the server)
-        (project-crumb-ast? ast) (get-project-name cb ast query)
-
-        ;; :route/run crumbs
-        (run-page-crumbs-ast? ast) (get-run-page-crumbs cb ast query)
-
-        ;; :route/run RunRow
-        (let [{:keys [key query]} ast]
-          (and (= :circleci/run key)
-               (= [:run/id
-                   :run/name
-                   :run/status
-                   :run/started-at
-                   :run/stopped-at
-                   {:run/trigger-info [:trigger-info/vcs-revision
-                                       :trigger-info/subject
-                                       :trigger-info/body
-                                       :trigger-info/branch
-                                       {:trigger-info/pull-requests [:pull-request/url]}]}
-                   {:run/project [:project/name
-                                  {:project/organization [:organization/name
-                                                          :organization/vcs-type]}]}]
-                  query)))
-        (api/get-workflow-status
-         (callback-api-chan
-          (fn [response]
-            (cb {:circleci/run (-> (adapt-to-run response)
-                                   (dissoc :run/jobs))}
-                query)))
-         (:run/id (:params ast)))
-        (let [{:keys [key query]} ast]
-          (and (= :circleci/run key)
-               (= '[({:jobs-for-jobs [:job/id
-                                      :job/status
-                                      :job/started-at
-                                      :job/stopped-at
-                                      :job/name
-                                      {:job/run [:run/id]}]}
-                     {:< :run/jobs})
-                    ({:jobs-for-first [:job/id
-                                       :job/build
-                                       :job/name]}
-                     {:< :run/jobs})]
-                  query)))
-        (api/get-workflow-status
-         (callback-api-chan
-          (fn [response]
-            (let [run (adapt-to-run response)
-                  run-with-aliases (-> run
-                                       (dissoc :run/jobs)
-                                       (assoc :jobs-for-jobs (mapv #(select-keys % [:job/id
-                                                                                    :job/status
-                                                                                    :job/started-at
-                                                                                    :job/stopped-at
-                                                                                    :job/name
-                                                                                    :job/run])
-                                                                   (:run/jobs run))
-                                              :jobs-for-first (mapv #(select-keys % [:job/id
-                                                                                     :job/build
-                                                                                     :job/name])
-                                                                    (:run/jobs run))))]
-              (cb {:circleci/run run-with-aliases} query))))
-         (:run/id (:params ast)))
-
-        ;; :route/org-workflows
-        (org-runs-ast? ast) (get-org-runs ast cb query)))))
+          ;; :route/org-workflows
+          (org-runs-ast? ast) (get-org-runs ast cb query))))))
 
 (defn send [remotes cb]
   (doseq [remote-entry remotes]
