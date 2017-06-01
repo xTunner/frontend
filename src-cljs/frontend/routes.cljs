@@ -97,7 +97,8 @@
         (when (and page (not= 1 page)) (str "?page=" page)))))
 
 (defn v1-project-branch-workflows-path
-  ([vcs_type org repo branch] (v1-project-branch-workflows-path vcs_type org repo branch nil))
+  ([vcs_type org repo branch]
+   (v1-project-branch-workflows-path vcs_type org repo branch nil))
   ([vcs_type org repo branch page]
    (str (v1-project-workflows-path vcs_type org repo)
         "/tree/"
