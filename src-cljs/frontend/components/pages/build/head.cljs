@@ -9,6 +9,7 @@
             [frontend.components.pages.build.head.trigger :as trigger]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.status :as status]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
@@ -162,7 +163,7 @@
         "#"
         (gh-utils/pull-request-number url)]))]))
 
-(defn- summary-header [{{:keys [stop_time start_time parallel usage_queued_at
+(defn- summary-header [{{:keys [stop_time start_time parallel usage_queued_at picard
                                 pull_requests status canceler vcs_url] :as build} :build
                         :keys [project plan]} owner]
   (reify
@@ -238,6 +239,24 @@
                 (om/build common/updating-duration {:start (:usage_queued_at build)
                                                     :stop (or (:queued_at build) (:stop_time build))})
                 " waiting for builds to finish"))))
+
+          (when-let [resource_class (:resource_class picard)]
+            (summary-item
+              [:span "Resources:"
+               [:span.resource-class
+                (popover/tooltip {:body (html [:span "Your job's resource is defined through your configuration."
+                                               (let [href "https://circleci.com/docs/2.0/configuration-reference/#jobs"]
+                                                 [:div [:a {:href href
+                                                            :target "_blank"
+                                                            :on-click #((om/get-shared owner :track-event) {:event-type :resource-class-docs-clicked
+                                                                                                            :properties {:href href}})}
+                                                        "Read more in our docs →"]])])
+                                  :placement :bottom}
+                                 [:i.fa.fa-question-circle])]]
+              [:span
+               (gstring/format "%sCPU/%sMB"
+                               (:cpu resource_class)
+                               (:ram resource_class))]))
 
           [:.right-side
            (summary-item

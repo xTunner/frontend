@@ -115,6 +115,7 @@
     :project-settings-clicked
     :projects-icon-clicked
     :rebuild-clicked
+    :resource-class-docs-clicked
     :revision-link-clicked
     :save-clicked
     :select-plan-clicked
