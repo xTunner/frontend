@@ -102,14 +102,13 @@
   (api/get-project-workflows
    (callback-api-chan
     (fn [response]
-      (let [api-runs (:results response)
-            novelty {:circleci/organization
+      (let [novelty {:circleci/organization
                      {:organization/project
                       {:project/name project-name
                        :project/organization {:organization/vcs-type vcs-type
                                               :organization/name org-name}
                        :routed-page {:connection/total-count (:total-count response)
-                                     :connection/edges (->> api-runs
+                                     :connection/edges (->> (:results response)
                                                             (map adapt-to-run)
                                                             (mapv #(hash-map :edge/node %)))}}}}]
         (merge-fn novelty query))))
@@ -149,27 +148,31 @@
   [expr-ast]
   (boolean (and (= :circleci/organization (:key expr-ast))
                 (expr-ast/has-children? expr-ast
-                                        #{:organization/workflow-runs
+                                        #{:routed-page
                                           :organization/name
                                           :organization/vcs-type}))))
 
 (defn- get-org-runs
   "Retrieves workflow runs for and org and merges them into the
-  app. Takes an expression ast, send callback, and query.
-
-  TODO: use the org workflow-runs API when it's available instead of
-  the project workflow-runs API"
-  [{:keys [params]} send-cb query]
-  (api/get-org-workflows
-   (callback-api-chan
-    (fn [resp]
-      (let [novelty {:circleci/organization
-                     {:organization/workflow-runs (->> resp
-                                                       :results
-                                                       (mapv adapt-to-run))}}]
-        (send-cb novelty query))))
-   (:organization/name params)
-   (:organization/vcs-type params)))
+  app. Takes an expression ast, send callback, and query."
+  [expr-ast send-cb query]
+  (let [vcs-type (-> expr-ast :params :organization/vcs-type)
+        org-name (-> expr-ast :params :organization/name)
+        {:keys [connection/offset connection/limit]}
+        (:params (expr-ast/get-in expr-ast [:routed-page]))]
+    (api/get-org-workflows
+     (callback-api-chan
+      (fn [response]
+        (let [novelty {:circleci/organization
+                       {:routed-page
+                        {:connection/total-count (:total-count response)
+                         :connection/edges (->> (:results response)
+                                                (map adapt-to-run)
+                                                (mapv #(hash-map :edge/node %)))}}}]
+          (send-cb novelty query))))
+     vcs-type
+     org-name
+     {:offset offset :limit limit})))
 
 (defn- branch-crumb-ast?
   "returns true if the ast is for an expression rendering the branch
@@ -211,7 +214,7 @@
             (expr-ast/has-children? #{:project/branch}))
         (-> expr-ast
             (expr-ast/get-in [:organization/project :project/branch])
-            (expr-ast/has-children? #{:branch/workflow-runs :branch/project}))
+            (expr-ast/has-children? #{:branch/name :routed-page :branch/project}))
         (-> expr-ast
             (expr-ast/get-in [:organization/project
                               :project/branch
@@ -234,21 +237,25 @@
         branch-name (-> expr-ast
                         (expr-ast/get-in [:organization/project :project/branch])
                         :params
-                        :branch/name)]
+                        :branch/name)
+        {:keys [connection/offset connection/limit]}
+        (:params (expr-ast/get-in expr-ast [:organization/project :project/branch :routed-page]))]
     (api/get-branch-workflows (callback-api-chan
                                (fn [response]
-                                 (let [runs (->> response
-                                                 :results
-                                                 (mapv adapt-to-run))
-                                       novelty {:circleci/organization
+                                 (let [novelty {:circleci/organization
                                                 {:organization/project
                                                  {:project/branch
-                                                  {:branch/workflow-runs (vec runs)}}}}]
+                                                  {:routed-page
+                                                   {:connection/total-count (:total-count response)
+                                                    :connection/edges (->> (:results response)
+                                                                           (map adapt-to-run)
+                                                                           (mapv #(hash-map :edge/node %)))}}}}}]
                                    (cb novelty query))))
                               vcs-type
                               org-name
                               repo-name
-                              branch-name)))
+                              branch-name
+                              {:offset offset :limit limit})))
 
 (defn- project-runs-ast? [expr-ast]
   (and (= :circleci/organization

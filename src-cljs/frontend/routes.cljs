@@ -97,14 +97,23 @@
         (when (and page (not= 1 page)) (str "?page=" page)))))
 
 (defn v1-project-branch-workflows-path
-  [vcs_type org repo branch]
-  (str (v1-project-workflows-path vcs_type org repo)
-       "/tree/"
-       (gstring/urlEncode branch)))
+  ([vcs_type org repo branch]
+   (v1-project-branch-workflows-path vcs_type org repo branch nil))
+  ([vcs_type org repo branch page]
+   (str (v1-project-workflows-path vcs_type org repo)
+        "/tree/"
+        (gstring/urlEncode branch)
+        (when (and page (not= 1 page)) (str "?page=" page)))))
 
 (defn v1-run-path
   [workflow-id]
   (str "/workflow-run/" workflow-id))
+
+(defn v1-org-workflows-path
+  ([vcs_type org] (v1-org-workflows-path vcs_type org nil))
+  ([vcs_type org page]
+   (str "/" (vcs/->short-vcs vcs_type) "/" org "/workflows"
+        (when (and page (not= 1 page)) (str "?page=" page)))))
 
 (defn v1-job-path
   ([workflow-id job-name] (v1-job-path workflow-id job-name nil))
@@ -250,22 +259,32 @@
                                 page))}})))
 
   (defroute v1-project-branch-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)/tree/([^/]+)"
-    [short-vcs-type org-name project-name branch]
-    (open! app
-           :route/project-branch-workflows
-           {:route-params
-            {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-             :organization/name org-name
-             :project/name project-name
-             :branch/name (gstring/urlDecode branch)}}))
+    [short-vcs-type org-name project-name branch params]
+    (let [page-str (get-in params [:query-params :page])]
+      (open! app
+             :route/project-branch-workflows
+             {:route-params
+              {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+               :organization/name org-name
+               :project/name project-name
+               :branch/name (gstring/urlDecode branch)
+               :page/number (let [page (js/parseInt page-str)]
+                              (if (js/isNaN page)
+                                1
+                                page))}})))
 
   (defroute v1-org-workflows #"/(gh|bb)/([^/]+)/workflows"
-    [short-vcs-type org-name]
-    (open! app
-           :route/org-workflows
-           {:route-params
-            {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-             :organization/name org-name}}))
+    [short-vcs-type org-name params]
+    (let [page-str (get-in params [:query-params :page])]
+      (open! app
+             :route/org-workflows
+             {:route-params
+              {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+               :organization/name org-name
+               :page/number (let [page (js/parseInt page-str)]
+                              (if (js/isNaN page)
+                                1
+                                page))}})))
 
   (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo params]
     (open-to-inner! app nav-ch :dashboard (merge params

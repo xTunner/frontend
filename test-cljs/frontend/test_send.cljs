@@ -10,7 +10,7 @@
                              :type :prop}
                             {:key :organization/vcs-type
                              :type :prop}
-                            {:key :organization/workflow-runs
+                            {:key :routed-page
                              :type :join
                              :children [{:type :prop
                                          :key :workflow-run/id}]}]}]
@@ -57,7 +57,7 @@
                   (update-in [:children 0 :children 0 :children]
                              conj
                              {:type :join
-                              :key :branch/workflow-runs
+                              :key :routed-page
                               :children []}))))))
     (testing "returns false when ast asks for additional project data"
       (is (= false
@@ -79,7 +79,7 @@
               (assoc-in example-ast
                         [:children 0 :children 0 :children 0]
                         {:type :join
-                         :key :branch/workflow-runs
+                         :key :routed-page
                          :children []}))))
       (is (= false
              (#'send/branch-runs-ast?
@@ -97,8 +97,10 @@
                        [{:type :join
                          :key :project/branch
                          :children
-                         [{:type :join
-                           :key :branch/workflow-runs
+                         [{:type :prop
+                           :key :branch/name}
+                          {:type :join
+                           :key :routed-page
                            :children []}
                           {:type :join
                            :key :branch/project
@@ -116,14 +118,6 @@
       (is (= false
              (#'send/branch-runs-ast?
               (assoc example-ast :key :some-other-key)))))
-    (testing "returns false when ast asks for additional branch data"
-      (is (= false
-             (#'send/branch-runs-ast?
-              (update-in example-ast
-                         [:children 0 :children 0 :children]
-                         conj
-                         {:type :prop
-                          :key :branch/name})))))
     (testing "returns false when ast asks for additional project data"
       (is (= false
              (#'send/branch-crumb-ast? (update-in example-ast
@@ -141,10 +135,9 @@
     (testing "returns false when ast doesn't ask for branch runs"
       (is (= false
              (#'send/branch-runs-ast?
-              (assoc-in example-ast
-                        [:children 0 :children 0 :children 0]
-                        {:type :prop
-                         :key :branch/name}))))
+              (update-in example-ast
+                         [:children 0 :children 0 :children]
+                         (fn [children] (vec (remove #(= :routed-page (:key %)) children)))))))
       (is (= false
              (#'send/branch-runs-ast?
               (update-in example-ast

@@ -212,11 +212,38 @@
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
-(defn run-row-collection [runs]
-  (html
-   [:div
-    (card/collection
-     (map #(when % (run-row %)) runs))]))
+(defn a-or-span [flag href & children]
+  (if flag
+    [:a {:href href} children]
+    [:span children]))
+
+(defui ^:once RunList
+  static om-next/IQuery
+  (query [this]
+    [:connection/total-count
+     :connection/offset
+     {:connection/edges [{:edge/node (om-next/get-query RunRow)}]}])
+  Object
+  (render [this]
+    (component
+      (let [{:keys [connection/total-count connection/offset connection/edges]} (om-next/props this)
+            {:keys [empty-state prev-page-href next-page-href]} (om-next/get-computed this)]
+        (if-not (pos? total-count)
+          empty-state
+          (html
+           [:div
+            [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
+            (card/collection
+             (map #(when % (run-row (:edge/node %))) edges))
+            [:.list-pager
+             (a-or-span (pos? offset)
+                        prev-page-href
+                        "← Newer workflow runs")
+             (a-or-span (> total-count (+ offset (count edges)))
+                        next-page-href
+                        "Older workflow runs →")]]))))))
+
+(def run-list (om-next/factory RunList))
 
 (defui ^:once ProjectWorkflowRuns
   static om-next/IQuery
@@ -225,9 +252,7 @@
      {:project/organization [:organization/vcs-type :organization/name]}
      `{(:routed/page {:page/connection :project/workflow-runs
                       :page/count 30})
-       [:connection/total-count
-        :connection/offset
-        {:connection/edges [{:edge/node ~(om-next/get-query RunRow)}]}]}
+       ~(om-next/get-query RunList)}
      {'[:app/route-params _] [:page/number]}])
   Object
   (render [this]
@@ -236,33 +261,21 @@
             page-num (get-in props ['[:app/route-params _] :page/number])
             {project-name :project/name
              {vcs-type :organization/vcs-type
-              org-name :organization/name} :project/organization} props
+              org-name :organization/name} :project/organization} props]
+        (run-list (om-next/computed
+                   (:routed/page props)
+                   {:prev-page-href
+                    (routes/v1-project-workflows-path vcs-type org-name project-name (dec page-num))
 
-            {:keys [connection/total-count
-                    connection/offset
-                    connection/edges]}
-            (:routed/page props)]
-        (if (pos? total-count)
-          (html
-           [:div
-            [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
-            (run-row-collection (map :edge/node edges))
-            [:.list-pager
-             (if (< 1 page-num)
-               [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (dec page-num))}
-                "← Newer workflow runs"]
-               [:span
-                "← Newer workflow runs"])
-             (if (> total-count (+ offset (count edges)))
-               [:a {:href (routes/v1-project-workflows-path vcs-type org-name project-name (inc page-num))}
-                "Older workflow runs →"]
-               [:span
-                "Older workflow runs →"])]])
-          (card/basic
-           (empty-state/empty-state
-            {:icon (icon/workflows)
-             :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
-             :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))))
+                    :next-page-href
+                    (routes/v1-project-workflows-path vcs-type org-name project-name (inc page-num))
+
+                    :empty-state
+                    (card/basic
+                     (empty-state/empty-state
+                      {:icon (icon/workflows)
+                       :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
+                       :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")}))}))))))
 
 (def project-workflow-runs (om-next/factory ProjectWorkflowRuns))
 
@@ -337,22 +350,37 @@
 (defui ^:once BranchWorkflowRuns
   static om-next/IQuery
   (query [this]
-    [{:branch/project [{:project/organization [:organization/name]}
-                       :project/name]}
-     {:branch/workflow-runs (om-next/get-query RunRow)}])
+    [:branch/name
+     {:branch/project [:project/name
+                       {:project/organization [:organization/name]}]}
+     `{(:routed/page {:page/connection :branch/workflow-runs
+                      :page/count 30})
+       ~(om-next/get-query RunList)}
+     {'[:app/route-params _] [:page/number]}])
   Object
   (render [this]
     (component
-      (if-let [runs (-> (om-next/props this) :branch/workflow-runs seq)]
-        (run-row-collection runs)
-        (let [{project-name :project/name
-               {org-name :organization/name} :project/organization}
-              (:branch/project (om-next/props this))]
-          (card/basic
-           (empty-state/empty-state
-            {:icon (icon/workflows)
-             :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
-             :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")})))))))
+      (let [props (om-next/props this)
+            {branch-name :branch/name
+             {project-name :project/name
+              {vcs-type :organization/vcs-type
+               org-name :organization/name} :project/organization} :branch/project} props
+            page (:routed/page props)
+            page-num (get-in props ['[:app/route-params _] :page/number])]
+        (run-list (om-next/computed
+                   page
+                   {:prev-page-href
+                    (routes/v1-project-branch-workflows-path vcs-type org-name project-name branch-name (dec page-num))
+
+                    :next-page-href
+                    (routes/v1-project-branch-workflows-path vcs-type org-name project-name branch-name (inc page-num))
+
+                    :empty-state
+                    (card/basic
+                     (empty-state/empty-state
+                      {:icon (icon/workflows)
+                       :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
+                       :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")}))}))))))
 
 (def branch-workflow-runs (om-next/factory BranchWorkflowRuns))
 
@@ -403,18 +431,32 @@
   (query [this]
     [:organization/name
      :organization/vcs-type
-     {:organization/workflow-runs (om-next/get-query RunRow)}])
+     `{(:routed/page {:page/connection :organization/workflow-runs
+                      :page/count 30})
+       ~(om-next/get-query RunList)}
+     {'[:app/route-params _] [:page/number]}])
   Object
   (render [this]
     (component
-      (if-let [runs (seq (:organization/workflow-runs (om-next/props this)))]
-        (run-row-collection runs)
-        (let [org-name (:organization/name (om-next/props this))]
-          (card/basic
-           (empty-state/empty-state
-            {:icon (icon/workflows)
-             :heading (html [:span (empty-state/important org-name) " has no workflows defined yet"])
-             :subheading (str "Add a workflow section to one of " org-name "'s project configs to start running workflows.")})))))))
+      (let [props (om-next/props this)
+            {vcs-type :organization/vcs-type
+             org-name :organization/name} props
+            page (:routed/page props)
+            page-num (get-in props ['[:app/route-params _] :page/number])]
+        (run-list (om-next/computed
+                   page
+                   {:prev-page-href
+                    (routes/v1-org-workflows-path vcs-type org-name (dec page-num))
+
+                    :next-page-href
+                    (routes/v1-org-workflows-path vcs-type org-name (inc page-num))
+
+                    :empty-state
+                    (card/basic
+                     (empty-state/empty-state
+                      {:icon (icon/workflows)
+                       :heading (html [:span (empty-state/important org-name) " has no workflows defined yet"])
+                       :subheading (str "Add a workflow section to one of " org-name "'s project configs to start running workflows.")}))}))))))
 
 (def org-workflow-runs (om-next/factory OrgWorkflowRuns))
 
