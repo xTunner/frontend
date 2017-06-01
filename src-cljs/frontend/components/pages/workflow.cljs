@@ -155,20 +155,21 @@
          (element :content
            (html
             [:div
-             [:div.status {:class (name run-status-class)}
-              [:a.exception {:href (routes/v1-run-path id)}
-               [:span.status-icon {:class (name run-status-class)}
-                (case (status-class status)
-                  :status-class/failed (icon/status-failed)
-                  :status-class/stopped (icon/status-canceled)
-                  :status-class/succeeded (icon/status-passed)
-                  :status-class/running (icon/status-running)
-                  :status-class/waiting (icon/status-queued))]
-               [:.status-string (string/replace (name status) #"-" " ")]]]
-             [:div.cancel-button
-              (button/icon {:label "Cancel"
-                            :on-click #(transact-run-cancel this id vcs-type org-name project-name)}
-                           (icon/status-canceled))]
+             [:.status-and-button
+              [:div.status {:class (name run-status-class)}
+               [:a.exception {:href (routes/v1-run-path id)}
+                [:span.status-icon {:class (name run-status-class)}
+                 (case (status-class status)
+                   :status-class/failed (icon/status-failed)
+                   :status-class/stopped (icon/status-canceled)
+                   :status-class/succeeded (icon/status-passed)
+                   :status-class/running (icon/status-running)
+                   :status-class/waiting (icon/status-queued))]
+                [:.status-string (string/replace (name status) #"-" " ")]]]
+              (if (feature/enabled? :cancel-below-status)
+                [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                 (icon/status-canceled)
+                 [:span "cancel"]])]
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier

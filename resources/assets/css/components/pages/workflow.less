@@ -42,59 +42,82 @@
           padding: 0;
         }
       }
-
-      > .status {
-        .flexy(center, center);
+      > .status-and-button {
         .flex(0 0 160px);
-        background-color: transparent;
+        .flexy(column);
 
-        > a {
-          .flex(1 1 auto);
-          align-self: stretch;
+        border-right: @build-item-inner-border;
+
+        > .status {
+          .flex(1 0 65px);
           .flexy(center, center);
+          background-color: transparent;
+
+          > a {
+            .flex(1 1 auto);
+            align-self: stretch;
+            .flexy(center, center);
+          }
+
+          @media (max-width: @screen-md-max) {
+            flex: 0 0 auto;
+            padding: 1em;
+          }
+
+          .status-icon {
+            width: 18px;
+            color: @white;
+            fill: @white;
+          }
+
+          .status-string {
+            color: @white;
+            font-weight: 600;
+            text-transform: uppercase;
+            min-width: 90px;
+            margin-left: 1em;
+          }
+
+          @background-lighten-ratio: 0%;
+
+          &.succeeded {
+            background-color: lighten(@green, @background-lighten-ratio);
+          }
+
+          &.failed {
+            background-color: lighten(@red, @background-lighten-ratio);
+          }
+
+          &.running {
+            background-color: lighten(@blueLight, @background-lighten-ratio);
+          }
+
+          &.stopped,
+          &.canceled {
+            background-color: lighten(@grayLight, @background-lighten-ratio);
+          }
+
+          &.waiting,
+          &.queued {
+            background-color: lighten(@purple, @background-lighten-ratio);
+          }
         }
 
-        @media (max-width: @screen-md-max) {
-          flex: 0 0 auto;
-          padding: 1em;
-        }
+        > .cancel-button {
+          .flexy(center);
+          &:hover {
+            cursor: pointer;
+            > span {
+              text-decoration: underline;
+            }
+          }
 
-        .status-icon {
-          width: 18px;
-          color: @white;
-          fill: @white;
-        }
-
-        .status-string {
-          color: @white;
-          font-weight: 600;
-          text-transform: uppercase;
-          min-width: 90px;
-          margin-left: 1em;
-        }
-
-        @background-lighten-ratio: 0%;
-
-        &.succeeded {
-         background-color: lighten(@green, @background-lighten-ratio);
-        }
-
-        &.failed {
-         background-color: lighten(@red, @background-lighten-ratio);
-        }
-
-        &.running {
-         background-color: lighten(@blueLight, @background-lighten-ratio);
-        }
-
-        &.stopped,
-        &.canceled {
-         background-color: lighten(@grayLight, @background-lighten-ratio);
-        }
-
-        &.waiting,
-        &.queued {
-         background-color: lighten(@purple, @background-lighten-ratio);
+          > svg {
+            color: gray;
+            height: 17px;
+            width: 17px;
+            margin: 10px;
+          }
         }
       }
 
@@ -102,8 +125,8 @@
       @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
 
       > .run-info {
+        .flexy(flex-start center column);
 
-        .flex(1 0 auto);
         padding: (@build-padding / 2) @build-padding;
         border-right: @build-item-inner-border;
         line-height: 1.8;
@@ -201,7 +224,8 @@
       }
 
       > .metadata {
-        .flexy(column);
+        .flexy(stretch center column);
+
         width: 214px;
         border-right: @build-item-inner-border;
 
