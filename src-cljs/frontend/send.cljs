@@ -396,7 +396,10 @@
                 (:params (expr-ast/get-in ast [:organization/project :routed-page]))]
             (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
                                   :organization/name (-> ast :params :organization/name)
-                                  :project/name (-> ast :children first :params :project/name)}
+                                  :project/name (-> ast
+                                                    (expr-ast/get :organization/project)
+                                                    :params
+                                                    :project/name)}
                                  offset
                                  limit
                                  cb
