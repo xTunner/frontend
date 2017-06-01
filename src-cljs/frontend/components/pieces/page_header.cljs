@@ -256,7 +256,11 @@
                                    :kind :primary
                                    :size :small
                                    :href "mailto:beta+ui@circleci.com?Subject=Topbar%20UI%20Feedback"
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked})}
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked
+                                                                                   :properties (:component "topbar"
+                                                                                                :treatment "top-bar-beta")})}
+
+
                                   "Provide Feedback")])
                  (button/link {:fixed? true
                                :kind (if has-topbar?
