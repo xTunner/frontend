@@ -221,7 +221,8 @@
                  [:li [:a.menu-item {:href "/dashboard"} "Back to app"]]]
                 [:ul.nav.navbar-nav.navbar-right
                  [:li
-                  [:a.login.login-link.menu-item {:href (if config/client-dev?
+                  [:a.login.login-link.menu-item {:href (if (or config/client-dev?
+                                                                (config/enterprise?))
                                                           (auth-url)
                                                           "/vcs-authorize/")
                                                   :on-click #((om/get-shared owner :track-event) {:event-type :login-clicked})
