@@ -308,20 +308,20 @@
                      (map #(vector (:key %1) %2)
                           children vals)))
              (map (fn [ast]
-                    (if (contains? mapping (:key ast))
-                      (let [result ((get mapping (:key ast)) context ast)
-                            promise (if (read-port? result)
-                                      result
-                                      (doto (async/promise-chan) (put! result)))]
-                        promise)
+                    (let [result-chan
+                          (fn [resolver]
+                            (let [result (resolver context ast)]
+                              (if (read-port? result)
+                                result
+                                (doto (async/promise-chan) (put! result)))))]
+                      (if (contains? mapping (:key ast))
+                        (let [resolver (get mapping (:key ast))]
+                          (result-chan resolver))
 
-                      (if-let [[keys resolver] (first (filter #(contains? (key %) (:key ast)) mapping))]
-                        (let [result (resolver context ast)
-                              promise (if (read-port? result)
-                                        result
-                                        (doto (async/promise-chan) (put! result)))]
-                          (async/map #(get % (:key ast)) [promise]))
-                        (throw "Unknown key"))))
+                        (if-let [[keys resolver]
+                                 (first (filter #(contains? (key %) (:key ast)) mapping))]
+                          (async/map #(get % (:key ast)) [(result-chan resolver)])
+                          (throw "Unknown key")))))
                   children)))
 
 
