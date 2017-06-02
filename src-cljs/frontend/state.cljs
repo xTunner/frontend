@@ -221,6 +221,7 @@
 
 (def browser-settings-path [:settings :browser-settings])
 (def selected-org-path (conj browser-settings-path :selected-org))
+(def selected-org-admin?-path (conj selected-org-path :admin))
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))

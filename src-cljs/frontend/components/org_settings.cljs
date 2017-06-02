@@ -26,6 +26,7 @@
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
@@ -1634,6 +1635,9 @@
     om/IRender
     (render [_]
       (let [org-data (get-in app state/org-data-path)
+            user-org-admin? (if (ld/feature-on? "top-bar-ui-v-1")
+                              (get-in app state/selected-org-admin?-path)
+                              (:admin? org-data))
             vcs_type (:vcs_type org-data)
             subpage (or (get-in app state/org-settings-subpage-path)
                         :overview)
@@ -1647,7 +1651,7 @@
                   (om/build common/flashes (get-in app state/error-message-path))
                   [:div#subpage
                    [:div
-                    (if (:admin? org-data)
+                    (if user-org-admin?
                       (om/build (get (main-component) subpage projects) app)
                       [:div (om/build non-admin-plan
                                       {:login (get-in app [:current-user :login])
