@@ -360,6 +360,17 @@
    (fn [context ast]
      (resolve* (assoc context :user/name (:user/name (:params ast))) User (:children ast)))})
 
+(defn memoize-cb [f]
+  (let [mem (atom {})]
+    (fn [& args]
+      (let [mem-args (butlast args)
+            cb (last args)]
+        (if-let [e (find @mem mem-args)]
+          (cb (val e))
+          (apply f (concat mem-args
+                           [#(do
+                               (swap! mem assoc mem-args %)
+                               (cb %))])))))))
 
 (deftest new-thing-works
   (async done
@@ -370,9 +381,10 @@
                                               :user/favorite-fellow-user-name "jburnford"}
                    {:user/name "jburnford"} {:user/favorite-color :color/red
                                              :user/favorite-number 7}}
-            c (resolve {:apis {:get-user (fn [params cb]
-                                           (swap! api-calls conj [:get-user params])
-                                           (cb (get users params)))}}
+            c (resolve {:apis {:get-user (memoize-cb
+                                          (fn [params cb]
+                                            (swap! api-calls conj [:get-user params])
+                                            (cb (get users params))))}}
                        Root '[{(:root/user {:user/name "nipponfarm"})
                                [:user/name
                                 :user/favorite-color
@@ -390,9 +402,6 @@
                [(<! c)
                 (<! c)]))
         (is (= [[:get-user {:user/name "nipponfarm"}]
-                [:get-user {:user/name "nipponfarm"}]
-                [:get-user {:user/name "nipponfarm"}]
-                [:get-user {:user/name "jburnford"}]
-                [:get-user {:user/name "jburnford"}]])
-            @api-calls)
+                [:get-user {:user/name "jburnford"}]]
+               @api-calls))
         (done)))))
