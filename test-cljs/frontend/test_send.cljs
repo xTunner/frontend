@@ -336,22 +336,19 @@
 
    #{:user/favorite-color :user/favorite-number}
    (fn [context ast]
-     (let [c (async/promise-chan)
-           get-user (get-in context [:apis :get-user])]
-       (get-user {:user/name (:user/name context)}
-                 #(put! c %))
-       c))
+     (let [get-user (get-in context [:apis :get-user])]
+       (get-user {:user/name (:user/name context)})))
 
    :user/favorite-fellow-user
    (fn [context ast]
      (let [c (chan)
            get-user (get-in context [:apis :get-user])]
-       (get-user {:user/name (:user/name context)}
-                 (fn [user]
-                   (-> (resolve* (assoc context :user/name (:user/favorite-fellow-user-name user))
-                                 User
-                                 (:children ast))
-                       (async/pipe c))))
+       (go
+         (let [user (<! (get-user {:user/name (:user/name context)}))]
+           (-> (resolve* (assoc context :user/name (:user/favorite-fellow-user-name user))
+                         User
+                         (:children ast))
+               (async/pipe c))))
        c))})
 
 
@@ -359,18 +356,6 @@
   {:root/user
    (fn [context ast]
      (resolve* (assoc context :user/name (:user/name (:params ast))) User (:children ast)))})
-
-(defn memoize-cb [f]
-  (let [mem (atom {})]
-    (fn [& args]
-      (let [mem-args (butlast args)
-            cb (last args)]
-        (if-let [e (find @mem mem-args)]
-          (cb (val e))
-          (apply f (concat mem-args
-                           [#(do
-                               (swap! mem assoc mem-args %)
-                               (cb %))])))))))
 
 (deftest new-thing-works
   (async done
@@ -381,10 +366,12 @@
                                               :user/favorite-fellow-user-name "jburnford"}
                    {:user/name "jburnford"} {:user/favorite-color :color/red
                                              :user/favorite-number 7}}
-            c (resolve {:apis {:get-user (memoize-cb
-                                          (fn [params cb]
+            c (resolve {:apis {:get-user (memoize
+                                          (fn [params]
                                             (swap! api-calls conj [:get-user params])
-                                            (cb (get users params))))}}
+                                            (let [c (async/promise-chan)]
+                                              (put! c (get users params))
+                                              c)))}}
                        Root '[{(:root/user {:user/name "nipponfarm"})
                                [:user/name
                                 :user/favorite-color
