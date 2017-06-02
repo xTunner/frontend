@@ -308,11 +308,20 @@
                      (map #(vector (:key %1) %2)
                           children vals)))
              (map (fn [ast]
-                    (let [result ((get mapping (:key ast)) context ast)
-                          promise (if (read-port? result)
-                                    result
-                                    (doto (async/promise-chan) (put! result)))]
-                      promise))
+                    (if (contains? mapping (:key ast))
+                      (let [result ((get mapping (:key ast)) context ast)
+                            promise (if (read-port? result)
+                                      result
+                                      (doto (async/promise-chan) (put! result)))]
+                        promise)
+
+                      (if-let [[keys resolver] (first (filter #(contains? (key %) (:key ast)) mapping))]
+                        (let [result (resolver context ast)
+                              promise (if (read-port? result)
+                                        result
+                                        (doto (async/promise-chan) (put! result)))]
+                          (async/map #(get % (:key ast)) [promise]))
+                        (throw "Unknown key"))))
                   children)))
 
 
@@ -325,20 +334,12 @@
    (fn [context ast]
      (:user/name context))
 
-   :user/favorite-color
+   #{:user/favorite-color :user/favorite-number}
    (fn [context ast]
      (let [c (async/promise-chan)
            get-user (get-in context [:apis :get-user])]
        (get-user {:user/name (:user/name context)}
-                 #(put! c (:user/favorite-color %)))
-       c))
-
-   :user/favorite-number
-   (fn [context ast]
-     (let [c (async/promise-chan)
-           get-user (get-in context [:apis :get-user])]
-       (get-user {:user/name (:user/name context)}
-                 #(put! c (:user/favorite-number %)))
+                 #(put! c %))
        c))
 
    :user/favorite-fellow-user
