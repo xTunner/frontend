@@ -302,35 +302,35 @@
 (defn- read-port? [x]
   (implements? async-impl/ReadPort x))
 
-(defn resolve* [context mapping key children]
+(defn resolve* [context mapping children]
   (async/map (fn [& vals]
-               {key (into {}
-                          (map #(vector (:key %1) %2)
-                               children vals))})
+               (into {}
+                     (map #(vector (:key %1) %2)
+                          children vals)))
              (map (fn [ast]
                     (let [result ((get mapping (:key ast)) context ast)
                           promise (if (read-port? result)
                                     result
                                     (doto (async/promise-chan) (put! result)))]
-                      (async/map (:key ast) [promise])))
+                      promise))
                   children)))
 
 
 (defn resolve [context root-mapping query]
   (let [ast (om/query->ast query)]
-    (async/map ::root [(resolve* context root-mapping ::root (:children ast))])))
+    (resolve* context root-mapping (:children ast))))
 
 (def User
   {:user/name
    (fn [context ast]
-     {:user/name (:user/name context)})
+     (:user/name context))
 
    :user/favorite-color
    (fn [context ast]
      (let [c (async/promise-chan)
            get-user (get-in context [:apis :get-user])]
        (get-user {:user/name (:user/name context)}
-                 #(put! c %))
+                 #(put! c (:user/favorite-color %)))
        c))
 
    :user/favorite-number
@@ -338,7 +338,7 @@
      (let [c (async/promise-chan)
            get-user (get-in context [:apis :get-user])]
        (get-user {:user/name (:user/name context)}
-                 #(put! c %))
+                 #(put! c (:user/favorite-number %)))
        c))
 
    :user/favorite-fellow-user
@@ -349,7 +349,6 @@
                  (fn [user]
                    (-> (resolve* (assoc context :user/name (:user/favorite-fellow-user-name user))
                                  User
-                                 (:key ast)
                                  (:children ast))
                        (async/pipe c))))
        c))})
@@ -358,7 +357,7 @@
 (def Root
   {:root/user
    (fn [context ast]
-     (resolve* (assoc context :user/name (:user/name (:params ast))) User :root/user (:children ast)))})
+     (resolve* (assoc context :user/name (:user/name (:params ast))) User (:children ast)))})
 
 
 (deftest new-thing-works
