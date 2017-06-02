@@ -1,12 +1,11 @@
 (ns frontend.test-send
-  (:require [cljs.core.async :as async :refer [<! chan put!]]
-            [cljs.core.async.impl.protocols :as async-impl]
+  (:require [cljs.core.async.impl.protocols :as async-impl]
             [clojure.set :as set]
             [clojure.test :refer-macros [async is testing]]
             [frontend.send :as send]
-            [om.next :as om])
-  (:require-macros [cljs.core.async.macros :refer [go]]
-                   [devcards.core :as dc :refer [deftest]]))
+            [om.next :as om]
+            [promesa.core :as p :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [deftest]]))
 
 (deftest org-runs-ast?-works
   (let [example {:key :circleci/organization
@@ -298,30 +297,27 @@
 
 
 
-(defn- read-port? [x]
-  (implements? async-impl/ReadPort x))
-
 (defn resolve* [context mapping children]
-  (async/map (fn [& vals]
-               (into {}
-                     (map #(vector (:key %1) %2)
-                          children vals)))
-             (map (fn [ast]
-                    (let [result-chan
-                          (fn [resolver]
-                            (let [result (resolver context ast)]
-                              (if (read-port? result)
-                                result
-                                (doto (async/promise-chan) (put! result)))))]
-                      (if (contains? mapping (:key ast))
-                        (let [resolver (get mapping (:key ast))]
-                          (result-chan resolver))
+  (p/map (fn [[& vals]]
+           (into {}
+                 (map #(vector (:key %1) %2)
+                      children vals)))
+         (p/all (map (fn [ast]
+                       (let [result-promise
+                             (fn [resolver]
+                               (let [result (resolver context ast)]
+                                 (if (p/promise? result)
+                                   result
+                                   (p/promise result))))]
+                         (if (contains? mapping (:key ast))
+                           (let [resolver (get mapping (:key ast))]
+                             (result-promise resolver))
 
-                        (if-let [[keys resolver]
-                                 (first (filter #(contains? (key %) (:key ast)) mapping))]
-                          (async/map #(get % (:key ast)) [(result-chan resolver)])
-                          (throw "Unknown key")))))
-                  children)))
+                           (if-let [[keys resolver]
+                                    (first (filter #(contains? (key %) (:key ast)) mapping))]
+                             (p/map #(get % (:key ast)) (result-promise resolver))
+                             (throw "Unknown key")))))
+                     children))))
 
 
 (defn resolve [context root-mapping query]
@@ -336,22 +332,20 @@
    #{:user/favorite-color :user/favorite-number}
    (fn [context ast]
      (let [get-user (get-in context [:apis :get-user])]
-       (async/map
+       (p/map
         #(set/rename-keys % {:favorite-color :user/favorite-color
                              :favorite-number :user/favorite-number})
-        [(get-user {:name (:user/name context)})])))
+        (get-user {:name (:user/name context)}))))
 
    :user/favorite-fellow-user
    (fn [context ast]
-     (let [c (chan)
-           get-user (get-in context [:apis :get-user])]
-       (go
-         (let [user (<! (get-user {:name (:user/name context)}))]
-           (-> (resolve* (assoc context :user/name (:favorite-fellow-user-name user))
-                         User
-                         (:children ast))
-               (async/pipe c))))
-       c))})
+     (let [get-user (get-in context [:apis :get-user])
+           user-promise (get-user {:name (:user/name context)})]
+       (p/then user-promise
+               (fn [user]
+                 (resolve* (assoc context :user/name (:favorite-fellow-user-name user))
+                           User
+                           (:children ast))))))})
 
 
 (def Root
@@ -361,38 +355,37 @@
 
 (deftest new-thing-works
   (async done
-    (go
-      (let [api-calls (atom [])
-            ;; Note that the "backend" data uses different keys from the client.
-            ;; The resolver must translate.
-            users {{:name "nipponfarm"} {:favorite-color :color/blue
-                                         :favorite-number 42
-                                         :favorite-fellow-user-name "jburnford"}
-                   {:name "jburnford"} {:favorite-color :color/red
-                                        :favorite-number 7}}
-            c (resolve {:apis {:get-user (memoize
-                                          (fn [params]
-                                            (swap! api-calls conj [:get-user params])
-                                            (let [c (async/promise-chan)]
-                                              (put! c (get users params))
-                                              c)))}}
-                       Root '[{(:root/user {:user/name "nipponfarm"})
-                               [:user/name
-                                :user/favorite-color
-                                :user/favorite-number
-                                {:user/favorite-fellow-user [:user/name
-                                                             :user/favorite-color
-                                                             :user/favorite-number]}]}])]
-        ;; Keeps delivering the same data.
-        (is (= (repeat 2 {:root/user {:user/name "nipponfarm"
-                                      :user/favorite-color :color/blue
-                                      :user/favorite-number 42
-                                      :user/favorite-fellow-user {:user/name "jburnford"
-                                                                  :user/favorite-color :color/red
-                                                                  :user/favorite-number 7}}})
-               [(<! c)
-                (<! c)]))
-        (is (= [[:get-user {:name "nipponfarm"}]
-                [:get-user {:name "jburnford"}]]
-               @api-calls))
-        (done)))))
+    (let [api-calls (atom [])
+          ;; Note that the "backend" data uses different keys from the client.
+          ;; The resolver must translate.
+          users {{:name "nipponfarm"} {:favorite-color :color/blue
+                                       :favorite-number 42
+                                       :favorite-fellow-user-name "jburnford"}
+                 {:name "jburnford"} {:favorite-color :color/red
+                                      :favorite-number 7}}
+          p (resolve {:apis {:get-user (memoize
+                                        (fn [params]
+                                          (p/do*
+                                           (swap! api-calls conj [:get-user params])
+                                           (get users params))))}}
+                     Root '[{(:root/user {:user/name "nipponfarm"})
+                             [:user/name
+                              :user/favorite-color
+                              :user/favorite-number
+                              {:user/favorite-fellow-user [:user/name
+                                                           :user/favorite-color
+                                                           :user/favorite-number]}]}])]
+      (p/then
+       p
+       (fn [v]
+         (is (= {:root/user {:user/name "nipponfarm"
+                             :user/favorite-color :color/blue
+                             :user/favorite-number 42
+                             :user/favorite-fellow-user {:user/name "jburnford"
+                                                         :user/favorite-color :color/red
+                                                         :user/favorite-number 7}}}
+                v))
+         (is (= [[:get-user {:name "nipponfarm"}]
+                 [:get-user {:name "jburnford"}]]
+                @api-calls))
+         (done))))))
