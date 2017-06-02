@@ -1,13 +1,12 @@
 (ns frontend.test-send
-  (:require [clojure.test :refer-macros [testing is async]]
+  (:require [cljs.core.async :as async :refer [<! chan put!]]
+            [cljs.core.async.impl.protocols :as async-impl]
+            [clojure.set :as set]
+            [clojure.test :refer-macros [async is testing]]
             [frontend.send :as send]
-
-
-            [cljs.core.async :as async :refer [<! chan close! put!]]
-            [om.next :as om]
-            [cljs.core.async.impl.protocols :as async-impl])
-  (:require-macros [devcards.core :as dc :refer [deftest]]
-                   [cljs.core.async.macros :refer [go]]))
+            [om.next :as om])
+  (:require-macros [cljs.core.async.macros :refer [go]]
+                   [devcards.core :as dc :refer [deftest]]))
 
 (deftest org-runs-ast?-works
   (let [example {:key :circleci/organization
@@ -337,15 +336,18 @@
    #{:user/favorite-color :user/favorite-number}
    (fn [context ast]
      (let [get-user (get-in context [:apis :get-user])]
-       (get-user {:user/name (:user/name context)})))
+       (async/map
+        #(set/rename-keys % {:favorite-color :user/favorite-color
+                             :favorite-number :user/favorite-number})
+        [(get-user {:name (:user/name context)})])))
 
    :user/favorite-fellow-user
    (fn [context ast]
      (let [c (chan)
            get-user (get-in context [:apis :get-user])]
        (go
-         (let [user (<! (get-user {:user/name (:user/name context)}))]
-           (-> (resolve* (assoc context :user/name (:user/favorite-fellow-user-name user))
+         (let [user (<! (get-user {:name (:user/name context)}))]
+           (-> (resolve* (assoc context :user/name (:favorite-fellow-user-name user))
                          User
                          (:children ast))
                (async/pipe c))))
@@ -361,11 +363,13 @@
   (async done
     (go
       (let [api-calls (atom [])
-            users {{:user/name "nipponfarm"} {:user/favorite-color :color/blue
-                                              :user/favorite-number 42
-                                              :user/favorite-fellow-user-name "jburnford"}
-                   {:user/name "jburnford"} {:user/favorite-color :color/red
-                                             :user/favorite-number 7}}
+            ;; Note that the "backend" data uses different keys from the client.
+            ;; The resolver must translate.
+            users {{:name "nipponfarm"} {:favorite-color :color/blue
+                                         :favorite-number 42
+                                         :favorite-fellow-user-name "jburnford"}
+                   {:name "jburnford"} {:favorite-color :color/red
+                                        :favorite-number 7}}
             c (resolve {:apis {:get-user (memoize
                                           (fn [params]
                                             (swap! api-calls conj [:get-user params])
@@ -388,7 +392,7 @@
                                                                   :user/favorite-number 7}}})
                [(<! c)
                 (<! c)]))
-        (is (= [[:get-user {:user/name "nipponfarm"}]
-                [:get-user {:user/name "jburnford"}]]
+        (is (= [[:get-user {:name "nipponfarm"}]
+                [:get-user {:name "jburnford"}]]
                @api-calls))
         (done)))))
