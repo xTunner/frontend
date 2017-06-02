@@ -298,26 +298,21 @@
 
 
 (defn resolve* [context mapping children]
-  (p/map (fn [[& vals]]
-           (into {}
-                 (map #(vector (:key %1) %2)
-                      children vals)))
-         (p/all (map (fn [ast]
-                       (let [result-promise
-                             (fn [resolver]
-                               (let [result (resolver context ast)]
-                                 (if (p/promise? result)
-                                   result
-                                   (p/promise result))))]
-                         (if (contains? mapping (:key ast))
-                           (let [resolver (get mapping (:key ast))]
-                             (result-promise resolver))
-
-                           (if-let [[keys resolver]
-                                    (first (filter #(contains? (key %) (:key ast)) mapping))]
-                             (p/map #(get % (:key ast)) (result-promise resolver))
-                             (throw "Unknown key")))))
-                     children))))
+  (p/alet [values
+           (p/await
+            (p/all
+             (for [ast children
+                   :let [read-from-key (get-in ast [:params :<] (:key ast))]]
+               (if (contains? mapping read-from-key)
+                 (let [resolver (get mapping read-from-key)]
+                   (resolver context ast))
+                 (if-let [[keys resolver]
+                          (first (filter #(contains? (key %) read-from-key) mapping))]
+                   (p/then (resolver context ast) #(get % read-from-key))
+                   (throw "Unknown key"))))))]
+    (into {}
+          (map #(vector (:key %1) %2)
+               children values))))
 
 
 (defn resolve [context root-mapping query]
@@ -331,21 +326,18 @@
 
    #{:user/favorite-color :user/favorite-number}
    (fn [context ast]
-     (let [get-user (get-in context [:apis :get-user])]
-       (p/map
-        #(set/rename-keys % {:favorite-color :user/favorite-color
-                             :favorite-number :user/favorite-number})
-        (get-user {:name (:user/name context)}))))
+     (p/alet [get-user (get-in context [:apis :get-user])
+              user (p/await (get-user {:name (:user/name context)}))]
+       (set/rename-keys user {:favorite-color :user/favorite-color
+                              :favorite-number :user/favorite-number})))
 
    :user/favorite-fellow-user
    (fn [context ast]
-     (let [get-user (get-in context [:apis :get-user])
-           user-promise (get-user {:name (:user/name context)})]
-       (p/then user-promise
-               (fn [user]
-                 (resolve* (assoc context :user/name (:favorite-fellow-user-name user))
-                           User
-                           (:children ast))))))})
+     (p/alet [get-user (get-in context [:apis :get-user])
+              user (p/await (get-user {:name (:user/name context)}))]
+       (resolve* (assoc context :user/name (:favorite-fellow-user-name user))
+                 User
+                 (:children ast))))})
 
 
 (def Root
@@ -374,7 +366,10 @@
                               :user/favorite-number
                               {:user/favorite-fellow-user [:user/name
                                                            :user/favorite-color
-                                                           :user/favorite-number]}]}])]
+                                                           :user/favorite-number]}]}
+                            {(:jamie {:< :root/user :user/name "jburnford"})
+                             [:user/name
+                              :user/favorite-color]}])]
       (p/then
        p
        (fn [v]
@@ -383,7 +378,9 @@
                              :user/favorite-number 42
                              :user/favorite-fellow-user {:user/name "jburnford"
                                                          :user/favorite-color :color/red
-                                                         :user/favorite-number 7}}}
+                                                         :user/favorite-number 7}}
+                 :jamie {:user/name "jburnford"
+                         :user/favorite-color :color/red}}
                 v))
          (is (= [[:get-user {:name "nipponfarm"}]
                  [:get-user {:name "jburnford"}]]
