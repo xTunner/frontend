@@ -171,11 +171,21 @@
                    :status-class/running (icon/status-running)
                    :status-class/waiting (icon/status-queued))]
                 [:.status-string (string/replace (name status) #"-" " ")]]]
-              (if (and (feature/enabled? :cancel-below-status)
-                       (running? status))
-                [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
-                 (icon/status-canceled)
-                 [:span "cancel"]])]
+              (cond (and (feature/enabled? :cancel-below-status)
+                         (running? status))
+                    [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                     (icon/status-canceled)
+                     [:span "cancel"]]
+                    (not (running? status))
+                    [:div.rebuild-button.dropdown
+                     (icon/rebuild)
+                     [:span "Rerun"]
+                     [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
+                     [:ul.dropdown-menu.pull-right
+                      [:li
+                       [:a
+                        {:on-click #(transact-run-retry this id vcs-type org-name project-name)}
+                        "Rerun failed jobs"]]]])]
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier
@@ -210,11 +220,7 @@
                (commit-link vcs-type
                             org-name
                             project-name
-                            commit-sha)]]
-             [:div.actions
-              (button/icon {:label "Retry this workflow"
-                            :on-click #(transact-run-retry this id vcs-type org-name project-name)}
-                           (icon/rebuild))]])))))))
+                            commit-sha)]]])))))))
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
