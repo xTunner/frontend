@@ -55,15 +55,9 @@
                              (aget "renderContext")
                              utils/js->clj-kw)))
 
-(defn log-channels?
-  "Log channels in development, can be overridden by the log-channels query param"
-  []
-  (:log-channels? utils/initial-query-map (config/log-channels?)))
-
 (defn controls-handler
   [value state container comms]
-  (when (log-channels?)
-    (mlog "Controls Verbose: " value))
+  (mlog "Controls Verbose: " value)
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
@@ -72,8 +66,7 @@
 
 (defn nav-handler
   [[navigation-point {:keys [inner? query-params] :as args} :as value] state history comms]
-  (when (log-channels?)
-    (mlog "Navigation Verbose: " value))
+  (mlog "Navigation Verbose: " value)
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
@@ -91,8 +84,7 @@
 
 (defn api-handler
   [value state container comms]
-  (when (log-channels?)
-    (mlog "API Verbose: " (first value) (second value) (utils/third value)))
+  (mlog "API Verbose: " (first value) (second value) (utils/third value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state
@@ -105,8 +97,7 @@
 
 (defn ws-handler
   [value state pusher comms]
-  (when (log-channels?)
-    (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value)))
+  (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value))
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
@@ -115,8 +106,7 @@
 
 (defn errors-handler
   [value state container comms]
-  (when (log-channels?)
-    (mlog "Errors Verbose: " value))
+  (mlog "Errors Verbose: " value)
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
