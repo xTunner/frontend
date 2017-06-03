@@ -169,6 +169,30 @@
   [_env _key _params]
   {:remote true})
 
+(defn- legacy-route?
+  "Is this route a Om (now) route?"
+  [state route]
+  (= route :route/legacy-page))
+
+(defn- maybe-clear-nav-data
+  "There is currently a bug with the org-picker navigation whose symptoms are:
+  When you are on a Om-next page, and change orgs via the org-picker, Om will navigate
+  back to the last Om-now page you viewed.
+
+  This is a temporary fix, and work to remove it will follow immediately."
+  [state route]
+  (if (legacy-route? state route)
+    state
+    (-> state
+        (assoc-in [:legacy/state :navigation-point] route)
+        ;; Clean up the legacy state so it doesn't leak
+        ;; from the previous page. This goes away when
+        ;; the legacy state dies. In the Om Next world,
+        ;; all route data is in :app/route-params, and is
+        ;; replaced completely on each route change.
+        (update :legacy/state dissoc
+                :navigation-data))))
+
 ;; Sets the :app/route-params during navigation.
 (defmethod mutate 'route-params/set
   [{:keys [state route] :as env} key {:keys [subpage route-params]}]
@@ -177,19 +201,7 @@
                             (-> state
                                 (assoc :app/subpage-route subpage
                                        :app/route-params route-params)
-                                ;; the legacy om still uses :navigation-point to tell
-                                ;; if we are navigating to a new page or tabbing, so only
-                                ;; set it to be route when not in old Om
-                                (#(if-not (= route :route/legacy-page)
-                                    (assoc-in % [:legacy/state :navigation-point] route)
-                                    %))
-                                ;; Clean up the legacy state so it doesn't leak
-                                ;; from the previous page. This goes away when
-                                ;; the legacy state dies. In the Om Next world,
-                                ;; all route data is in :app/route-params, and is
-                                ;; replaced completely on each route change.
-                                (update :legacy/state dissoc
-                                        :navigation-data))))
+                                (maybe-clear-nav-data route))))
              (analytics/track {:event-type :pageview
                                :navigation-point route
                                :subpage :default

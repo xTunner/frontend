@@ -467,7 +467,7 @@
   "Helper function for the :action-steps events to tell if the
   result returned is from the same build page as the one the user
   is currently on."
-  [{:keys [build args state]}]
+  [{:keys [args state]}]
   (let [build (get-in state state/build-path)
         {:keys [build-num project-name new-container-id]} (:context args)]
     (and (= build-num (:build_num build))
@@ -476,10 +476,8 @@
 
 (defmethod api-event [:action-steps :success]
   [target message status args state]
-  (let [build (get-in state state/build-path)
-        {:keys [build-num project-name new-container-id]} (:context args)]
-    (if-not (same-build-page? {:build build
-                               :args args
+  (let [build (get-in state state/build-path)]
+    (if-not (same-build-page? {:args args
                                :state state})
       state
       (let [build (assoc build :steps (:resp args))]
@@ -501,11 +499,12 @@
 
 (defmethod post-api-event! [:action-steps :success]
   [target message status args previous-state current-state comms]
-  (let [{:keys [build-num project-name old-container-id new-container-id]} (:context args)
-        build (get-in current-state state/build-path)
-        vcs-url (:vcs_url build)]
-    (when (same-build-page? {:build build
-                             :args args
+  (let [build (get-in current-state state/build-path)
+        vcs-url (:vcs_url build)
+        build-num (:build_num build)
+        old-container-id (get-in previous-state state/current-container-path)
+        new-container-id (get-in current-state state/current-container-path)]
+    (when (same-build-page? {:args args
                              :state current-state})
       (fetch-visible-output current-state comms build-num vcs-url)
       (update-pusher-subscriptions current-state comms old-container-id new-container-id)
