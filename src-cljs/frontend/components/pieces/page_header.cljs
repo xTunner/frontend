@@ -263,7 +263,7 @@
                                                                                                 :treatment "top-bar-beta"}})}
 
 
-                                  "Provide Feedback")])
+                                  "Provide Beta UI Feedback")])
                  (button/link {:fixed? true
                                :kind (if has-topbar?
                                        :secondary
