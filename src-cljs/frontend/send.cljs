@@ -118,8 +118,8 @@
 (def ^:private ignore-response-callback (fn [_response] nil))
 
 (defn- request-run-retry-from-api-service
-  [id]
-  (api/request-retry-run (callback-api-chan ignore-response-callback) id))
+  [params]
+  (api/request-retry-run (callback-api-chan ignore-response-callback) params))
 
 (defn- request-run-cancel-from-api-service
   [id]
@@ -127,8 +127,7 @@
 
 (defn- send-retry-run
   [{:keys [params]} merge-fn query]
-  (let [{:keys [run/id]} params]
-    (request-run-retry-from-api-service id)))
+  (request-run-retry-from-api-service params))
 
 (defn- send-cancel-run
   [{:keys [params]} merge-fn query]
@@ -473,6 +472,7 @@
                      :run/status
                      :run/started-at
                      :run/stopped-at
+                     {:run/jobs [:job/id]}
                      {:run/trigger-info [:trigger-info/vcs-revision
                                          :trigger-info/subject
                                          :trigger-info/body
@@ -489,6 +489,7 @@
                                      (dissoc :run/jobs))}
                   query)))
            (:run/id (:params ast)))
+
           (let [{:keys [key query]} ast]
             (and (= :circleci/run key)
                  (= '[({:jobs-for-jobs [:job/id
