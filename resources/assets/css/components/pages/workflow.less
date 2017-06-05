@@ -15,22 +15,6 @@
         margin-bottom: -15px;
       }
 
-      > .actions {
-        .flexy(center, center);
-        padding: (@build-padding / 2) @build-padding;
-
-        @media (max-width: @screen-md-max) {
-          justify-content: space-around;
-        }
-
-        button {
-          background-color: transparent;
-          &:last-of-type {
-            margin-left: .5em;
-          }
-        }
-      }
-
       > .run-info {
         .flex(1 0 auto);
         width: 0;
@@ -103,20 +87,53 @@
           }
         }
 
-        > .cancel-button {
+        > .cancel-button, > .rebuild-button {
           .flexy(center);
-          &:hover {
-            cursor: pointer;
-            > span {
-              text-decoration: underline;
-            }
-          }
 
-          > svg {
-            color: gray;
+          > svg, > .fa {
+            color: @grayLight;
             height: 17px;
             width: 17px;
             margin: 10px;
+          }
+
+          > span {
+            font-size: @fontSizeSmaller; 
+          }
+
+          > .dropdown-menu > li {
+            > a {
+              cursor: pointer;
+              padding: 3px 10px;
+              color: inherit;
+              background-color: inherit;
+              font-size: @fontSizeSmaller;
+            }
+              
+            &:hover {
+              background: rgba(0, 0, 0, 0.05);
+            }
+          }
+
+          > ul.dropdown {
+            position: absolute;
+            bottom: -100%;
+            background-color: white;
+            margin: 0;            
+          }
+        }
+
+        > .rebuild-button > .dropdown-toggle {
+          cursor: pointer;
+        }
+
+        > .cancel-button {
+          cursor: pointer;
+          
+          &:hover {
+            > span {
+              text-decoration: underline;
+            }
           }
         }
       }
