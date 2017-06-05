@@ -303,16 +303,18 @@
   (implements? async-impl/ReadPort x))
 
 (defn- pipe-values
-  "Pipes value(s) from `from` to `to`, returning `to`. If `from` is a channel,
-  pipes as with core.async/pipe. If `from` is a promise, puts the promise's
-  value on `to` and closes it. If `from` is a value, puts that value on `to` and
-  closes it."
+  "Pipes value(s) from `from` to `to`, returning `to`. If `from` is a channel or
+  a promise of a channel, pipes to that channel as with core.async/pipe. If
+  `from` is a value or a promise of a value, puts that value on `to` and closes
+  `to`."
   [from to]
-  (if (read-port? from)
-    (async/pipe from to)
-    (do
-      (p/then from #(doto to (put! %) (close!)))
-      to)))
+  (p/then
+   from
+   (fn [v]
+     (if (read-port? v)
+       (async/pipe v to)
+       (doto to (put! v) (close!)))))
+  to)
 
 (defn resolve* [context mapping children]
   (async/pipe
@@ -381,15 +383,13 @@
 
    :user/favorite-fellow-user
    (fn [context ast]
-     (let [c (chan)]
-       (p/alet [get-user (get-in context [:apis :get-user])
-                user (p/await (get-user {:name (:user/name context)}))]
-         (resolve* (assoc context
-                          :channel c
-                          :user/name (:favorite-fellow-user-name user))
-                   resolvers
-                   (:children ast)))
-       c))})
+     (p/alet [get-user (get-in context [:apis :get-user])
+              user (p/await (get-user {:name (:user/name context)}))]
+       (resolve* (assoc context
+                        :channel (chan)
+                        :user/name (:favorite-fellow-user-name user))
+                 resolvers
+                 (:children ast))))})
 
 (deftest new-thing-works
   (async done
