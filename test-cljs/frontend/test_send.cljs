@@ -316,7 +316,7 @@
        (doto to (put! v) (close!)))))
   to)
 
-(defn resolve [channel env query-or-ast]
+(defn resolve [env query-or-ast channel]
   (let [ast (if (vector? query-or-ast)
               (om/query->ast query-or-ast)
               query-or-ast)
@@ -352,9 +352,9 @@
 
    :root/user
    (fn [env ast]
-     (resolve (chan)
-              (assoc env :user/name (:user/name (:params ast)))
-              ast))
+     (resolve (assoc env :user/name (:user/name (:params ast)))
+              ast
+              (chan)))
 
    :user/name
    (fn [env ast]
@@ -388,9 +388,9 @@
    (fn [env ast]
      (p/alet [get-user (get-in env [:apis :get-user])
               user (p/await (get-user {:name (:user/name env)}))]
-       (resolve (chan)
-                (assoc env :user/name (:favorite-fellow-user-name user))
-                ast)))})
+       (resolve (assoc env :user/name (:favorite-fellow-user-name user))
+                ast
+                (chan))))})
 
 (deftest new-thing-works
   (async done
@@ -417,8 +417,7 @@
                                            {:name "Otis"
                                             :species :pet-species/dog
                                             :description "pug"}]}
-          data-chan (resolve (chan)
-                             {:apis {:get-user
+          data-chan (resolve {:apis {:get-user
                                      (memoize
                                       (fn [params]
                                         (p/do*
@@ -451,7 +450,8 @@
                                                               :user/favorite-number]}]}
                                {(:jamie {:< :root/user :user/name "jburnford"})
                                 [:user/name
-                                 :user/favorite-color]}])]
+                                 :user/favorite-color]}]
+                             (chan))]
       (take!
        (async/into #{} data-chan)
        (fn [v]
