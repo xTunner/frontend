@@ -369,6 +369,16 @@
            (update :user/vehicle
                    #(parser {:state (atom %)} (mapv om/ast->query (:children ast)))))))
 
+   :user/pets
+   (fn [context ast]
+     (p/alet [get-user-pets (get-in context [:apis :get-user-pets])
+              pets (p/await (get-user-pets {:name (:user/name context)}))]
+       (->> pets
+            (map #(set/rename-keys % {:name :pet/name
+                                      :species :pet/species
+                                      :description :pet/description}))
+            (mapv #(parser {:state (atom %)} (mapv om/ast->query (:children ast)))))))
+
    :user/favorite-fellow-user
    (fn [context ast]
      (let [c (chan)]
@@ -391,21 +401,39 @@
                                        :vehicle {:color :color/white
                                                  :make "Toyota"
                                                  :model "Hilux"}
+                                       :pets [{:name "Milo"
+                                               :species :pet-species/cat
+                                               :description "orange tabby"}
+                                              {:name "Otis"
+                                               :species :pet-species/dog
+                                               :description "pug"}]
                                        :favorite-fellow-user-name "jburnford"}
                  {:name "jburnford"} {:favorite-color :color/red
                                       :favorite-number 7}}
+          user-pets {{:name "nipponfarm"} [{:name "Milo"
+                                            :species :pet-species/cat
+                                            :description "orange tabby"}
+                                           {:name "Otis"
+                                            :species :pet-species/dog
+                                            :description "pug"}]}
           data-chan (resolve {:channel (chan)
                               :apis {:get-user (memoize
                                                 (fn [params]
                                                   (p/do*
                                                    (swap! api-calls conj [:get-user params])
-                                                   (get users params))))}}
+                                                   (get users params))))
+                                     :get-user-pets (memoize
+                                                     (fn [params]
+                                                       (p/do*
+                                                        (swap! api-calls conj [:get-user-pets params])
+                                                        (get user-pets params))))}}
                              resolvers '[{(:root/user {:user/name "nipponfarm"})
                                           [:user/name
                                            :user/favorite-color
                                            :user/favorite-number
                                            {:user/vehicle [:vehicle/make
                                                            (:the-model {:< :vehicle/model})]}
+                                           {:user/pets [:pet/name]}
                                            {:user/favorite-fellow-user [:user/name
                                                                         :user/favorite-color
                                                                         :user/favorite-number]}]}
@@ -420,6 +448,8 @@
                   {:root/user {:user/favorite-number 42}}
                   {:root/user {:user/vehicle {:vehicle/make "Toyota"
                                               :the-model "Hilux"}}}
+                  {:root/user {:user/pets [{:pet/name "Milo"}
+                                           {:pet/name "Otis"}]}}
                   {:root/user {:user/favorite-fellow-user {:user/name "jburnford"}}}
                   {:root/user {:user/favorite-fellow-user {:user/favorite-color :color/red}}}
                   {:root/user {:user/favorite-fellow-user {:user/favorite-number 7}}}
@@ -427,6 +457,7 @@
                   {:jamie {:user/favorite-color :color/red}}}
                 v))
          (is (= [[:get-user {:name "nipponfarm"}]
+                 [:get-user-pets {:name "nipponfarm"}]
                  [:get-user {:name "jburnford"}]]
                 @api-calls))
          (done))))))
