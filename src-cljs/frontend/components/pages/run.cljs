@@ -255,20 +255,4 @@
                                  {:selected? (= (:job/name job-data)
                                                 (:job/name selected-job))})))
                         jobs))]
-                [:.jobs-and-output
-                 [:.output
-                  [:div.output-header
-                   [:.output-title
-                    [:span (gstring/format "%s #%s"
-                                           selected-job-name
-                                           (:build/number selected-job-build-id))]]]
-                  (when selected-job-build-id
-                    (build-legacy build-page
-                                  {:app (:legacy/state (om-next/props this))
-                                   :job-build selected-job-build-id
-                                   :current-tab (:route-params/tab route-params)
-                                   :tab-href #(routes/v1-job-path
-                                               id
-                                               selected-job-name
-                                               (assoc route-params
-                                                      :route-params/tab %))}))]]])))})))))
+                ])))})))))
