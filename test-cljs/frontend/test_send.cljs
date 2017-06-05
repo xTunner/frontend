@@ -1,5 +1,7 @@
 (ns frontend.test-send
-  (:require [cljs.core.async :as async :refer [chan close! put! take!]]
+  (:require [bodhi.aliasing :as aliasing]
+            [bodhi.core :as bodhi]
+            [cljs.core.async :as async :refer [chan close! put! take!]]
             [cljs.core.async.impl.protocols :as async-impl]
             [clojure.set :as set]
             [clojure.test :refer-macros [async is testing]]
@@ -335,6 +337,11 @@
   (let [ast (om/query->ast query)]
     (resolve* context root-mapping (:children ast))))
 
+(def parser
+  (om/parser {:read (bodhi/read-fn
+                     (-> bodhi/basic-read
+                         aliasing/read))}))
+
 (def resolvers
   {:root/user
    (fn [context ast]
@@ -359,9 +366,8 @@
            (update :user/vehicle set/rename-keys {:color :vehicle/color
                                                   :make :vehicle/make
                                                   :model :vehicle/model})
-           (update :user/vehicle #(om/db->tree (mapv om/ast->query (:children ast))
-                                               %
-                                               {})))))
+           (update :user/vehicle
+                   #(parser {:state (atom %)} (mapv om/ast->query (:children ast)))))))
 
    :user/favorite-fellow-user
    (fn [context ast]
@@ -399,7 +405,7 @@
                                            :user/favorite-color
                                            :user/favorite-number
                                            {:user/vehicle [:vehicle/make
-                                                           :vehicle/model]}
+                                                           (:the-model {:< :vehicle/model})]}
                                            {:user/favorite-fellow-user [:user/name
                                                                         :user/favorite-color
                                                                         :user/favorite-number]}]}
@@ -413,7 +419,7 @@
                   {:root/user {:user/favorite-color :color/blue}}
                   {:root/user {:user/favorite-number 42}}
                   {:root/user {:user/vehicle {:vehicle/make "Toyota"
-                                              :vehicle/model "Hilux"}}}
+                                              :the-model "Hilux"}}}
                   {:root/user {:user/favorite-fellow-user {:user/name "jburnford"}}}
                   {:root/user {:user/favorite-fellow-user {:user/favorite-color :color/red}}}
                   {:root/user {:user/favorite-fellow-user {:user/favorite-number 7}}}
