@@ -251,7 +251,7 @@
               (when (ld/feature-on? "top-bar-beta-button")
                 [:div.topbar-toggle
                  (when (and has-topbar?
-                            (not (= (:nav-point topbar-beta) :build)))
+                         (not= (:nav-point topbar-beta) :build))
                    [:span.feedback
                      (button/link {:fixed? true
                                    :kind :primary
