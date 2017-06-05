@@ -76,7 +76,7 @@
            {:resp (.getResponseText xhrio)})})
 
 (defn transit-response-format
-  [{:keys [prefix keywords? url method start-time]
+  [{:keys [url method start-time]
     :or {start-time (time/now)}}]
   {:read (fn read-transit [xhrio]
            (let [reader (transit/reader :json)

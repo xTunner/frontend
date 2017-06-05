@@ -69,7 +69,7 @@
          pretty-sha]]))))
 
 (defn- transact-run-retry
-  [component run-id vcs-type org-name project-name]
+  [component run-id jobs]
   (om-next/transact!
 
    ;; We transact on the reconciler, not the component; otherwise the
@@ -94,7 +94,7 @@
    ;; so we do it. This is another bug we're punting on.
    (om-next/transform-reads
     (om-next/get-reconciler component)
-    `[(run/retry {:run/id ~run-id})
+    `[(run/retry {:run/id ~run-id :run/jobs ~jobs})
       ;; We queue the entire page to re-read using :compassus.core/route-data.
       ;; Ideally we'd know what specifically to re-run, but there are now
       ;; several keys the new run could show up under. (Aliases also complicate
@@ -129,6 +129,7 @@
      :run/status
      :run/started-at
      :run/stopped-at
+     {:run/jobs [:job/id]}
      {:run/trigger-info [:trigger-info/vcs-revision
                          :trigger-info/subject
                          :trigger-info/body
@@ -144,7 +145,8 @@
                     run/status
                     run/started-at
                     run/stopped-at
-                    run/trigger-info]
+                    run/trigger-info
+                    run/jobs]
              run-name :run/name
              {project-name :project/name
               {org-name :organization/name
@@ -184,8 +186,12 @@
                      [:ul.dropdown-menu.pull-right
                       [:li
                        [:a
-                        {:on-click #(transact-run-retry this id vcs-type org-name project-name)}
-                        "Rerun failed jobs"]]]])]
+                        {:on-click #(transact-run-retry this id [])}
+                        "Rerun failed jobs"]]
+                      [:li
+                       [:a
+                        {:on-click #(transact-run-retry this id jobs)}
+                        "Rerun from start"]]]])]
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier

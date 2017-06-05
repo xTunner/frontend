@@ -121,13 +121,13 @@
                        :organization/vcs-type (keyword vcs-type)
                        :opts opts}}))
 
-(defn request-retry-run [api-ch run-id]
+(defn request-retry-run [api-ch params]
   (ajax/ajax :post
              "/query-api"
              :uncatchable-by-old-controller
              api-ch
              :format :transit
-             :params `(run/retry {:run/id ~run-id})))
+             :params `(run/retry ~params)))
 
 (defn request-cancel-run [api-ch run-id]
   (ajax/ajax :post
