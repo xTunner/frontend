@@ -316,10 +316,11 @@
        (doto to (put! v) (close!)))))
   to)
 
-(defn resolve [channel context resolvers query-or-ast]
+(defn resolve [channel context query-or-ast]
   (let [ast (if (vector? query-or-ast)
               (om/query->ast query-or-ast)
               query-or-ast)
+        resolvers (:resolvers context)
         children (:children ast)]
     (async/pipe
      (async/merge
@@ -353,7 +354,6 @@
    (fn [context ast]
      (resolve (chan)
               (assoc context :user/name (:user/name (:params ast)))
-              resolvers
               ast))
 
    :user/name
@@ -390,7 +390,6 @@
               user (p/await (get-user {:name (:user/name context)}))]
        (resolve (chan)
                 (assoc context :user/name (:favorite-fellow-user-name user))
-                resolvers
                 ast)))})
 
 (deftest new-thing-works
@@ -437,21 +436,22 @@
                                      (fn [params]
                                        (p/do*
                                         (swap! api-calls conj [:do-something params])
-                                        "Did something."))}}
-                             resolvers '[(do/something {:very "important"})
-                                         {(:root/user {:user/name "nipponfarm"})
-                                          [:user/name
-                                           :user/favorite-color
-                                           :user/favorite-number
-                                           {:user/vehicle [:vehicle/make
-                                                           (:the-model {:< :vehicle/model})]}
-                                           {:user/pets [:pet/name]}
-                                           {:user/favorite-fellow-user [:user/name
-                                                                        :user/favorite-color
-                                                                        :user/favorite-number]}]}
-                                         {(:jamie {:< :root/user :user/name "jburnford"})
-                                          [:user/name
-                                           :user/favorite-color]}])]
+                                        "Did something."))}
+                              :resolvers resolvers}
+                             '[(do/something {:very "important"})
+                               {(:root/user {:user/name "nipponfarm"})
+                                [:user/name
+                                 :user/favorite-color
+                                 :user/favorite-number
+                                 {:user/vehicle [:vehicle/make
+                                                 (:the-model {:< :vehicle/model})]}
+                                 {:user/pets [:pet/name]}
+                                 {:user/favorite-fellow-user [:user/name
+                                                              :user/favorite-color
+                                                              :user/favorite-number]}]}
+                               {(:jamie {:< :root/user :user/name "jburnford"})
+                                [:user/name
+                                 :user/favorite-color]}])]
       (take!
        (async/into #{} data-chan)
        (fn [v]
