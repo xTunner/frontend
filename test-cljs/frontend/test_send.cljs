@@ -316,11 +316,11 @@
        (doto to (put! v) (close!)))))
   to)
 
-(defn resolve [channel context query-or-ast]
+(defn resolve [channel env query-or-ast]
   (let [ast (if (vector? query-or-ast)
               (om/query->ast query-or-ast)
               query-or-ast)
-        resolvers (:resolvers context)
+        resolvers (:resolvers env)
         children (:children ast)]
     (async/pipe
      (async/merge
@@ -328,11 +328,11 @@
             :let [read-from-key (get-in ast [:params :<] (:key ast))]]
         (if (contains? resolvers read-from-key)
           (let [resolver (get resolvers read-from-key)]
-            (pipe-values (resolver context ast)
+            (pipe-values (resolver env ast)
                          (chan 1 (map #(hash-map (:key ast) %)))))
           (if-let [[keys resolver]
                    (first (filter #(contains? (key %) read-from-key) resolvers))]
-            (pipe-values (resolver context ast)
+            (pipe-values (resolver env ast)
                          (chan 1 (comp
                                   (map #(get % read-from-key))
                                   (map #(hash-map (:key ast) %)))))
@@ -346,24 +346,24 @@
 
 (def resolvers
   {'do/something
-   (fn [context ast]
-     (let [do-something (get-in context [:apis :do-something])]
+   (fn [env ast]
+     (let [do-something (get-in env [:apis :do-something])]
        (do-something (:params ast))))
 
    :root/user
-   (fn [context ast]
+   (fn [env ast]
      (resolve (chan)
-              (assoc context :user/name (:user/name (:params ast)))
+              (assoc env :user/name (:user/name (:params ast)))
               ast))
 
    :user/name
-   (fn [context ast]
-     (:user/name context))
+   (fn [env ast]
+     (:user/name env))
 
    #{:user/favorite-color :user/favorite-number :user/vehicle}
-   (fn [context ast]
-     (p/alet [get-user (get-in context [:apis :get-user])
-              user (p/await (get-user {:name (:user/name context)}))]
+   (fn [env ast]
+     (p/alet [get-user (get-in env [:apis :get-user])
+              user (p/await (get-user {:name (:user/name env)}))]
        (-> user
            (set/rename-keys {:favorite-color :user/favorite-color
                              :favorite-number :user/favorite-number
@@ -375,9 +375,9 @@
                    #(parser {:state (atom %)} (mapv om/ast->query (:children ast)))))))
 
    :user/pets
-   (fn [context ast]
-     (p/alet [get-user-pets (get-in context [:apis :get-user-pets])
-              pets (p/await (get-user-pets {:name (:user/name context)}))]
+   (fn [env ast]
+     (p/alet [get-user-pets (get-in env [:apis :get-user-pets])
+              pets (p/await (get-user-pets {:name (:user/name env)}))]
        (->> pets
             (map #(set/rename-keys % {:name :pet/name
                                       :species :pet/species
@@ -385,11 +385,11 @@
             (mapv #(parser {:state (atom %)} (mapv om/ast->query (:children ast)))))))
 
    :user/favorite-fellow-user
-   (fn [context ast]
-     (p/alet [get-user (get-in context [:apis :get-user])
-              user (p/await (get-user {:name (:user/name context)}))]
+   (fn [env ast]
+     (p/alet [get-user (get-in env [:apis :get-user])
+              user (p/await (get-user {:name (:user/name env)}))]
        (resolve (chan)
-                (assoc context :user/name (:favorite-fellow-user-name user))
+                (assoc env :user/name (:favorite-fellow-user-name user))
                 ast)))})
 
 (deftest new-thing-works
