@@ -29,7 +29,7 @@
     :run-status/failed :status-class/failed
     :run-status/canceled :status-class/stopped))
 
-(defn- running? [run-status]
+(defn- cancelable-status? [run-status]
   (contains? #{:run-status/not-run
                :run-status/running}
              run-status))
@@ -172,11 +172,11 @@
                    :status-class/waiting (icon/status-queued))]
                 [:.status-string (string/replace (name status) #"-" " ")]]]
               (cond (and (feature/enabled? :cancel-below-status)
-                         (running? status))
+                         (cancelable-status? status))
                     [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
                      (icon/status-canceled)
                      [:span "cancel"]]
-                    (not (running? status))
+                    (not (cancelable-status? status))
                     [:div.rebuild-button.dropdown
                      (icon/rebuild)
                      [:span "Rerun"]
