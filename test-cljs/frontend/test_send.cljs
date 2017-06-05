@@ -316,28 +316,27 @@
        (doto to (put! v) (close!)))))
   to)
 
-(defn resolve* [context mapping children]
-  (async/pipe
-   (async/merge
-    (for [ast children
-          :let [read-from-key (get-in ast [:params :<] (:key ast))]]
-      (if (contains? mapping read-from-key)
-        (let [resolver (get mapping read-from-key)]
-          (pipe-values (resolver context ast)
-                       (chan 1 (map #(hash-map (:key ast) %)))))
-        (if-let [[keys resolver]
-                 (first (filter #(contains? (key %) read-from-key) mapping))]
-          (pipe-values (resolver context ast)
-                       (chan 1 (comp
-                                (map #(get % read-from-key))
-                                (map #(hash-map (:key ast) %)))))
-          (throw (ex-info "Unknown key" {:key read-from-key}))))))
-   (:channel context)))
-
-
-(defn resolve [context root-mapping query]
-  (let [ast (om/query->ast query)]
-    (resolve* context root-mapping (:children ast))))
+(defn resolve [context resolvers query-or-ast]
+  (let [ast (if (vector? query-or-ast)
+              (om/query->ast query-or-ast)
+              query-or-ast)
+        children (:children ast)]
+    (async/pipe
+     (async/merge
+      (for [ast children
+            :let [read-from-key (get-in ast [:params :<] (:key ast))]]
+        (if (contains? resolvers read-from-key)
+          (let [resolver (get resolvers read-from-key)]
+            (pipe-values (resolver context ast)
+                         (chan 1 (map #(hash-map (:key ast) %)))))
+          (if-let [[keys resolver]
+                   (first (filter #(contains? (key %) read-from-key) resolvers))]
+            (pipe-values (resolver context ast)
+                         (chan 1 (comp
+                                  (map #(get % read-from-key))
+                                  (map #(hash-map (:key ast) %)))))
+            (throw (ex-info "Unknown key" {:key read-from-key}))))))
+     (:channel context))))
 
 (def parser
   (om/parser {:read (bodhi/read-fn
@@ -352,11 +351,11 @@
 
    :root/user
    (fn [context ast]
-     (resolve* (assoc context
-                      :channel (chan)
-                      :user/name (:user/name (:params ast)))
-               resolvers
-               (:children ast)))
+     (resolve (assoc context
+                     :channel (chan)
+                     :user/name (:user/name (:params ast)))
+              resolvers
+              ast))
 
    :user/name
    (fn [context ast]
@@ -390,11 +389,11 @@
    (fn [context ast]
      (p/alet [get-user (get-in context [:apis :get-user])
               user (p/await (get-user {:name (:user/name context)}))]
-       (resolve* (assoc context
-                        :channel (chan)
-                        :user/name (:favorite-fellow-user-name user))
-                 resolvers
-                 (:children ast))))})
+       (resolve (assoc context
+                       :channel (chan)
+                       :user/name (:favorite-fellow-user-name user))
+                resolvers
+                ast)))})
 
 (deftest new-thing-works
   (async done
