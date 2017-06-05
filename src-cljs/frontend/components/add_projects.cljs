@@ -10,6 +10,7 @@
             [frontend.components.pieces.org-picker :as org-picker]
             [frontend.components.pieces.tabs :as tabs]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.models.organization :as org]
             [frontend.models.plan :as pm]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -422,20 +423,32 @@
              (map (fn [repo] (om/build inaccessible-repo-item {:repo repo :settings settings}))
                   repos)])])))))
 
-(defn inaccessible-orgs-notice [follows settings]
-  (let [inaccessible-orgs (set (map :username follows))
-        follows-by-orgs (group-by :username follows)]
-    [:div.inaccessible-notice.card
-     [:h2 "Warning: Access Problems"]
-     [:p.missing-org-info
-      "You are following projects owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
-      [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
-       "GitHub's application permissions"]
-      "."]
-     [:div.inaccessible-org-wrapper
-      (map (fn [org-follows] (om/build inaccessible-org-item
-                                       {:org-name (:username (first org-follows)) :repos org-follows :settings settings}))
-           (vals follows-by-orgs))]]))
+(defn- inaccessible-orgs-notice-body
+  [inaccessible-orgs follows-by-orgs settings]
+  [:div.inaccessible-notice.card
+   [:h2 "Warning: Access Problems"]
+   [:p.missing-org-info
+    "You are following projects owned by GitHub organizations to which you don't currently have access. If an admin for the org recently enabled the new GitHub Third Party Application Access Restrictions for these organizations, you may need to enable CircleCI access for the orgs at "
+    [:a {:href (gh-utils/third-party-app-restrictions-url) :target "_blank"}
+     "GitHub's application permissions"]
+    "."]
+   [:div.inaccessible-org-wrapper
+    (for [follows-by-org (vals follows-by-orgs)]
+      (let [org-name (->> follows-by-org first :username)]
+        (when (contains? inaccessible-orgs org-name)
+          (om/build inaccessible-org-item
+            {:org-name org-name :repos follows-by-org :settings settings}))))]])
+
+(defn inaccessible-orgs-notice [inaccessible-followed-projects settings selected-org-name]
+  "Note: These functions historically do not take vcs-type into account
+         This may become an issue in future as users have the same
+         name organization under different vcs-providers"
+  (let [inaccessible-orgs (set (map :username inaccessible-followed-projects))
+        followed-projects-by-org (group-by :username inaccessible-followed-projects)]
+    (if (ld/feature-on? "top-bar-ui-v-1")
+      (when (contains? inaccessible-orgs selected-org-name)
+        (inaccessible-orgs-notice-body #{selected-org-name} followed-projects-by-org settings))
+      (inaccessible-orgs-notice-body inaccessible-orgs followed-projects-by-org settings))))
 
 (defn- org-picker [{:keys [orgs user selected-org tab]} owner]
   (reify
@@ -517,17 +530,19 @@
         settings (:settings data)
         {{tab :tab} :navigation-data} data
         selected-org (get-in settings [:add-projects :selected-org])
-        followed-inaccessible (inaccessible-follows user
-                                                    (get-in data state/projects-path))]
+        inaccessible-followed-projects (inaccessible-follows user
+                                                             (get-in data state/projects-path))]
     (html
      [:div#add-projects
       (when (seq (user-model/missing-scopes user))
         (missing-scopes-notice (user-model/current-scopes user)
                                (user-model/missing-scopes user)))
-      (when (and (seq followed-inaccessible)
+      (when (and (seq inaccessible-followed-projects)
                  (not (loading-repos-for-vcs-type? user :github))
                  (not (loading-repos-for-vcs-type? user :bitbucket)))
-        (inaccessible-orgs-notice followed-inaccessible settings))
+        (inaccessible-orgs-notice inaccessible-followed-projects settings (-> data
+                                                                              (get-in state/selected-org-path)
+                                                                              org/name)))
       [:.text-card
        (card/titled
          {:title "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI."}
