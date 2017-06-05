@@ -472,6 +472,7 @@
                      :run/status
                      :run/started-at
                      :run/stopped-at
+                     {:run/jobs [:job/id]}
                      {:run/trigger-info [:trigger-info/vcs-revision
                                          :trigger-info/subject
                                          :trigger-info/body
@@ -488,6 +489,7 @@
                                      (dissoc :run/jobs))}
                   query)))
            (:run/id (:params ast)))
+
           (let [{:keys [key query]} ast]
             (and (= :circleci/run key)
                  (= '[({:jobs-for-jobs [:job/id

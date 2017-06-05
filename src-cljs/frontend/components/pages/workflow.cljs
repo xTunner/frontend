@@ -158,6 +158,7 @@
              pull-requests :trigger-info/pull-requests
              branch :trigger-info/branch} trigger-info
             run-status-class (status-class status)]
+
         (card/basic
          (element :content
            (html
