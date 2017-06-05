@@ -1,5 +1,6 @@
 (ns frontend.test-send
-  (:require [cljs.core.async.impl.protocols :as async-impl]
+  (:require [cljs.core.async :as async :refer [chan close! put! take!]]
+            [cljs.core.async.impl.protocols :as async-impl]
             [clojure.set :as set]
             [clojure.test :refer-macros [async is testing]]
             [frontend.send :as send]
@@ -296,23 +297,38 @@
               (update example :children pop)))))))
 
 
+(defn- read-port? [x]
+  (implements? async-impl/ReadPort x))
+
+(defn- pipe-values
+  "Pipes value(s) from `from` to `to`, returning `to`. If `from` is a channel,
+  pipes as with core.async/pipe. If `from` is a promise, puts the promise's
+  value on `to` and closes it. If `from` is a value, puts that value on `to` and
+  closes it."
+  [from to]
+  (if (read-port? from)
+    (async/pipe from to)
+    (do
+      (p/then from #(doto to (put! %) (close!)))
+      to)))
 
 (defn resolve* [context mapping children]
-  (p/alet [values
-           (p/await
-            (p/all
-             (for [ast children
-                   :let [read-from-key (get-in ast [:params :<] (:key ast))]]
-               (if (contains? mapping read-from-key)
-                 (let [resolver (get mapping read-from-key)]
-                   (resolver context ast))
-                 (if-let [[keys resolver]
-                          (first (filter #(contains? (key %) read-from-key) mapping))]
-                   (p/then (resolver context ast) #(get % read-from-key))
-                   (throw "Unknown key"))))))]
-    (into {}
-          (map #(vector (:key %1) %2)
-               children values))))
+  (async/pipe
+   (async/merge
+    (for [ast children
+          :let [read-from-key (get-in ast [:params :<] (:key ast))]]
+      (if (contains? mapping read-from-key)
+        (let [resolver (get mapping read-from-key)]
+          (pipe-values (resolver context ast)
+                       (chan 1 (map #(hash-map (:key ast) %)))))
+        (if-let [[keys resolver]
+                 (first (filter #(contains? (key %) read-from-key) mapping))]
+          (pipe-values (resolver context ast)
+                       (chan 1 (comp
+                                (map #(get % read-from-key))
+                                (map #(hash-map (:key ast) %)))))
+          (throw "Unknown key")))))
+   (:channel context)))
 
 
 (defn resolve [context root-mapping query]
@@ -333,17 +349,25 @@
 
    :user/favorite-fellow-user
    (fn [context ast]
-     (p/alet [get-user (get-in context [:apis :get-user])
-              user (p/await (get-user {:name (:user/name context)}))]
-       (resolve* (assoc context :user/name (:favorite-fellow-user-name user))
-                 User
-                 (:children ast))))})
+     (let [c (chan)]
+       (p/alet [get-user (get-in context [:apis :get-user])
+                user (p/await (get-user {:name (:user/name context)}))]
+         (resolve* (assoc context
+                          :channel c
+                          :user/name (:favorite-fellow-user-name user))
+                   User
+                   (:children ast)))
+       c))})
 
 
 (def Root
   {:root/user
    (fn [context ast]
-     (resolve* (assoc context :user/name (:user/name (:params ast))) User (:children ast)))})
+     (resolve* (assoc context
+                      :channel (chan)
+                      :user/name (:user/name (:params ast)))
+               User
+               (:children ast)))})
 
 (deftest new-thing-works
   (async done
@@ -355,32 +379,33 @@
                                        :favorite-fellow-user-name "jburnford"}
                  {:name "jburnford"} {:favorite-color :color/red
                                       :favorite-number 7}}
-          p (resolve {:apis {:get-user (memoize
-                                        (fn [params]
-                                          (p/do*
-                                           (swap! api-calls conj [:get-user params])
-                                           (get users params))))}}
-                     Root '[{(:root/user {:user/name "nipponfarm"})
-                             [:user/name
-                              :user/favorite-color
-                              :user/favorite-number
-                              {:user/favorite-fellow-user [:user/name
-                                                           :user/favorite-color
-                                                           :user/favorite-number]}]}
-                            {(:jamie {:< :root/user :user/name "jburnford"})
-                             [:user/name
-                              :user/favorite-color]}])]
-      (p/then
-       p
+          data-chan (resolve {:channel (chan)
+                              :apis {:get-user (memoize
+                                                (fn [params]
+                                                  (p/do*
+                                                   (swap! api-calls conj [:get-user params])
+                                                   (get users params))))}}
+                             Root '[{(:root/user {:user/name "nipponfarm"})
+                                     [:user/name
+                                      :user/favorite-color
+                                      :user/favorite-number
+                                      {:user/favorite-fellow-user [:user/name
+                                                                   :user/favorite-color
+                                                                   :user/favorite-number]}]}
+                                    {(:jamie {:< :root/user :user/name "jburnford"})
+                                     [:user/name
+                                      :user/favorite-color]}])]
+      (take!
+       (async/into #{} data-chan)
        (fn [v]
-         (is (= {:root/user {:user/name "nipponfarm"
-                             :user/favorite-color :color/blue
-                             :user/favorite-number 42
-                             :user/favorite-fellow-user {:user/name "jburnford"
-                                                         :user/favorite-color :color/red
-                                                         :user/favorite-number 7}}
-                 :jamie {:user/name "jburnford"
-                         :user/favorite-color :color/red}}
+         (is (= #{{:root/user {:user/name "nipponfarm"}}
+                  {:root/user {:user/favorite-color :color/blue}}
+                  {:root/user {:user/favorite-number 42}}
+                  {:root/user {:user/favorite-fellow-user {:user/name "jburnford"}}}
+                  {:root/user {:user/favorite-fellow-user {:user/favorite-color :color/red}}}
+                  {:root/user {:user/favorite-fellow-user {:user/favorite-number 7}}}
+                  {:jamie {:user/name "jburnford"}}
+                  {:jamie {:user/favorite-color :color/red}}}
                 v))
          (is (= [[:get-user {:name "nipponfarm"}]
                  [:get-user {:name "jburnford"}]]
