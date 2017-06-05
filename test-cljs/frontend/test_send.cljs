@@ -345,7 +345,12 @@
                          aliasing/read))}))
 
 (def resolvers
-  {:root/user
+  {'do/something
+   (fn [context ast]
+     (let [do-something (get-in context [:apis :do-something])]
+       (do-something (:params ast))))
+
+   :root/user
    (fn [context ast]
      (resolve* (assoc context
                       :channel (chan)
@@ -417,17 +422,27 @@
                                             :species :pet-species/dog
                                             :description "pug"}]}
           data-chan (resolve {:channel (chan)
-                              :apis {:get-user (memoize
-                                                (fn [params]
-                                                  (p/do*
-                                                   (swap! api-calls conj [:get-user params])
-                                                   (get users params))))
-                                     :get-user-pets (memoize
-                                                     (fn [params]
-                                                       (p/do*
-                                                        (swap! api-calls conj [:get-user-pets params])
-                                                        (get user-pets params))))}}
-                             resolvers '[{(:root/user {:user/name "nipponfarm"})
+                              :apis {:get-user
+                                     (memoize
+                                      (fn [params]
+                                        (p/do*
+                                         (swap! api-calls conj [:get-user params])
+                                         (get users params))))
+
+                                     :get-user-pets
+                                     (memoize
+                                      (fn [params]
+                                        (p/do*
+                                         (swap! api-calls conj [:get-user-pets params])
+                                         (get user-pets params))))
+
+                                     :do-something
+                                     (fn [params]
+                                       (p/do*
+                                        (swap! api-calls conj [:do-something params])
+                                        "Did something."))}}
+                             resolvers '[(do/something {:very "important"})
+                                         {(:root/user {:user/name "nipponfarm"})
                                           [:user/name
                                            :user/favorite-color
                                            :user/favorite-number
@@ -443,7 +458,8 @@
       (take!
        (async/into #{} data-chan)
        (fn [v]
-         (is (= #{{:root/user {:user/name "nipponfarm"}}
+         (is (= #{{'do/something "Did something."}
+                  {:root/user {:user/name "nipponfarm"}}
                   {:root/user {:user/favorite-color :color/blue}}
                   {:root/user {:user/favorite-number 42}}
                   {:root/user {:user/vehicle {:vehicle/make "Toyota"
@@ -456,7 +472,8 @@
                   {:jamie {:user/name "jburnford"}}
                   {:jamie {:user/favorite-color :color/red}}}
                 v))
-         (is (= [[:get-user {:name "nipponfarm"}]
+         (is (= [[:do-something {:very "important"}]
+                 [:get-user {:name "nipponfarm"}]
                  [:get-user-pets {:name "nipponfarm"}]
                  [:get-user {:name "jburnford"}]]
                 @api-calls))
