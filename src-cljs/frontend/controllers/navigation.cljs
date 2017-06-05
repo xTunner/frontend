@@ -93,19 +93,25 @@
       (.replaceToken history-imp path)
       (.setToken history-imp path))))
 
-
 (defn- org-for-topbar
-  "Use org in route when provided, otherwise default to previously selected org"
+  "Use org in route when provided, otherwise default to previously selected org
+
+  Returns nil if user does not have admin access to selected-org"
   [login vcs_type state]
   (if (and login vcs_type)
     {:login login :vcs_type vcs_type}
-    (get-in state state/selected-org-path)))
+    (let [selected-org (get-in state state/selected-org-path)]
+      (when (or (:admin (get-in state state/user-path))
+                (-> (get-in state state/selected-org-admin?-path) nil? not)) ;; selected-org-admin?-path info only available on orgs
+        selected-org))))                                                     ;; set in state that a user has access to
+                                                                             ;; sadly, state/user-organizations-path
+                                                                             ;; has not returned when this call is made
 
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
-  (let [nav-org (if (ld/feature-on? "top-bar-ui-v-1")
-                  (org-for-topbar (org/name args) (:vcs_type args) state)
-                  {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
+  (let [nav-org (or (and (ld/feature-on? "top-bar-ui-v-1")
+                         (org-for-topbar (org/name args) (:vcs_type args) state))
+                    {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
     (-> state
         (assoc-in state/selected-org-path nav-org)
         (state-utils/change-selected-org nav-org)

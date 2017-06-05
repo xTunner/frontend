@@ -107,7 +107,7 @@
    [:li [:a.nav-item {:href "/account"} [:div.heading "User settings"]]]
    (when (:admin user)
      [:li [:a.nav-item {:href "/admin"} [:div.heading "Admin"]]])
-   [:li [:a.nav-item {:href "/logout/"} [:div.heading "Log out"]]]])
+   [:li [:a.nav-item {:href "/logout"} [:div.heading "Log out"]]]])
 
 (defn user-dropdown [user]
   [:li.dropdown.user-menu
