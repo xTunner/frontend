@@ -1,13 +1,17 @@
 (ns frontend.send
-  (:require [cljs-time.coerce :as time-coerce]
+  (:require [bodhi.aliasing :as aliasing]
+            [bodhi.core :as bodhi]
+            [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as time]
-            [cljs.core.async :refer [chan <!]]
+            [cljs.core.async :refer [<! chan]]
             [clojure.set :refer [rename-keys]]
             [frontend.api :as api]
             [frontend.send.resolve :refer [resolve]]
             [frontend.utils.expr-ast :as expr-ast]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.next.impl.parser :as om-parser])
+            [om.next :as om-next]
+            [om.next.impl.parser :as om-parser]
+            [promesa.core :as p :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
 
 (def ^:private ms-until-retried-run-retrieved 3000)
@@ -26,6 +30,24 @@
         (when-not (= state :finished)
           (recur))))
     ch))
+
+(defn- api-promise
+  "Takes an API function which expects a channel as its first arg, followed by
+  the API functions other args. Returns a promise of the response the API
+  function puts on the channel.
+
+  This is a temporary shim to reuse the old API functions in the Om Next send."
+  [api-f & args]
+  (p/promise
+   (fn [resolve reject]
+     (let [ch (chan)]
+       (go-loop []
+         (let [[_ state data] (<! ch)]
+           (when (= state :success)
+             (resolve (:resp data)))
+           (when-not (= state :finished)
+             (recur))))
+       (apply api-f ch args)))))
 
 (defn- job-run-status [job-status-str]
   (case job-status-str
@@ -190,17 +212,6 @@
             (expr-ast/get-in [:organization/project :project/branch])
             (expr-ast/has-children? #{:branch/name})))))
 
-(defn- get-branch-name [cb expr-ast query]
-  (let [branch-name (-> expr-ast
-                        (expr-ast/get-in [:organization/project :project/branch])
-                        :params
-                        :branch/name)
-        novelty {:circleci/organization
-                 {:organization/project
-                  {:project/branch
-                   {:branch/name branch-name}}}}]
-    (cb novelty query)))
-
 (defn- branch-runs-ast?
   "returns true if the ast is for an expression rendering the branch
   workflow-runs page"
@@ -319,6 +330,12 @@
           (cb novelty query))))
      id)))
 
+;; The parser used by the resolvers when they return deeply nested data.
+(def parser
+  (om-next/parser {:read (bodhi/read-fn
+                          (-> bodhi/basic-read
+                              aliasing/read))}))
+
 (def resolvers
   {:circleci/organization
    (fn [env ast]
@@ -342,7 +359,56 @@
 
    :branch/name
    (fn [env ast]
-     (:branch/name env))})
+     (:branch/name env))
+
+   :branch/project
+   (fn [env ast]
+     (resolve (dissoc env :branch/name)
+              ast
+              (chan)))
+
+   :project/name
+   (fn [env ast]
+     (:project/name env))
+
+   :project/organization
+   (fn [env ast]
+     (resolve (dissoc env :project/name)
+              ast
+              (chan)))
+
+   :organization/name
+   (fn [env ast]
+     (:organization/name env))
+
+   :branch/workflow-runs
+   (fn [env ast]
+     (-> (api-promise
+          api/get-branch-workflows
+          (:organization/vcs-type env)
+          (:organization/name env)
+          (:project/name env)
+          (:branch/name env)
+          {:offset (:connection/offset (:params ast))
+           :limit (:connection/limit (:params ast))})
+
+         (p/then
+          (fn [response]
+            (let [adapted {:connection/total-count (:total-count response)
+                           :connection/edges (->> (:results response)
+                                                  (map adapt-to-run)
+                                                  (mapv #(hash-map :edge/node %)))}]
+              ;; Run the adapted structure through a parser to match it to the
+              ;; rest of the query.
+              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
+
+(defn- resolvers-can-handle?
+  "Tool for migrating to resolvers. True if the expression can be handled by the
+  resolvers above."
+  [expr]
+  (let [de-aliased-ast (om-parser/expr->ast (first (de-alias-expression expr #())))]
+    (or (branch-crumb-ast? de-aliased-ast)
+        (branch-runs-ast? de-aliased-ast))))
 
 (defmulti send* key)
 
@@ -361,7 +427,7 @@
       (js/setTimeout #(send* [:remote (rest query)] cb)
                      ms-until-retried-run-retrieved))
     (doseq [expr query]
-      (if (branch-crumb-ast? (om-parser/expr->ast (first (de-alias-expression expr cb))))
+      (if (resolvers-can-handle? expr)
         (let [ch (resolve {:resolvers resolvers} [expr] (chan))]
           (go-loop []
             (when-let [novelty (<! ch)]
@@ -371,8 +437,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            ;; (branch-crumb-ast? ast) (get-branch-name cb ast query)
-            (branch-runs-ast? ast) (get-branch-runs cb ast query)
             (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
                expr)
             (let [ch (callback-api-chan
