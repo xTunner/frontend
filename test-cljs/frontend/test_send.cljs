@@ -316,7 +316,7 @@
        (doto to (put! v) (close!)))))
   to)
 
-(defn resolve [context resolvers query-or-ast]
+(defn resolve [channel context resolvers query-or-ast]
   (let [ast (if (vector? query-or-ast)
               (om/query->ast query-or-ast)
               query-or-ast)
@@ -336,7 +336,7 @@
                                   (map #(get % read-from-key))
                                   (map #(hash-map (:key ast) %)))))
             (throw (ex-info "Unknown key" {:key read-from-key}))))))
-     (:channel context))))
+     channel)))
 
 (def parser
   (om/parser {:read (bodhi/read-fn
@@ -351,9 +351,8 @@
 
    :root/user
    (fn [context ast]
-     (resolve (assoc context
-                     :channel (chan)
-                     :user/name (:user/name (:params ast)))
+     (resolve (chan)
+              (assoc context :user/name (:user/name (:params ast)))
               resolvers
               ast))
 
@@ -389,9 +388,8 @@
    (fn [context ast]
      (p/alet [get-user (get-in context [:apis :get-user])
               user (p/await (get-user {:name (:user/name context)}))]
-       (resolve (assoc context
-                       :channel (chan)
-                       :user/name (:favorite-fellow-user-name user))
+       (resolve (chan)
+                (assoc context :user/name (:favorite-fellow-user-name user))
                 resolvers
                 ast)))})
 
@@ -420,8 +418,8 @@
                                            {:name "Otis"
                                             :species :pet-species/dog
                                             :description "pug"}]}
-          data-chan (resolve {:channel (chan)
-                              :apis {:get-user
+          data-chan (resolve (chan)
+                             {:apis {:get-user
                                      (memoize
                                       (fn [params]
                                         (p/do*
