@@ -327,7 +327,7 @@
                        (chan 1 (comp
                                 (map #(get % read-from-key))
                                 (map #(hash-map (:key ast) %)))))
-          (throw "Unknown key")))))
+          (throw (ex-info "Unknown key" {:key read-from-key}))))))
    (:channel context)))
 
 
@@ -335,17 +335,33 @@
   (let [ast (om/query->ast query)]
     (resolve* context root-mapping (:children ast))))
 
-(def User
-  {:user/name
+(def resolvers
+  {:root/user
+   (fn [context ast]
+     (resolve* (assoc context
+                      :channel (chan)
+                      :user/name (:user/name (:params ast)))
+               resolvers
+               (:children ast)))
+
+   :user/name
    (fn [context ast]
      (:user/name context))
 
-   #{:user/favorite-color :user/favorite-number}
+   #{:user/favorite-color :user/favorite-number :user/vehicle}
    (fn [context ast]
      (p/alet [get-user (get-in context [:apis :get-user])
               user (p/await (get-user {:name (:user/name context)}))]
-       (set/rename-keys user {:favorite-color :user/favorite-color
-                              :favorite-number :user/favorite-number})))
+       (-> user
+           (set/rename-keys {:favorite-color :user/favorite-color
+                             :favorite-number :user/favorite-number
+                             :vehicle :user/vehicle})
+           (update :user/vehicle set/rename-keys {:color :vehicle/color
+                                                  :make :vehicle/make
+                                                  :model :vehicle/model})
+           (update :user/vehicle #(om/db->tree (mapv om/ast->query (:children ast))
+                                               %
+                                               {})))))
 
    :user/favorite-fellow-user
    (fn [context ast]
@@ -355,19 +371,9 @@
          (resolve* (assoc context
                           :channel c
                           :user/name (:favorite-fellow-user-name user))
-                   User
+                   resolvers
                    (:children ast)))
        c))})
-
-
-(def Root
-  {:root/user
-   (fn [context ast]
-     (resolve* (assoc context
-                      :channel (chan)
-                      :user/name (:user/name (:params ast)))
-               User
-               (:children ast)))})
 
 (deftest new-thing-works
   (async done
@@ -376,6 +382,9 @@
           ;; The resolver must translate.
           users {{:name "nipponfarm"} {:favorite-color :color/blue
                                        :favorite-number 42
+                                       :vehicle {:color :color/white
+                                                 :make "Toyota"
+                                                 :model "Hilux"}
                                        :favorite-fellow-user-name "jburnford"}
                  {:name "jburnford"} {:favorite-color :color/red
                                       :favorite-number 7}}
@@ -385,22 +394,26 @@
                                                   (p/do*
                                                    (swap! api-calls conj [:get-user params])
                                                    (get users params))))}}
-                             Root '[{(:root/user {:user/name "nipponfarm"})
-                                     [:user/name
-                                      :user/favorite-color
-                                      :user/favorite-number
-                                      {:user/favorite-fellow-user [:user/name
-                                                                   :user/favorite-color
-                                                                   :user/favorite-number]}]}
-                                    {(:jamie {:< :root/user :user/name "jburnford"})
-                                     [:user/name
-                                      :user/favorite-color]}])]
+                             resolvers '[{(:root/user {:user/name "nipponfarm"})
+                                          [:user/name
+                                           :user/favorite-color
+                                           :user/favorite-number
+                                           {:user/vehicle [:vehicle/make
+                                                           :vehicle/model]}
+                                           {:user/favorite-fellow-user [:user/name
+                                                                        :user/favorite-color
+                                                                        :user/favorite-number]}]}
+                                         {(:jamie {:< :root/user :user/name "jburnford"})
+                                          [:user/name
+                                           :user/favorite-color]}])]
       (take!
        (async/into #{} data-chan)
        (fn [v]
          (is (= #{{:root/user {:user/name "nipponfarm"}}
                   {:root/user {:user/favorite-color :color/blue}}
                   {:root/user {:user/favorite-number 42}}
+                  {:root/user {:user/vehicle {:vehicle/make "Toyota"
+                                              :vehicle/model "Hilux"}}}
                   {:root/user {:user/favorite-fellow-user {:user/name "jburnford"}}}
                   {:root/user {:user/favorite-fellow-user {:user/favorite-color :color/red}}}
                   {:root/user {:user/favorite-fellow-user {:user/favorite-number 7}}}
