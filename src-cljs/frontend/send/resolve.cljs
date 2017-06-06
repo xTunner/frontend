@@ -41,5 +41,6 @@
                          (chan 1 (comp
                                   (map #(get % read-from-key))
                                   (map #(hash-map (:key ast) %)))))
-            (throw (ex-info "Unknown key" {:key read-from-key}))))))
+            (throw (ex-info (str "Unknown key " read-from-key)
+                            {:key read-from-key}))))))
      channel)))
