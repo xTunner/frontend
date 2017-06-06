@@ -1,6 +1,6 @@
 (ns frontend.models.user
   (:require [clojure.set :as set]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             goog.string.format))
 
 (defn current-scopes [user]
@@ -71,7 +71,7 @@
     (-> user check-fn boolean)))
 
 (defn has-code-identity? [user]
-  (if (ld/feature-on? "google-login-empty-state")
+  (if (feature/enabled? "google-login-empty-state")
     (or (github-authorized? user)
         (bitbucket-authorized? user))
     true))

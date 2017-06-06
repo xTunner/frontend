@@ -17,7 +17,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer [unexterned-prop] :refer-macros [defrender html]]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.events :as gevents]
             [goog.string :as gstring]
@@ -573,7 +573,7 @@
 (defrender build-insights [state owner]
   (let [selected-org-login (:login (get-in state state/selected-org-path))
         selected-org-vcs-type (:vcs_type (get-in state state/selected-org-path))
-        projects (if (ld/feature-on? "top-bar-ui-v-1")
+        projects (if (feature/enabled? "top-bar-ui-v-1")
                    (filter #(and (= selected-org-login
                                     (:username %))
                                  (= selected-org-vcs-type

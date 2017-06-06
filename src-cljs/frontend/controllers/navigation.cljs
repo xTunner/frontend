@@ -16,7 +16,7 @@
             [frontend.utils.ajax :as ajax]
             [frontend.utils.build :as build-utils]
             [frontend.utils.docs :as doc-utils]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
@@ -109,7 +109,7 @@
 
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
-  (let [nav-org (or (and (ld/feature-on? "top-bar-ui-v-1")
+  (let [nav-org (or (and (feature/enabled? "top-bar-ui-v-1")
                          (org-for-topbar (org/name args) (:vcs_type args) state))
                     {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
     (-> state
@@ -310,7 +310,7 @@
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (if (ld/feature-on? "top-bar-ui-v-1")
+    (if (feature/enabled? "top-bar-ui-v-1")
       (when-not (get-in current-state state/add-projects-selected-org-path)
         (nav-to-selected-org (get-in current-state state/selected-org-path) (:nav comms)))
       ;; load orgs, collaborators, and repos.
@@ -373,7 +373,7 @@
 
 (defmethod post-navigated-to! :team
   [history-imp navigation-point args previous-state current-state comms]
-  (if (ld/feature-on? "top-bar-ui-v-1")
+  (if (feature/enabled? "top-bar-ui-v-1")
     (let [selected-org (get-in current-state state/selected-org-path)]
       (api/get-org-settings-normalized (:login selected-org) (:vcs_type selected-org) (:api comms)))))
 

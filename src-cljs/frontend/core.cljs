@@ -29,7 +29,7 @@
             [frontend.support :as support]
             [frontend.timer :as timer]
             [frontend.utils :as utils :refer [mlog set-canonical!]]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             goog.dom
             [goog.events :as gevents]
             [om.next :as om-next]

@@ -19,7 +19,7 @@
             [frontend.utils :as utils :refer-macros [defrender html]]
             [frontend.utils.bitbucket :as bitbucket]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.legacy :refer [build-next]]
             [frontend.utils.vcs :as vcs-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -445,7 +445,7 @@
          name organization under different vcs-providers"
   (let [inaccessible-orgs (set (map :username inaccessible-followed-projects))
         followed-projects-by-org (group-by :username inaccessible-followed-projects)]
-    (if (ld/feature-on? "top-bar-ui-v-1")
+    (if (feature/enabled? "top-bar-ui-v-1")
       (when (contains? inaccessible-orgs selected-org-name)
         (inaccessible-orgs-notice-body #{selected-org-name} followed-projects-by-org settings))
       (inaccessible-orgs-notice-body inaccessible-orgs followed-projects-by-org settings))))
@@ -561,7 +561,7 @@
                     "Add private repos"))]]))]
 
       [:div.org-repo-container
-       (when-not (ld/feature-on? "top-bar-ui-v-1")
+       (when-not (feature/enabled? "top-bar-ui-v-1")
          [:div.app-aside.org-listing
           (let [orgs (orgs-from-repos user repos)]
             [:div
@@ -575,7 +575,7 @@
           (when (user-model/github-authorized? user)
             (integrations/gh-permissions))])
        [:div#project-listing.project-listing
-        (when-not (ld/feature-on? "top-bar-ui-v-1")
+        (when-not (feature/enabled? "top-bar-ui-v-1")
           [:div.overview
            [:span.big-number "2"]
            [:div.instruction

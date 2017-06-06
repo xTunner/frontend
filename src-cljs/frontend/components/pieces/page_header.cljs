@@ -3,7 +3,7 @@
             [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.components.pieces.popover :as popover]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -222,7 +222,7 @@
                  nav-point and org to allow for toggling into and out of topbar beta view"
   [{:keys [crumbs actions logged-out? platform topbar-beta]} owner]
   (let [crumbs-login (map #(assoc % :logged-out? logged-out?) crumbs)
-        has-topbar? (ld/feature-on? "top-bar-ui-v-1")
+        has-topbar? (feature/enabled? "top-bar-ui-v-1")
         toggle-topbar (when-not has-topbar? "top-bar-ui-v-1")
         toggle-topbar-text (if has-topbar?
                              "Leave Beta UI"
@@ -249,7 +249,7 @@
                                   :placement :bottom}
                                  (engine-2)))]
              [:.actions
-              (when (ld/feature-on? "top-bar-beta-button")
+              (when (feature/enabled? "top-bar-beta-button")
                 [:div.topbar-toggle
                  (when (and has-topbar? (not om-next-page?))
                    [:span.feedback

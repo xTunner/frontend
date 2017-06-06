@@ -18,7 +18,7 @@
             [frontend.models.organization :as org]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.state :as state-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [om.core :as om :include-macros true]
@@ -150,7 +150,7 @@
 
             [:.top
              [:.bar
-              (when (and (ld/feature-on? "top-bar-ui-v-1")
+              (when (and (feature/enabled? "top-bar-ui-v-1")
                          inner-with-user?)
                 (build-legacy topbar/topbar {:user user
                                              :selected-org selected-org

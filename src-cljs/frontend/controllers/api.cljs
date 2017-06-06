@@ -20,7 +20,7 @@
             [frontend.favicon]
             [frontend.elevio :as elevio]
             [frontend.utils.ajax :as ajax]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.state :as state-utils]
             [frontend.utils.map :as map-utils]
             [frontend.utils.vcs-url :as vcs-url]
@@ -406,7 +406,7 @@
 
 (defmethod post-api-event! [:organizations :success]
   [target message status args previous-state current-state comms]
-  (when (ld/feature-on? "top-bar-ui-v-1")
+  (when (feature/enabled? "top-bar-ui-v-1")
     (let [nav-point (get-in current-state state/current-view-path)
           nav-data-path (get-in current-state state/navigation-data-path)]
       (when (and (= nav-point :dashboard)

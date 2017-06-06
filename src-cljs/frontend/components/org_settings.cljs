@@ -27,7 +27,7 @@
             [frontend.stripe :as stripe]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]

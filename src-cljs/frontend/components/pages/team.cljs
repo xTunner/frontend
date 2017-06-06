@@ -17,7 +17,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer [valid-email? prettify-vcs_type] :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.legacy :refer [build-next]]
             [goog.string :as gstr]
             [inflections.core :as inflections]
@@ -256,13 +256,13 @@
   (reify
     om/IInitState
     (init-state [_]
-      {:selected-org-ident (if (ld/feature-on? "top-bar-ui-v-1")
+      {:selected-org-ident (if (feature/enabled? "top-bar-ui-v-1")
                              (organization-ident (get-in app state/selected-org-path))
                              nil)
        :show-invite-modal? nil})
     om/IWillMount
     (will-mount [_]
-      (if (ld/feature-on? "top-bar-ui-v-1")
+      (if (feature/enabled? "top-bar-ui-v-1")
         (let [selected-org (get-in app state/selected-org-path)]
           (api/get-org-members (org/name selected-org) (:vcs_type selected-org) (om/get-shared owner [:comms :api])))
         (api/get-orgs (om/get-shared owner [:comms :api]) :include-user? true)))
@@ -273,7 +273,7 @@
     (will-update [_ _ {:keys [selected-org-ident]}]
       (let [[_ [vcs-type name]] selected-org-ident
             api-chan (om/get-shared owner [:comms :api])]
-        (if (ld/feature-on? "top-bar-ui-v-1")
+        (if (feature/enabled? "top-bar-ui-v-1")
           (when-not (correct-org-selected? selected-org-ident (get-in app state/selected-org-path))
             (let [org-in-app-state (get-in app state/selected-org-path)]
               (om/set-state! owner :selected-org-ident (organization-ident org-in-app-state))
@@ -291,7 +291,7 @@
              available-orgs (filter :org (:organizations user))]
          (html
           [:div
-           (when-not (ld/feature-on? "top-bar-ui-v-1")
+           (when-not (feature/enabled? "top-bar-ui-v-1")
              [:.sidebar
               (card/basic
                 (if available-orgs

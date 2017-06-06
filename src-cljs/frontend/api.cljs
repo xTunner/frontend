@@ -4,7 +4,7 @@
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.utils.ajax :as ajax]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [secretary.core :as sec]))

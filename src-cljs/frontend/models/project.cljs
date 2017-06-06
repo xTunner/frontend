@@ -5,7 +5,7 @@
             [frontend.models.plan :as plan-model]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.function-query :as fq :include-macros true]
-            [frontend.utils.launchdarkly :as ld]
+            [frontend.models.feature :as feature]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]))
