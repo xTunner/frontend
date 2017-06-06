@@ -68,8 +68,7 @@
                                                                       repo)})}
          pretty-sha]]))))
 
-(defn- transact-run-retry
-  [component run-id jobs]
+(defn- transact-run-mutate [component mutation]
   (om-next/transact!
 
    ;; We transact on the reconciler, not the component; otherwise the
@@ -94,27 +93,22 @@
    ;; so we do it. This is another bug we're punting on.
    (om-next/transform-reads
     (om-next/get-reconciler component)
-    `[(run/retry {:run/id ~run-id :run/jobs ~jobs})
-      ;; We queue the entire page to re-read using :compassus.core/route-data.
-      ;; Ideally we'd know what specifically to re-run, but there are now
-      ;; several keys the new run could show up under. (Aliases also complicate
-      ;; this, and solving that problem is not something we want to spend time
-      ;; on yet.) Re-reading the entire query here seems like a good idea
-      ;; anyhow.
-      :compassus.core/route-data])))
+    [mutation
+     ;; We queue the entire page to re-read using :compassus.core/route-data.
+     ;; Ideally we'd know what specifically to re-run, but there are now
+     ;; several keys the new run could show up under. (Aliases also complicate
+     ;; this, and solving that problem is not something we want to spend time
+     ;; on yet.) Re-reading the entire query here seems like a good idea
+     ;; anyhow.
+     :compassus.core/route-data])))
+
+(defn- transact-run-retry
+  [component run-id jobs]
+  (transact-run-mutate component `(run/retry {:run/id ~run-id :run/jobs ~jobs})))
 
 (defn- transact-run-cancel
   [component run-id vcs-type org-name project-name]
-  (om-next/transact!
-   ;; TODO: when bodhi props metadata bug is fixed, pass the component
-   ;; instead of the reconciler
-   (om-next/get-reconciler component)
-   ;; TODO: when bodhi props metadata bug is fixed, pass the query
-   ;; without transforming reads
-   (om-next/transform-reads
-    (om-next/get-reconciler component)
-    `[(run/cancel {:run/id ~run-id})
-      :project/workflow-runs])))
+  (transact-run-mutate component `(run/cancel {:run/id ~run-id})))
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
 (defui ^:once RunRow
@@ -174,8 +168,7 @@
                    :status-class/running (icon/status-running)
                    :status-class/waiting (icon/status-queued))]
                 [:.status-string (string/replace (name status) #"-" " ")]]]
-              (cond (and (feature/enabled? :cancel-below-status)
-                         (cancelable-status? status))
+              (cond (cancelable-status? status)
                     [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
                      (icon/status-canceled)
                      [:span "cancel"]]
