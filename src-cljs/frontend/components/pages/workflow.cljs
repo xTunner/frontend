@@ -192,7 +192,7 @@
                       [:li
                        [:a
                         {:on-click #(transact-run-retry this id jobs)}
-                        "Rerun from start"]]]])]
+                        "Rerun from beginning"]]]])]
              [:div.run-info
               [:div.build-info-header
                [:div.contextual-identifier
