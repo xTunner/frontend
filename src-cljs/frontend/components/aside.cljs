@@ -19,7 +19,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
-            [frontend.models.feature :as feature]
             [om.core :as om :include-macros true]))
 
 (defn project-settings-link [{:keys [project]} owner]

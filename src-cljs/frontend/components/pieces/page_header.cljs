@@ -1,10 +1,9 @@
 (ns frontend.components.pieces.page-header
-  (:require [frontend.async :refer [raise!]]
-            [devcards.core :as dc :refer-macros [defcard]]
+  (:require [devcards.core :as dc :refer-macros [defcard]]
+            [frontend.async :refer [raise!]]
             [frontend.components.pieces.button :as button]
-            [frontend.components.pieces.icon :as icon]
-            [frontend.models.feature :as feature]
             [frontend.components.pieces.popover :as popover]
+            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [component html]]

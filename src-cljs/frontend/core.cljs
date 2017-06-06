@@ -1,7 +1,6 @@
 (ns frontend.core
   (:require [bodhi.aliasing :as aliasing]
             [bodhi.core :as bodhi]
-            [bodhi.default-db :as default-db]
             [bodhi.param-indexing :as param-indexing]
             [cljs.core.async :as async :refer [chan]]
             [compassus.core :as compassus]
@@ -29,7 +28,6 @@
             [frontend.support :as support]
             [frontend.timer :as timer]
             [frontend.utils :as utils :refer [mlog set-canonical!]]
-            [frontend.models.feature :as feature]
             goog.dom
             [goog.events :as gevents]
             [om.next :as om-next]

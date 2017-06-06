@@ -1,13 +1,15 @@
 (ns frontend.controllers.api
-  (:require [cljs.core.async :refer [close!]]
+  (:require [frontend.analytics.core :as analytics]
             [frontend.api :as api]
             [frontend.api.path :as api-path]
-            [frontend.async :refer [put! raise!]]
-            [frontend.components.forms :as forms]
-            [frontend.components.forms :refer [release-button!]]
+            [frontend.async :refer [put!]]
+            [frontend.components.forms :as forms :refer [release-button!]]
+            [frontend.elevio :as elevio]
+            frontend.favicon
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
+            [frontend.models.feature :as feature]
             [frontend.models.organization :as org]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
@@ -16,16 +18,11 @@
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.analytics.core :as analytics]
-            [frontend.favicon]
-            [frontend.elevio :as elevio]
+            [frontend.utils :as utils :refer [merror mlog]]
             [frontend.utils.ajax :as ajax]
-            [frontend.models.feature :as feature]
-            [frontend.utils.state :as state-utils]
             [frontend.utils.map :as map-utils]
+            [frontend.utils.state :as state-utils]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils :as utils :refer [mlog merror]]
-            [om.core :as om :include-macros true]
             [goog.string :as gstring]))
 
 ;; when a button is clicked, the post-controls will make the API call, and the

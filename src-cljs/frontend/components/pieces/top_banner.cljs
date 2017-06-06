@@ -1,9 +1,6 @@
 (ns frontend.components.pieces.top-banner
   (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.notifications :as n]
             [frontend.utils :refer-macros [component html]]
-            [frontend.models.feature :as feature]
-            [frontend.components.pieces.button :as button]
             [om.core :as om :include-macros true]))
 
 (defn banner
