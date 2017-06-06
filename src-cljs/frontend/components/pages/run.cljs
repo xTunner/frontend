@@ -39,7 +39,7 @@
      :job/started-at
      :job/stopped-at
      :job/name
-     {:job/run [:run/id]}])
+     :job/build])
   Object
   (render [this]
     (component
@@ -48,7 +48,8 @@
                     job/started-at
                     job/stopped-at]
              job-name :job/name
-             {run-id :run/id} :job/run}
+             run :job/run
+             {:keys [build/vcs-type build/org build/repo build/number]} :job/build}
             (om-next/props this)
             {:keys [selected?]} (om-next/get-computed this)]
         (card/basic
@@ -61,7 +62,12 @@
                 [:span.job-status (status/icon (status-class status))]
                 (if selected?
                   [:span.job-name job-name]
-                  [:a {:href (routes/v1-job-path run-id job-name)}
+                  [:a {:href
+                       (routes/v1-build-path vcs-type
+                                             org
+                                             repo
+                                             nil
+                                             number)}
                    [:span.job-name job-name]])]
                [:div.status-actions
                 (button/icon {:label "Retry job-name"

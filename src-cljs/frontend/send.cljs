@@ -496,7 +496,7 @@
                                         :job/started-at
                                         :job/stopped-at
                                         :job/name
-                                        {:job/run [:run/id]}]}
+                                        :job/build]}
                        {:< :run/jobs})
                       ({:jobs-for-first [:job/id
                                          :job/build
@@ -514,7 +514,7 @@
                                                                                       :job/started-at
                                                                                       :job/stopped-at
                                                                                       :job/name
-                                                                                      :job/run])
+                                                                                      :job/build])
                                                                      (:run/jobs run))
                                                 :jobs-for-first (mapv #(select-keys % [:job/id
                                                                                        :job/build
