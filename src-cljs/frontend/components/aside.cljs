@@ -408,6 +408,8 @@
   ((om/get-shared owner :track-event) {:event-type event-name
                                        :properties {:component "left-nav"}}))
 
+(def light-builds? #{:dashboard :build})
+
 (defn aside-nav-original [{:keys [user current-route owner]}]
   "Original side-nav, preserved for most users as the top-bar-ui-v-1
    is implemented. Case-by-case feature flags too cumbersome as routes change"
@@ -421,7 +423,7 @@
       [:div.logomark
        (common/ico :logo)]]
 
-     [:a.aside-item {:class (when (= :dashboard current-route) "current")
+     [:a.aside-item {:class (when (light-builds? current-route) "current")
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Builds"
@@ -541,7 +543,7 @@
   "New side nav, to be used in conjunction with the top bar"
   (html
     [:nav.aside-left-nav
-     [:a.aside-item {:class (when (dashboard-subpages current-route)
+     [:a.aside-item {:class (when (light-builds? current-route)
                               "current")
                      :data-placement "right"
                      :data-trigger "hover"
