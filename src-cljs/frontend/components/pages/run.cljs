@@ -48,8 +48,7 @@
                     job/started-at
                     job/stopped-at]
              job-name :job/name
-             run :job/run
-             {:keys [build/vcs-type build/org build/repo build/number]} :job/build}
+             {:keys [build/vcs-type build/org build/repo build/number] :as build} :job/build}
             (om-next/props this)]
         (card/basic
          (element :content
@@ -59,13 +58,15 @@
               [:div.status-heading
                [:div.status-name
                 [:span.job-status (status/icon (status-class status))]
-                [:a {:href
+                (if (nil? build)
+                  [:span.job-name job-name]
+                  [:a {:href
                      (routes/v1-build-path vcs-type
                                            org
                                            repo
                                            nil
                                            number)}
-                 [:span.job-name job-name]]]
+                 [:span.job-name job-name]])]
                [:div.status-actions
                 (button/icon {:label "Retry job-name"
                               :disabled? true}
@@ -257,5 +258,4 @@
                                  job-data
                                  {:selected? (= (:job/name job-data)
                                                 (:job/name selected-job))})))
-                        jobs))]
-                ])))})))))
+                        jobs))]])))})))))
