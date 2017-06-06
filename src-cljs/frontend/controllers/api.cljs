@@ -153,6 +153,10 @@
         ;; Hack until we have organization scopes
         (assoc-in state/page-scopes-path (or (:scopes args) #{:read-settings})))))
 
+(defmethod post-api-event! [:recent-builds :failure]
+  [target message status args previous-state current-state comms]
+  (put! (:nav comms) [:error args]))
+
 (defmethod api-event [:insights-recent-builds :success]
   [target message status {page-of-recent-builds :resp, {target-key :project-id
                                                         page-result :page-result
@@ -407,25 +411,17 @@
 
 (defmethod api-event [:organizations :success]
   [target message status {orgs :resp} state]
-  (let [selected-org (or (state-utils/complete-org-path orgs (get-in state state/selected-org-path))
-                         (org/default orgs))]
-    (-> state
-      (assoc-in state/user-organizations-path orgs)
-      (assoc-in state/selected-org-path selected-org))))
+  (assoc-in state state/user-organizations-path orgs))
 
 (defmethod post-api-event! [:organizations :success]
   [target message status args previous-state current-state comms]
   (when (feature/enabled? "top-bar-ui-v-1")
-    (let [nav-point (get-in current-state state/current-view-path)
-          nav-data-path (get-in current-state state/navigation-data-path)]
-      (when (and (= nav-point :dashboard)
-                 (= nil (:org nav-data-path)
-                        (:repo nav-data-path)
-                        (:branch nav-data-path)))
+    (let [nav-point (get-in current-state state/current-view-path)]
+      (when (not (get-in current-state state/selected-org-path))
         ;; If org not provided in the url, we need to capture a user's
         ;; default org before we can navigate to it.
-        (put! (:nav comms) [:navigate! {:path (routes/new-org-path {:current-org (get-in current-state state/selected-org-path)
-                                                                    :nav-point nav-point})}])))))
+        (put! (:nav comms) [:navigate! {:path (routes/org-centric-path {:current-org (state-utils/last-visited-or-default-org current-state)
+                                                                        :nav-point nav-point})}])))))
 
 (defmethod api-event [:tokens :success]
   [target message status args state]
@@ -575,14 +571,9 @@
         (update-in state/project-path merge resp)
         (add-project-settings-flash (:flash context) status))))
 
-(defmethod api-event [:project-settings :failed]
-  [target message status {:keys [resp context]} state]
-  (cond-> state
-    (= (:project-name context)
-      (str (get-in state [:navigation-data :org])
-           "/"
-           (get-in state [:navigation-data :repo])))
-    (add-project-settings-flash (:flash context) status)))
+(defmethod post-api-event! [:project-settings :failed]
+  [target message status args previous-state current-state comms]
+  (put! (:nav comms) [:error {:status (:status-code args)}]))
 
 ;; TODO: add project settings API failed handler here. Also, make sure
 ;; to do this without interfering with the old school flash
@@ -886,6 +877,22 @@
   [target message status {:keys [resp context]} state]
   (assoc-in state state/org-admin?-path false))
 
+(defmethod api-event [:org-check :success]
+  [target message status {:keys [resp context]} state]
+  (let [org (:org resp)]
+    (if (org/same? (org/get-from-map context)
+                   org)
+      (-> state
+          (assoc-in state/add-projects-selected-org-path org) ;; Remove when top-bar-ui-v-1 applied
+          ;; universally. Point all references to
+          ;; state/selected-org-path
+          (state-utils/change-selected-org org))
+      state)))
+
+(defmethod post-api-event! [:org-check :failed]
+  [target message status args previous-state current-state comms]
+  (put! (:nav comms) [:error {:status (:status-code args)}]))
+
 (defmethod api-event [:org-settings :success]
   [target message status {:keys [resp context]} state]
   (let [{:keys [org-name vcs-type]} context
@@ -898,14 +905,9 @@
           (update-in state/org-data-path merge resp)
           (assoc-in state/org-loaded-path true)))))
 
-(defmethod api-event [:org-settings :failed]
-  [target message status {:keys [resp context]} state]
-  (let [{:keys [org-name vcs-type]} context]
-    (if-not (org-selectable? state org-name vcs-type)
-      state
-      (-> state
-          (assoc-in state/org-loaded-path true)
-          (assoc-in state/org-admin?-path false)))))
+(defmethod post-api-event! [:org-settings :failed]
+  [target message status args previous-state current-state comms]
+  (put! (:nav comms) [:error {:status (:status-code args)}]))
 
 (defmethod api-event [:follow-repo :success]
   [target message status {:keys [resp context]} state]
@@ -1221,19 +1223,14 @@
 
 (defmethod api-event [:org-settings-normalized :success]
   [_ _ _ {:keys [resp]} state]
-  (let [{:keys [name vcs_type]} resp
-        org {:login name
-             :vcs_type vcs_type}
-        state (state-utils/change-selected-org state org)]
+  (let [{:keys [name vcs_type]} resp]
     (-> state
       (update-in state/org-data-path merge resp)
       (update-in [:organization/by-vcs-type-and-name [vcs_type name]] merge resp))))
 
-(defmethod api-event [:org-settings-normalized :failed]
-  [_ _ _ {:keys [_ context]} state]
-  (-> state
-    (update-in [:organization/by-vcs-type-and-name [(:vcs_type context) (:org_name context)]] assoc :users (:users context))
-    (state/add-flash-notification "An error has occurred. Please try again in a few moments.")))
+(defmethod post-api-event! [:org-settings-normalized :failed]
+  [target message status {:keys [context] :as args} previous-state current-state comms]
+  (put! (:nav comms) [:error {:status (:status-code args)}]))
 
 (defmethod api-event [:enterprise-site-status :success]
   [target message status {:keys [resp]} state]

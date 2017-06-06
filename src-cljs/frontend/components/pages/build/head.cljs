@@ -20,6 +20,7 @@
             [frontend.utils :as utils :refer-macros [component defrender element html]]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
+            [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [frontend.state :as state]
@@ -213,15 +214,18 @@
             (summary-item
              "Parallelism:"
              (html
-              [:a
-               {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
-                :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
-                                                                :properties {:repo (project-model/repo-name project)
-                                                                             :org (project-model/org-name project)}})
-                :href (build-model/path-for-parallelism build)}
-               parallel "x"
-               (when (not (enterprise?))
-                 (str " out of " (project-model/buildable-parallelism plan project) "x"))])))
+               [:a
+                {:title (str "This build used " parallel " containers. Click here to change parallelism for future builds.")
+                 :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked
+                                                                 :properties {:repo (project-model/repo-name project)
+                                                                              :org (project-model/org-name project)}})
+                 :href (routes/v1-project-settings-path {:vcs_type (-> build build-model/vcs-url vcs-url/vcs-type vcs/->short-vcs)
+                                                         :org (vcs-url/org-name (build-model/vcs-url build))
+                                                         :repo (vcs-url/repo-name (build-model/vcs-url build))
+                                                         :_fragment "parallel-builds"})}
+                parallel "x"
+                (when (not (enterprise?))
+                  (str " out of " (project-model/buildable-parallelism plan project) "x"))])))
 
           (when usage_queued_at
             (summary-item

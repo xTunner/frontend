@@ -369,8 +369,7 @@
                          (-> user :projects empty? not)))
             (om/build page-header/header {:crumbs crumbs
                                           :logged-out? (not (:name user))
-                                          :topbar-beta {:org (state-utils/selected-or-default-org (get-in app state/selected-org-path)
-                                                                                                  (get-in app state/user-organizations-path))
+                                          :topbar-beta {:org (state-utils/last-visited-or-default-org app)
                                                         :nav-point (get-in app state/current-view-path)}
                                           :actions (cond-> []
                                                      (show-settings-link? app)

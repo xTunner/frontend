@@ -302,7 +302,7 @@
 
     om/IRenderState
     (render-state [_ {:keys [selected-tab-name]}]
-      (let [selected-org-login (:login selected-org)
+      (let [selected-org-login (org/name selected-org)
             loading-repos? (loading-repos-for-vcs-type? user (:vcs_type selected-org))
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])
             show-forks (true? (get-in settings [:add-projects :show-forks]))]

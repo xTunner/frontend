@@ -1,7 +1,7 @@
 (ns frontend.utils.state
   (:require [frontend.state :as state]
             [frontend.utils.vcs-url :as vcs-url]
-            [frontend.utils.seq :refer [find-index]]
+            [frontend.utils.seq :refer [find-index submap?]]
             [frontend.models.plan :as plan]
             [frontend.models.organization :as org]
             [clojure.string :as string]))
@@ -104,15 +104,15 @@
   (when-let [builds (seq (get-in state state/usage-queue-path))]
     (find-index #(= parts (build-parts %)) builds)))
 
-(defn selected-or-default-org
-  [selected-org orgs]
-  (or selected-org
-    (org/default orgs)))
+(defn last-visited-or-default-org
+  [state]
+  (or (get-in state state/last-visited-org-path)
+      (org/default (get-in state state/user-organizations-path))))
 
 (defn complete-org-path
   "Replace partial org map with complete org info (including avatar key, etc.)"
   [user-orgs org]
-  (let [org (if (:login org)
+  (let [org (if (org/name org)
               org
               (org/default user-orgs))]
     (or (->> user-orgs
@@ -120,21 +120,36 @@
           first)
         org))) ;; Needed for CCI admins to view orgs outside their user-orgs
 
+(defn update-last-visited-org
+  "Update the last-visited-org. This is so that we can correctly redirect when we need to."
+  [state]
+  (if (org/in-orgs? (get-in state state/selected-org-path)
+                    (get-in state state/user-organizations-path))
+    (assoc-in state state/last-visited-org-path (get-in state state/selected-org-path))
+    state))
+
 (defn change-selected-org
   "Returns updated state map with the provided org as the selected-org.
 
-   If possible, the provided org map is updated with information from user-organizations-path
-   to ensure that a complete selected-org-path (including avatar_url, admin) is maintained.
+  If possible, the provided org map is updated with information from user-organizations-path
+  to ensure that a complete selected-org-path (including avatar_url, admin) is maintained.
 
-   The `api-event [:organizations :success]` event checks to see if a partial org (only
-   :login and :vcs_type keys in map) is stored in selected-org-path, and updates that
-   information to a complete url
+  The `api-event [:organizations :success]` event checks to see if a partial org (only
+  :login and :vcs_type keys in map) is stored in selected-org-path, and updates that
+  information to a complete url
 
-   Conditional logic can be removed after launchdarkly top-bar-ui-v-1 flag is applied to all
-     Until then, org will not always be supplied"
+  Conditional logic can be removed after launchdarkly top-bar-ui-v-1 flag is applied to all
+  Until then, org will not always be supplied"
   [state org]
-  (cond-> state
-    org (assoc-in state/selected-org-path
-          (if-let [user-orgs (get-in state state/user-organizations-path)]
-            (complete-org-path user-orgs org)
-            org))))
+  (let [complete-org (complete-org-path (get-in state state/user-organizations-path) org)]
+    (-> state
+        (assoc-in state/selected-org-path complete-org)
+        (update-last-visited-org))))
+
+(defn update-selected-org
+  "Update the selected-org in state. This is a helper function since we can only parse
+  the name and vcs type out of the URL, and later the rest of the org's information (such
+  as the avatar url) are returned."
+  [state]
+  (change-selected-org state (get-in state state/last-visited-org-path)))
+

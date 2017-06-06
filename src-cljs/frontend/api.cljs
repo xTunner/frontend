@@ -63,12 +63,15 @@
              :context {:org-name org-name
                        :vcs-type vcs-type}))
 
-(defn get-org-plan [org-name vcs-type api-ch]
+(defn get-org-plan [org-name vcs-type api-ch message]
+  "Used both to get plan info (message :org-plan) and
+   as proxy for whether or not a user has access to
+   an organization (message :org-check)"
   (ajax/ajax :get
              (gstring/format "/api/v1.1/organization/%s/%s/plan"
                              vcs-type
                              org-name)
-             :org-plan
+             message
              api-ch
              :context {:org-name org-name
                        :vcs-type vcs-type}))

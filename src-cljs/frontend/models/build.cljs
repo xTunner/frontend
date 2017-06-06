@@ -1,7 +1,6 @@
 (ns frontend.models.build
   (:require [frontend.datetime :as datetime]
             [frontend.models.project :as proj]
-            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
@@ -24,13 +23,6 @@
 ;; TODO paths should use secretary
 (defn path-for [project build]
   (str "/" (-> project proj/vcs-type vcs/->short-vcs) "/" (proj/project-name project) "/" (num build)))
-
-(defn path-for-parallelism [build]
-  (let [vcs-url (vcs-url build)]
-    (routes/v1-project-settings-path {:vcs_type (-> vcs-url vcs-url/vcs-type vcs/->short-vcs)
-                                      :org (vcs-url/org-name vcs-url)
-                                      :repo (vcs-url/repo-name vcs-url)
-                                      :_fragment "parallel-builds"})))
 
 (defn github-revision [build]
   (when (:vcs_revision build)

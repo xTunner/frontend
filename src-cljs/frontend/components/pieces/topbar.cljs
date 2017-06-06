@@ -6,6 +6,7 @@
             [frontend.components.pieces.icon :as icon]
             [frontend.config :as config]
             [frontend.models.organization :as org]
+            [frontend.routes :as routes]
             [frontend.utils :as utils :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
@@ -13,7 +14,7 @@
             [om.core :as om])
   (:require-macros [frontend.utils :refer [component html]]))
 
-(defn orgs-dropdown-selector [orgs selected-org owner]
+(defn orgs-dropdown-selector [orgs selected-org current-route owner]
   [:li.dropdown.org-dropdown
    [:button.dropdown-toggle.org-button
     {:data-toggle "dropdown"
@@ -28,21 +29,21 @@
    [:ul.dropdown-menu.pull-right.animated.slideInDown.nav-items.org-dropdown-menu
     [:li.org-dropdown-menu__item.switch-org-text
      "Switch Organization"]
-    (map (fn [{:as single-org :keys [login vcs_type]}]
-           (let [org-same? (org/same? single-org selected-org)]
-             [:li
-              [:a.org-dropdown-menu__item {:class (when org-same? "selected-org")
-                                           :on-click (when-not org-same?
-                                                       #(raise! owner [:update-org single-org]))}
-               [:span.org-icon-and-name
-                [:span.leading-dot
-                 "●"]
-                [:img.avatar {:src (gh-utils/make-avatar-url single-org :size 40)}]
-                [:span.org-name login]]
-               [:span.vcs-icon
-                 (case vcs_type
-                   "github" (icon/github)
-                   "bitbucket" (icon/bitbucket))]]])) orgs)]])
+    (for [{:as org :keys [login vcs_type]} orgs]
+      (let [org-same? (org/same? org selected-org)]
+        [:li
+         [:a.org-dropdown-menu__item {:class (when org-same? "selected-org")
+                                      :href (routes/org-centric-path {:current-org org
+                                                                      :nav-point current-route})}
+          [:span.org-icon-and-name
+           [:span.leading-dot
+            "●"]
+           [:img.avatar {:src (gh-utils/make-avatar-url org :size 40)}]
+           [:span.org-name login]]
+          [:span.vcs-icon
+           (case vcs_type
+             "github" (icon/github)
+             "bitbucket" (icon/bitbucket))]]]))]])
 
 (defn updates-dropdown-list
   [class-name]
@@ -155,7 +156,7 @@
           [:div
            [:div.navs-container
             [:ul.nav-options.collapsing-nav {:class (when (disable-org-picker? current-route) "disable")}
-              (orgs-dropdown-selector orgs selected-org owner)]
+              (orgs-dropdown-selector orgs selected-org current-route owner)]
 
             [:a.logomark {:href "/dashboard"
                           :aria-label "Dashboard"}

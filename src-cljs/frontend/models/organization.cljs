@@ -41,14 +41,18 @@
 (def name
   "Takes an org, returns its name.
   Not named 'name' because it conflicts with clojure.core/name"
-  (some-fn :login :name :org))
+  (some-fn :login :name :org :org-name))
+
+(def vcs-type
+  "Takes an org, returns its vcs type"
+  (some-fn :vcs_type :vcs-type))
 
 (defn same?
   "Compares two orgs, returns whether or not they are the same by
   comparing their name and their vcs_type"
   [org-a org-b]
   (and (= (name org-a) (name org-b))
-       (= (:vcs_type org-a) (:vcs_type org-b))))
+       (= (vcs-type org-a) (vcs-type org-b))))
 
 (defn default
   "Takes a list of orgs and returns a default value"
@@ -74,3 +78,18 @@
   "Inverse of legacy-org->modern-org."
   [org]
   (set/rename-keys org (set/map-invert legacy-org-keys->modern-org-keys)))
+
+(defn get-from-map
+  "Returns two-key 'org' map from a larger map.
+
+  Return nil, not an incomplete map, if a complete org cannot be made."
+  [map]
+  (when (and (name map)
+             (vcs-type map))
+    {:login (name map)
+     :vcs_type (vcs-type map)}))
+
+(defn in-orgs?
+  "Given an org, and a list of orgs, is the org in the list of orgs"
+  [org orgs]
+  (some (partial same? org) orgs))

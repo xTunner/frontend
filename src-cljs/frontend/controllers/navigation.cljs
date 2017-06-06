@@ -32,6 +32,14 @@
 (defmulti post-navigated-to!
   (fn [history-imp navigation-point args previous-state current-state comms]
     (frontend.favicon/reset!)
+    (when (and (org/name args)
+               (-> (get-in current-state state/selected-org-path)
+                   (org/same? args)
+                   (not)))
+      (api/get-org-plan (org/name args)
+                        (org/vcs-type args)
+                        (:api comms)
+                        :org-check))
     (put! (:ws comms) [:unsubscribe-stale-channels])
     navigation-point))
 
@@ -71,40 +79,21 @@
       (.replaceToken history-imp path)
       (.setToken history-imp path))))
 
-(defn- org-for-topbar
-  "Use org in route when provided, otherwise default to previously selected org
-
-  Returns nil if user does not have admin access to selected-org"
-  [login vcs_type state]
-  (if (and login vcs_type)
-    {:login login :vcs_type vcs_type}
-    (let [selected-org (get-in state state/selected-org-path)]
-      (when (or (:admin (get-in state state/user-path))
-                (-> (get-in state state/selected-org-admin?-path) nil? not)) ;; selected-org-admin?-path info only available on orgs
-        selected-org))))                                                     ;; set in state that a user has access to
-                                                                             ;; sadly, state/user-organizations-path
-                                                                             ;; has not returned when this call is made
-
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
-  (let [nav-org (or (and (feature/enabled? "top-bar-ui-v-1")
-                         (org-for-topbar (org/name args) (:vcs_type args) state))
-                    {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
-    (-> state
-        (assoc-in state/selected-org-path nav-org)
-        (state-utils/change-selected-org nav-org)
-        state-utils/clear-page-state
-        (assoc state/current-view navigation-point
-               state/navigation-data args
-               state/recent-builds nil)
-        (state-utils/set-dashboard-crumbs args)
-        state-utils/reset-current-build
-        state-utils/reset-current-project
-        (state-utils/change-selected-org nav-org))))
+  (-> state
+      state-utils/clear-page-state
+      (assoc state/current-view navigation-point
+             state/navigation-data args
+             state/recent-builds nil)
+      (state-utils/set-dashboard-crumbs args)
+      state-utils/reset-current-build
+      state-utils/reset-current-project))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state comms]
   (let [api-ch (:api comms)
+        nav-ch (:nav comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)]
     (mlog (str "post-navigated-to! :dashboard with current-user? " (not (empty? current-user))
@@ -119,8 +108,8 @@
               scopes (:scopes api-resp)]
           (mlog (str "post-navigated-to! :dashboard, " builds-url " scopes " scopes))
           (condp = (:status api-resp)
-            :success (put! (:api comms) [:recent-builds :success (assoc api-resp :context args)])
-            :failed (put! (:nav comms) [:error {:status (:status-code api-resp) :inner? false}])
+            :success (put! api-ch [:recent-builds :success (assoc api-resp :context args)])
+            :failed (put! nav-ch [:error {:status (:status-code api-resp) :inner? false}])
             (put! (:errors comms) [:api-error api-resp]))
           (when (:repo args)
             (when (:read-settings scopes)
@@ -163,30 +152,28 @@
     (assoc-in state state/crumbs-path crumbs)))
 
 (defmethod navigated-to :build
-  [history-imp navigation-point {:keys [vcs_type project-name build-num org repo tab container-id action-id] :as args}
+  [history-imp navigation-point {:keys [project-name build-num tab container-id action-id] :as args}
    state]
   (mlog "navigated-to :build with args " args)
-  (let [nav-org {:login org :vcs_type vcs_type}]
-    (if (and (= :build (state/current-view state))
-             (not (state-utils/stale-current-build? state project-name build-num)))
-      ;; page didn't change, just switched tabs
-      (-> state
-          (assoc-in state/navigation-tab-path tab)
-          (assoc-in state/current-container-path container-id)
-          (assoc-in state/current-action-id-path action-id))
-      ;; navigated to page, load everything
-      (-> state
-          state-utils/clear-page-state
-          (state-utils/change-selected-org nav-org)
-          (assoc state/current-view navigation-point
-                 state/navigation-data (assoc args :show-settings-link? false)
-                 :project-settings-project-name project-name)
-          (add-crumbs args)
-          state-utils/reset-current-build
-          (#(if (state-utils/stale-current-project? % project-name)
-              (state-utils/reset-current-project %)
-              %))
-          state-utils/reset-dismissed-osx-usage-level))))
+  (if (and (= :build (state/current-view state))
+           (not (state-utils/stale-current-build? state project-name build-num)))
+    ;; page didn't change, just switched tabs
+    (-> state
+        (assoc-in state/navigation-tab-path tab)
+        (assoc-in state/current-container-path container-id)
+        (assoc-in state/current-action-id-path action-id))
+    ;; navigated to page, load everything
+    (-> state
+        state-utils/clear-page-state
+        (assoc state/current-view navigation-point
+               state/navigation-data (assoc args :show-settings-link? false)
+               :project-settings-project-name project-name)
+        (add-crumbs args)
+        state-utils/reset-current-build
+        (#(if (state-utils/stale-current-project? % project-name)
+            (state-utils/reset-current-project %)
+            %))
+        state-utils/reset-dismissed-osx-usage-level)))
 
 (defn initialize-pusher-subscriptions
   "Subscribe to pusher channels for initial messaging. This subscribes
@@ -252,6 +239,7 @@
         nav-org (not-empty (select-keys args [:login :vcs_type]))]
     (-> state
         state-utils/clear-page-state
+        (assoc-in state/add-projects-selected-org-path (org/get-from-map args))
         (assoc state/current-view navigation-point
                state/navigation-data args)
         ;; force a reload of repos.
@@ -259,19 +247,8 @@
         (assoc-in state/github-repos-loading-path (user/github-authorized? current-user))
         (assoc-in state/bitbucket-repos-loading-path (user/bitbucket-authorized? current-user))
         (assoc-in state/crumbs-path [{:type :add-projects}])
-        (assoc-in state/add-projects-selected-org-path nav-org)
         (assoc-in [:settings :add-projects :repo-filter-string] "")
-        (state-utils/reset-current-org)
-        (state-utils/change-selected-org nav-org))))
-
-(defn- nav-to-selected-org
-  [selected-org nav-ch]
-  (put! nav-ch
-    [:navigate! {:path (->> selected-org
-                            :vcs_type
-                            vcs/->short-vcs
-                            (assoc selected-org :short-vcs-type)
-                            routes/v1-organization-add-projects)}]))
+        (state-utils/reset-current-org))))
 
 (defn load-repos
   [current-state api-ch]
@@ -285,27 +262,35 @@
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (if (feature/enabled? "top-bar-ui-v-1")
-      (when-not (get-in current-state state/add-projects-selected-org-path)
-        (nav-to-selected-org (get-in current-state state/selected-org-path) (:nav comms)))
-      ;; load orgs, collaborators, and repos.
-      (api/get-orgs api-ch :include-user? true))
+    (when (and (feature/enabled? "top-bar-ui-v-1")
+               (not (get-in current-state state/add-projects-selected-org-path)))
+      (let [org (or (get-in current-state state/selected-org-path)
+                    (get-in current-state state/last-visited-org-path))]
+        (routes/org-centric-path {:current-org org
+                                  :nav-point navigation-point}))
+      ;; load orgs, collaborators, and repos
+    (api/get-orgs api-ch :include-user? true)
     (load-repos current-state api-ch)
-    (set-page-title! "Add projects")))
+    (set-page-title! "Add projects"))))
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
-  (let [nav-org (not-empty (select-keys args [:login :vcs_type]))]
-    (-> state
+  (-> state
       (assoc state/current-view navigation-point
              state/navigation-data args)
       state-utils/clear-page-state
-      (state-utils/change-selected-org nav-org)
-      (assoc-in state/crumbs-path [{:type :build-insights}]))))
+      (assoc-in state/crumbs-path [{:type :build-insights}])))
 
 (defmethod post-navigated-to! :build-insights
-  [history-imp navigation-point _ previous-state current-state comms]
+  [history-imp navigation-point args previous-state current-state comms]
   (let [api-ch (:api comms)]
+    ;; since build-insights users user centric and not org centric api calls,
+    ;; we need to use the plan endpoint to check if the current user has access.
+    ;; TODO: make org centric insights endpoints and use the status from those instead
+    (api/get-org-plan (org/name args)
+                      (org/vcs-type args)
+                      api-ch
+                      :org-check)
     (api/get-projects api-ch)
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
@@ -337,14 +322,11 @@
 
 (defmethod navigated-to :team
   [history-imp navigation-point args state]
-  (let [current-user (get-in state state/user-path)
-        org (not-empty (select-keys args [:login :vcs_type]))
-        state (state-utils/change-selected-org state org)]
-    (-> state
-        state-utils/clear-page-state
-        (assoc state/current-view navigation-point
-               state/navigation-data args)
-        (assoc-in state/crumbs-path [{:type :team}]))))
+  (-> state
+      state-utils/clear-page-state
+      (assoc state/current-view navigation-point
+             state/navigation-data args)
+      (assoc-in state/crumbs-path [{:type :team}])))
 
 (defmethod post-navigated-to! :team
   [history-imp navigation-point args previous-state current-state comms]
@@ -465,7 +447,7 @@
       (api/get-projects api-ch))
     (if (get-in current-state state/org-plan-path)
       (mlog "plan details already loaded for" org)
-      (api/get-org-plan org vcs_type api-ch))
+      (api/get-org-plan org vcs_type api-ch :org-plan))
     (if (and (= org (get-in current-state state/org-name-path))
              (= vcs_type (get-in current-state state/org-vcs_type-path))
              (get-in current-state state/org-plan-path))
@@ -501,7 +483,6 @@
   [history-imp navigation-point _ previous-state current-state comms]
   (go (let [api-result (<! (ajax/managed-ajax :post "/logout"))]
         (set! js/window.location "/"))))
-
 
 (defmethod navigated-to :error
   [history-imp navigation-point {:keys [status] :as args} state]

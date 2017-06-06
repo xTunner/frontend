@@ -191,6 +191,8 @@
 (def user-betas-key :enrolled_betas)
 (def user-betas-path (conj user-path user-betas-key))
 
+(def selected-org-path (conj user-path :selected-org))
+
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
 (def org-vcs_type-path (conj org-data-path :vcs_type))
@@ -218,8 +220,7 @@
 (def instrumentation-path [:instrumentation])
 
 (def browser-settings-path [:settings :browser-settings])
-(def selected-org-path (conj browser-settings-path :selected-org))
-(def selected-org-admin?-path (conj selected-org-path :admin))
+(def last-visited-org-path (conj browser-settings-path :last-visited-org))
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))
