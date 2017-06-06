@@ -405,15 +405,32 @@
    :app/current-user
    (fn [env ast]
      (-> (api-promise api/get-orgs :include-user? true)
-         (p/then (fn [response]
-                   (let [adapted {:user/organizations
-                                  (mapv #(hash-map :organization/name (:login %)
-                                                   :organization/vcs-type (:vcs_type %)
-                                                   :organization/avatar-url (:avatar_url %))
-                                        response)}]
-                     ;; Run the adapted structure through a parser to match it to the
-                     ;; rest of the query.
-                     (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
+         (p/then
+          (fn [response]
+            (let [adapted {:user/organizations
+                           (mapv #(hash-map :organization/name (:login %)
+                                            :organization/vcs-type (:vcs_type %)
+                                            :organization/avatar-url (:avatar_url %))
+                                 response)}]
+              ;; Run the adapted structure through a parser to match it to the
+              ;; rest of the query.
+              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+
+   :organization/vcs-type
+   (fn [env ast]
+     (:organization/vcs-type env))
+
+   #{:organization/avatar-url :organization/current-user-is-admin?}
+   (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
+     (-> (api-promise api/get-orgs :include-user? true)
+         (p/then
+          (fn [response]
+            (let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
+                                                (and (= vcs_type vcs-type)
+                                                     (= login name)))
+                                              response))]
+              {:organization/avatar-url (:avatar_url selected-org)
+               :organization/current-user-is-admin? (:admin selected-org)})))))})
 
 (defn- resolvers-can-handle?
   "Tool for migrating to resolvers. True if the expression can be handled by the
@@ -423,7 +440,13 @@
     (or (branch-crumb-ast? de-aliased-ast)
         (branch-runs-ast? de-aliased-ast)
         (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
-           expr))))
+           expr)
+        (and (= :circleci/organization (:key de-aliased-ast))
+                 (= '[:organization/vcs-type
+                      :organization/name
+                      :organization/avatar-url
+                      :organization/current-user-is-admin?]
+                    (:query de-aliased-ast))))))
 
 (defmulti send* key)
 
@@ -452,28 +475,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            (and (= :circleci/organization (:key ast))
-                 (= '[:organization/vcs-type
-                      :organization/name
-                      :organization/avatar-url
-                      :organization/current-user-is-admin?]
-                    (:query ast)))
-            (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-              (api/get-orgs
-               (callback-api-chan
-                #(let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
-                                                     (and (= vcs_type vcs-type)
-                                                          (= login name)))
-                                                   %))
-
-                       avatar-url (:avatar_url selected-org)
-                       admin (:admin selected-org)]
-                   (cb {:circleci/organization {:organization/name name
-                                                :organization/vcs-type vcs-type
-                                                :organization/avatar-url avatar-url
-                                                :organization/current-user-is-admin? admin}} query)))
-               :include-user? true))
-
             ;; :route/projects
             (and (= :circleci/organization (:key ast))
                  (= '[:organization/vcs-type
