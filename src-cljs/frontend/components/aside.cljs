@@ -410,6 +410,12 @@
 
 (def light-builds? #{:dashboard :build})
 
+(def light-workflows? #{:route/project-workflows
+                        :route/project-branch-workflows
+                        :route/org-workflows
+                        :route/run})
+
+
 (defn aside-nav-original [{:keys [user current-route owner]}]
   "Original side-nav, preserved for most users as the top-bar-ui-v-1
    is implemented. Case-by-case feature flags too cumbersome as routes change"
@@ -432,8 +438,8 @@
       [:i.material-icons "storage"]
       [:div.nav-label "Builds"]]
 
-     (when (ld/feature-on? "workflows-poc")
-       [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
+     (when (feature/enabled? :workflows-poc)
+       [:a.aside-item {:class (when (light-workflows? current-route) "current")
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
@@ -553,8 +559,9 @@
       [:i.material-icons "storage"]
       [:div.nav-label "Builds"]]
 
-     (when (ld/feature-on? "workflows-poc")
-       [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
+     (when (feature/enabled? "workflows-poc")
+       [:a.aside-item {:class (when (light-workflows? current-route)
+                                "current")
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
