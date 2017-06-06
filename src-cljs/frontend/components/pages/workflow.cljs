@@ -174,8 +174,7 @@
                    :status-class/running (icon/status-running)
                    :status-class/waiting (icon/status-queued))]
                 [:.status-string (string/replace (name status) #"-" " ")]]]
-              (cond (and (feature/enabled? :cancel-below-status)
-                         (cancelable-status? status))
+              (cond (cancelable-status? status)
                     [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
                      (icon/status-canceled)
                      [:span "cancel"]]
