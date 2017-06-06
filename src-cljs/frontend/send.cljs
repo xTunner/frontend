@@ -400,7 +400,20 @@
                                                   (mapv #(hash-map :edge/node %)))}]
               ;; Run the adapted structure through a parser to match it to the
               ;; rest of the query.
-              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
+              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+
+   :app/current-user
+   (fn [env ast]
+     (-> (api-promise api/get-orgs :include-user? true)
+         (p/then (fn [response]
+                   (let [adapted {:user/organizations
+                                  (mapv #(hash-map :organization/name (:login %)
+                                                   :organization/vcs-type (:vcs_type %)
+                                                   :organization/avatar-url (:avatar_url %))
+                                        response)}]
+                     ;; Run the adapted structure through a parser to match it to the
+                     ;; rest of the query.
+                     (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
 
 (defn- resolvers-can-handle?
   "Tool for migrating to resolvers. True if the expression can be handled by the
@@ -408,7 +421,9 @@
   [expr]
   (let [de-aliased-ast (om-parser/expr->ast (first (de-alias-expression expr #())))]
     (or (branch-crumb-ast? de-aliased-ast)
-        (branch-runs-ast? de-aliased-ast))))
+        (branch-runs-ast? de-aliased-ast)
+        (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
+           expr))))
 
 (defmulti send* key)
 
@@ -437,16 +452,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
-               expr)
-            (let [ch (callback-api-chan
-                      #(let [orgs (for [api-org %]
-                                    {:organization/name (:login api-org)
-                                     :organization/vcs-type (:vcs_type api-org)
-                                     :organization/avatar-url (:avatar_url api-org)})]
-                         (cb {:app/current-user {:user/organizations (vec orgs)}} query)))]
-              (api/get-orgs ch :include-user? true))
-
             (and (= :circleci/organization (:key ast))
                  (= '[:organization/vcs-type
                       :organization/name
