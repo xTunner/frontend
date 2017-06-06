@@ -325,7 +325,9 @@
 
     om/IRender
     (render [_]
-      (om/build aside/branch-activity-list app))))
+      (om/build aside/branch-activity-list
+                app
+                {:opts {:workflows? true}}))))
 
 (defui ^:once ProjectPage
   static om-next/IQuery

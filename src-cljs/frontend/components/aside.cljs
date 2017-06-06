@@ -37,7 +37,7 @@
                                                                                               :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
-(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [identities show-project?]}]
+(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [identities show-project? workflows?]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Branch List")
     om/IRender
@@ -62,10 +62,15 @@
                                         (= (name branch-identifier)
                                            (:branch navigation-data)))
                                "selected")}
-                 [:a {:href (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
-                                                       :org (:username project)
-                                                       :repo (:reponame project)
-                                                       :branch (name branch-identifier)})
+                 [:a {:href (if workflows?
+                              (routes/v1-project-branch-workflows-path (:vcs_type project)
+                                                                       (:username project)
+                                                                       (:reponame project)
+                                                                       (name branch-identifier))
+                              (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
+                                                         :org (:username project)
+                                                         :repo (:reponame project)
+                                                         :branch (name branch-identifier)}))
                       :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
                                                                       :properties {:repo repo-name
                                                                                    :org org-name
@@ -94,7 +99,7 @@
                  (when show-project?
                    (project-settings-link {:project project} owner))]))])))))
 
-(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [identities]}]
+(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [identities workflows?]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
@@ -113,9 +118,13 @@
                  :title (project-model/project-name project)}
                 [:i.fa.rotating-chevron {:class (when (expanded-repos vcs-url) "expanded")
                                          :on-click #(raise! owner [:expand-repo-toggled {:repo vcs-url}])}]
-                [:a.project-name {:href (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
-                                                                           :org (:username project)
-                                                                           :repo (:reponame project)})
+                [:a.project-name {:href (if workflows?
+                                          (routes/v1-project-workflows-path (:vcs_type project)
+                                                                            (:username project)
+                                                                            (:reponame project))
+                                          (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
+                                                                             :org (:username project)
+                                                                             :repo (:reponame project)}))
                                   :on-click #((om/get-shared owner :track-event) {:event-type :project-clicked
                                                                                   :properties {:vcs-type (:vcs_type project)
                                                                                                :org org-name
@@ -133,7 +142,8 @@
                                            (sort-by (comp lower-case name :identifier)))
                             :show-all-branches? show-all-branches?
                             :navigation-data navigation-data}
-                           {:opts {:identities identities}}))])))))
+                           {:opts {:identities identities
+                                   :workflows? workflows?}}))])))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -328,7 +338,7 @@
         branch (:current-branch project)]
     (utils/md5 (str project-id branch))))
 
-(defn branch-activity-list [app owner]
+(defn branch-activity-list [app owner {:keys [workflows?]}]
   (reify
     om/IRender
     (render [_]
@@ -378,7 +388,8 @@
                         :show-all-branches? show-all-branches?
                         :navigation-data (:navigation-data app)}
                        {:opts {:identities identities
-                               :show-project? true}})
+                               :show-project? true
+                               :workflows? workflows?}})
              [:ul.projects
               (for [project (sort project-model/sidebar-sort projects)]
                 (om/build project-aside
@@ -387,7 +398,8 @@
                            :expanded-repos expanded-repos
                            :navigation-data (:navigation-data app)}
                           {:react-key (project-model/id project)
-                           :opts {:identities identities}}))])
+                           :opts {:identities identities
+                                  :workflows? workflows?}}))])
 
           (when-not (user/has-private-scopes? user)
             [:.add-private-project-card
