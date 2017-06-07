@@ -1,8 +1,15 @@
 (ns frontend.send.resolve
   (:require [cljs.core.async :as async :refer [chan close! put!]]
             [cljs.core.async.impl.protocols :as async-impl]
+            [goog.log :as glog]
             [om.next :as om]
-            [promesa.core :as p :include-macros true]))
+            [promesa.core :as p :include-macros true])
+  (:import goog.debug.Console))
+
+(defonce *logger*
+  (when ^boolean goog.DEBUG
+    (.setCapturing (Console.) true)
+    (glog/getLogger "frontend.send.resolve")))
 
 (defn- read-port? [x]
   (implements? async-impl/ReadPort x))
@@ -41,6 +48,7 @@
                          (chan 1 (comp
                                   (map #(get % read-from-key))
                                   (map #(hash-map (:key ast) %)))))
-            (throw (ex-info (str "Unknown key " read-from-key)
-                            {:key read-from-key}))))))
+            (do
+              (glog/error *logger* (str "No resolver found for key " read-from-key))
+              (doto (chan) (close!)))))))
      channel)))
