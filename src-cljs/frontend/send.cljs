@@ -430,23 +430,63 @@
                                                      (= login name)))
                                               response))]
               {:organization/avatar-url (:avatar_url selected-org)
-               :organization/current-user-is-admin? (:admin selected-org)})))))})
+               :organization/current-user-is-admin? (:admin selected-org)})))))
+
+   :organization/projects
+   (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
+     ;; Unlike most of the api functions, api/get-org-settings takes the channel
+     ;; as its last argument, so we use `partial` to make a function which takes
+     ;; it first, as `api-promise` requires.
+     (-> (api-promise (partial api/get-org-settings name vcs-type))
+         (p/then
+          (fn [response]
+            (let [projects (for [p (:projects response)]
+                             {:project/vcs-url (:vcs_url p)
+                              :project/name (vcs-url/repo-name (:vcs_url p))
+                              :project/parallelism (:parallel p)
+                              ;; Sometimes the backend returns a map of feature_flags,
+                              ;; and sometimes it returns :oss directly on the project.
+                              :project/oss? (or (:oss p)
+                                                (get-in p [:feature_flags :oss]))
+                              :project/follower-count (count (:followers p))})]
+              (mapv #(parser {:state (atom %)} (mapv om-next/ast->query (:children ast))) projects))))))
+
+   :organization/plan
+   (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
+     ;; Unlike most of the api functions, api/get-org-settings takes the channel
+     ;; as its last argument, so we use `partial` to make a function which takes
+     ;; it first, as `api-promise` requires.
+     ;;
+     ;; Also: note that we do no processing/massaging of this data. The plan
+     ;; data is currently used in it's old-api form rather than using new
+     ;; namespaced, universal keys. This is debt.
+     (-> (api-promise (partial api/get-org-plan name vcs-type))))})
 
 (defn- resolvers-can-handle?
   "Tool for migrating to resolvers. True if the expression can be handled by the
   resolvers above."
   [expr]
-  (let [de-aliased-ast (om-parser/expr->ast (first (de-alias-expression expr #())))]
-    (or (branch-crumb-ast? de-aliased-ast)
-        (branch-runs-ast? de-aliased-ast)
+  (let [ast (om-parser/expr->ast (first (de-alias-expression expr #())))]
+    (or (branch-crumb-ast? ast)
+        (branch-runs-ast? ast)
         (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
            expr)
-        (and (= :circleci/organization (:key de-aliased-ast))
-                 (= '[:organization/vcs-type
-                      :organization/name
-                      :organization/avatar-url
-                      :organization/current-user-is-admin?]
-                    (:query de-aliased-ast))))))
+        (and (= :circleci/organization (:key ast))
+             (= '[:organization/vcs-type
+                  :organization/name
+                  :organization/avatar-url
+                  :organization/current-user-is-admin?]
+                (:query ast)))
+        (and (= :circleci/organization (:key ast))
+             (= '[:organization/vcs-type
+                  :organization/name
+                  {:organization/projects [:project/follower-count
+                                           :project/vcs-url
+                                           :project/name
+                                           :project/parallelism
+                                           :project/oss?]}
+                  {:organization/plan [*]}]
+                (:query ast))))))
 
 (defmulti send* key)
 
@@ -475,41 +515,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            ;; :route/projects
-            (and (= :circleci/organization (:key ast))
-                 (= '[:organization/vcs-type
-                      :organization/name
-                      {:organization/projects [:project/follower-count
-                                               :project/vcs-url
-                                               :project/name
-                                               :project/parallelism
-                                               :project/oss?]}
-                      {:organization/plan [*]}]
-                    (:query ast)))
-            (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-              (api/get-org-settings
-               name vcs-type
-               (callback-api-chan
-                #(let [projects (for [p (:projects %)]
-                                  {:project/vcs-url (:vcs_url p)
-                                   :project/name (vcs-url/repo-name (:vcs_url p))
-                                   :project/parallelism (:parallel p)
-                                   ;; Sometimes the backend returns a map of feature_flags,
-                                   ;; and sometimes it returns :oss directly on the project.
-                                   :project/oss? (or (:oss p)
-                                                     (get-in p [:feature_flags :oss]))
-                                   :project/follower-count (count (:followers p))})]
-                   (cb {:circleci/organization {:organization/name name
-                                                :organization/vcs-type vcs-type
-                                                :organization/projects (vec projects)}} query))))
-              (api/get-org-plan
-               name vcs-type
-               (callback-api-chan
-                #(cb {:circleci/organization {:organization/name name
-                                              :organization/vcs-type vcs-type
-                                              :organization/plan %}}
-                     query))))
-
             ;; Also :route/projects (but a separate expression for analytics, which
             ;; doesn't actually need to hit the server)
             (and (= :circleci/organization (:key ast))
