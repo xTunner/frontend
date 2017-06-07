@@ -33,8 +33,10 @@
                             :alt name}]))
                   :action (when-not identity
                             (button/link {:href auth-url
-                                          :on-click #(analytics/track! c {:event-type :authorize-vcs-clicked
-                                                                          :properties {:vcs-type type}})
+                                          :on-click #(analytics/track! c {:event-type :vcs-authorize-clicked
+                                                                          :properties {:vcs-type type
+                                                                                       :component "account-integrations"
+                                                                                       :cta-text "Connect"}})
                                           :kind :primary
                                           :size :small}
                                          "Connect"))}

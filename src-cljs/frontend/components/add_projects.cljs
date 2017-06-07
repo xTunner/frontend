@@ -470,8 +470,10 @@
                               [:div
                                [:p "GitHub is not connected to your account yet. To connect it, click the button below:"]
                                (button/link {:href (gh-utils/auth-url)
-                                             :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                             :properties {:vcs-type selected-vcs-type}})
+                                             :on-click #((om/get-shared owner :track-event) {:event-type :vcs-authorize-clicked
+                                                                                             :properties {:vcs-type selected-vcs-type
+                                                                                                          :component "org-picker"
+                                                                                                          :cta-text "Authorize GitHub"}})
                                              :kind :primary}
                                             "Authorize GitHub")]))
                           (when (and (= "bitbucket" selected-vcs-type)
@@ -479,8 +481,10 @@
                             [:div
                              [:p "Bitbucket is not connected to your account yet. To connect it, click the button below:"]
                              (button/link {:href (bitbucket/auth-url)
-                                           :on-click #((om/get-shared owner :track-event) {:event-type :authorize-vcs-clicked
-                                                                                           :properties {:vcs-type selected-vcs-type}})
+                                           :on-click #((om/get-shared owner :track-event) {:event-type :vcs-authorize-clicked
+                                                                                           :properties {:vcs-type selected-vcs-type
+                                                                                                        :component "org-picker"
+                                                                                                        :cta-text "Authorize Bitbucket"}})
                                            :kind :primary}
                                           "Authorize Bitbucket")])
                           (build-next

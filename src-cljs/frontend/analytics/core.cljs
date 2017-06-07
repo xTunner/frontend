@@ -39,7 +39,6 @@
     :add-project-clicked
     :add-project-icon-clicked
     :admin-icon-clicked
-    :authorize-vcs-clicked
     :beta-accept-terms-clicked
     :beta-join-clicked
     :beta-leave-clicked
@@ -149,6 +148,7 @@
     :unfollow-projects-clicked
     :update-parallelism-clicked
     :update-plan-clicked
+    :vcs-authorize-clicked
     :view-demo-clicked
     :web-notifications-permissions-banner-dismissed
     :web-notifications-permissions-banner-impression
