@@ -114,30 +114,6 @@
        #(cb (rename-keys %1 {aliased-from (:key ast)}) %2)]
       [expr cb])))
 
-(defn- merge-workflow-runs
-  [{vcs-type :organization/vcs-type
-    org-name :organization/name
-    project-name :project/name}
-   offset
-   limit
-   merge-fn
-   query]
-  (api/get-project-workflows
-   (callback-api-chan
-    (fn [response]
-      (let [novelty {:circleci/organization
-                     {:organization/project
-                      {:project/name project-name
-                       :project/organization {:organization/vcs-type vcs-type
-                                              :organization/name org-name}
-                       :routed-page {:connection/total-count (:total-count response)
-                                     :connection/edges (->> (:results response)
-                                                            (map adapt-to-run)
-                                                            (mapv #(hash-map :edge/node %)))}}}}]
-        (merge-fn novelty query))))
-   (vcs-url/vcs-url vcs-type org-name project-name)
-   {:offset offset :limit limit}))
-
 (def ^:private ignore-response-callback (fn [_response] nil))
 
 (defn- request-run-retry-from-api-service
@@ -402,6 +378,26 @@
               ;; rest of the query.
               (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
 
+   :project/workflow-runs
+   (fn [env ast]
+     (-> (api-promise
+          api/get-project-workflows
+          (vcs-url/vcs-url (:organization/vcs-type env)
+                           (:organization/name env)
+                           (:project/name env))
+          {:offset (:connection/offset (:params ast))
+           :limit (:connection/limit (:params ast))})
+
+         (p/then
+          (fn [response]
+            (let [adapted {:connection/total-count (:total-count response)
+                           :connection/edges (->> (:results response)
+                                                  (map adapt-to-run)
+                                                  (mapv #(hash-map :edge/node %)))}]
+              ;; Run the adapted structure through a parser to match it to the
+              ;; rest of the query.
+              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+
    :app/current-user
    (fn [env ast]
      (-> (api-promise api/get-orgs :include-user? true)
@@ -486,7 +482,8 @@
                                            :project/parallelism
                                            :project/oss?]}
                   {:organization/plan [*]}]
-                (:query ast))))))
+                (:query ast)))
+        (project-runs-ast? ast))))
 
 (defmulti send* key)
 
@@ -515,28 +512,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            ;; Also :route/projects (but a separate expression for analytics, which
-            ;; doesn't actually need to hit the server)
-            (and (= :circleci/organization (:key ast))
-                 (= '[:organization/name] (:query ast)))
-            (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-              (cb {:circleci/organization {:organization/name name}} query))
-
-            ;; :route/workflow
-            (project-runs-ast? ast)
-            (let [{:keys [connection/offset connection/limit]}
-                  (:params (expr-ast/get-in ast [:organization/project :routed-page]))]
-              (merge-workflow-runs {:organization/vcs-type (-> ast :params :organization/vcs-type)
-                                    :organization/name (-> ast :params :organization/name)
-                                    :project/name (-> ast
-                                                      (expr-ast/get :organization/project)
-                                                      :params
-                                                      :project/name)}
-                                   offset
-                                   limit
-                                   cb
-                                   query))
-
             ;; :route/run
             (let [{:keys [key children]} ast]
               (and (= :circleci/run key)
