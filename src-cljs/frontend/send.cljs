@@ -456,7 +456,38 @@
      ;; Also: note that we do no processing/massaging of this data. The plan
      ;; data is currently used in it's old-api form rather than using new
      ;; namespaced, universal keys. This is debt.
-     (-> (api-promise (partial api/get-org-plan name vcs-type))))})
+     (-> (api-promise (partial api/get-org-plan name vcs-type))))
+
+   :circleci/run
+   (fn [env ast]
+     (resolve (assoc env :run/id (:run/id (:params ast)))
+              ast
+              (chan)))
+
+   :run/job
+   (fn [env ast]
+     (resolve (assoc env :job/name (:job/name (:params ast)))
+              ast
+              (chan)))
+
+   :job/name
+   (fn [env ast]
+     (:job/name env))
+
+   :job/build
+   (fn [{:keys [run/id job/name] :as env} ast]
+     ;; Unlike most of the api functions, api/get-org-settings takes the channel
+     ;; as its last argument, so we use `partial` to make a function which takes
+     ;; it first, as `api-promise` requires.
+     (-> (api-promise api/get-workflow-status id)
+         (p/then
+          (fn [response]
+            (let [adapted (->> response
+                               adapt-to-run
+                               :run/jobs
+                               (filter #(= name (:job/name %)))
+                               first)]
+              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
 
 (defn- resolvers-can-handle?
   "Tool for migrating to resolvers. True if the expression can be handled by the
@@ -483,7 +514,13 @@
                                            :project/oss?]}
                   {:organization/plan [*]}]
                 (:query ast)))
-        (project-runs-ast? ast))))
+        (project-runs-ast? ast)
+        (let [{:keys [key children]} ast]
+          (and (= :circleci/run key)
+               (= 1 (count children))
+               (= :run/job (:key (first children)))
+               (= [:job/build :job/name]
+                  (:query (first children))))))))
 
 (defmulti send* key)
 
@@ -512,25 +549,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            ;; :route/run
-            (let [{:keys [key children]} ast]
-              (and (= :circleci/run key)
-                   (= 1 (count children))
-                   (= :run/job (:key (first children)))
-                   (= [:job/build :job/name]
-                      (:query (first children)))))
-            (let [job-ast (first (:children ast))
-                  job-name (:job/name (:params job-ast))]
-              (api/get-workflow-status
-               (callback-api-chan
-                (fn [response]
-                  (cb {:circleci/run {:run/job (->> response
-                                                    adapt-to-run
-                                                    :run/jobs
-                                                    (filter #(= job-name (:job/name %)))
-                                                    first)}}
-                      query)))
-               (:run/id (:params ast))))
             ;; Also :route/workflow (but a separate expression for breadcrumbs, which
             ;; doesn't actually need to hit the server)
             (and (= :circleci/organization (:key ast))
