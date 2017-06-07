@@ -37,7 +37,8 @@
     (async/pipe
      (async/merge
       (for [ast children
-            :let [read-from-key (get-in ast [:params :<] (:key ast))]]
+            :let [read-from-key (get-in ast [:params :<] (:key ast))
+                  ast (update ast :params dissoc :<)]]
         (if (contains? resolvers read-from-key)
           (let [resolver (get resolvers read-from-key)]
             (pipe-values (resolver env ast)
