@@ -88,6 +88,9 @@ foreman start # (or) goreman start
 Then visit https://prod.circlehost:4443 or https://dev.circlehost:4443 (if you
 have access and have set it up) in your browser.
 
+To log into using the production backend, visit https://prod.circlehost:4443/dashboard.
+(`https://prod.circlehost:4443` redirects to outer in a vicious cycle.)
+
 ### Viewing documentation changes
 
 To see documentation locally you have to compile the docs manifest, like:
