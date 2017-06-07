@@ -520,7 +520,10 @@
                (= 1 (count children))
                (= :run/job (:key (first children)))
                (= [:job/build :job/name]
-                  (:query (first children))))))))
+                  (:query (first children)))))
+        (and (= :circleci/organization (:key ast))
+             (= '[:organization/vcs-type :organization/name] (:query ast)))
+        (project-crumb-ast? ast))))
 
 (defmulti send* key)
 
@@ -549,19 +552,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            ;; Also :route/workflow (but a separate expression for breadcrumbs, which
-            ;; doesn't actually need to hit the server)
-            (and (= :circleci/organization (:key ast))
-                 (= '[:organization/vcs-type :organization/name] (:query ast)))
-            (let [{:keys [organization/vcs-type organization/name]} (:params ast)]
-              (cb {:circleci/organization {:organization/vcs-type vcs-type
-                                           :organization/name name}}
-                  query))
-
-            ;; Also :route/workflow (but *another( expression for breadcrumbs, which
-            ;; doesn't actually need to hit the server)
-            (project-crumb-ast? ast) (get-project-name cb ast query)
-
             ;; :route/run crumbs
             (run-page-crumbs-ast? ast) (get-run-page-crumbs cb ast query)
 
