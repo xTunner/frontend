@@ -429,7 +429,7 @@
       [:div.logomark
        (common/ico :logo)]]
 
-     [:a.aside-item {:class (when (dashboard-subpages current-route) "current")
+     [:a.aside-item {:class (when (contains? dashboard-subpages current-route) "current")
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Builds"
@@ -439,7 +439,7 @@
       [:div.nav-label "Builds"]]
 
      (when (feature/enabled? :workflows-poc)
-       [:a.aside-item {:class (when (workflows-subpages current-route) "current")
+       [:a.aside-item {:class (when (contains? workflows-subpages current-route) "current")
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
@@ -447,7 +447,7 @@
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 
-     [:a.aside-item {:class (when (insights-subpages current-route)
+     [:a.aside-item {:class (when (contains? insights-subpages current-route)
                               "current")
                      :data-placement "right"
                      :data-trigger "hover"
@@ -547,7 +547,7 @@
   "New side nav, to be used in conjunction with the top bar"
   (html
     [:nav.aside-left-nav
-     [:a.aside-item {:class (when (dashboard-subpages current-route)
+     [:a.aside-item {:class (when (contains? dashboard-subpages current-route)
                               "current")
                      :data-placement "right"
                      :data-trigger "hover"
@@ -558,7 +558,7 @@
       [:div.nav-label "Builds"]]
 
      (when (feature/enabled? "workflows-poc")
-       [:a.aside-item {:class (when (workflows-subpages current-route)
+       [:a.aside-item {:class (when (contains? workflows-subpages current-route)
                                 "current")
                        :data-placement "right"
                        :data-trigger "hover"
@@ -567,7 +567,7 @@
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 
-     [:a.aside-item {:class (when (insights-subpages current-route)
+     [:a.aside-item {:class (when (contains? insights-subpages current-route)
                               "current")
                      :data-placement "right"
                      :data-trigger "hover"
