@@ -287,25 +287,6 @@
            (expr-ast/get :run/trigger-info)
            (expr-ast/has-children? #{:trigger-info/branch}))))
 
-(defn- get-run-page-crumbs [cb expr-ast query]
-  (let [id (:run/id (:params expr-ast))]
-    (api/get-workflow-status
-     (callback-api-chan
-      (fn [response]
-        (let [build (-> response :workflow/jobs first :job/build)
-              branch (-> response :workflow/trigger-info :trigger-info/branch)
-              novelty {:circleci/run
-                       {:run/id id
-                        :run/project
-                        {:project/name (:build/repo build)
-                         :project/organization
-                         {:organization/vcs-type (:build/vcs-type build)
-                          :organization/name (:build/org build)}}
-                        :run/trigger-info
-                        {:trigger-info/branch branch}}}]
-          (cb novelty query))))
-     id)))
-
 ;; The parser used by the resolvers when they return deeply nested data.
 (def parser
   (om-next/parser {:read (bodhi/read-fn
@@ -487,6 +468,47 @@
                                :run/jobs
                                (filter #(= name (:job/name %)))
                                first)]
+              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+
+   :run/id
+   (fn [env ast]
+     (:run/id env))
+
+   #{:run/name
+     :run/status
+     :run/started-at
+     :run/stopped-at}
+   (fn [{:keys [run/id] :as env} ast]
+     (-> (api-promise api/get-workflow-status id)
+         (p/then adapt-to-run)))
+
+   ;; The current implementation of `resolve` makes deeply-nested
+   ;; responses (using a parser like this) and matching multiple keys (using a
+   ;; set as a key in the resolvers map) not really work together well. Instead
+   ;; we have to repeat ourselves for each of these non-scalar parts of a run.
+   ;; This is something `resolve` should improve.
+   :run/jobs
+   (fn [{:keys [run/id] :as env} ast]
+     (-> (api-promise api/get-workflow-status id)
+         (p/then
+          (fn [response]
+            (let [jobs (:run/jobs (adapt-to-run response))]
+              (mapv #(parser {:state (atom %)} (mapv om-next/ast->query (:children ast))) jobs))))))
+
+   :run/trigger-info
+   (fn [{:keys [run/id] :as env} ast]
+     (-> (api-promise api/get-workflow-status id)
+         (p/then
+          (fn [response]
+            (let [adapted (:run/trigger-info (adapt-to-run response))]
+              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+
+   :run/project
+   (fn [{:keys [run/id] :as env} ast]
+     (-> (api-promise api/get-workflow-status id)
+         (p/then
+          (fn [response]
+            (let [adapted (:run/project (adapt-to-run response))]
               (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
 
 (defn- resolvers-can-handle?
@@ -523,7 +545,39 @@
                   (:query (first children)))))
         (and (= :circleci/organization (:key ast))
              (= '[:organization/vcs-type :organization/name] (:query ast)))
-        (project-crumb-ast? ast))))
+        (project-crumb-ast? ast)
+        (run-page-crumbs-ast? ast)
+        (let [{:keys [key query]} ast]
+          (and (= :circleci/run key)
+               (= [:run/id
+                   :run/name
+                   :run/status
+                   :run/started-at
+                   :run/stopped-at
+                   {:run/jobs [:job/id]}
+                   {:run/trigger-info [:trigger-info/vcs-revision
+                                       :trigger-info/subject
+                                       :trigger-info/body
+                                       :trigger-info/branch
+                                       {:trigger-info/pull-requests [:pull-request/url]}]}
+                   {:run/project [:project/name
+                                  {:project/organization [:organization/name
+                                                          :organization/vcs-type]}]}]
+                  query)))
+        (let [{:keys [key query]} ast]
+          (and (= :circleci/run key)
+               (= '[({:jobs-for-jobs [:job/id
+                                      :job/status
+                                      :job/started-at
+                                      :job/stopped-at
+                                      :job/name
+                                      :job/build]}
+                     {:< :run/jobs})
+                    ({:jobs-for-first [:job/id
+                                       :job/build
+                                       :job/name]}
+                     {:< :run/jobs})]
+                  query))))))
 
 (defmulti send* key)
 
@@ -552,69 +606,6 @@
         (let [[expr cb] (de-alias-expression expr cb)
               ast (om-parser/expr->ast expr)]
           (cond
-            ;; :route/run crumbs
-            (run-page-crumbs-ast? ast) (get-run-page-crumbs cb ast query)
-
-            ;; :route/run RunRow
-            (let [{:keys [key query]} ast]
-              (and (= :circleci/run key)
-                   (= [:run/id
-                       :run/name
-                       :run/status
-                       :run/started-at
-                       :run/stopped-at
-                       {:run/jobs [:job/id]}
-                       {:run/trigger-info [:trigger-info/vcs-revision
-                                           :trigger-info/subject
-                                           :trigger-info/body
-                                           :trigger-info/branch
-                                           {:trigger-info/pull-requests [:pull-request/url]}]}
-                       {:run/project [:project/name
-                                      {:project/organization [:organization/name
-                                                              :organization/vcs-type]}]}]
-                      query)))
-            (api/get-workflow-status
-             (callback-api-chan
-              (fn [response]
-                (cb {:circleci/run (-> (adapt-to-run response)
-                                       (dissoc :run/jobs))}
-                    query)))
-             (:run/id (:params ast)))
-
-            (let [{:keys [key query]} ast]
-              (and (= :circleci/run key)
-                   (= '[({:jobs-for-jobs [:job/id
-                                          :job/status
-                                          :job/started-at
-                                          :job/stopped-at
-                                          :job/name
-                                          :job/build]}
-                         {:< :run/jobs})
-                        ({:jobs-for-first [:job/id
-                                           :job/build
-                                           :job/name]}
-                         {:< :run/jobs})]
-                      query)))
-            (api/get-workflow-status
-             (callback-api-chan
-              (fn [response]
-                (let [run (adapt-to-run response)
-                      run-with-aliases (-> run
-                                           (dissoc :run/jobs)
-                                           (assoc :jobs-for-jobs (mapv #(select-keys % [:job/id
-                                                                                        :job/status
-                                                                                        :job/started-at
-                                                                                        :job/stopped-at
-                                                                                        :job/name
-                                                                                        :job/build])
-                                                                       (:run/jobs run))
-                                                  :jobs-for-first (mapv #(select-keys % [:job/id
-                                                                                         :job/build
-                                                                                         :job/name])
-                                                                        (:run/jobs run))))]
-                  (cb {:circleci/run run-with-aliases} query))))
-             (:run/id (:params ast)))
-
             ;; :route/org-workflows
             (org-runs-ast? ast) (get-org-runs ast cb query)))))))
 

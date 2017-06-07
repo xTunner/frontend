@@ -126,7 +126,11 @@
         {(:jobs-for-first {:< :run/jobs}) ^{:component ~Job} [:job/id
                                                               :job/build
                                                               :job/name]}]}
-     {:routed-entity/job [:job/build :job/name]}])
+     {:routed-entity/job [:job/name
+                          {:job/build [:build/vcs-type
+                                       :build/org
+                                       :build/repo
+                                       :build/number]}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
