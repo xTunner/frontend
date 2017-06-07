@@ -420,6 +420,14 @@
   ((om/get-shared owner :track-event) {:event-type event-name
                                        :properties {:component "left-nav"}}))
 
+(def insights-subpages #{:build-insights :project-insights})
+(def dashboard-subpages #{:dashboard :build})
+(def workflows-subpages #{:route/project-workflows
+                          :route/project-branch-workflows
+                          :route/org-workflows
+                          :route/run})
+
+
 (defn aside-nav-original [{:keys [user current-route owner]}]
   "Original side-nav, preserved for most users as the top-bar-ui-v-1
    is implemented. Case-by-case feature flags too cumbersome as routes change"
@@ -433,7 +441,7 @@
       [:div.logomark
        (common/ico :logo)]]
 
-     [:a.aside-item {:class (when (= :dashboard current-route) "current")
+     [:a.aside-item {:class (when (contains? dashboard-subpages current-route) "current")
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Builds"
@@ -442,8 +450,8 @@
       [:i.material-icons "storage"]
       [:div.nav-label "Builds"]]
 
-     (when (ld/feature-on? "workflows-poc")
-       [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
+     (when (feature/enabled? :workflows-poc)
+       [:a.aside-item {:class (when (contains? workflows-subpages current-route) "current")
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
@@ -451,7 +459,8 @@
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 
-     [:a.aside-item {:class (when (= :build-insights current-route) "current")
+     [:a.aside-item {:class (when (contains? insights-subpages current-route)
+                              "current")
                      :data-placement "right"
                      :data-trigger "hover"
                      :title "Insights"
@@ -546,14 +555,11 @@
       [:i.material-icons "power_settings_new"]
       [:div.nav-label "Log Out"]]]))
 
-(def insights-subpages #{:build-insights :project-insights})
-(def dashboard-subpages #{:dashboard :build})
-
 (defn aside-nav-new [{:keys [current-route org owner]}]
   "New side nav, to be used in conjunction with the top bar"
   (html
     [:nav.aside-left-nav
-     [:a.aside-item {:class (when (dashboard-subpages current-route)
+     [:a.aside-item {:class (when (contains? dashboard-subpages current-route)
                               "current")
                      :data-placement "right"
                      :data-trigger "hover"
@@ -563,8 +569,9 @@
       [:i.material-icons "storage"]
       [:div.nav-label "Builds"]]
 
-     (when (ld/feature-on? "workflows-poc")
-       [:a.aside-item {:class (when (= :v1-workflow current-route) "current")
+     (when (feature/enabled? "workflows-poc")
+       [:a.aside-item {:class (when (contains? workflows-subpages current-route)
+                                "current")
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
@@ -572,7 +579,7 @@
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 
-     [:a.aside-item {:class (when (insights-subpages current-route)
+     [:a.aside-item {:class (when (contains? insights-subpages current-route)
                               "current")
                      :data-placement "right"
                      :data-trigger "hover"
