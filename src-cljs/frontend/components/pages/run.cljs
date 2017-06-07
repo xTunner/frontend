@@ -39,7 +39,7 @@
      :job/started-at
      :job/stopped-at
      :job/name
-     {:job/run [:run/id]}])
+     :job/build])
   Object
   (render [this]
     (component
@@ -48,9 +48,8 @@
                     job/started-at
                     job/stopped-at]
              job-name :job/name
-             {run-id :run/id} :job/run}
-            (om-next/props this)
-            {:keys [selected?]} (om-next/get-computed this)]
+             {:keys [build/vcs-type build/org build/repo build/number] :as build} :job/build}
+            (om-next/props this)]
         (card/basic
          (element :content
            (html
@@ -59,10 +58,15 @@
               [:div.status-heading
                [:div.status-name
                 [:span.job-status (status/icon (status-class status))]
-                (if selected?
+                (if (nil? build)
                   [:span.job-name job-name]
-                  [:a {:href (routes/v1-job-path run-id job-name)}
-                   [:span.job-name job-name]])]
+                  [:a {:href
+                     (routes/v1-build-path vcs-type
+                                           org
+                                           repo
+                                           nil
+                                           number)}
+                 [:span.job-name job-name]])]
                [:div.status-actions
                 (button/icon {:label "Retry job-name"
                               :disabled? true}
@@ -85,69 +89,6 @@
                    "-")]]]]])))))))
 
 (def job (om-next/factory Job {:keyfn :job/id}))
-
-(defn- fetch-build [owner
-                    {:keys [:build/vcs-type :build/org :build/repo :build/number]}]
-  (let [build-url (gstring/format "/api/v1.1/project/%s/%s/%s/%s"
-                                  (name vcs-type)
-                                  org
-                                  repo
-                                  number)]
-    (ajax/ajax :get build-url
-               :build-fetch
-               (om/get-shared owner [:comms :api])
-               :context {:project-name (gstring/format "%s/%s" org repo)
-                         :build-num number})))
-
-(defn- build-matches-spec?
-  "Returns whether a build (using legacy attributes) matches the :build/*
-  attributes of a build spec."
-  [spec build]
-  (let [mapping {:vcs_type :build/vcs-type
-                 :username :build/org
-                 :reponame :build/repo
-                 :build_num :build/number}]
-    (= spec (-> build
-                (select-keys (keys mapping))
-                (set/rename-keys mapping)
-                (update :build/vcs-type keyword)))))
-
-(defn- build-page [{:keys [app job-build current-tab tab-href]} owner]
-  (reify
-    om/IWillMount
-    (will-mount [_]
-      (when job-build
-        (fetch-build owner job-build)))
-    om/IWillUpdate
-    (will-update [this next-props _next-state]
-      (let [previous-build-spec (-> owner om/get-props :job-build)
-            current-build-spec (:job-build next-props)]
-        (when (not= previous-build-spec current-build-spec)
-         (fetch-build owner current-build-spec))))
-    om/IRender
-    (render [_]
-      (let [app
-            ;; Strip build data from legacy app state if it doesn't match the
-            ;; build spec we're currently after. This happens when old build
-            ;; data is present and new build data hasn't loaded yet.
-            (update-in app state/build-data-path
-                       #(when (build-matches-spec? job-build (:build %)) %))]
-        (html
-         [:div
-          [:div.job-output-tabs (let [build-data (dissoc (get-in app state/build-data-path) :container-data)]
-                                  (om/build old-build-head/build-sub-head
-                                            {:build-data build-data
-                                             :current-tab current-tab
-                                             :project-data (get-in app state/project-data-path)
-                                             :user (get-in app state/user-path)
-                                             :projects (get-in app state/projects-path)
-                                             :scopes (get-in app state/project-scopes-path)
-                                             :ssh-available? false
-                                             :tab-href tab-href}))]
-          [:div.card (om/build build-steps/container-build-steps
-                               (assoc (get-in app state/container-data-path)
-                                      :selected-container-id (state/current-container-id app))
-                               {:key :selected-container-id})]])))))
 
 (defn job-cards-row
   "A set of cards to layout together"
@@ -254,21 +195,4 @@
                                  job-data
                                  {:selected? (= (:job/name job-data)
                                                 (:job/name selected-job))})))
-                        jobs))]
-                [:.jobs-and-output
-                 [:.output
-                  [:div.output-header
-                   [:.output-title
-                    [:span (gstring/format "%s #%s"
-                                           selected-job-name
-                                           (:build/number selected-job-build-id))]]]
-                  (when selected-job-build-id
-                    (build-legacy build-page
-                                  {:app (:legacy/state (om-next/props this))
-                                   :job-build selected-job-build-id
-                                   :current-tab (:route-params/tab route-params)
-                                   :tab-href #(routes/v1-job-path
-                                               id
-                                               selected-job-name
-                                               (assoc route-params
-                                                      :route-params/tab %))}))]]])))})))))
+                        jobs))]])))})))))
