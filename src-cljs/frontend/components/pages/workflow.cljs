@@ -29,10 +29,14 @@
     :run-status/failed :status-class/failed
     :run-status/canceled :status-class/stopped))
 
-(defn- cancelable-status? [run-status]
-  (contains? #{:run-status/not-run
-               :run-status/running}
-             run-status))
+(def ^:private cancelable-statuses #{:run-status/not-run
+                                     :run-status/running})
+
+(def ^:private rerunnable-statuses #{:run-status/succeeded
+                                     :run-status/failed
+                                     :run-status/canceled})
+
+(def ^:private rerunnable-from-start-statuses #{:run-status/failed})
 
 (defn run-prs
   "A om-next compatible version of
@@ -168,20 +172,21 @@
                    :status-class/running (icon/status-running)
                    :status-class/waiting (icon/status-queued))]
                 [:.status-string (string/replace (name status) #"-" " ")]]]
-              (cond (cancelable-status? status)
+              (cond (cancelable-statuses status)
                     [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
                      (icon/status-canceled)
                      [:span "cancel"]]
-                    (not (cancelable-status? status))
+                    (rerunnable-statuses status)
                     [:div.rebuild-button.dropdown
                      (icon/rebuild)
                      [:span "Rerun"]
                      [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
                      [:ul.dropdown-menu.pull-right
-                      [:li
-                       [:a
-                        {:on-click #(transact-run-retry this id [])}
-                        "Rerun failed jobs"]]
+                      (when (rerunnable-from-start-statuses status)
+                        [:li
+                         [:a
+                          {:on-click #(transact-run-retry this id [])}
+                          "Rerun failed jobs"]])
                       [:li
                        [:a
                         {:on-click #(transact-run-retry this id jobs)}
