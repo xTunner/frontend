@@ -31,7 +31,7 @@
                  [cljsjs/react-dom "15.4.2-2"]
                  [cljsjs/c3 "0.4.10-0"]
 
-                 [org.omcljs/om "1.0.0-alpha47"]
+                 [org.omcljs/om "1.0.0-beta1"]
                  [compassus "1.0.0-alpha2"]
                  [bodhi "0.0.2"]
 
