@@ -264,25 +264,26 @@
               [:a {:href (routes/v1-run-path workflow_id)}
                workflow_name]]))
 
-          (summary-item
-           "Triggered by:"
-           (trigger/description build))
+          [:.right-side
+           (summary-item
+            "Triggered by:"
+            (trigger/description build))
 
-          (when (and (= "canceled" status) canceler)
-            (summary-item
-             "Canceled by:"
-             (let [{:keys [type name login]} canceler]
-               (html
-                [:a {:href (case type
-                             "github" (str (github-endpoint) "/" login)
-                             "bitbucket" (bb-utils/user-profile-url login)
-                             nil)}
-                 (if (not-empty name) name login)]))))
+           (when (and (= "canceled" status) canceler)
+             (summary-item
+              "Canceled by:"
+              (let [{:keys [type name login]} canceler]
+                (html
+                 [:a {:href (case type
+                              "github" (str (github-endpoint) "/" login)
+                              "bitbucket" (bb-utils/user-profile-url login)
+                              nil)}
+                  (if (not-empty name) name login)]))))
 
-          (when (build-model/has-pull-requests? build)
-            (summary-item
-             (str "PR" (when (< 1 (count pull_requests)) "s") ":")
-             (om/build pull-requests pull_requests)))])))))
+           (when (build-model/has-pull-requests? build)
+             (summary-item
+              (str "PR" (when (< 1 (count pull_requests)) "s") ":")
+              (om/build pull-requests pull_requests)))]])))))
 
 (defn- build-head-content [{:keys [build-data project-data] :as data} owner]
   (reify
