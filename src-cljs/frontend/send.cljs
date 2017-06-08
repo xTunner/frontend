@@ -104,16 +104,6 @@
                    :project/organization {:organization/vcs-type vcs-type
                                           :organization/name org}}}))
 
-(defn- de-alias-expression [expr cb]
-  (let [ast (om-parser/expr->ast expr)]
-    (if-let [aliased-from (get-in ast [:params :<])]
-      [(om-parser/ast->expr (-> ast
-                                (update :params dissoc :<)
-                                (assoc :key aliased-from)))
-       ;; Wrap the callback to rename the key in the result back to the alias.
-       #(cb (rename-keys %1 {aliased-from (:key ast)}) %2)]
-      [expr cb])))
-
 (def ^:private ignore-response-callback (fn [_response] nil))
 
 (defn- request-run-retry-from-api-service
@@ -141,120 +131,6 @@
   [expression]
   (= 'run/cancel (first expression)))
 
-(defn- branch-crumb-ast?
-  "returns true if the ast is for an expression rendering the branch
-  breadcrumb"
-  [expr-ast]
-  (boolean
-   (and (= :circleci/organization
-           (:key expr-ast))
-        (expr-ast/has-children? expr-ast
-                                #{:organization/project})
-        (-> expr-ast
-            (expr-ast/get :organization/project)
-            (expr-ast/has-children? #{:project/branch}))
-        (-> expr-ast
-            (expr-ast/get-in [:organization/project :project/branch])
-            (expr-ast/has-children? #{:branch/name})))))
-
-(defn- branch-runs-ast?
-  "returns true if the ast is for an expression rendering the branch
-  workflow-runs page"
-  [expr-ast]
-  (boolean
-   (and (= :circleci/organization (:key expr-ast))
-        (expr-ast/has-children? expr-ast
-                                #{:organization/project})
-        (-> expr-ast
-            (expr-ast/get :organization/project)
-            (expr-ast/has-children? #{:project/branch}))
-        (-> expr-ast
-            (expr-ast/get-in [:organization/project :project/branch])
-            (expr-ast/has-children? #{:branch/name :routed-page :branch/project}))
-        (-> expr-ast
-            (expr-ast/get-in [:organization/project
-                              :project/branch
-                              :branch/project])
-            (expr-ast/has-children? #{:project/organization :project/name}))
-        (-> expr-ast
-            (expr-ast/get-in [:organization/project
-                              :project/branch
-                              :branch/project
-                              :project/organization])
-            (expr-ast/has-children? #{:organization/name})))))
-
-(defn- get-branch-runs [cb expr-ast query]
-  (let [vcs-type (-> expr-ast :params :organization/vcs-type)
-        org-name (-> expr-ast :params :organization/name)
-        repo-name (-> expr-ast
-                      (expr-ast/get-in [:organization/project])
-                      :params
-                      :project/name)
-        branch-name (-> expr-ast
-                        (expr-ast/get-in [:organization/project :project/branch])
-                        :params
-                        :branch/name)
-        {:keys [connection/offset connection/limit]}
-        (:params (expr-ast/get-in expr-ast [:organization/project :project/branch :routed-page]))]
-    (api/get-branch-workflows (callback-api-chan
-                               (fn [response]
-                                 (let [novelty {:circleci/organization
-                                                {:organization/project
-                                                 {:project/branch
-                                                  {:routed-page
-                                                   {:connection/total-count (:total-count response)
-                                                    :connection/edges (->> (:results response)
-                                                                           (map adapt-to-run)
-                                                                           (mapv #(hash-map :edge/node %)))}}}}}]
-                                   (cb novelty query))))
-                              vcs-type
-                              org-name
-                              repo-name
-                              branch-name
-                              {:offset offset :limit limit})))
-
-(defn- project-runs-ast? [expr-ast]
-  (and (= :circleci/organization
-          (:key expr-ast))
-       (expr-ast/has-children? expr-ast #{:organization/project})
-       (or
-        (-> expr-ast
-            (expr-ast/get :organization/project)
-            (expr-ast/has-children? #{:project/name :routed-page :project/organization})))
-       (-> expr-ast
-           (expr-ast/get-in [:organization/project :project/organization])
-           (expr-ast/has-children? #{:organization/vcs-type :organization/name}))))
-
-(defn- project-crumb-ast? [expr-ast]
-  (and (= :circleci/organization
-          (:key expr-ast))
-       (expr-ast/has-children? expr-ast #{:organization/project})
-       (-> expr-ast
-           (expr-ast/get :organization/project)
-           (expr-ast/has-children? #{:project/name}))))
-
-(defn- get-project-name [cb expr-ast query]
-  (let [project-name (-> expr-ast
-                         (expr-ast/get :organization/project)
-                         :params
-                         :project/name)
-        novelty {:circleci/organization
-                 {:organization/project
-                  {:project/name project-name}}}]
-    (cb novelty query)))
-
-(defn- run-page-crumbs-ast? [expr-ast]
-  (and (= :circleci/run (:key expr-ast))
-       (expr-ast/has-children? expr-ast #{:run/id :run/project :run/trigger-info})
-       (-> expr-ast
-           (expr-ast/get :run/project)
-           (expr-ast/has-children? #{:project/name :project/organization}))
-       (-> expr-ast
-           (expr-ast/get-in [:run/project :project/organization])
-           (expr-ast/has-children? #{:organization/vcs-type :organization/name}))
-       (-> expr-ast
-           (expr-ast/get :run/trigger-info)
-           (expr-ast/has-children? #{:trigger-info/branch}))))
 
 ;; The parser used by the resolvers when they return deeply nested data.
 (def parser
