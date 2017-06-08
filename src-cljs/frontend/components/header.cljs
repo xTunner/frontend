@@ -49,20 +49,6 @@
           :size :small}
          "Follow Project")))))
 
-(defn show-workflows-link? [app]
-  (let [repo (get-in app [:navigation-data :repo])
-        workflows-enabled? (get-in app (conj state/feature-flags-path
-                                             :workflows))]
-    (boolean (and repo workflows-enabled?))))
-
-(defn workflows-link [app]
-  (let [{:keys [vcs_type org repo]} (:navigation-data app)]
-    (button/link
-     {:href (routes/v1-project-workflows-path vcs_type org repo)
-      :bordered? true
-      :size :small}
-     "Workflows")))
-
 (defn show-settings-link? [app]
   (and
     (:read-settings (get-in app state/page-scopes-path))
@@ -387,9 +373,6 @@
                                                                                                   (get-in app state/user-organizations-path))
                                                         :nav-point (get-in app state/current-view-path)}
                                           :actions (cond-> []
-                                                     (show-workflows-link? app)
-                                                     (conj (workflows-link app))
-
                                                      (show-settings-link? app)
                                                      (conj (settings-link app owner))
 
