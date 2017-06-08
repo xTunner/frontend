@@ -469,16 +469,26 @@
       [:i.material-icons "assessment"]
       [:div.nav-label "Insights"]]
 
-     [:a.aside-item {:class (when (or (= :route/projects current-route)
-                                      (= :add-projects current-route))
-                              "current")
-                     :title "Projects"
-                     :data-placement "right"
-                     :data-trigger "hover"
-                     :href "/projects"
-                     :on-click #(aside-nav-clicked owner :projects-icon-clicked)}
-      [:i.material-icons "book"]
-      [:div.nav-label "Projects"]]
+     (if (config/enterprise?)
+       [:a.aside-item {:class (when (= :add-projects current-route)
+                                "current")
+                       :href "/add-projects",
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Projects"
+                       :on-click #(aside-nav-clicked owner :add-project-icon-clicked)}
+        [:i.material-icons "library_add"]
+        [:div.nav-label "Projects"]]
+
+       [:a.aside-item {:class (when (= :route/projects current-route)
+                                "current")
+                       :title "Projects"
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :href "/projects"
+                       :on-click #(aside-nav-clicked owner :projects-icon-clicked)}
+        [:i.material-icons "book"]
+        [:div.nav-label "Projects"]])
 
      [:a.aside-item {:class (when (= :team current-route) "current")
                      :href "/team",
