@@ -24,12 +24,15 @@ jobs:
       - restore_cache:
           keys:
             - v1-repo-{{ checksum ".circle-sha" }}
+      - run:
+          command: rmdir /home/ubuntu/.m2
       - restore_cache:
           keys:
             - v2-dependency-jars-{{ checksum "project.clj" }}
       - run:
           name: download dependencies
-          command: lein deps
+          command: |
+            [[ -d /home/ubuntu/.m2 ]] || lein deps
       - save_cache:
           key: v2-dependency-jars-{{ checksum "project.clj" }}
           paths:
@@ -52,11 +55,12 @@ jobs:
       - run:
           name: download dependencies
           command: |
-            source ~/.bashrc
-            set -exu
-            npm install
-            node_modules/bower/bin/bower install || (sleep 2; node_modules/bower/bin/bower install)
-            [[ -d resources/components ]] || node_modules/bower/bin/bower install
+            if [ ! -d node_modules -o ! -d resources/components ]; then
+              source ~/.bashrc
+              set -exu
+              npm install
+              node_modules/bower/bin/bower install
+            fi
       - save_cache:
           key: v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
           paths:
