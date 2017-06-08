@@ -141,37 +141,6 @@
   [expression]
   (= 'run/cancel (first expression)))
 
-(defn- org-runs-ast?
-  "returns true if the ast is for an expression rendering the org workflows page"
-  [expr-ast]
-  (boolean (and (= :circleci/organization (:key expr-ast))
-                (expr-ast/has-children? expr-ast
-                                        #{:routed-page
-                                          :organization/name
-                                          :organization/vcs-type}))))
-
-(defn- get-org-runs
-  "Retrieves workflow runs for and org and merges them into the
-  app. Takes an expression ast, send callback, and query."
-  [expr-ast send-cb query]
-  (let [vcs-type (-> expr-ast :params :organization/vcs-type)
-        org-name (-> expr-ast :params :organization/name)
-        {:keys [connection/offset connection/limit]}
-        (:params (expr-ast/get-in expr-ast [:routed-page]))]
-    (api/get-org-workflows
-     (callback-api-chan
-      (fn [response]
-        (let [novelty {:circleci/organization
-                       {:routed-page
-                        {:connection/total-count (:total-count response)
-                         :connection/edges (->> (:results response)
-                                                (map adapt-to-run)
-                                                (mapv #(hash-map :edge/node %)))}}}]
-          (send-cb novelty query))))
-     vcs-type
-     org-name
-     {:offset offset :limit limit})))
-
 (defn- branch-crumb-ast?
   "returns true if the ast is for an expression rendering the branch
   breadcrumb"
@@ -511,74 +480,6 @@
             (let [adapted (:run/project (adapt-to-run response))]
               (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
 
-(defn- resolvers-can-handle?
-  "Tool for migrating to resolvers. True if the expression can be handled by the
-  resolvers above."
-  [expr]
-  (let [ast (om-parser/expr->ast (first (de-alias-expression expr #())))]
-    (or (branch-crumb-ast? ast)
-        (branch-runs-ast? ast)
-        (= {:app/current-user [{:user/organizations [:organization/name :organization/vcs-type :organization/avatar-url]}]}
-           expr)
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/vcs-type
-                  :organization/name
-                  :organization/avatar-url
-                  :organization/current-user-is-admin?]
-                (:query ast)))
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/vcs-type
-                  :organization/name
-                  {:organization/projects [:project/follower-count
-                                           :project/vcs-url
-                                           :project/name
-                                           :project/parallelism
-                                           :project/oss?]}
-                  {:organization/plan [*]}]
-                (:query ast)))
-        (project-runs-ast? ast)
-        (let [{:keys [key children]} ast]
-          (and (= :circleci/run key)
-               (= 1 (count children))
-               (= :run/job (:key (first children)))
-               (= [:job/build :job/name]
-                  (:query (first children)))))
-        (and (= :circleci/organization (:key ast))
-             (= '[:organization/vcs-type :organization/name] (:query ast)))
-        (project-crumb-ast? ast)
-        (run-page-crumbs-ast? ast)
-        (let [{:keys [key query]} ast]
-          (and (= :circleci/run key)
-               (= [:run/id
-                   :run/name
-                   :run/status
-                   :run/started-at
-                   :run/stopped-at
-                   {:run/jobs [:job/id]}
-                   {:run/trigger-info [:trigger-info/vcs-revision
-                                       :trigger-info/subject
-                                       :trigger-info/body
-                                       :trigger-info/branch
-                                       {:trigger-info/pull-requests [:pull-request/url]}]}
-                   {:run/project [:project/name
-                                  {:project/organization [:organization/name
-                                                          :organization/vcs-type]}]}]
-                  query)))
-        (let [{:keys [key query]} ast]
-          (and (= :circleci/run key)
-               (= '[({:jobs-for-jobs [:job/id
-                                      :job/status
-                                      :job/started-at
-                                      :job/stopped-at
-                                      :job/name
-                                      :job/build]}
-                     {:< :run/jobs})
-                    ({:jobs-for-first [:job/id
-                                       :job/build
-                                       :job/name]}
-                     {:< :run/jobs})]
-                  query))))))
-
 (defmulti send* key)
 
 ;; This implementation is merely a prototype, which does some rudimentary
@@ -596,18 +497,11 @@
       (js/setTimeout #(send* [:remote (rest query)] cb)
                      ms-until-retried-run-retrieved))
     (doseq [expr query]
-      (if (resolvers-can-handle? expr)
-        (let [ch (resolve {:resolvers resolvers} [expr] (chan))]
-          (go-loop []
-            (when-let [novelty (<! ch)]
-              (cb novelty query)
-              (recur))))
-
-        (let [[expr cb] (de-alias-expression expr cb)
-              ast (om-parser/expr->ast expr)]
-          (cond
-            ;; :route/org-workflows
-            (org-runs-ast? ast) (get-org-runs ast cb query)))))))
+      (let [ch (resolve {:resolvers resolvers} [expr] (chan))]
+        (go-loop []
+          (when-let [novelty (<! ch)]
+            (cb novelty query)
+            (recur)))))))
 
 (defn send [remotes cb]
   (doseq [remote-entry remotes]
