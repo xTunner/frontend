@@ -15,30 +15,13 @@
   .ui("summary-header", {
     @status-badge-height: 25px;
 
-    .flexy();
+    .flexy(row, space-between);
 
     font-size: 13px;
     line-height: @status-badge-height;
 
-    > .right-side {
-      .flexy(stretch, flex-end, row);
-      flex-grow: 1;
-    }
-
-    > *, > .right-side > * {
-      margin-right: 20px;
-
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-
     @media (max-width: 767px) {
       .flexy(stretch, space-around, column);
-
-      > .right-side {
-        .flexy(stretch, flex-start, column);
-      }
     }
   });
 
