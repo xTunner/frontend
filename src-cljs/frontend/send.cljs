@@ -31,23 +31,24 @@
           (recur))))
     ch))
 
-(defn- api-promise
-  "Takes an API function which expects a channel as its first arg, followed by
-  the API functions other args. Returns a promise of the response the API
-  function puts on the channel.
+(defn- api-promise-fn
+  "Takes an API function which expects a channel as its first arg. Returns a
+  function which takes the remaining args, which will then return a promise of
+  the response the API function puts on the channel.
 
   This is a temporary shim to reuse the old API functions in the Om Next send."
-  [api-f & args]
-  (p/promise
-   (fn [resolve reject]
-     (let [ch (chan)]
-       (go-loop []
-         (let [[_ state data] (<! ch)]
-           (when (= state :success)
-             (resolve (:resp data)))
-           (when-not (= state :finished)
-             (recur))))
-       (apply api-f ch args)))))
+  [api-f]
+  (fn [& args]
+    (p/promise
+     (fn [resolve reject]
+       (let [ch (chan)]
+         (go-loop []
+           (let [[_ state data] (<! ch)]
+             (when (= state :success)
+               (resolve (:resp data)))
+             (when-not (= state :finished)
+               (recur))))
+         (apply api-f ch args))))))
 
 (defn- job-run-status [job-status-str]
   (case job-status-str
@@ -185,8 +186,8 @@
 
    :branch/workflow-runs
    (fn [env ast]
-     (-> (api-promise
-          api/get-branch-workflows
+     (-> ((api-promise-fn
+           api/get-branch-workflows)
           (:organization/vcs-type env)
           (:organization/name env)
           (:project/name env)
@@ -206,8 +207,8 @@
 
    :project/workflow-runs
    (fn [env ast]
-     (-> (api-promise
-          api/get-project-workflows
+     (-> ((api-promise-fn
+           api/get-project-workflows)
           (vcs-url/vcs-url (:organization/vcs-type env)
                            (:organization/name env)
                            (:project/name env))
@@ -226,7 +227,7 @@
 
    :app/current-user
    (fn [env ast]
-     (-> (api-promise api/get-orgs :include-user? true)
+     (-> ((api-promise-fn api/get-orgs) :include-user? true)
          (p/then
           (fn [response]
             (let [adapted {:user/organizations
@@ -244,7 +245,7 @@
 
    #{:organization/avatar-url :organization/current-user-is-admin?}
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
-     (-> (api-promise api/get-orgs :include-user? true)
+     (-> ((api-promise-fn api/get-orgs) :include-user? true)
          (p/then
           (fn [response]
             (let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
@@ -258,8 +259,8 @@
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
      ;; as its last argument, so we use `partial` to make a function which takes
-     ;; it first, as `api-promise` requires.
-     (-> (api-promise (partial api/get-org-settings name vcs-type))
+     ;; it first, as `(api-promise-fn` requires.)
+     (-> ((api-promise-fn (partial api/get-org-settings name vcs-type)))
          (p/then
           (fn [response]
             (let [projects (for [p (:projects response)]
@@ -277,12 +278,12 @@
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
      ;; as its last argument, so we use `partial` to make a function which takes
-     ;; it first, as `api-promise` requires.
+     ;; it first, as `api-promise-fn` requires.
      ;;
      ;; Also: note that we do no processing/massaging of this data. The plan
      ;; data is currently used in it's old-api form rather than using new
      ;; namespaced, universal keys. This is debt.
-     (-> (api-promise (partial api/get-org-plan name vcs-type))))
+     (-> ((api-promise-fn (partial api/get-org-plan name vcs-type)))))
 
    :circleci/run
    (fn [env ast]
@@ -304,8 +305,8 @@
    (fn [{:keys [run/id job/name] :as env} ast]
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
      ;; as its last argument, so we use `partial` to make a function which takes
-     ;; it first, as `api-promise` requires.
-     (-> (api-promise api/get-workflow-status id)
+     ;; it first, as `api-promise-fn` requires.
+     (-> ((api-promise-fn api/get-workflow-status) id)
          (p/then
           (fn [response]
             (let [adapted (->> response
@@ -324,7 +325,7 @@
      :run/started-at
      :run/stopped-at}
    (fn [{:keys [run/id] :as env} ast]
-     (-> (api-promise api/get-workflow-status id)
+     (-> ((api-promise-fn api/get-workflow-status) id)
          (p/then adapt-to-run)))
 
    ;; The current implementation of `resolve` makes deeply-nested
