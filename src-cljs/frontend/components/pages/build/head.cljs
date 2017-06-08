@@ -257,6 +257,12 @@
                (gstring/format "%sCPU/%sMB"
                                (:cpu resource_class)
                                (:ram resource_class))]))
+          (when-let [{:keys [workflow_id workflow_name]} (:workflows build)]
+            (summary-item
+             [:span "Workflow:"]
+             [:span
+              [:a {:href (routes/v1-run-path workflow_id)}
+               workflow_name]]))
 
           [:.right-side
            (summary-item
