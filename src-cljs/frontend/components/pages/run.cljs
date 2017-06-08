@@ -1,8 +1,5 @@
 (ns frontend.components.pages.run
-  (:require [clojure.set :as set]
-            [frontend.components.build-head :as old-build-head]
-            [frontend.components.build-steps :as build-steps]
-            [frontend.components.common :as common]
+  (:require [frontend.components.common :as common]
             [frontend.components.pages.workflow :as workflow-page]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
@@ -12,10 +9,8 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer-macros [component element html]]
-            [frontend.utils.ajax :as ajax]
             [frontend.utils.legacy :refer [build-legacy]]
             [goog.string :as gstring]
-            [om.core :as om]
             [om.next :as om-next :refer-macros [defui]]))
 
 (defn- status-class [run-status]
@@ -39,14 +34,16 @@
      :job/started-at
      :job/stopped-at
      :job/name
-     :job/build])
+     :job/build
+     {:job/required-jobs [:job/name]}
+     {:job/run [:run/id]}])
   Object
   (render [this]
     (component
-      (let [{:keys [job/id
-                    job/status
+      (let [{:keys [job/status
                     job/started-at
-                    job/stopped-at]
+                    job/stopped-at
+                    job/required-jobs]
              job-name :job/name
              {:keys [build/vcs-type build/org build/repo build/number] :as build} :job/build}
             (om-next/props this)]
@@ -71,6 +68,12 @@
                 (button/icon {:label "Retry job-name"
                               :disabled? true}
                              [:i.material-icons "more_vert"])]]
+              (when (seq required-jobs)
+                [:div.requires
+                 [:span.requires-heading "Requires"]
+                 [:ul.requirements
+                  (for [required-job required-jobs]
+                    [:li.requirement (:job/name required-job)])]])
               [:div.metadata
                [:div.metadata-row.timing
                 [:span.metadata-item.recent-time.start-time
@@ -181,10 +184,7 @@
                                                    state/build-path))
                   jobs (cond-> (-> (om-next/props this) :run-for-jobs :jobs-for-jobs)
                          selected-job-build (assoc-in [0 :job/started-at]
-                                                      (:start_time selected-job-build)))
-                  selected-job-build-id (:job/build selected-job)
-                  selected-job-name (:job/name selected-job)
-                  route-params (:app/route-params (om-next/props this))]
+                                                      (:start_time selected-job-build)))]
               (html
                [:div
                 ;; We get the :run/id for free in the route params, so even

@@ -21,43 +21,64 @@
       > .job-card-inner {
 
         > .status-heading {
-            .flexy(center, space-between);
-            padding: 8px;
+          .flexy(center, space-between);
+          padding: 8px 8px 0 8px;
 
-            > .status-name {
-              .flexy(center);
+          > .status-name {
+            .flexy(center);
 
-              > .job-status {
-                margin-right: 8px;
-                padding: 8px;
-              }
+            > .job-status {
+              margin-right: 8px;
+              padding: 8px;
             }
-
-            > .status-actions {
-              .flexy(center);
-            }
-
-            // FIXME: need to make this a child selector
-            button {
-              background-color: transparent;
-            }
-
-            // FIXME: need to add ellipsis for all the things
-            // .job-name {
-            //   overflow: hidden;
-            //   white-space: nowrap;
-            //   text-overflow: ellipsis;
-            //   max-width: 168px;
-
-            //   @media (min-width: @screen-md-max) {
-            //     max-width: 100px;
-            //   }
-            // }
           }
+
+          > .status-actions {
+            .flexy(center);
+          }
+
+          // FIXME: need to make this a child selector
+          button {
+            background-color: transparent;
+          }
+
+          // FIXME: need to add ellipsis for all the things
+          // .job-name {
+          //   overflow: hidden;
+          //   white-space: nowrap;
+          //   text-overflow: ellipsis;
+          //   max-width: 168px;
+
+          //   @media (min-width: @screen-md-max) {
+          //     max-width: 100px;
+          //   }
+          // }
+        }
+
+        > .requires {
+          padding-left: 50px;
+          margin-bottom: 8px;
+          font-size: @fontSizeSmaller;
+
+          > .requires-heading {
+            color: @grayLight;
+            font-weight: bold;
+            text-transform: uppercase;
+          }
+
+          > .requirements {
+            list-style: none;
+            padding-left: 0;
+
+            > .requirement {
+              color: @grayLight;
+            }
+          }
+        }
 
 
         > .metadata {
-
+          margin-top: 8px;
           @build-padding: 12px;
           @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
 
