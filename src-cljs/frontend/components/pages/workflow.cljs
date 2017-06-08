@@ -23,11 +23,10 @@
 
 (defn- status-class [run-status]
   (case run-status
-    :run-status/not-run :status-class/waiting
     :run-status/running :status-class/running
     :run-status/succeeded :status-class/succeeded
     :run-status/failed :status-class/failed
-    :run-status/canceled :status-class/stopped))
+    (:run-status/canceled :run-status/not-run) :status-class/stopped))
 
 (defn- cancelable-status? [run-status]
   (contains? #{:run-status/not-run
