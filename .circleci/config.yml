@@ -106,7 +106,7 @@ jobs:
             - v2-dependency-jars-{{ checksum "project.clj" }}
       - restore_cache:
           keys:
-            - v1-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+            - v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
       - run:
           name: compile test code and run tests
           command: |
