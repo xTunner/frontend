@@ -28,7 +28,46 @@
        (doto to (put! v) (close!)))))
   to)
 
-(defn resolve [env query-or-ast channel]
+(defn resolve
+  "Takes an env map, a query or a query ast, and a channel. Resolves the query
+  using the resolver functions in the map at `(:resolvers env)`, and streams the
+  results onto the channel. It's like a parser, but it's asynchronous, so it can
+  be used to fetch data from a server.
+
+  The resolver map is a map of query keys and sets of query keys to functions.
+  When the map key is a single query key, the function should resolve to the
+  value for that key. When the map key is a set of keys, the function should
+  resolve to a map giving a value to each of those query keys. (This makes it
+  easy to implement several query keys with a single function, rather than
+  writing it out multiple times.)
+
+  To resolve to a value, the function must return one of the following:
+
+  * The simple value,
+  * A (Promesa) promise of the value,
+  * A core.async channel which will carry the value (or several values) and then close, or
+  * A (Promesa) promise of such a channel.
+
+  A resolver function takes two args: the env map and the ast of the query node
+  that's being resolved.
+
+  resolve returns `channel` and will put the novelty onto that channel. The
+  novelty will come in pieces, streaming in as promises resolve (that is, as API
+  calls finish). Each piece of novelty will be in a form that matches the
+  original query, so it will be suitable to be merged into the app state using
+  that query. For instance, the query
+  `[{:app/current-user [:user/name :user/favorite-color]}] might yield the
+  following separate maps on the channel:
+
+  * `{:app/current-user {:user/name \"Sarah\"}`
+  * `{:app/current-user {:user/favorite-color :color/red}
+  * `nil` (channel closed)
+
+  Rather than wait for the entire query to be fulfilled, this allows the app to
+  display data as it becomes available.
+
+  See the tests for examples."
+  [env query-or-ast channel]
   (let [ast (if (vector? query-or-ast)
               (om/query->ast query-or-ast)
               query-or-ast)
