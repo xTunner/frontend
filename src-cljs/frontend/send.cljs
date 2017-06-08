@@ -373,10 +373,11 @@
 ;; pattern-matching against a few expected cases to decide which APIs to hit. A
 ;; more rigorous implementation will come later.
 (defmethod send* :remote [[_ query] cb]
-  (if-let [send-fn (cond (retry-run-expression? (first query))
-                      send-retry-run
-                      (cancel-run-expression? (first query))
-                      send-cancel-run)]
+  (if-let [send-fn (cond
+                     (retry-run-expression? (first query))
+                     send-retry-run
+                     (cancel-run-expression? (first query))
+                     send-cancel-run)]
     ;; If we're rerunning, give the rerun mutation a chance to take effect on
     ;; the backend before continuing with any reads.
     (do
