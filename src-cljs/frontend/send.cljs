@@ -139,6 +139,18 @@
                           (-> bodhi/basic-read
                               aliasing/read))}))
 
+
+(def apis
+  {:get-workflow-status (api-promise-fn api/get-workflow-status)
+   :get-org-plan (fn [name vcs-type] (api-promise-fn (partial api/get-org-plan name vcs-type)))
+   :get-org-settings (fn [name vcs-type] (api-promise-fn (partial api/get-org-settings name vcs-type)))
+   :get-orgs (api-promise-fn api/get-orgs)
+   :get-project-workflows (api-promise-fn api/get-project-workflows)
+   :get-branch-workflows (api-promise-fn api/get-branch-workflows)})
+
+(defn memoize-apis [apis]
+  (into {} (map (fn [[k api]] [k (memoize api)])) apis))
+
 (def resolvers
   {:circleci/organization
    (fn [env ast]
@@ -186,8 +198,7 @@
 
    :branch/workflow-runs
    (fn [env ast]
-     (-> ((api-promise-fn
-           api/get-branch-workflows)
+     (-> ((get-in env [:apis :get-branch-workflows])
           (:organization/vcs-type env)
           (:organization/name env)
           (:project/name env)
@@ -207,8 +218,7 @@
 
    :project/workflow-runs
    (fn [env ast]
-     (-> ((api-promise-fn
-           api/get-project-workflows)
+     (-> ((get-in env [:apis :get-project-workflows])
           (vcs-url/vcs-url (:organization/vcs-type env)
                            (:organization/name env)
                            (:project/name env))
@@ -227,7 +237,7 @@
 
    :app/current-user
    (fn [env ast]
-     (-> ((api-promise-fn api/get-orgs) :include-user? true)
+     (-> ((get-in env [:apis :get-orgs]) :include-user? true)
          (p/then
           (fn [response]
             (let [adapted {:user/organizations
@@ -245,7 +255,7 @@
 
    #{:organization/avatar-url :organization/current-user-is-admin?}
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
-     (-> ((api-promise-fn api/get-orgs) :include-user? true)
+     (-> ((get-in env [:apis :get-orgs]) :include-user? true)
          (p/then
           (fn [response]
             (let [selected-org (first (filter (fn [{:keys [vcs_type login]}]
@@ -259,8 +269,8 @@
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
      ;; as its last argument, so we use `partial` to make a function which takes
-     ;; it first, as `(api-promise-fn` requires.)
-     (-> ((api-promise-fn (partial api/get-org-settings name vcs-type)))
+     ;; it first, as `api-promise-fn` requires.)
+     (-> ((get-in env [:apis :get-org-settings]))
          (p/then
           (fn [response]
             (let [projects (for [p (:projects response)]
@@ -283,7 +293,7 @@
      ;; Also: note that we do no processing/massaging of this data. The plan
      ;; data is currently used in it's old-api form rather than using new
      ;; namespaced, universal keys. This is debt.
-     (-> ((api-promise-fn (partial api/get-org-plan name vcs-type)))))
+     (-> ((get-in env [:apis :get-org-plan]))))
 
    :circleci/run
    (fn [env ast]
@@ -306,7 +316,7 @@
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
      ;; as its last argument, so we use `partial` to make a function which takes
      ;; it first, as `api-promise-fn` requires.
-     (-> ((api-promise-fn api/get-workflow-status) id)
+     (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
             (let [adapted (->> response
@@ -325,7 +335,7 @@
      :run/started-at
      :run/stopped-at}
    (fn [{:keys [run/id] :as env} ast]
-     (-> ((api-promise-fn api/get-workflow-status) id)
+     (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then adapt-to-run)))
 
    ;; The current implementation of `resolve` makes deeply-nested
@@ -335,7 +345,7 @@
    ;; This is something `resolve` should improve.
    :run/jobs
    (fn [{:keys [run/id] :as env} ast]
-     (-> (api-promise api/get-workflow-status id)
+     (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
             (let [jobs (:run/jobs (adapt-to-run response))]
@@ -343,7 +353,7 @@
 
    :run/trigger-info
    (fn [{:keys [run/id] :as env} ast]
-     (-> (api-promise api/get-workflow-status id)
+     (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
             (let [adapted (:run/trigger-info (adapt-to-run response))]
@@ -351,7 +361,7 @@
 
    :run/project
    (fn [{:keys [run/id] :as env} ast]
-     (-> (api-promise api/get-workflow-status id)
+     (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
             (let [adapted (:run/project (adapt-to-run response))]
@@ -373,12 +383,13 @@
       (send-fn (om-parser/expr->ast (first query)) cb query)
       (js/setTimeout #(send* [:remote (rest query)] cb)
                      ms-until-retried-run-retrieved))
-    (doseq [expr query]
-      (let [ch (resolve {:resolvers resolvers} [expr] (chan))]
-        (go-loop []
-          (when-let [novelty (<! ch)]
-            (cb novelty query)
-            (recur)))))))
+    (let [ch (resolve {:resolvers resolvers
+                       :apis (memoize-apis apis)}
+                      query (chan))]
+      (go-loop []
+        (when-let [novelty (<! ch)]
+          (cb novelty query)
+          (recur))))))
 
 (defn send [remotes cb]
   (doseq [remote-entry remotes]
