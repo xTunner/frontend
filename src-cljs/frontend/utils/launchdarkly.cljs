@@ -2,9 +2,13 @@
     (:refer-clojure :exclude [exists?]))
 
 (defn feature-on?
+  "True if the named feature is on in LaunchDarkly.
+
+  Do not use this function directly; instead use
+  `frontend.models.feature/enabled?`."
   ([feature-name default]
    (when (and (aget js/window "ldclient") js/ldclient.toggle)
-    (.toggle js/ldclient feature-name default)))
+     (.toggle js/ldclient feature-name default)))
   ([feature-name]
    (feature-on? feature-name nil)))
 
