@@ -248,18 +248,20 @@
              [:.actions
               (when (ld/feature-on? "top-bar-beta-button")
                 [:div.topbar-toggle
-                 (when has-topbar?
+                 (when (and has-topbar?
+                         (not= (:nav-point topbar-beta) :build))
                    [:span.feedback
                      (button/link {:fixed? true
                                    :kind :primary
                                    :size :small
+                                   :target "_blank"
                                    :href "mailto:beta+ui@circleci.com?Subject=Topbar%20UI%20Feedback"
                                    :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked
                                                                                    :properties {:component "topbar"
                                                                                                 :treatment "top-bar-beta"}})}
 
 
-                                  "Provide Feedback")])
+                                  "Provide Beta UI Feedback")])
                  (button/link {:fixed? true
                                :kind (if has-topbar?
                                        :secondary
