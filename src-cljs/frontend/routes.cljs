@@ -240,6 +240,9 @@
                                              {:vcs_type (vcs/->lengthen-vcs short-vcs-type)
                                               :org org})))
 
+  (defroute v1-workflows "/workflows" []
+    (open! app :route/workflows))
+
   (defroute v1-project-workflows #"/(gh|bb)/([^/]+)/workflows/([^/]+)"
     [short-vcs-type org-name project-name params]
     (let [page-str (get-in params [:query-params :page])]

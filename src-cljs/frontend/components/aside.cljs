@@ -421,7 +421,8 @@
 
 (def insights-subpages #{:build-insights :project-insights})
 (def dashboard-subpages #{:dashboard :build})
-(def workflows-subpages #{:route/project-workflows
+(def workflows-subpages #{:route/workflows
+                          :route/project-workflows
                           :route/project-branch-workflows
                           :route/org-workflows
                           :route/run})
@@ -454,7 +455,7 @@
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
-                       :href (routes/v1-project-workflows-path :github "circleci" "workflows-poc")}
+                       :href (routes/v1-workflows)}
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 
@@ -584,7 +585,7 @@
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
-                       :href (routes/v1-project-workflows-path :github "circleci" "workflows-poc")}
+                       :href (routes/v1-workflows)}
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 

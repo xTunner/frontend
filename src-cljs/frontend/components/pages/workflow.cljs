@@ -518,3 +518,28 @@
         :main-content (if-let [org (:org-for-runs (om-next/props this))]
                         (org-workflow-runs org)
                         (spinner))}))))
+
+(defui ^:once SplashPage
+  static om-next/IQuery
+  (query [this]
+    ['{:legacy/state [*]}])
+  ;; TODO: Add the correct analytics properties.
+  #_analytics/Properties
+  #_(properties [this]
+      (let [props (om-next/props this)]
+        {:user (get-in props [:app/current-user :user/login])
+         :view :projects
+         :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
+  Object
+  (componentDidMount [this]
+    (set-page-title! "CircleCI"))
+  (render [this]
+    (main-template/template
+     {:app (:legacy/state (om-next/props this))
+      :crumbs [{:type :workflows}]
+      :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
+      :main-content (card/basic
+                     (empty-state/empty-state
+                      {:icon (icon/workflows)
+                       :heading (html [:span "Welcome to CircleCI " (empty-state/important "Workflows")])
+                       :subheading "Select a project to get started."}))})))
