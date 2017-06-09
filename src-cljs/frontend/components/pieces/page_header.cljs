@@ -278,8 +278,8 @@
                                                                                   :properties {:toggle-topbar-text toggle-topbar-text
                                                                                                :has-topbar has-topbar?
                                                                                                :toggled-topbar-on (boolean toggle-topbar)}}))}
-                    toggle-topbar-text)))]])
-          actions)))))
+                    toggle-topbar-text)))
+              actions]]))))))
 
 (dc/do
   (def ^:private crumbs
