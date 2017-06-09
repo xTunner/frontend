@@ -2101,7 +2101,7 @@
             [:option {:value "us-west-1"} "us-west-1"]  ;; US West (N. California)
             [:option {:value "us-west-2"} "us-west-2"]  ;; US West (Oregon)
             [:option {:value "ca-central-1"} "ca-central-1"]  ;; Canada (Central)
-            [:option {:value "ap-south-1"} "ap-south-1"]] ;; Asia Pacific (Mumbai)
+            [:option {:value "ap-south-1"} "ap-south-1"] ;; Asia Pacific (Mumbai)
             [:option {:value "sa-east-1"} "sa-east-1"]  ;; South America (São Paulo)
             [:option {:value "eu-west-1"} "eu-west-1"]  ;; EU (Ireland)
             [:option {:value "eu-west-2"} "eu-west-2"]  ;; EU (London)
@@ -2110,7 +2110,7 @@
             [:option {:value "ap-northeast-2"} "ap-northeast-2"]  ;; Asia Pacific (Seoul)
             [:option {:value "ap-southeast-1"} "ap-southeast-1"]  ;; Asia Pacific (Singapore)
             [:option {:value "ap-southeast-2"} "ap-southeast-2"]  ;; Asia Pacific (Sydney)
-            [:option {:value "cn-north-1"} "cn-north-1"]  ;; China (Beijing)
+            [:option {:value "cn-north-1"} "cn-north-1"]]  ;; China (Beijing)
 
            [:div.input-with-help
             [:input#application-root
