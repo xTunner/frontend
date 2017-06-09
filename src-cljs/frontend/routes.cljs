@@ -429,4 +429,13 @@
       :route/account (v1-account)
       :route/projects (v1-organization-projects-path org)
       :team (v1-team-path org)
+
+      (:route/workflows
+       :route/org-workflows
+       :route/project-workflows
+       :route/project-branch-workflows
+       :route/run)
+      (v1-org-workflows-path (:vcs_type org)
+                             (:org org))
+
       (v1-organization-dashboard-path org))))
