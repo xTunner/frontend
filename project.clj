@@ -20,7 +20,7 @@
                  ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
                  [ankha "0.1.5.1-64423e"]
                  [org.clojure/clojurescript "1.9.227"]
-                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [org.clojure/core.async "0.3.443"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/test.check "0.9.0"]
                  [cljs-ajax "0.3.13" :exclusions [com.cognitect/transit-cljs]]
@@ -31,7 +31,7 @@
                  [cljsjs/react-dom "15.4.2-2"]
                  [cljsjs/c3 "0.4.10-0"]
 
-                 [org.omcljs/om "1.0.0-alpha47"]
+                 [org.omcljs/om "1.0.0-beta1"]
                  [compassus "1.0.0-alpha2"]
                  [bodhi "0.0.2"]
 
@@ -41,6 +41,7 @@
                  [com.andrewmcveigh/cljs-time "0.4.0"]
                  [prismatic/schema "1.1.3"]
                  [devcards "0.2.1-6"]
+                 [funcool/promesa "1.8.1"]
 
                  ;; Frontend tests
                  [org.clojure/tools.reader "1.0.0-beta3"]

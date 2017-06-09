@@ -130,13 +130,14 @@
    :routed-entity/job
    [[:run-for-routed-job :run/job]
     (fn [route-params query]
-      `{(:run-for-routed-job
-         ~(-> route-params
-              (select-keys [:run/id])
-              (assoc :< :circleci/run)))
-        [{(:run/job
-           ~(select-keys route-params [:job/name]))
-          ~query}]})]
+      (when (:job/name route-params)
+        `{(:run-for-routed-job
+           ~(-> route-params
+                (select-keys [:run/id])
+                (assoc :< :circleci/run)))
+          [{(:run/job
+             ~(select-keys route-params [:job/name]))
+            ~query}]}))]
 
    :routed/page
    [[:routed-page]

@@ -20,7 +20,10 @@
 
   PersistentHashMap
   (-inspect [this]
-    (ankha/coll-view this "{" "}" "map persistent-hash-map" sort-map-by-pr)))
+    (ankha/coll-view this "{" "}" "map persistent-hash-map" sort-map-by-pr))
+
+  Subvec
+  (-inspect [this] (ankha/-inspect (vec this))))
 
 (defui ^:once Inspector
   Object

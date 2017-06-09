@@ -111,7 +111,10 @@
   static om-next/IQuery
   (query [this]
     '[{:legacy/state [*]}
-      {:routed-entity/organization [:organization/vcs-type :organization/name :organization/avatar-url :organization/current-user-is-admin?]}])
+      {:routed-entity/organization [:organization/vcs-type
+                                    :organization/name
+                                    :organization/avatar-url
+                                    :organization/current-user-is-admin?]}])
   Object
   (render [this]
     (let [app (:legacy/state (om-next/props this))

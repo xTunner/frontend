@@ -126,7 +126,11 @@
         {(:jobs-for-first {:< :run/jobs}) ^{:component ~Job} [:job/id
                                                               :job/build
                                                               :job/name]}]}
-     {:routed-entity/job [:job/build :job/name]}])
+     {:routed-entity/job [:job/name
+                          {:job/build [:build/vcs-type
+                                       :build/org
+                                       :build/repo
+                                       :build/number]}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -183,7 +187,11 @@
                   route-params (:app/route-params (om-next/props this))]
               (html
                [:div
-                (when-not (empty? run)
+                ;; We get the :run/id for free in the route params, so even
+                ;; before the run has loaded, we'll have the :run/id here. So
+                ;; dissoc that and see if we have anything else; when we do, we
+                ;; should have enough to render it.
+                (when-not (empty? (dissoc run :run/id))
                   (workflow-page/run-row run))
                 [:.jobs
                  [:div.jobs-header
