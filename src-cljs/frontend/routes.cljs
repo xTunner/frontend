@@ -397,6 +397,12 @@
         params (merge params query-params {:_fragment fragment})]
     (action params)))
 
+(defn om-next-nav-point?
+  "Would be better to match a map to frontend.components.app/routes
+   but that creates all sorts of circular dependencies"
+  [nav-point]
+  (->> nav-point str (re-matches #":route.*")))
+
 (defn new-org-path
   "Generate url to current navigation-point for new org
    Routes that are not org-specic (e.g. landing) return
@@ -415,6 +421,7 @@
       :logout nil
       :org-settings (v1-org-settings-path org)
       :project-insights (v1-organization-insights-path org)
+      :route/account (v1-account)
       :route/projects (v1-organization-projects-path org)
       :team (v1-team-path org)
       (v1-organization-dashboard-path org))))

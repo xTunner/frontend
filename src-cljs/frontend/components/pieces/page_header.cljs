@@ -217,14 +217,17 @@
                  typically to view of an OSS-project
   :actions     - (optional) A component (or collection of components) which will be
                  placed on the right of the header. This is where page-wide actions are
-                 placed."
+                 placed.
+  :topbar-beta - Temporarily in place while user top-bar-ui-v-1 feature flag. Provides
+                 nav-point and org to allow for toggling into and out of topbar beta view"
   [{:keys [crumbs actions logged-out? platform topbar-beta]} owner]
   (let [crumbs-login (map #(assoc % :logged-out? logged-out?) crumbs)
         has-topbar? (ld/feature-on? "top-bar-ui-v-1")
         toggle-topbar (when-not has-topbar? "top-bar-ui-v-1")
         toggle-topbar-text (if has-topbar?
                              "Leave Beta UI"
-                             "Join Beta UI")]
+                             "Join Beta UI")
+        om-next-page? (-> topbar-beta :nav-point routes/om-next-nav-point?)]
     (reify
       om/IDisplayName (display-name [_] "User Header")
       om/IRender
@@ -248,37 +251,35 @@
              [:.actions
               (when (ld/feature-on? "top-bar-beta-button")
                 [:div.topbar-toggle
-                 (when (and has-topbar?
-                         (not= (:nav-point topbar-beta) :build))
+                 (when (and has-topbar? (not om-next-page?))
                    [:span.feedback
-                     (button/link {:fixed? true
-                                   :kind :primary
-                                   :size :small
-                                   :target "_blank"
-                                   :href "mailto:beta+ui@circleci.com?Subject=Topbar%20UI%20Feedback"
-                                   :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked
-                                                                                   :properties {:component "topbar"
-                                                                                                :treatment "top-bar-beta"}})}
-
-
-                                  "Provide Beta UI Feedback")])
-                 (button/link {:fixed? true
-                               :kind (if has-topbar?
-                                       :secondary
-                                       :primary)
-                               :size :small
-                               :href (if has-topbar?
-                                       "/dashboard"
-                                       (routes/new-org-path {:nav-point (:nav-point topbar-beta)
-                                                             :current-org (:org topbar-beta)}))
-                               :on-click #(do
-                                            (raise! owner [:preferences-updated {state/user-betas-key [toggle-topbar]}])
-                                            ((om/get-shared owner :track-event) {:event-type :topbar-toggled
-                                                                                 :properties {:toggle-topbar-text toggle-topbar-text
-                                                                                              :has-topbar has-topbar?
-                                                                                              :toggled-topbar-on (boolean toggle-topbar)}}))}
-                              toggle-topbar-text)])
-              actions]]))))))
+                    (button/link {:fixed? true
+                                  :kind :primary
+                                  :size :small
+                                  :target "_blank"
+                                  :href "mailto:beta+ui@circleci.com?Subject=Topbar%20UI%20Feedback"
+                                  :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked
+                                                                                  :properties {:component "topbar"
+                                                                                               :treatment "top-bar-beta"}})}
+                      "Provide Beta UI Feedback")])]
+                (when-not om-next-page?
+                  (button/link {:fixed? true
+                                :kind (if has-topbar?
+                                        :secondary
+                                        :primary)
+                                :size :small
+                                :href (if has-topbar?
+                                        "/dashboard"
+                                        (routes/new-org-path {:nav-point (:nav-point topbar-beta)
+                                                              :current-org (:org topbar-beta)}))
+                                :on-click #(do
+                                             (raise! owner [:preferences-updated {state/user-betas-key [toggle-topbar]}])
+                                             ((om/get-shared owner :track-event) {:event-type :topbar-toggled
+                                                                                  :properties {:toggle-topbar-text toggle-topbar-text
+                                                                                               :has-topbar has-topbar?
+                                                                                               :toggled-topbar-on (boolean toggle-topbar)}}))}
+                    toggle-topbar-text)))]])
+          actions)))))
 
 (dc/do
   (def ^:private crumbs
