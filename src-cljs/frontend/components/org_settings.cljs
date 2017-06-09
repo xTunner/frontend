@@ -20,6 +20,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.feature :as feature]
             [frontend.models.organization :as org-model]
+            [frontend.models.user :as user]
             [frontend.models.plan :as pm]
             [frontend.routes :as routes]
             [frontend.state :as state]
@@ -1635,9 +1636,7 @@
     om/IRender
     (render [_]
       (let [org-data (get-in app state/org-data-path)
-            user-org-admin? (if (ld/feature-on? "top-bar-ui-v-1")
-                              (get-in app state/selected-org-admin?-path)
-                              (:admin? org-data))
+            user-org-admin? (user/org-admin-authorized? (get-in app state/user-path) (get-in app state/selected-org-path))
             vcs_type (:vcs_type org-data)
             subpage (or (get-in app state/org-settings-subpage-path)
                         :overview)

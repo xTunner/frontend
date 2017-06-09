@@ -642,5 +642,5 @@
         (if (ld/feature-on? "top-bar-ui-v-1")
           (aside-nav-new (merge args {:org {:org (org/name org)
                                             :vcs_type (:vcs_type org)
-                                            :admin? (:admin org)}}))
+                                            :admin? (user/org-admin-authorized? user org)}}))
           (aside-nav-original (merge args {:user user})))))))

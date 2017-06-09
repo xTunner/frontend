@@ -93,3 +93,18 @@
 
 (defn num-projects-followed [user-data]
   (:num_projects_followed user-data))
+
+(defn installation-admin?
+  "Indicates whether or not a user is an admin of this installation of CircleCI"
+  [user]
+  (:admin user))
+
+(defn- org-admin?
+  "Indicates whether or not user is an admin for this installation"
+  [org]
+  (:admin? org))
+
+(defn org-admin-authorized?
+  "Does the current user have the permissions to view this org"
+  [user org]
+  (or (org-admin? org) (installation-admin? user)))
