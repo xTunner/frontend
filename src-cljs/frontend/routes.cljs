@@ -274,16 +274,18 @@
 
   (defroute v1-org-workflows #"/(gh|bb)/([^/]+)/workflows"
     [short-vcs-type org-name params]
-    (let [page-str (get-in params [:query-params :page])]
-      (open! app
-             :route/org-workflows
-             {:route-params
-              {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
-               :organization/name org-name
-               :page/number (let [page (js/parseInt page-str)]
-                              (if (js/isNaN page)
-                                1
-                                page))}})))
+    ;; Show splash screen until org-level view exists again.
+    (open! app :route/workflows)
+    #_(let [page-str (get-in params [:query-params :page])]
+        (open! app
+               :route/org-workflows
+               {:route-params
+                {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+                 :organization/name org-name
+                 :page/number (let [page (js/parseInt page-str)]
+                                (if (js/isNaN page)
+                                  1
+                                  page))}})))
 
   (defroute v1-project-dashboard #"/(gh|bb)/([^/]+)/([^/]+)" [short-vcs-type org repo params]
     (open-to-inner! app nav-ch :dashboard (merge params

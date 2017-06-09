@@ -585,7 +585,8 @@
                        :data-placement "right"
                        :data-trigger "hover"
                        :title "Workflows"
-                       :href (routes/v1-workflows)}
+                       :href (routes/v1-org-workflows-path (:vcs_type org)
+                                                           (:org org))}
         (icon/workflows)
         [:div.nav-label "Workflows"]])
 
