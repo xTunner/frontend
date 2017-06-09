@@ -231,3 +231,5 @@ Running devtools:
 3. Install the Dirac devtools [Chrome extension](https://chrome.google.com/webstore/detail/dirac-devtools/kbkdngfljkchidcjpnfcgcokkbhlkogi?hl=en) in *the instance of Chrome that was started by `devtools.sh`*. This only needs to be done the first time you use Dirac.
 4. Click on the Dirac extension icon to the right of the address bar to open the dev tools.
 5. Toggle CLJS on/off by pressing pgUp/pgDn (fn + up/down arrow on Mac) with focus on the prompt field.
+
+Bump
