@@ -96,21 +96,14 @@
    ;; so we do it. This is another bug we're punting on.
    (om-next/transform-reads
     (om-next/get-reconciler component)
-    [mutation
-     ;; We queue the entire page to re-read using :compassus.core/route-data.
-     ;; Ideally we'd know what specifically to re-run, but there are now
-     ;; several keys the new run could show up under. (Aliases also complicate
-     ;; this, and solving that problem is not something we want to spend time
-     ;; on yet.) Re-reading the entire query here seems like a good idea
-     ;; anyhow.
-     :compassus.core/route-data])))
+    [mutation])))
 
 (defn- transact-run-retry
   [component run-id jobs]
   (transact-run-mutate component `(run/retry {:run/id ~run-id :run/jobs ~jobs})))
 
 (defn- transact-run-cancel
-  [component run-id vcs-type org-name project-name]
+  [component run-id]
   (transact-run-mutate component `(run/cancel {:run/id ~run-id})))
 
 ;; TODO: Move this to pieces.*, as it's used on the run page as well.
@@ -172,7 +165,7 @@
                    :status-class/waiting (icon/status-queued))]
                 [:.status-string (string/replace (name status) #"-" " ")]]]
               (cond (cancelable-statuses status)
-                    [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                    [:div.cancel-button {:on-click #(transact-run-cancel this id)}
                      (icon/status-canceled)
                      [:span "cancel"]]
                     (rerunnable-statuses status)

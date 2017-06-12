@@ -13,8 +13,6 @@
             [promesa.core :as p :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
 
-(def ^:private ms-until-retried-run-retrieved 3000)
-
 (defn- callback-api-chan
   "Returns a channel which can be used with the API functions. Calls cb with the
   response data when the API call succeeds. Ignores failures.
@@ -387,12 +385,7 @@
                      send-retry-run
                      (cancel-run-expression? (first query))
                      send-cancel-run)]
-    ;; If we're rerunning, give the rerun mutation a chance to take effect on
-    ;; the backend before continuing with any reads.
-    (do
-      (send-fn (om-parser/expr->ast (first query)) cb query)
-      (js/setTimeout #(send* [:remote (rest query)] cb)
-                     ms-until-retried-run-retrieved))
+    (send-fn (om-parser/expr->ast (first query)) cb query)
     (let [ch (resolve {:resolvers resolvers
                        :apis (memoize-apis apis)}
                       query (chan))]
