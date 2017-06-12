@@ -112,24 +112,26 @@
       @calls)))
 
 (deftest post-control-event-activate-plan-trial-works
-  (let [org-name "foo"
-        vcs-type "github"
-        plan-type :paid
-        template :t3
-        controller-data {:plan-type plan-type
-                         :template template
-                         :org {:name org-name :vcs_type vcs-type}}
-        current-state {:zippity "doo-da"}]
-    (testing "the post-control-event activate-plan-trial sends a :start-trial-clicked event with the correct properties"
-      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :activate-plan-trial controller-data {} current-state))]
-        (is (= (count calls) 1))
-        (let [args (-> calls first :args first)]
-          (is (= (:event-type args) :start-trial-clicked))
-          (is (= (:current-state args) current-state))
-          (is (= (:properties args) {:org org-name
-                                     :vcs-type vcs-type
-                                     :plan-type :linux
-                                     :template template})))))))
+  (with-redefs [ajax/ajax (constantly nil)]
+    (let [org-name "foo"
+          vcs-type "github"
+          plan-type :paid
+          template :t3
+          controller-data {:plan-type plan-type
+                           :template template
+                           :org {:name org-name :vcs_type vcs-type}}
+          current-state {:zippity "doo-da"}]
+      (testing "the post-control-event activate-plan-trial sends a :start-trial-clicked event with the correct properties"
+        (let [calls (analytics-track-call-args #(controls/post-control-event! {} :activate-plan-trial controller-data {} current-state {:api (chan)
+                                                                                                                                        :nav (chan)}))]
+          (is (= (count calls) 1))
+          (let [args (-> calls first :args first)]
+            (is (= (:event-type args) :start-trial-clicked))
+            (is (= (:current-state args) current-state))
+            (is (= (:properties args) {:org org-name
+                                       :vcs-type vcs-type
+                                       :plan-type :linux
+                                       :template template}))))))))
 
 (deftest post-control-event-dismiss-trial-offer-banner-works
   (let [org-name "bar"
@@ -163,7 +165,7 @@
         controller-data {:project-id "https://github.com/circleci/circle"}]
     (with-redefs [ajax/ajax (fn [& args] nil)]
       (testing "the post-control-event dismiss-trial-offer-banner sends a :selected-project-parallelism event with the correct properties"
-      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :selected-project-parallelism controller-data previous-state current-state))]
+      (let [calls (analytics-track-call-args #(controls/post-control-event! {} :selected-project-parallelism controller-data previous-state current-state {:api (chan)}))]
         (is (= (count calls) 1))
         (let [args (-> calls first :args first)]
           (is (= (:event-type args) :update-parallelism-clicked))
