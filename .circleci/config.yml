@@ -1,89 +1,131 @@
 version: 2.0
+
+references:
+  
+  container_config: &container_config
+    docker:
+      - image: clojure:lein-2.7.1
+    working_directory: /root/frontend
+
+  workspace_root: &workspace_root
+    /tmp/workspace
+    
+  attach_workspace: &attach_workspace
+    attach_workspace:
+      at: *workspace_root
+      
+  load_code: &load_code
+    run:
+      name: load code from workspace
+      command: mv /tmp/workspace/frontend/* .
+      
+  jars_cache_key: &jars_cache_key
+    key: v5-dependency-jars-{{ checksum "project.clj" }}
+
+  js_cache_key: &js_cache_key
+    key: v5-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+    
+  restore_jars: &restore_jars
+    run:
+      name: Restore m2 repo from workspace
+      command: |
+        rm -r ~/.m2
+        mv /tmp/workspace/.m2 ~/
+
+  restore_node_modules: &restore_node_modules
+    run:
+      name: Restore npm dependencies from workspace
+      command: mv /tmp/workspace/node_modules ./
+
+  restore_bower_components: &restore_bower_components
+    run:
+      name: Restore npm/bower dependencies from workspace
+      command: mv /tmp/workspace/bower_components resources/components
+
+  install_nodejs: &install_nodejs
+    run:
+      name: Install node/npm
+      command: |
+        curl -sL https://deb.nodesource.com/setup_4.x | bash -
+        apt-get install -y nodejs
+    
+    
 jobs:
   checkout_code:
-    docker:
-      - image: circleci/build-image:trusty-latest
-    working_directory: /home/ubuntu/frontend
+    <<: *container_config
     steps:
       - checkout
       - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - save_cache:
-          key: v1-repo-{{ checksum ".circle-sha" }}
+          command: |
+            mkdir -p /tmp/workspace/frontend
+            mv * /tmp/workspace/frontend/
+      - persist_to_workspace:
+          root: *workspace_root
           paths:
-            - /home/ubuntu/frontend
+            - frontend
   clojure_dependencies:
-    docker:
-      - image: circleci/build-image:trusty-latest
-    working_directory: /home/ubuntu/frontend          
-    steps:    
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - *load_code
       - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - run:
-          command: rmdir /home/ubuntu/.m2
-      - restore_cache:
-          keys:
-            - v2-dependency-jars-{{ checksum "project.clj" }}
+          <<: *jars_cache_key
       - run:
           name: download dependencies
           command: |
-            [[ -d /home/ubuntu/.m2 ]] || lein deps
+            [[ -a /root/.m2/.circle_cache ]] || lein deps
+      - run:
+          name: Mark m2 repo as cached
+          command: touch ~/.m2/.circle_cache
       - save_cache:
-          key: v2-dependency-jars-{{ checksum "project.clj" }}
+          <<: *jars_cache_key
           paths:
-            - /home/ubuntu/.m2
+            - /root/.m2
+      - run:
+          name: Move m2 repo to workspace
+          command: mv /root/.m2 /tmp/workspace/
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - .m2
 
   npm_bower_dependencies:
+    <<: *container_config
     docker:
-      - image: circleci/build-image:trusty-latest
-    working_directory: /home/ubuntu/frontend          
-    steps:    
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
+      - image: node:4.8.3
+    steps:
+      - *attach_workspace
+      - *load_code
       - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+          <<: *js_cache_key
       - run:
           name: download dependencies
           command: |
-            if [ ! -d node_modules -o ! -d resources/components ]; then
-              source ~/.bashrc
+            if [ ! -d node_modules -o ! -d bower_components ]; then
               set -exu
               npm install
-              node_modules/bower/bin/bower install
+              node_modules/bower/bin/bower --allow-root install
             fi
       - save_cache:
-          key: v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+          <<: *js_cache_key
           paths:
-            - /home/ubuntu/frontend/node_modules
-            - /home/ubuntu/frontend/resources/components
+            - /root/frontend/node_modules
+            - /root/frontend/bower_components
+      - run:
+          name: Move dependencies to workspace
+          command: mv node_modules bower_components /tmp/workspace/
+      - persist_to_workspace:
+          root: *workspace_root
+          paths:
+            - node_modules
+            - bower_components
           
   clojure_test:
-    docker:
-      - image: circleci/build-image:trusty-latest
-        environment:
-          CIRCLE_TEST_REPORTS: /tmp/test-reports
-          CIRCLE_ARTIFACTS: /tmp/artifacts
-    working_directory: /home/ubuntu/frontend          
+    <<: *container_config
     steps:
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v2-dependency-jars-{{ checksum "project.clj" }}
+      - *attach_workspace
+      - *load_code
+      - *restore_jars
       - run:
           name: lein test
           command: lein test
@@ -91,26 +133,21 @@ jobs:
   cljs_test:
     docker:
       - image: circleci/build-image:trusty-latest
-        environment:
-          CIRCLE_TEST_REPORTS: /tmp/test-reports
-          CIRCLE_ARTIFACTS: /tmp/artifacts
-    working_directory: /home/ubuntu/frontend          
+    working_directory: /home/ubuntu/frontend
     steps:
+      - *attach_workspace
+      - *load_code
       - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
+          name: Install JDK 8
+          command: |
+            sudo apt-get update
+            sudo apt-get install openjdk-8-jdk
       - run:
           command: Xvfb :99 -screen 0 1280x1024x24
           background: true
-      - restore_cache:
-          keys:
-            - v2-dependency-jars-{{ checksum "project.clj" }}
-      - restore_cache:
-          keys:
-            - v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+      - *restore_jars
+      - *restore_bower_components
+      - *restore_node_modules
       - run:
           name: compile test code and run tests
           command: |
@@ -118,96 +155,86 @@ jobs:
             lein doo chrome test once
           
   cljsbuild_whitespace:
-    docker:
-      - image: circleci/build-image:trusty-latest
-    working_directory: /home/ubuntu/frontend          
-    steps:    
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v2-dependency-jars-{{ checksum "project.clj" }}
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - *load_code
+      - *restore_jars
       - run:
           name: cljsbuild whitespace
           command: lein cljsbuild once whitespace
-      - save_cache:
-          key: v1-cljsbuild-whitespace-{{ checksum ".circle-sha" }}
+      - run:
+          name: Move compiled cljs to workspace
+          command: |
+            set -exu
+            mkdir -p /tmp/workspace/compiled-cljs
+            mv resources/public/cljs/whitespace /tmp/workspace/compiled-cljs/
+      - persist_to_workspace:
+          root: *workspace_root
           paths:
-            - /home/ubuntu/frontend/resources/public/cljs/whitespace
+            - compiled-cljs/whitespace
 
   cljsbuild_production:
-    docker:
-      - image: circleci/build-image:trusty-latest
-    working_directory: /home/ubuntu/frontend          
-    steps:    
-      - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v2-dependency-jars-{{ checksum "project.clj" }}
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - *load_code
+      - *restore_jars
       - run:
           name: cljsbuild production
           command: lein cljsbuild once production
-      - save_cache:
-          key: v1-cljsbuild-production-{{ checksum ".circle-sha" }}
+      - run:
+          name: Move compiled cljs to workspace
+          command: |
+            set -exu
+            mkdir -p /tmp/workspace/compiled-cljs
+            mv resources/public/cljs/production /tmp/workspace/compiled-cljs/
+      - persist_to_workspace:
+          root: *workspace_root
           paths:
-            - /home/ubuntu/frontend/resources/public/cljs/production
+            - compiled-cljs/production
             
   precompile_assets:
-    docker:
-      - image: circleci/build-image:trusty-latest
-    working_directory: /home/ubuntu/frontend          
-    steps:    
+    <<: *container_config
+    steps:
+      - *attach_workspace
+      - *load_code
+      - *restore_jars
+      - *restore_node_modules
+      - *restore_bower_components
       - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v1-cljsbuild-whitespace-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v1-cljsbuild-production-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v2-dependency-jars-{{ checksum "project.clj" }}
-      - restore_cache:
-          keys:
-            - v2-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+          name: Restore compiled cljs from workspace
+          command: |
+            set -exu
+            mkdir -p resources/public/cljs
+            mv /tmp/workspace/compiled-cljs/* resources/public/cljs/
+      - *install_nodejs
       - run:
           name: precompile assets
           command: |
             source ~/.bashrc
             lein run -m frontend.tasks.http/precompile-assets
-      - save_cache:
-          key: v1-production-assets-{{ checksum ".circle-sha" }}
+      - run:
+          name: Move compiled assets to workspace
+          command: mv resources /tmp/workspace/assets
+
+      - persist_to_workspace:
+          root: *workspace_root
           paths:
-            - /home/ubuntu/frontend/resources/public
+            - assets
             
   deploy:
     docker:
       - image: circleci/build-image:trusty-latest
     working_directory: /home/ubuntu/frontend
     steps:
+      - *attach_workspace
+      - *load_code
       - run:
-          name: save SHA to a file
-          command: echo $CIRCLE_SHA1 > .circle-sha
-      - restore_cache:
-          keys:
-            - v1-repo-{{ checksum ".circle-sha" }}
-      - restore_cache:
-          keys:
-            - v1-production-assets-{{ checksum ".circle-sha" }}
+          name: Restore compiled assets from workspace
+          command: |
+            rm -r resources
+            mv /tmp/workspace/assets resources
       - add-ssh-keys
       - run:
           name: deploy and trigger integration tests
