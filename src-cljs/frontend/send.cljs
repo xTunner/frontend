@@ -65,8 +65,8 @@
 (defn denormalize-required [job jobs-by-id]
   (assoc job
          :job/required-jobs
-         (map (fn [required-job-id] (get jobs-by-id required-job-id))
-              (:job/required-job-ids job))))
+         (mapv (fn [required-job-id] (get jobs-by-id required-job-id))
+               (:job/required-job-ids job))))
 
 (defn- compute-run-stop-time [jobs]
   (some->> jobs
