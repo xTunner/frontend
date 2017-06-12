@@ -93,8 +93,8 @@
                          (assoc-in [:job/run :run/id] run-id)))
                    (:workflow/jobs response))
         jobs-by-id (into {} (map (juxt :job/id identity) jobs))
-        jobs-with-normalized-required (map #(denormalize-required % jobs-by-id)
-                                           jobs)
+        jobs-with-normalized-required (mapv #(denormalize-required % jobs-by-id)
+                                            jobs)
         {:keys [build/vcs-type build/org build/repo]} (get-in response
                                                               [:workflow/jobs
                                                                0
