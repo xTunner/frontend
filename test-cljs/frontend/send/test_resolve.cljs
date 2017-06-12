@@ -62,7 +62,7 @@
                 ast
                 (chan))))})
 
-(deftest resolve-works
+#_(deftest resolve-works
   (async done
     (let [api-calls (atom [])
           ;; Note that the "backend" data uses different keys from the client.
