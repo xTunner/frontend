@@ -63,11 +63,7 @@
                                            repo
                                            nil
                                            number)}
-                 [:span.job-name job-name]])]
-               [:div.status-actions
-                (button/icon {:label "Retry job-name"
-                              :disabled? true}
-                             [:i.material-icons "more_vert"])]]
+                 [:span.job-name job-name]])]]
               (when (seq required-jobs)
                 [:div.requires
                  [:span.requires-heading "Requires"]
