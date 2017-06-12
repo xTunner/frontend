@@ -320,7 +320,6 @@
      (:job/name env))
 
    #{:job/build
-     :job/required-job-ids
      :job/required-jobs}
    (fn [{:keys [run/id job/name] :as env} ast]
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
