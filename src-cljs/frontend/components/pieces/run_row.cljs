@@ -153,7 +153,7 @@
                                :status-class/setup-needed
                                (status-class status))]
 
-        (card/basic
+        (card/full-bleed
          (element :content
            (html
             [:div
