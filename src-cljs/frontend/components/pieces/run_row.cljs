@@ -185,13 +185,13 @@
                       "needs setup"
                       (string/replace (name status) #"-" " ")))]]]
                (cond
-                 loading? nil
+                 loading? [:div.action-button [:svg]]
                  (contains? cancelable-statuses status)
-                 [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                 [:div.action-button.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
                   (icon/status-canceled)
                   [:span "cancel"]]
                  (contains? rerunnable-statuses status)
-                 [:div.rebuild-button.dropdown
+                 [:div.action-button.rebuild-button.dropdown
                   (icon/rebuild)
                   [:span "Rerun"]
                   [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
