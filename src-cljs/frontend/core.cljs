@@ -30,6 +30,7 @@
             [frontend.utils :as utils :refer [mlog set-canonical!]]
             goog.dom
             [goog.events :as gevents]
+            [goog.functions :as gfun]
             [om.next :as om-next]
             [schema.core :as s :include-macros true])
   (:require-macros
@@ -93,6 +94,19 @@
                                               api-data))
        (api-con/post-api-event! container message status api-data previous-state @state comms)))))
 
+(defn- refresh [app]
+  (om-next/transact!
+   (compassus/get-reconciler app)
+   (into (om-next/transform-reads
+          (compassus/get-reconciler app)
+          `[:compassus.core/route-data])
+         (om-next/transform-reads
+          (compassus/get-reconciler app)
+          `[:compassus.core/mixin-data]))))
+
+;;; refresh max every second
+(def ^:private debounced-refresh (gfun/debounce refresh 1000))
+
 (defn ws-handler
   [value state pusher comms app]
   (mlog "websocket Verbose: " (pr-str (first value)) (second value) (utils/third value))
@@ -100,7 +114,7 @@
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
        (swap! state (partial ws-con/ws-event pusher (first value) (second value)))
-       (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state comms app)))))
+       (ws-con/post-ws-event! pusher (first value) (second value) previous-state @state comms (partial debounced-refresh app))))))
 
 (defn errors-handler
   [value state container comms]

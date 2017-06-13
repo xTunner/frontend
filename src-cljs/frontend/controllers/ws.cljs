@@ -1,7 +1,6 @@
 (ns frontend.controllers.ws
   "Websocket controllers"
   (:require [clojure.set]
-            [compassus.core :as compassus]
             [frontend.api :as api]
             [frontend.favicon]
             [frontend.models.action :as action-model]
@@ -9,9 +8,7 @@
             [frontend.pusher :as pusher]
             [frontend.utils.seq :refer [find-index]]
             [frontend.state :as state]
-            [frontend.utils :as utils :include-macros true :refer [mlog]]
-            [goog.functions :as gfun]
-            [om.next :as om-next])
+            [frontend.utils :as utils :include-macros true :refer [mlog]])
   (:require-macros [frontend.controllers.ws :refer [with-swallow-ignored-build-channels]]))
 
 ;; To subscribe to a channel, put a subscribe message in the websocket channel
@@ -175,21 +172,8 @@
   [pusher-imp message {:keys [channel-name status]} _ _]
   (utils/mlog "subscription-error " channel-name status))
 
-(defn- refresh [app]
-  (om-next/transact!
-   (compassus/get-reconciler app)
-   (into (om-next/transform-reads
-          (compassus/get-reconciler app)
-          `[:compassus.core/route-data])
-         (om-next/transform-reads
-          (compassus/get-reconciler app)
-          `[:compassus.core/mixin-data]))))
-
-;;; refresh max every second
-(def ^:private debounced-refresh (gfun/debounce refresh 1000))
-
 (defmethod post-ws-event! :refresh
-  [pusher-imp message _ previous-state current-state comms app]
+  [pusher-imp message _ previous-state current-state comms refresh-fn]
   (let [navigation-point (:navigation-point current-state)
         api-ch (:api comms)]
     (utils/mlog "ws refresh navigation-point" navigation-point)
@@ -202,5 +186,5 @@
                                                      :builds-per-page (:builds-per-page current-state)
                                                      :all? (get-in current-state state/show-all-builds-path))
                                               api-ch)
-      state/workflows-routes (debounced-refresh app)
+      state/workflows-routes (refresh-fn)
       nil)))
