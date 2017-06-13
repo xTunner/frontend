@@ -19,6 +19,7 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true]))
 
 (defn project-settings-link [{:keys [project]} owner]
@@ -65,7 +66,7 @@
                               (routes/v1-project-branch-workflows-path (:vcs_type project)
                                                                        (:username project)
                                                                        (:reponame project)
-                                                                       (name branch-identifier))
+                                                                       (-> branch-identifier name gstring/urlDecode))
                               (routes/v1-dashboard-path {:vcs_type (:vcs_type project)
                                                          :org (:username project)
                                                          :repo (:reponame project)
