@@ -30,8 +30,18 @@
     (component
       (let [{:keys [connection/total-count connection/offset connection/edges]} (om-next/props this)
             {:keys [empty-state prev-page-href next-page-href]} (om-next/get-computed this)]
-        (if-not (pos? total-count)
+        (js/console.log (contains? (om-next/props this) :connection/total-count))
+        (cond
+          (not (contains? (om-next/props this) :connection/total-count))
+          (html
+           [:div
+            [:.page-info]
+            (card/collection (repeatedly 10 run-row/loading-run-row))])
+
+          (not (pos? total-count))
           empty-state
+
+          :else
           (html
            [:div
             [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]

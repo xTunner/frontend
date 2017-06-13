@@ -6,6 +6,11 @@
       > .run-numbers {
         font-weight: 500;
       }
+
+      // When empty, reserve normal vertical space.
+      &:empty::before {
+        content: "\0000a0";
+      }
     }
 
     > .list-pager {
