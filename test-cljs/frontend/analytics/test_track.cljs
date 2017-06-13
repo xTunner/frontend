@@ -1,5 +1,6 @@
 (ns frontend.analytics.test-track
-  (:require [cljs.test :refer-macros [is deftest testing]]
+  (:require [cljs.core.async :as async :refer [chan]]
+            [cljs.test :refer-macros [is deftest testing]]
             [bond.james :as bond :include-macros true]
             [frontend.state :as state]
             [frontend.controllers.controls :as controls]
@@ -24,7 +25,8 @@
                                                        (assoc-in state
                                                                  (conj state/feature-flags-path :trusty-beta)
                                                                  trusty-state-value))]
-                                   (controls/post-control-event! "" :project-feature-flag-checked data previous-state current-state)
+                                   (controls/post-control-event! "" :project-feature-flag-checked data previous-state current-state {:api (chan)
+                                                                                                                                     :errors (chan)})
                                    (is (= 1 (count @call-args)))
                                    (is (= (-> @call-args first :event-type event)))
                                    (is (= (-> @call-args first :properties
