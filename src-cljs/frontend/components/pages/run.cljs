@@ -44,8 +44,12 @@
                     job/started-at
                     job/stopped-at
                     job/required-jobs]
-             job-name :job/name
-             {:keys [build/vcs-type build/org build/repo build/number] :as build} :job/build}
+             {:keys [build/vcs-type
+                     build/org
+                     build/repo
+                     build/number]
+              :as build} :job/build
+             job-name :job/name}
             (om-next/props this)]
         (card/basic
          (element :content
@@ -108,12 +112,12 @@
     ['{:legacy/state [*]}
      {:app/route-params [:route-params/tab :route-params/container-id]}
      `{:routed-entity/run
-       ^{:component ~workflow-page/RunRow}
        [:run/id
         {:run/project [:project/name
                        {:project/organization [:organization/vcs-type
                                                :organization/name]}]}
-        {:run/trigger-info [:trigger-info/branch]}]}
+        {:run/trigger-info [:trigger-info/branch]}
+        {:run/errors [:workflow-error/message]}]}
      `{(:run-for-row {:< :routed-entity/run})
        ~(om-next/get-query workflow-page/RunRow)}
      `{(:run-for-jobs {:< :routed-entity/run})
@@ -146,7 +150,8 @@
             {org-name :organization/name
              vcs-type :organization/vcs-type} :project/organization} :run/project
            {branch-name :trigger-info/branch} :run/trigger-info
-           id :run/id}
+           id :run/id
+           errors :run/errors}
           (:routed-entity/run (om-next/props this))]
       (component
         (main-template/template
@@ -189,14 +194,27 @@
                 ;; should have enough to render it.
                 (when-not (empty? (dissoc run :run/id))
                   (workflow-page/run-row run))
-                [:.jobs
-                 [:div.jobs-header
-                  [:.hr-title
-                   [:span (gstring/format "%s jobs in this workflow" (count jobs))]]]
-                 (job-cards-row
-                   (map (fn [job-data]
-                          (job (om-next/computed
+                
+                (if (seq errors)
+                  [:div.alert.alert-warning.iconified
+                   [:div [:img.alert-icon {:src (common/icon-path "Info-Warning")}]]
+                   [:div
+                    [:div "We weren't able to start this workflow."]
+                    (for [{:keys [workflow-error/message]} errors]
+                      [:div message])
+                    [:div
+                     [:span "For more examples see the "]
+                     [:a {:href "/docs/2.0/workflows"}
+                      "Workflows documentation"]
+                     [:span "."]]]]
+                  [:.jobs
+                   [:div.jobs-header
+                    [:.hr-title
+                     [:span (gstring/format "%s jobs in this workflow" (count jobs))]]]
+                   (job-cards-row
+                    (map (fn [job-data]
+                           (job (om-next/computed
                                  job-data
                                  {:selected? (= (:job/name job-data)
                                                 (:job/name selected-job))})))
-                        jobs))]])))})))))
+                         jobs))])])))})))))

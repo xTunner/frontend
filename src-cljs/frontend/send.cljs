@@ -93,12 +93,12 @@
         jobs-by-id (into {} (map (juxt :job/id identity) jobs))
         jobs-with-normalized-required (mapv #(denormalize-required % jobs-by-id)
                                             jobs)
-        {:keys [build/vcs-type build/org build/repo]} (get-in response
-                                                              [:workflow/jobs
-                                                               0
-                                                               :job/build])]
-
+        vcs-url (:workflow/vcs-url response)
+        vcs-type (vcs-url/vcs-type vcs-url)
+        org (vcs-url/org-name vcs-url)
+        repo (vcs-url/repo-name vcs-url)]
     {:run/id run-id
+     :run/errors (:workflow/errors response)
      :run/name (:workflow/name response)
      :run/status status
      :run/started-at (:workflow/created-at response)
@@ -350,6 +350,18 @@
    ;; set as a key in the resolvers map) not really work together well. Instead
    ;; we have to repeat ourselves for each of these non-scalar parts of a run.
    ;; This is something `resolve` should improve.
+
+   :run/errors
+   (fn [{:keys [run/id] :as env} ast]
+     (println "hello from :run/errors resolver")
+     (-> ((get-in env [:apis :get-workflow-status]) id)
+         (p/then
+          (fn [response]
+            (let [errors (:run/errors (adapt-to-run response))]
+              (mapv #(parser {:state (atom %)}
+                             (mapv om-next/ast->query (:children ast)))
+                    errors))))))
+   
    :run/jobs
    (fn [{:keys [run/id] :as env} ast]
      (-> ((get-in env [:apis :get-workflow-status]) id)
