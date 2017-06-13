@@ -121,7 +121,6 @@
      `{(:run-for-row {:< :routed-entity/run})
        ~(om-next/get-query workflow-page/RunRow)}
      `{(:run-for-jobs {:< :routed-entity/run})
-       ^{:component ~workflow-page/RunRow}
        [{(:jobs-for-jobs {:< :run/jobs}) ~(om-next/get-query Job)}
         ;; NB: We need the :component metadata and :job/id here to make sure the
         ;; merger constructs the ident successfully to merge properly. This
