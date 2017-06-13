@@ -10,6 +10,7 @@
             [frontend.utils.seq :refer [find-index]]
             [frontend.state :as state]
             [frontend.utils :as utils :include-macros true :refer [mlog]]
+            [goog.functions :as gfun]
             [om.next :as om-next])
   (:require-macros [frontend.controllers.ws :refer [with-swallow-ignored-build-channels]]))
 
@@ -174,11 +175,25 @@
   [pusher-imp message {:keys [channel-name status]} _ _]
   (utils/mlog "subscription-error " channel-name status))
 
+(defn- refresh [app]
+  (om-next/transact!
+   (compassus/get-reconciler app)
+   (into (om-next/transform-reads
+          (compassus/get-reconciler app)
+          `[:compassus.core/route-data])
+         (om-next/transform-reads
+          (compassus/get-reconciler app)
+          `[:compassus.core/mixin-data]))))
+
+;;; refresh max every second
+(def ^:private debounced-refresh (gfun/debounce refresh 1000))
+
 (defmethod post-ws-event! :refresh
   [pusher-imp message _ previous-state current-state comms app]
   (let [navigation-point (:navigation-point current-state)
         api-ch (:api comms)]
     (utils/mlog "ws refresh navigation-point" navigation-point)
+    (utils/mlog "contains?" state/workflows-routes (contains? state/workflows-routes navigation-point))
     (api/get-projects api-ch)
     (condp contains? navigation-point
       #{:build} (when (get-in current-state state/show-usage-queue-path)
@@ -187,12 +202,5 @@
                                                      :builds-per-page (:builds-per-page current-state)
                                                      :all? (get-in current-state state/show-all-builds-path))
                                               api-ch)
-      state/workflows-routes (om-next/transact!
-                              (compassus/get-reconciler app)
-                              (into (om-next/transform-reads
-                                     (compassus/get-reconciler app)
-                                     `[:compassus.core/route-data])
-                                    (om-next/transform-reads
-                                     (compassus/get-reconciler app)
-                                     `[:compassus.core/mixin-data])))
+      state/workflows-routes (debounced-refresh app)
       nil)))
