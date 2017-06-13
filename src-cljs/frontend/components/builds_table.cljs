@@ -111,7 +111,8 @@
                                  (build-model/can-cancel? build))
         should-show-rebuild? (and (project-model/can-trigger-builds? project)
                                   (#{"timedout" "failed"} (:outcome build)))
-        platform (:platform build)]
+        platform (:platform build)
+        workflow-data (:workflows build)]
     [:div.build {:class (-> build build-model/build-status build-model/status-class name)}
      [:div.status-area
       [:a {:href url
@@ -159,6 +160,11 @@
             (-> build build-model/vcs-ref-name))
           " #"
           (:build_num build)]]]
+       (when workflow-data
+         [:div.workflow-info
+          [:div.workflows-icon (icon/workflows)]
+          [:a {:href (routes/v1-run-path (:workflow_id workflow-data))}
+           (:workflow_name workflow-data)]])
        [:div.recent-commit-msg
         (let [pusher-name (build-model/ui-user build)
               trigger (:why build)]
