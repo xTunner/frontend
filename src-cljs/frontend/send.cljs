@@ -95,11 +95,10 @@
         jobs-by-id (into {} (map (juxt :job/id identity) jobs))
         jobs-with-normalized-required (mapv #(denormalize-required % jobs-by-id)
                                             jobs)
-        {:keys [build/vcs-type build/org build/repo]} (get-in response
-                                                              [:workflow/jobs
-                                                               0
-                                                               :job/build])]
-
+        vcs-url (:workflow/vcs-url response)
+        vcs-type (vcs-url/vcs-type vcs-url)
+        org (vcs-url/org-name vcs-url)
+        repo (vcs-url/repo-name vcs-url)]
     {:run/id run-id
      :run/name (:workflow/name response)
      :run/status status
