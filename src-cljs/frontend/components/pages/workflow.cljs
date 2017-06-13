@@ -12,6 +12,7 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
+            [frontend.models.organization :as organization]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
@@ -317,7 +318,7 @@
 (defn- legacy-branch-picker
   "Wraps the branch picker in a legacy component which can load the project data
   on mount."
-  [app owner]
+  [{:keys [app org]} owner]
   (reify
     om/IWillMount
     (will-mount [_]
@@ -330,7 +331,7 @@
     om/IRender
     (render [_]
       (om/build aside/branch-activity-list
-                app
+                (assoc-in app state/selected-org-path (organization/modern-org->legacy-org org))
                 {:opts {:workflows? true}}))))
 
 (defui ^:once ProjectPage
@@ -367,7 +368,8 @@
                   :project project-name
                   :vcs_type vcs-type}]
         :header-actions (settings-link vcs-type org-name project-name)
-        :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
+        :sidebar (build-legacy legacy-branch-picker {:app (:legacy/state (om-next/props this))
+                                                     :org (:routed-entity/organization (om-next/props this))})
         :main-content (if-let [project (:project-for-runs (om-next/props this))]
                         (project-workflow-runs project)
                         (spinner))}))))
@@ -453,7 +455,8 @@
                   :vcs_type vcs-type
                   :branch branch-name}]
         :header-actions (settings-link vcs-type org-name project-name)
-        :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
+        :sidebar (build-legacy legacy-branch-picker {:app (:legacy/state (om-next/props this))
+                                                     :org (:routed-entity/organization (om-next/props this))})
         :main-content (if-let [branch (:branch-for-runs (om-next/props this))]
                         (branch-workflow-runs branch)
                         (spinner))}))))
@@ -521,7 +524,8 @@
                  {:type :org-workflows
                   :username org-name
                   :vcs_type vcs-type}]
-        :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
+        :sidebar (build-legacy legacy-branch-picker {:app (:legacy/state (om-next/props this))
+                                                     :org (:org-for-crumb (om-next/props this))})
         :main-content (if-let [org (:org-for-runs (om-next/props this))]
                         (org-workflow-runs org)
                         (spinner))}))))
@@ -529,7 +533,9 @@
 (defui ^:once SplashPage
   static om-next/IQuery
   (query [this]
-    ['{:legacy/state [*]}])
+    ['{:legacy/state [*]}
+     {:routed-entity/organization [:organization/vcs-type
+                                   :organization/name]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -544,7 +550,8 @@
     (main-template/template
      {:app (:legacy/state (om-next/props this))
       :crumbs [{:type :workflows}]
-      :sidebar (build-legacy legacy-branch-picker (:legacy/state (om-next/props this)))
+      :sidebar (build-legacy legacy-branch-picker {:app (:legacy/state (om-next/props this))
+                                                   :org (:routed-entity/organization (om-next/props this))})
       :main-content (card/basic
                      (empty-state/empty-state
                       {:icon (icon/workflows)
