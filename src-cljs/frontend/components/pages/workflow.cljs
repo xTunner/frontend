@@ -36,7 +36,7 @@
            [:div
             [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
             (card/collection
-             (map #(when % (run-row/run-row (:edge/node %))) edges))
+             (map #(if % (run-row/run-row (:edge/node %)) (run-row/loading-run-row)) edges))
             [:.list-pager
              (a-or-span (pos? offset)
                         prev-page-href
