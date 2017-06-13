@@ -19,7 +19,6 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.launchdarkly :as ld]
             [om.core :as om :include-macros true]))
 
 (defn project-settings-link [{:keys [project]} owner]
@@ -130,7 +129,7 @@
                                                                                                :org org-name
                                                                                                :repo repo-name
                                                                                                :component "branch-picker"}})}
-                 (if (ld/feature-on? "top-bar-ui-v-1")
+                 (if (feature/enabled? "top-bar-ui-v-1")
                    (project-model/repo-name project)
                    (project-model/project-name project))]
                 (project-settings-link {:project project} owner)]
@@ -347,7 +346,7 @@
             sort-branches-by-recency? (get-in app state/sort-branches-by-recency-path false)
             selected-org (get-in app state/selected-org-path)
             projects (cond->> (get-in app state/projects-path)
-                       (ld/feature-on? "top-bar-ui-v-1") (filter #(project-model/belong-to-org? % selected-org)))
+                       (feature/enabled? "top-bar-ui-v-1") (filter #(project-model/belong-to-org? % selected-org)))
             user (get-in app state/user-path)
             identities (:identities user)]
         (html
@@ -639,7 +638,7 @@
     (render [_]
       (let [args {:current-route current-route
                   :owner owner}]
-        (if (ld/feature-on? "top-bar-ui-v-1")
+        (if (feature/enabled? "top-bar-ui-v-1")
           (aside-nav-new (merge args {:org {:org (org/name org)
                                             :vcs_type (:vcs_type org)
                                             :admin? (user/org-admin-authorized? user org)}}))

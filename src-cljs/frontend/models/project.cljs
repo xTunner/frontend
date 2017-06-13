@@ -3,12 +3,9 @@
             [frontend.config :as config]
             [frontend.models.organization :as org]
             [frontend.models.plan :as plan-model]
-            [frontend.utils :as utils :include-macros true]
             [frontend.utils.function-query :as fq :include-macros true]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs :as vcs]
-            [frontend.utils.vcs-url :as vcs-url]
-            [goog.string :as gstring]))
+            [frontend.utils.vcs-url :as vcs-url]))
 
 (defn project-name [project]
   (let [username (:username project)

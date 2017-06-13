@@ -11,13 +11,13 @@
             [frontend.components.templates.main :as main-template]
             [frontend.data.projects :as test-data]
             [frontend.experimental.non-code-empty-state :as non-code-empty-state]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
             [frontend.utils.function-query :as fq :include-macros true]
             [frontend.utils.github :as gh-utils]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
@@ -222,7 +222,7 @@
                (let [orgs (get-in (om-next/props this) [:app/current-user :user/organizations])]
                  (html
                    [:div
-                    (when-not (ld/feature-on? "top-bar-ui-v-1")
+                    (when-not (feature/enabled? "top-bar-ui-v-1")
                       [:.sidebar
                        (card/basic
                          (if orgs

@@ -1,32 +1,25 @@
 (ns frontend.controllers.navigation
-  (:require [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
+  (:require [cljs.core.async :as async :refer [<!]]
             [clojure.string :as str]
-            [frontend.analytics.core :as analytics]
-            [frontend.async :refer [put!]]
             [frontend.api :as api]
             [frontend.api.path :as api-path]
-            [frontend.favicon]
+            [frontend.async :refer [put!]]
+            [frontend.experimental.workflow-spike :as workflow]
+            frontend.favicon
             [frontend.models.feature :as feature]
-            [frontend.models.user :as user]
-            [frontend.models.build :as build-model]
             [frontend.models.organization :as org]
+            [frontend.models.user :as user]
             [frontend.pusher :as pusher]
+            [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.stefon :as stefon]
+            [frontend.utils :as utils :refer [mlog scroll! set-page-description! set-page-title!]]
             [frontend.utils.ajax :as ajax]
             [frontend.utils.build :as build-utils]
-            [frontend.utils.docs :as doc-utils]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.state :as state-utils]
-            [frontend.utils.vcs-url :as vcs-url]
             [frontend.utils.vcs :as vcs]
-            [frontend.utils :as utils :refer [mlog merror set-page-title! set-page-description! scroll-to-id! scroll!]]
-            [frontend.routes :as routes]
-            [frontend.experimental.workflow-spike :as workflow]
-            [goog.dom]
+            [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring])
-  (:require-macros [cljs.core.async.macros :as am :refer [go go-loop alt!]]))
-
+  (:require-macros [cljs.core.async.macros :as am :refer [go]]))
 
 (defn- maybe-add-workflow-response-data [state]
   (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
@@ -109,7 +102,7 @@
 
 (defmethod navigated-to :dashboard
   [history-imp navigation-point args state]
-  (let [nav-org (or (and (ld/feature-on? "top-bar-ui-v-1")
+  (let [nav-org (or (and (feature/enabled? "top-bar-ui-v-1")
                          (org-for-topbar (org/name args) (:vcs_type args) state))
                     {})] ;; Force state to update with a 'nil' value when NOT in org-centric UI
     (-> state
@@ -310,7 +303,7 @@
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (if (ld/feature-on? "top-bar-ui-v-1")
+    (if (feature/enabled? "top-bar-ui-v-1")
       (when-not (get-in current-state state/add-projects-selected-org-path)
         (nav-to-selected-org (get-in current-state state/selected-org-path) (:nav comms)))
       ;; load orgs, collaborators, and repos.
@@ -373,7 +366,7 @@
 
 (defmethod post-navigated-to! :team
   [history-imp navigation-point args previous-state current-state comms]
-  (if (ld/feature-on? "top-bar-ui-v-1")
+  (if (feature/enabled? "top-bar-ui-v-1")
     (let [selected-org (get-in current-state state/selected-org-path)]
       (api/get-org-settings-normalized (:login selected-org) (:vcs_type selected-org) (:api comms)))))
 

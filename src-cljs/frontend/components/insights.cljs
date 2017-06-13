@@ -2,7 +2,6 @@
   (:require [clojure.string :as string]
             [devcards.core :as dc :refer-macros [defcard]]
             [frontend.async :refer [raise!]]
-            [frontend.experimental.non-code-empty-state :as non-code-empty-state]
             [frontend.components.common :as common]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
@@ -10,14 +9,14 @@
             [frontend.config :as config]
             [frontend.data.insights :as test-data]
             [frontend.datetime :as datetime]
+            [frontend.experimental.non-code-empty-state :as non-code-empty-state]
             [frontend.models.build :as build-model]
-            [frontend.models.organization :as org]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer [unexterned-prop] :refer-macros [defrender html]]
-            [frontend.utils.launchdarkly :as ld]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.events :as gevents]
             [goog.string :as gstring]
@@ -573,7 +572,7 @@
 (defrender build-insights [state owner]
   (let [selected-org-login (:login (get-in state state/selected-org-path))
         selected-org-vcs-type (:vcs_type (get-in state state/selected-org-path))
-        projects (if (ld/feature-on? "top-bar-ui-v-1")
+        projects (if (feature/enabled? "top-bar-ui-v-1")
                    (filter #(and (= selected-org-login
                                     (:username %))
                                  (= selected-org-vcs-type
