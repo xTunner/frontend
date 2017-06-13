@@ -345,7 +345,6 @@
 
 (defmethod api-event [:workflow-status :success]
   [target message status {:keys [resp]} state]
-  (js/console.log "workflow status" resp)
   state)
 
 (defmethod api-event [:cancel-build :success]
