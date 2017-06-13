@@ -83,7 +83,7 @@
              {:type :get-workflow-status
               :params {:run/id run-id}}))
 
-(defn get-project-workflows [api-ch vcs-url opts]
+(defn get-project-workflows [api-ch vcs-type org-name repo-name opts]
   (ajax/ajax :post
              "/query-api"
              :uncatchable-by-old-controller
@@ -91,7 +91,9 @@
              :format :transit
              :params
              {:type :get-project-workflows
-              :params {:vcs-url vcs-url
+              :params {:organization/vcs-type (keyword vcs-type)
+                       :organization/name org-name
+                       :project/name repo-name
                        :opts opts}}))
 
 (defn get-branch-workflows [api-ch vcs-type org-name repo-name branch-name opts]
