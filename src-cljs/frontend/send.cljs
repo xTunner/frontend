@@ -225,9 +225,9 @@
    :project/workflow-runs
    (fn [env ast]
      (-> ((get-in env [:apis :get-project-workflows])
-          (vcs-url/vcs-url (:organization/vcs-type env)
-                           (:organization/name env)
-                           (:project/name env))
+          (:organization/vcs-type env)
+          (:organization/name env)
+          (:project/name env)
           {:offset (:connection/offset (:params ast))
            :limit (:connection/limit (:params ast))})
 
