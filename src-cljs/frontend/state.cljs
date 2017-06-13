@@ -315,3 +315,10 @@
 
 (defn vcs-users-path [vcs-type org-name]
   (conj (org-ident vcs-type org-name) :vcs-users))
+
+(def insights-routes #{:build-insights :project-insights})
+(def dashboard-routes #{:dashboard :build})
+(def workflows-routes #{:route/project-workflows
+                        :route/project-branch-workflows
+                        :route/org-workflows
+                        :route/run})

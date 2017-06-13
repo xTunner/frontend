@@ -173,15 +173,18 @@
   (utils/mlog "subscription-error " channel-name status))
 
 (defmethod post-ws-event! :refresh
-  [pusher-imp message _ previous-state current-state comms]
+  [pusher-imp message _ previous-state current-state comms refresh-fn]
   (let [navigation-point (:navigation-point current-state)
         api-ch (:api comms)]
+    (utils/mlog "ws refresh navigation-point" navigation-point)
+    (utils/mlog "contains?" state/workflows-routes (contains? state/workflows-routes navigation-point))
     (api/get-projects api-ch)
-    (condp = navigation-point
-      :build (when (get-in current-state state/show-usage-queue-path)
-               (api/get-usage-queue (get-in current-state state/build-path) api-ch))
-      :dashboard (api/get-dashboard-builds (assoc (:navigation-data current-state)
-                                             :builds-per-page (:builds-per-page current-state)
-                                             :all? (get-in current-state state/show-all-builds-path))
-                                           api-ch)
+    (condp contains? navigation-point
+      #{:build} (when (get-in current-state state/show-usage-queue-path)
+                  (api/get-usage-queue (get-in current-state state/build-path) api-ch))
+      #{:dashboard} (api/get-dashboard-builds (assoc (:navigation-data current-state)
+                                                     :builds-per-page (:builds-per-page current-state)
+                                                     :all? (get-in current-state state/show-all-builds-path))
+                                              api-ch)
+      state/workflows-routes (refresh-fn)
       nil)))
