@@ -60,7 +60,7 @@
   (render [this]
     (component
       (let [props (om-next/props this)
-            page-num (get-in props ['[:app/route-params _] :page/number])
+            page-num (get-in props [:app/route-params :page/number])
             {project-name :project/name
              {vcs-type :organization/vcs-type
               org-name :organization/name} :project/organization} props]
@@ -177,7 +177,7 @@
               {vcs-type :organization/vcs-type
                org-name :organization/name} :project/organization} :branch/project} props
             page (:routed/page props)
-            page-num (get-in props ['[:app/route-params _] :page/number])]
+            page-num (get-in props [:app/route-params :page/number])]
         (run-list (om-next/computed
                    page
                    {:prev-page-href
@@ -260,7 +260,7 @@
             {vcs-type :organization/vcs-type
              org-name :organization/name} props
             page (:routed/page props)
-            page-num (get-in props ['[:app/route-params _] :page/number])]
+            page-num (get-in props [:app/route-params :page/number])]
         (run-list (om-next/computed
                    page
                    {:prev-page-href
