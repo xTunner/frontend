@@ -7,7 +7,6 @@
             [clojure.set :refer [rename-keys]]
             [frontend.api :as api]
             [frontend.send.resolve :refer [resolve]]
-            [frontend.utils.expr-ast :as expr-ast]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next]
             [om.next.impl.parser :as om-parser]
@@ -63,6 +62,12 @@
 (defn adapt-to-job [job-response]
   (update job-response :job/status job-run-status))
 
+(defn denormalize-required [job jobs-by-id]
+  (assoc job
+         :job/required-jobs
+         (mapv (fn [required-job-id] (get jobs-by-id required-job-id))
+               (:job/required-job-ids job))))
+
 (defn- compute-run-stop-time [jobs]
   (some->> jobs
            (keep (comp time-coerce/from-date :job/stopped-at))
@@ -87,6 +92,9 @@
                          adapt-to-job
                          (assoc-in [:job/run :run/id] run-id)))
                    (:workflow/jobs response))
+        jobs-by-id (into {} (map (juxt :job/id identity) jobs))
+        jobs-with-normalized-required (mapv #(denormalize-required % jobs-by-id)
+                                            jobs)
         {:keys [build/vcs-type build/org build/repo]} (get-in response
                                                               [:workflow/jobs
                                                                0
@@ -99,7 +107,7 @@
      :run/stopped-at (if (#{:run-status/running :run-status/not-run} status)
                        nil
                        (compute-run-stop-time jobs))
-     :run/jobs jobs
+     :run/jobs jobs-with-normalized-required
      :run/trigger-info (:workflow/trigger-info response)
      :run/project {:project/name repo
                    :project/organization {:organization/vcs-type vcs-type
@@ -311,7 +319,8 @@
    (fn [env ast]
      (:job/name env))
 
-   :job/build
+   #{:job/build
+     :job/required-jobs}
    (fn [{:keys [run/id job/name] :as env} ast]
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
      ;; as its last argument, so we use `partial` to make a function which takes
