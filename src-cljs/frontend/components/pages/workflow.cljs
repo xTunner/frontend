@@ -126,6 +126,7 @@
      :run/status
      :run/started-at
      :run/stopped-at
+     {:run/errors [:workflow-error/message]}
      {:run/jobs [:job/id]}
      {:run/trigger-info [:trigger-info/vcs-revision
                          :trigger-info/subject
@@ -139,6 +140,7 @@
   (render [this]
     (component
       (let [{:keys [run/id
+                    run/errors
                     run/status
                     run/started-at
                     run/stopped-at
@@ -154,8 +156,10 @@
              commit-subject :trigger-info/subject
              pull-requests :trigger-info/pull-requests
              branch :trigger-info/branch} trigger-info
-            run-status-class (status-class status)]
-
+            run-status-class (if (seq errors)
+                               :status-class/setup-needed
+                               (status-class status))]
+        
         (card/basic
          (element :content
            (html
@@ -164,13 +168,16 @@
               [:div.status {:class (name run-status-class)}
                [:a.exception {:href (routes/v1-run-path id)}
                 [:span.status-icon {:class (name run-status-class)}
-                 (case (status-class status)
+                 (case run-status-class
                    :status-class/failed (icon/status-failed)
+                   :status-class/setup-needed (icon/status-setup-needed)
                    :status-class/stopped (icon/status-canceled)
                    :status-class/succeeded (icon/status-passed)
                    :status-class/running (icon/status-running)
                    :status-class/waiting (icon/status-queued))]
-                [:.status-string (string/replace (name status) #"-" " ")]]]
+                [:.status-string (if (seq errors)
+                                   "needs setup"
+                                   (string/replace (name status) #"-" " "))]]]
               (cond (cancelable-statuses status)
                     [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
                      (icon/status-canceled)
