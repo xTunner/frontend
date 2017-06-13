@@ -17,7 +17,9 @@ references:
   load_code: &load_code
     run:
       name: load code from workspace
-      command: mv /tmp/workspace/frontend/* .
+      command: |
+        # Move all files and dotfiles to current directory
+        mv /tmp/workspace/frontend/* /tmp/workspace/frontend/.[!.]* .
       
   jars_cache_key: &jars_cache_key
     key: v5-dependency-jars-{{ checksum "project.clj" }}
@@ -58,7 +60,7 @@ jobs:
       - run:
           command: |
             mkdir -p /tmp/workspace/frontend
-            mv * /tmp/workspace/frontend/
+            mv * .[!.]* /tmp/workspace/frontend/
       - persist_to_workspace:
           root: *workspace_root
           paths:
