@@ -14,6 +14,12 @@
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [devcards.core :as dc :refer [defcard]]))
 
+(defn loading-placeholder [width]
+  (component (html [:div {:style {:width width}}])))
+
+(defn loading-circle []
+  (component (html [:span (icon/simple-circle)])))
+
 (defn- status-class [run-status]
   (case run-status
     :run-status/running :status-class/running
@@ -30,12 +36,12 @@
 
 (def ^:private rerunnable-from-start-statuses #{:run-status/failed})
 
-(defn run-prs
+(defn- run-prs
   "A om-next compatible version of
   `frontend.components.builds-table/pull-requests`."
   [pull-requests]
-  (html
-   (when-let [urls (seq (map :pull-request/url pull-requests))]
+  (when-let [urls (seq (map :pull-request/url pull-requests))]
+    (html
      [:span.metadata-item.pull-requests {:title "Pull Requests"}
       (icon/git-pull-request)
       (interpose
@@ -52,9 +58,9 @@
 (defn- commit-link
   "Om Next compatible version of `frontend.components.builds-table/commits`."
   [vcs-type org repo sha]
-  (html
-   (when (and vcs-type org repo sha)
-     (let [pretty-sha (build-model/github-revision {:vcs_revision sha})]
+  (when (and vcs-type org repo sha)
+    (let [pretty-sha (build-model/github-revision {:vcs_revision sha})]
+      (html
        [:span.metadata-item.revision
         [:i.octicon.octicon-git-commit]
         [:a {:title pretty-sha
@@ -132,7 +138,8 @@
   Object
   (render [this]
     (component
-      (let [{:keys [run/id
+      (let [{:keys [::loading?]} (om-next/get-computed this)
+            {:keys [run/id
                     run/errors
                     run/status
                     run/started-at
@@ -149,84 +156,106 @@
              commit-subject :trigger-info/subject
              pull-requests :trigger-info/pull-requests
              branch :trigger-info/branch} trigger-info
-            run-status-class (if (seq errors)
-                               :status-class/setup-needed
-                               (status-class status))]
+            run-status-class (cond
+                               loading? nil
+                               (seq errors) :status-class/setup-needed
+                               :else (status-class status))]
 
         (card/full-bleed
          (element :content
            (html
-            [:div
-             [:.status-and-button
-              [:div.status {:class (name run-status-class)}
-               [:a.exception {:href (routes/v1-run-path id)}
-                [:span.status-icon {:class (name run-status-class)}
-                 (case (status-class status)
-                   :status-class/failed (icon/status-failed)
-                   :status-class/setup-needed (icon/status-setup-needed)
-                   :status-class/stopped (icon/status-canceled)
-                   :status-class/succeeded (icon/status-passed)
-                   :status-class/running (icon/status-running)
-                   :status-class/waiting (icon/status-queued))]
-                [:.status-string (if (seq errors)
-                                   "needs setup"
-                                   (string/replace (name status) #"-" " "))]]]
-              (cond (cancelable-statuses status)
-                    [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
-                     (icon/status-canceled)
-                     [:span "cancel"]]
-                    (rerunnable-statuses status)
-                    [:div.rebuild-button.dropdown
-                     (icon/rebuild)
-                     [:span "Rerun"]
-                     [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
-                     [:ul.dropdown-menu.pull-right
-                      (when (rerunnable-from-start-statuses status)
-                        [:li
-                         [:a
-                          {:on-click #(transact-run-retry this id [])}
-                          "Rerun failed jobs"]])
-                      [:li
-                       [:a
-                        {:on-click #(transact-run-retry this id jobs)}
-                        "Rerun from beginning"]]]])]
-             [:div.run-info
-              [:div.build-info-header
-               [:div.contextual-identifier
-                [:a {:href (routes/v1-run-path id)}
-                 [:span  branch " / " run-name]]]]
-              [:div.recent-commit-msg
-               [:span.recent-log
-                {:title (when commit-body
-                          commit-body)}
-                (when commit-subject
-                  commit-subject)]]]
-             [:div.metadata
-              [:div.metadata-row.timing
-               [:span.metadata-item.recent-time.start-time
-                [:i.material-icons "today"]
-                (if started-at
-                  [:span {:title (str "Started: " (datetime/full-datetime started-at))}
-                   (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
-                   [:span " ago"]]
-                  "-")]
-               [:span.metadata-item.recent-time.duration
-                [:i.material-icons "timer"]
-                (if stopped-at
-                  [:span {:title (str "Duration: "
-                                      (datetime/as-duration (- (.getTime stopped-at)
-                                                               (.getTime started-at))))}
-                   (build-legacy common/updating-duration {:start started-at
-                                                           :stop stopped-at})]
-                  "-")]]
-              [:div.metadata-row.pull-revision
-               (run-prs pull-requests)
-               (commit-link vcs-type
-                            org-name
-                            project-name
-                            commit-sha)]]])))))))
+            [:div (when loading? {:class "loading"})
+             [:.inner-content
+              [:.status-and-button
+               [:div.status {:class (if loading? "loading" (name run-status-class))}
+                [:a.exception {:href (routes/v1-run-path id)}
+                 [:span.status-icon
+                  (if loading?
+                    (icon/simple-circle)
+                    (case (status-class status)
+                      :status-class/failed (icon/status-failed)
+                      :status-class/setup-needed (icon/status-setup-needed)
+                      :status-class/stopped (icon/status-canceled)
+                      :status-class/succeeded (icon/status-passed)
+                      :status-class/running (icon/status-running)
+                      :status-class/waiting (icon/status-queued)))]
+                 [:.status-string
+                  (when-not loading?
+                    (if (seq errors)
+                      "needs setup"
+                      (string/replace (name status) #"-" " ")))]]]
+               (cond
+                 loading? nil
+                 (contains? cancelable-statuses status)
+                 [:div.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                  (icon/status-canceled)
+                  [:span "cancel"]]
+                 (contains? rerunnable-statuses status)
+                 [:div.rebuild-button.dropdown
+                  (icon/rebuild)
+                  [:span "Rerun"]
+                  [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
+                  [:ul.dropdown-menu.pull-right
+                   (when (rerunnable-from-start-statuses status)
+                     [:li
+                      [:a
+                       {:on-click #(transact-run-retry this id [])}
+                       "Rerun failed jobs"]])
+                   [:li
+                    [:a
+                     {:on-click #(transact-run-retry this id jobs)}
+                     "Rerun from beginning"]]]])]
+              [:div.run-info
+               [:div.build-info-header
+                [:div.contextual-identifier
+                 [:a {:href (routes/v1-run-path id)}
+                  (if loading?
+                    (loading-placeholder 300)
+                    [:span branch " / " run-name])]]]
+               [:div.recent-commit-msg
+                [:span.recent-log
+                 {:title (when commit-body
+                           commit-body)}
+                 (if loading?
+                   (loading-placeholder 200)
+                   (when commit-subject
+                     commit-subject))]]]
+              [:div.metadata
+               [:div.metadata-row.timing
+                [:span.metadata-item.recent-time.start-time
+                 (if loading?
+                   (loading-circle)
+                   [:i.material-icons "today"])
+                 (if started-at
+                   [:span {:title (str "Started: " (datetime/full-datetime started-at))}
+                    (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
+                    [:span " ago"]]
+                   "-")]
+                [:span.metadata-item.recent-time.duration
+                 (if loading?
+                   (loading-circle)
+                   [:i.material-icons "timer"])
+                 (if stopped-at
+                   [:span {:title (str "Duration: "
+                                       (datetime/as-duration (- (.getTime stopped-at)
+                                                                (.getTime started-at))))}
+                    (build-legacy common/updating-duration {:start started-at
+                                                            :stop stopped-at})]
+                   "-")]]
+               [:div.metadata-row.pull-revision
+                (if loading?
+                  [:span.metadata-item.pull-requests (loading-circle)]
+                  (run-prs pull-requests))
+                (if loading?
+                  [:span.metadata-item.revision (loading-circle)]
+                  (commit-link vcs-type
+                               org-name
+                               project-name
+                               commit-sha))]]]])))))))
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
+
+(defn loading-run-row [] (run-row (om-next/computed {:run/id (random-uuid)} {::loading? true})))
 
 (dc/do
   (defcard run-row
@@ -243,4 +272,7 @@
                                    :trigger-info/pull-requests [{:pull-request/url "https://github.com/acme/anvil/pull/1974"}]}
                 :run/project {:project/name "anvil"
                               :project/organization {:organization/name "acme"
-                                                     :organization/vcs-type :github}}}))))
+                                                     :organization/vcs-type :github}}})))
+
+  (defcard loading-run-row
+    (loading-run-row)))
