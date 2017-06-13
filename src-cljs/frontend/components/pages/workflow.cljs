@@ -397,8 +397,15 @@
                     (card/basic
                      (empty-state/empty-state
                       {:icon (icon/workflows)
-                       :heading (html [:span (empty-state/important (str org-name "/" project-name)) " has no workflows defined yet"])
-                       :subheading (str "Add a workflow section to " project-name "'s config to start running workflows.")}))}))))))
+                       :heading (html [:span (empty-state/important (str project-name "/" branch-name)) " has no workflows configured"])
+                       :subheading (html
+                                     [:span
+                                      "To orchestrate multiple jobs, add the workflows key to your config.yml file."
+                                      [:br]
+                                      "See "
+                                      [:a {:href "https://circleci.com/docs/2.0/workflows"}
+                                       "the workflows documentation"]
+                                      " for examples and instructions."])}))}))))))
 
 (def branch-workflow-runs (om-next/factory BranchWorkflowRuns))
 
