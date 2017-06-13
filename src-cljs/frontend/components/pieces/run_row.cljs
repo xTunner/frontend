@@ -6,11 +6,13 @@
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
+            [frontend.timer :as timer]
             [frontend.utils :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.next :as om-next :refer-macros [defui]]))
+            [om.next :as om-next :refer-macros [defui]])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn- status-class [run-status]
   (case run-status
@@ -225,3 +227,20 @@
                             commit-sha)]]])))))))
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
+
+(dc/do
+  (defcard run-row
+    (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
+      (run-row {:run/id (random-uuid)
+                :run/name "a-workflow"
+                :run/status :run-status/succeeded
+                :run/started-at #inst "2017-05-31T18:59:19.517-00:00"
+                :run/stopped-at #inst "2017-05-31T19:59:19.517-00:00"
+                :run/trigger-info {:trigger-info/vcs-revision "abcd123"
+                                   :trigger-info/subject "Changed something."
+                                   :trigger-info/body "Actually, changed a lot of things."
+                                   :trigger-info/branch "change-stuff"
+                                   :trigger-info/pull-requests [{:pull-request/url "https://github.com/acme/anvil/pull/1974"}]}
+                :run/project {:project/name "anvil"
+                              :project/organization {:organization/name "acme"
+                                                     :organization/vcs-type :github}}}))))
