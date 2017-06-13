@@ -33,6 +33,7 @@
    :route/legacy-page legacy/LegacyPage
    :route/projects projects/Page
    :route/account user-settings/Page
+   :route/workflows workflow/SplashPage
    :route/project-workflows workflow/ProjectPage
    :route/project-branch-workflows workflow/BranchPage
    :route/org-workflows workflow/OrgPage
