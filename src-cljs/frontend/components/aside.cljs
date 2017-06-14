@@ -495,11 +495,11 @@
      [:a.aside-item {:class (when (= :route/account current-route) "current")
                      :data-placement "right"
                      :data-trigger "hover"
-                     :title "Account Settings"
+                     :title "User Settings"
                      :href "/account"
                      :on-click #(aside-nav-clicked owner :account-settings-icon-clicked)}
       [:i.material-icons "settings"]
-      [:div.nav-label "Account Settings"]]
+      [:div.nav-label "User Settings"]]
 
      [:a.aside-item {:title "Documentation"
                      :data-placement "right"

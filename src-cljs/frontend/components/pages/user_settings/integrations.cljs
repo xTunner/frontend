@@ -68,7 +68,7 @@
                     (-> (om-next/props this) :app/current-user :user/identities))]
       (html
         [:div
-         [:legend "Account Integrations"]
+         [:legend "User Integrations"]
          (card/collection
            (-> [(card this {:name "GitHub"
                             :type "github"

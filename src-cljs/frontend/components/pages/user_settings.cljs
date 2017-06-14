@@ -20,7 +20,7 @@
 (defn nav-items []
   (remove
     nil?
-    [{:type :subpage :href (routes/v1-account) :title "Account Integrations" :subpage :integrations}
+    [{:type :subpage :href (routes/v1-account) :title "User Integrations" :subpage :integrations}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notification Settings" :subpage :notifications}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "Personal API Tokens" :subpage :api}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku API Key" :subpage :heroku}
@@ -35,7 +35,7 @@
    ;; styled component. See CIRCLE-2545.
    [:div.aside-user
     [:header
-     [:h4 "Account Settings"]]
+     [:h4 "User Settings"]]
     [:div.aside-user-options
      (aside/expand-menu-items (nav-items) subpage)]]))
 
@@ -103,7 +103,7 @@
        :view :account}))
   Object
   (componentDidMount [this]
-    (set-page-title! "Account")
+    (set-page-title! "User")
 
     ;; Replicates the old behavior of post-navigated-to! :account.
     ;; This will go away as the subpages which use this data move to Om Next

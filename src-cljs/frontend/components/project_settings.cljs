@@ -156,7 +156,7 @@
                         "We'll keep an eye on this and update you with personalized build emails and notifications."
                         [:br]
                         "You can update your notifications from your "
-                        [:a {:href "/account"} "account settings"]
+                        [:a {:href "/account"} "user settings"]
                         "."]
                        (when show-modal?
                          (let [close-fn #(om/set-state! owner :show-modal? false)
@@ -1669,7 +1669,7 @@
              [:div
               [:p
                "You can set your Heroku key in your "
-               [:a {:href "/account/heroku"} "account settings"] "."]]]]
+               [:a {:href "/account/heroku"} "user settings"] "."]]]]
            [:div.heroku-step
             [:h4 "Step 2: Associate a Heroku SSH key with your account"]
             [:span "Current deploy user: "
