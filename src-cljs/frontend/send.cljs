@@ -73,17 +73,19 @@
            time/latest
            time-coerce/to-date))
 
-(defn- run-status [run-status-str]
-  (case run-status-str
-    "success" :run-status/succeeded
-    "failed" :run-status/failed
-    "running" :run-status/running
-    "not_run" :run-status/not-run
-    "canceled" :run-status/canceled))
+(defn- run-status [run-response]
+  (if (seq (:workflow/errors run-response))
+    :run-status/needs-setup
+    (case (:workflow/status run-response)
+      "success" :run-status/succeeded
+      "failed" :run-status/failed
+      "running" :run-status/running
+      "not_run" :run-status/not-run
+      "canceled" :run-status/canceled)))
 
 (defn adapt-to-run
   [response]
-  (let [status (-> response :workflow/status run-status)
+  (let [status (run-status response)
         run-id (:workflow/id response)
         jobs (mapv (fn [job-response]
                      (-> job-response
