@@ -301,6 +301,21 @@
   border-right: @build-item-inner-border;
   line-height: 1.8;
 
+  > .build-info-container > .workflow-info {
+    .flexy(center, flex-start); 
+    margin-bottom: 1em;
+
+    > .workflows-icon {
+      .flex(0 0 16px);
+      margin-right: 0.5em;
+      color: @grayLight;
+    }
+
+    > a {
+      color: inherit;
+    }
+  }
+
   .recent-commit-msg {
     // TODO: Make these fiddly margins unnecessary.
     margin-top: 6px;
