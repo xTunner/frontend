@@ -276,7 +276,7 @@
      ;; Unlike most of the api functions, api/get-org-settings takes the channel
      ;; as its last argument, so we use `partial` to make a function which takes
      ;; it first, as `api-promise-fn` requires.)
-     (-> ((get-in env [:apis :get-org-settings]))
+     (-> (((get-in env [:apis :get-org-settings]) name vcs-type))
          (p/then
           (fn [response]
             (let [projects (for [p (:projects response)]
@@ -299,6 +299,8 @@
      ;; Also: note that we do no processing/massaging of this data. The plan
      ;; data is currently used in it's old-api form rather than using new
      ;; namespaced, universal keys. This is debt.
+     ;; TODO: (get-in env [:apis :get-org-plan]) is a fn that takes 2 arguments
+     ;; in order to invoke this, we'd need to do (((get-in env [:apis :get-org-plan]) name vcs-type))
      (-> ((get-in env [:apis :get-org-plan]))))
 
    :circleci/run
