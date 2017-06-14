@@ -275,7 +275,10 @@
   (defroute v1-org-workflows #"/(gh|bb)/([^/]+)/workflows"
     [short-vcs-type org-name params]
     ;; Show splash screen until org-level view exists again.
-    (open! app :route/workflows)
+    (open! app :route/workflows
+           {:route-params
+              {:organization/vcs-type (vcs/short-to-long-vcs short-vcs-type)
+               :organization/name org-name}})
     #_(let [page-str (get-in params [:query-params :page])]
         (open! app
                :route/org-workflows

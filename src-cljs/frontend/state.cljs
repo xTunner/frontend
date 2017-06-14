@@ -322,7 +322,8 @@
 
 (def insights-routes #{:build-insights :project-insights})
 (def dashboard-routes #{:dashboard :build})
-(def workflows-routes #{:route/project-workflows
+(def workflows-routes #{:route/workflows
+                        :route/project-workflows
                         :route/project-branch-workflows
                         :route/org-workflows
                         :route/run})
