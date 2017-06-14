@@ -4,7 +4,6 @@
             [frontend.api :as api]
             [frontend.api.path :as api-path]
             [frontend.async :refer [put!]]
-            [frontend.experimental.workflow-spike :as workflow]
             frontend.favicon
             [frontend.models.feature :as feature]
             [frontend.models.organization :as org]
@@ -20,12 +19,6 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring])
   (:require-macros [cljs.core.async.macros :as am :refer [go]]))
-
-(defn- maybe-add-workflow-response-data [state]
-  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
-    (cond-> state
-      (= workflow-id "mock-workflow-id")
-      (assoc-in state/workflow-path workflow/fake-progress-response))))
 
 (defn- maybe-fetch-workflow-response-data! [state api-ch]
   (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
@@ -115,15 +108,13 @@
         (state-utils/set-dashboard-crumbs args)
         state-utils/reset-current-build
         state-utils/reset-current-project
-        (state-utils/change-selected-org nav-org)
-        maybe-add-workflow-response-data)))
+        (state-utils/change-selected-org nav-org))))
 
 (defmethod post-navigated-to! :dashboard
   [history-imp navigation-point args previous-state current-state comms]
   (let [api-ch (:api comms)
         projects-loaded? (seq (get-in current-state state/projects-path))
         current-user (get-in current-state state/user-path)]
-    (maybe-fetch-workflow-response-data! current-state api-ch)
     (mlog (str "post-navigated-to! :dashboard with current-user? " (not (empty? current-user))
                " projects-loaded? " (not (empty? projects-loaded?))))
     (when (and (not projects-loaded?)
@@ -203,8 +194,7 @@
           (#(if (state-utils/stale-current-project? % project-name)
               (state-utils/reset-current-project %)
               %))
-          state-utils/reset-dismissed-osx-usage-level
-          maybe-add-workflow-response-data))))
+          state-utils/reset-dismissed-osx-usage-level))))
 
 (defn initialize-pusher-subscriptions
   "Subscribe to pusher channels for initial messaging. This subscribes

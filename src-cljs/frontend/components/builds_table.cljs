@@ -7,7 +7,6 @@
             [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.status :as status]
             [frontend.datetime :as datetime]
-            [frontend.experimental.workflow-spike :as workflow]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
@@ -332,7 +331,7 @@
 (defn builds-table [data owner {:keys [show-actions? show-branch? show-project?]
                                 :or {show-branch? true
                                      show-project? true}}]
-  (let [{:keys [builds projects workflow]} data
+  (let [{:keys [builds projects]} data
         projects-by-vcs_url (into {}
                                   (map (juxt :vcs_url identity) projects))]
     (reify
@@ -341,20 +340,9 @@
       (render [_]
         (html
          [:div.container-fluid
-          (if workflow
-            (->> (:jobs workflow)
-                 next-this-previous
-                 (map (fn [[previous-job job next-job]]
-                        (build-job-row {:previous-job previous-job
-                                        :job job
-                                        :next-job next-job
-                                        :workflow-id (:id workflow)
-                                        :project (get projects-by-vcs_url (workflow/trigger-vcs_url workflow))}
-                                       owner)))
-                 reverse)
-            (map #(build-row {:build %
-                              :project (get projects-by-vcs_url (:vcs_url %))}
-                             owner {:show-actions? show-actions?
-                                    :show-branch? show-branch?
-                                    :show-project? show-project?})
-                 builds))])))))
+          (map #(build-row {:build %
+                            :project (get projects-by-vcs_url (:vcs_url %))}
+                           owner {:show-actions? show-actions?
+                                  :show-branch? show-branch?
+                                  :show-project? show-project?})
+               builds)])))))
