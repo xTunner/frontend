@@ -41,7 +41,7 @@ references:
 
   restore_bower_components: &restore_bower_components
     run:
-      name: Restore npm/bower dependencies from workspace
+      name: Restore bower dependencies from workspace
       command: mv /tmp/workspace/bower_components resources/components
       
 jobs:
