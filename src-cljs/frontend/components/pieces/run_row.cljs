@@ -25,7 +25,8 @@
     :run-status/running :status-class/running
     :run-status/succeeded :status-class/succeeded
     :run-status/failed :status-class/failed
-    (:run-status/canceled :run-status/not-run) :status-class/stopped))
+    (:run-status/canceled :run-status/not-run) :status-class/stopped
+    :run-status/needs-setup :status-class/setup-needed))
 
 (def ^:private cancelable-statuses #{:run-status/not-run
                                      :run-status/running})
@@ -156,10 +157,8 @@
              commit-subject :trigger-info/subject
              pull-requests :trigger-info/pull-requests
              branch :trigger-info/branch} trigger-info
-            run-status-class (cond
-                               loading? nil
-                               (seq errors) :status-class/setup-needed
-                               :else (status-class status))]
+            run-status-class (when-not loading?
+                               (status-class status))]
 
         (card/full-bleed
          (element :content
@@ -172,7 +171,7 @@
                  [:span.status-icon
                   (if loading?
                     (icon/simple-circle)
-                    (case (status-class status)
+                    (case run-status-class
                       :status-class/failed (icon/status-failed)
                       :status-class/setup-needed (icon/status-setup-needed)
                       :status-class/stopped (icon/status-canceled)
@@ -181,9 +180,7 @@
                       :status-class/waiting (icon/status-queued)))]
                  [:.status-string
                   (when-not loading?
-                    (if (seq errors)
-                      "needs setup"
-                      (string/replace (name status) #"-" " ")))]]]
+                    (string/replace (name status) #"-" " "))]]]
                (cond
                  loading? [:div.action-button [:svg]]
                  (contains? cancelable-statuses status)
