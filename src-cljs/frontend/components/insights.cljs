@@ -120,10 +120,20 @@
    "timedout" "failed",
    "canceled" "canceled"})
 
+(def fail-outcomes
+  (->> insights-outcome-mapping
+       (filter #(= "failed" (second %)))
+       (into {})))
+
 (def pass-fail-outcomes
   (->> insights-outcome-mapping
        (filter #(#{"success" "failed"} (second %)))
        (into {})))
+
+(defn build-failed? [{:keys [outcome]}]
+  (-> outcome
+      fail-outcomes
+      boolean))
 
 (defn build-chartable? [{:keys [outcome build_time_millis]}]
   (boolean

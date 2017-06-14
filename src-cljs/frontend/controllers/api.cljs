@@ -6,6 +6,7 @@
             [frontend.components.forms :as forms :refer [release-button!]]
             [frontend.elevio :as elevio]
             frontend.favicon
+            [frontend.components.insights.project :as project-insights]
             [frontend.models.action :as action-model]
             [frontend.models.build :as build-model]
             [frontend.models.container :as container-model]
@@ -13,6 +14,7 @@
             [frontend.models.organization :as org]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
+            [frontend.models.test :as test-model]
             [frontend.models.user :as user-model]
             [frontend.notifications :as notifications]
             [frontend.pusher :as pusher]
@@ -173,6 +175,17 @@
       (if (= (:navigation-point state) :project-insights)
         (update-in state state/project-path add-recent-build)
         (update-in state state/projects-path (partial map add-recent-build))))))
+
+(defmethod post-api-event! [:insights-recent-builds :success]
+  [target message status args previous-state current-state comms]
+  (if (= (:navigation-point current-state) :project-insights)
+    (let [branch (-> current-state :navigation-data :branch)
+          project (get-in current-state state/project-path)
+          failed-builds (project-insights/failed-builds (project-insights/branch-builds project branch))]
+      (when (nil? (get-in current-state state/failed-builds-junit-enabled?-path))
+        (doseq [failed-build failed-builds]
+          (api/get-build-tests (merge failed-build {:vcs_type (project-model/vcs-type project)})
+            (:api comms) :failed-build-tests))))))
 
 (defmethod api-event [:branch-build-times :success]
   [target message status {timing-data :resp, {:keys [target-key]} :context} state]
@@ -446,6 +459,15 @@
     (if-not (= build-id (build-model/id (get-in state state/build-path)))
       state
       (assoc-in state state/artifacts-path artifacts))))
+
+(defmethod api-event [:failed-build-tests :success]
+  [target message status {{:keys [tests]} :resp :as args} state]
+  (let [failed-builds-tests (get-in state state/failed-builds-tests-path [])
+        failed-tests (filter test-model/failed? tests)
+        junit-enabled? (not (empty? tests))]
+    (-> state
+        (assoc-in state/failed-builds-tests-path (concat failed-builds-tests failed-tests))
+        (assoc-in state/failed-builds-junit-enabled?-path junit-enabled?))))
 
 (defmethod api-event [:build-tests :success]
   [target message status {{:keys [tests exceptions]} :resp :as args} state]

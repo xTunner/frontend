@@ -288,8 +288,12 @@
 
 (def hamburger-menu-path [:hamburger-menu])
 
-(def insights-filter-path [:insights :selected-filter])
-(def insights-sorting-path [:insights :selected-sorting])
+(def insights-path [:insights])
+(def insights-filter-path (conj insights-path :selected-filter))
+(def insights-sorting-path (conj insights-path :selected-sorting))
+(def project-insights-path (conj insights-path :project))
+(def failed-builds-tests-path (conj project-insights-path :failed-tests))
+(def failed-builds-junit-enabled?-path (conj project-insights-path :junit-enabled?))
 
 (def current-view :navigation-point)
 (def current-view-path [current-view])

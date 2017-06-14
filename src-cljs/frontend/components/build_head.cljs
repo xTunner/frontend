@@ -458,7 +458,7 @@
        [:div
         (om/build-all test-item (vec failures))]))))
 
-(defn build-tests-source-block [[source {:keys [failures successes]}] owner]
+(defn build-tests-source-block [[source {:keys [failures successes]}] owner opts]
   (reify om/IRender
     (render [_]
       (html
@@ -493,13 +493,24 @@
                       "Less"
                       "More")]]]
                  (when (om/get-state owner :is-open?)
-                   (om/build-all build-tests-file-block bottom-map))))))]]]]))))
+                   (om/build-all build-tests-file-block bottom-map))))))
+           [:div.link-to-insights
+            (button/link {:fixed? true
+                          :kind :primary
+                          :target "_blank"
+                          :size :small
+                          :href (routes/v1-project-insights-path opts)
+                          :on-click #((om/get-shared owner :track-event) {:event-type :insights-icon-clicked
+                                                                          :properties {:component "build-head"
+                                                                                       :copy "See Most Failed Tests"}})}
+                         "See Most Failed Tests")]]]]]))))
 
 (defn build-tests-list [{project :project
                          {{:keys [tests exceptions]} :tests-data
                           {build-status :status
                            platform :platform} :build
-                          :as data} :build-data}
+                          :as data} :build-data
+                         branch :branch}
                         owner]
   (reify
     om/IWillMount
@@ -538,7 +549,10 @@
                                               "Info-Error")}]]
                 (om/build parse-errors exceptions)])
              (cond
-               (seq failed-sources) (om/build-all build-tests-source-block failed-sources)
+               (seq failed-sources) (om/build-all build-tests-source-block failed-sources {:opts {:branch branch
+                                                                                                  :vcs_type (:vcs_type project)
+                                                                                                  :org (:username project)
+                                                                                                  :repo (:reponame project)}})
                (seq tests) [:div
                             "Your build ran "
                             [:strong (count tests)]
@@ -591,7 +605,7 @@
                     :let [pname (name k) pval (pr-str v)]]
                 (str pname "=" pval \newline))]]))))
 
-(defn build-sub-head [{:keys [build-data scopes user current-tab project-data ssh-available? tab-href] :as data} owner]
+(defn build-sub-head [{:keys [build-data scopes branch user current-tab project-data ssh-available? tab-href] :as data} owner]
   (reify
     om/IRender
     (render [_]
@@ -658,7 +672,8 @@
            (case selected-tab-name
 
              :tests (om/build build-tests-list {:build-data build-data
-                                                :project project})
+                                                :project project
+                                                :branch branch})
 
              :build-timing (om/build build-timings/build-timings {:build (select-keys build build-timings/required-build-keys)
                                                                   :project project
