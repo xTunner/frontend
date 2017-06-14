@@ -46,11 +46,14 @@
                  ;; Frontend tests
                  [org.clojure/tools.reader "1.0.0-beta3"]
                  [circleci/bond "0.2.9"]
-                 [lein-doo "0.1.6"]]
+                 ;; fork adds headless chrome support and only
+                 ;; compiles cljs when it's not already compiled
+                 ;; PR: https://github.com/bensu/doo/pull/136
+                 [org.clojars.projectfrank/lein-doo "0.1.8-SNAPSHOT"]]
 
   :plugins [[lein-cljsbuild "1.1.1"]
             [lein-figwheel "0.5.10"]
-            [lein-doo "0.1.7"]]
+            [org.clojars.projectfrank/lein-doo "0.1.8-SNAPSHOT"]]
 
   ;; Don't include these dependencies transitively. These are foundational
   ;; dependencies that lots of our direct dependencies depend on. We want to
