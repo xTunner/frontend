@@ -13,6 +13,12 @@
         transform: translate(-50%, -100%);
       }
 
+      &.top-left {
+        top: 0;
+        left: 0;
+        transform: translate(0, -100%);
+      }
+
       &.right {
         top: 50%;
         right: 0;
@@ -113,6 +119,17 @@
           border-top-color: @grayDark;
         }
       }
+
+      &.top-left > .popover-inner {
+        flex-direction: column;
+
+        &::after {
+          border-top-color: @grayDark;
+          align-self: left;
+          margin-left: 5px;
+        }
+      }
+
 
       &.right > .popover-inner {
         flex-direction: row-reverse;

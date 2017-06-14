@@ -268,15 +268,16 @@
               :params params
               :context {:org_name org-name :vcs_type vcs-type :users initial-users})))
 
-(defn get-build-tests [build api-ch]
+(defn get-build-tests [build api-ch & [msg]]
   (let [vcs-type (:vcs_type build)
         tests-url (gstring/format "/api/v1.1/project/%s/%s/%s/tests"
                                   vcs-type
                                   (vcs-url/project-name (:vcs_url build))
-                                  (:build_num build))]
+                                  (:build_num build))
+        msg (or msg :build-tests)]
     (ajax/ajax :get
                tests-url
-               :build-tests
+               msg
                api-ch
                :context (build-model/id build))))
 

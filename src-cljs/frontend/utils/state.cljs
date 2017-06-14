@@ -71,6 +71,8 @@
 (defn clear-page-state [state]
   (-> state
       (assoc :crumbs nil)
+      (assoc-in state/project-path nil)
+      (assoc-in state/project-insights-path nil)
       (assoc-in state/inputs-path nil)
       (assoc-in state/error-message-path nil)
       (assoc-in state/general-message-path nil)

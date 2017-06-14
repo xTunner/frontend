@@ -94,7 +94,7 @@
 
   :placement
    The position of the popover relative to the trigger element.
-   Can be one of [:top :bottom :left :right].
+   Can be one of [:top :top-left :bottom :left :right].
    (default: :top)
 
   :trigger-mode
@@ -275,6 +275,14 @@
                           :trigger-mode :click
                           :visible? true})}
          trigger)
+        (with-positioned-element
+          {:placement :top-left
+           :element (card {:title "With title"
+                           :body "Content"
+                           :placement :top-left
+                           :trigger-mode :click
+                           :visible? true})}
+          trigger)
         (with-positioned-element
          {:placement :bottom
           :element (card {:title "With multi-line content and multi-line title"

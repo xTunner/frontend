@@ -1,18 +1,18 @@
 (ns frontend.components.insights.project
   (:require [frontend.components.common :as common]
-            [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.insights :as insights]
+            [frontend.components.pieces.popover :as popover]
+            [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.pieces.table :refer [table]]
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.async :refer [raise!]]
-            [frontend.api :as api]
-            [frontend.utils :refer-macros [html defrender]]
+            [frontend.utils :refer-macros [html defrender component]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
-            [cljs-time.core :as time]
             [cljs-time.format :as time-format]
             [devcards.core :as dc :refer-macros [defcard]]
             cljsjs.c3))
@@ -94,7 +94,6 @@
 (s/defn build-status-bar-chart-hovercard [build :- insights/BarChartableBuild]
   (html
    [:div {:data-component `build-status-bar-chart-hovercard}
-
    [:div.insights-metadata
     [:div.metadata-row
      [:div.metadata-item
@@ -114,6 +113,28 @@
      [:div.metadata-item
       [:i.material-icons "storage"]
       (:build_num build)]]]]))
+
+(defn- test-frequency-rows [failed-tests]
+  (let [failed-tests (map #(select-keys % [:classname :name]) failed-tests)
+        test-frequencies (frequencies failed-tests)] ;;Test frequencies is a map of failed tests; each mapped
+    ;; to it's frequency throughout the last 10 builds.
+    (for [test-frequency test-frequencies]
+      (merge {:frequency (second test-frequency)} {:test-name (:name (first test-frequency))
+                                                   :classname (:classname (first test-frequency))}))))
+(defn- failed-tests-table [failed-tests owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+         (om/build table {:key-fn :name
+                          :rows (sort-by :frequency > (test-frequency-rows failed-tests))
+                          :columns [{:header "Test Suite"
+                                     :cell-fn :classname}
+                                    {:header "Test Name"
+                                     :cell-fn :test-name}
+                                    {:header "Frequency"
+                                     :cell-fn :frequency}]})]))))
 
 (defn build-status-bar-chart [{:keys [plot-info builds]} owner]
   (reify
@@ -135,15 +156,75 @@
          (when focused-build
            (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]]))))
 
-(defrender project-insights [state owner]
-  (let [{:keys [branch] :as navigation-data} (:navigation-data state)
-        {:keys [branches parallel] :as project} (get-in state state/project-path)
+(defn branch-builds
+  [project branch]
+  (get (:recent-builds project) branch))
+
+(defn failed-builds
+  [builds]
+  (->> builds
+       (filter insights/build-failed?)
+       (take 10)))
+
+(defn- failed-tests-card [failed-tests junit-enabled?]
+  [:div.card
+   [:div.card-header
+    [:h2 "Failed Tests"]]
+   [:div.card-body.failed-tests
+    (cond
+      (not-empty failed-tests)
+      (om/build failed-tests-table failed-tests)
+
+      (false? junit-enabled?)
+      [:span "Implement test metadata to view output. Find out more in the "
+       [:a {:href "https://circleci.com/docs/1.0/test-metadata/"
+            :target "_blank"}
+        "test metadata documentation"]
+       "."]
+
+      (and (not (nil? failed-tests))
+           (empty? failed-tests))
+      [:span "No failed tests to show."]
+
+      :else (spinner))]])
+
+(defn- build-status-card [chartable-builds bar-chart-builds]
+  [:div.card
+   [:div.card-header
+    [:h2 "Build Status"]]
+   [:div.card-body.fixed
+    (if (nil? chartable-builds)
+      (spinner)
+      (om/build build-status-bar-chart {:plot-info build-time-bar-chart-plot-info
+                                        :builds (reverse bar-chart-builds)}))]])
+
+(defn- build-performance-card [timing-data]
+  [:div.card
+   [:div.card-header
+    [:h2 "Build Performance"]]
+   [:div.card-body.fixed
+    {:class (when (empty? timing-data)
+              "no-chart")}
+    (cond (nil? timing-data) (spinner)
+          (empty? timing-data) [:div.no-builds.no-insights "No builds in the last 90 days."]
+          :else (om/build build-time-line-chart timing-data))]])
+
+(defn project-insights [state owner]
+  (reify
+    om/IRender
+    (render [_]
+      (component
+        (let [branch (-> state :navigation-data :branch)
+              {:keys [parallel] :as project} (get-in state state/project-path)
         timing-data (get-in project [:build-timing branch])
-        chartable-builds (some->> (get (:recent-builds project) branch)
+              project-branch-builds (branch-builds project branch)
+              chartable-builds (some->> project-branch-builds
                                   (filter insights/build-chartable?))
         bar-chart-builds (->> chartable-builds
                               (take (:max-bars build-time-bar-chart-plot-info))
-                              (map insights/add-queued-time))]
+                                    (map insights/add-queued-time))
+              failed-tests (get-in state state/failed-builds-tests-path)
+              junit-enabled? (get-in state state/failed-builds-junit-enabled?-path)]
     (html
      [:div.insights-project
       [:div.insights-metadata-header
@@ -160,11 +241,15 @@
        [:div.card.insights-metadata
         [:dl
          [:dt "median build time"]
-         [:dd (datetime/as-duration (insights/median (map :build_time_millis bar-chart-builds))) " min"]]]
+                [:dd (-> (map :build_time_millis bar-chart-builds)
+                         (insights/median)
+                         (datetime/as-duration))" min"]]]
        [:div.card.insights-metadata
         [:dl
          [:dt "median queue time"]
-         [:dd (datetime/as-duration (insights/median (map :queued_time_millis bar-chart-builds))) " min"]]]
+                [:dd (-> (map :queued_time_millis bar-chart-builds)
+                         (insights/median)
+                         (datetime/as-duration))" min"]]]
        [:div.card.insights-metadata
         [:dl
          [:dt "success rate"]
@@ -179,24 +264,9 @@
                                                                                :_fragment "parallel-builds"})
                                        :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked})}
             [:i.material-icons "tune"]])]]]]
-      [:div.card
-       [:div.card-header
-        [:h2 "Build Status"]]
-       [:div.card-body
-        (if (nil? chartable-builds)
-          (spinner)
-          (om/build build-status-bar-chart {:plot-info build-time-bar-chart-plot-info
-                                            :builds (reverse bar-chart-builds)}))]]
-      [:div.card
-       [:div.card-header
-        [:h2 "Build Performance"]]
-       [:div.card-body
-        {:class (when (empty? timing-data)
-                  "no-chart")}
-        (cond (nil? timing-data) (spinner)
-              (empty? timing-data) [:div.no-builds.no-insights "No builds in the last 90 days."]
-              :else
-              (om/build build-time-line-chart timing-data))]]])))
+             (failed-tests-card failed-tests junit-enabled?)
+             (build-status-card chartable-builds bar-chart-builds)
+             (build-performance-card timing-data)]))))))
 
 (defrender header [state owner]
   (let [projects (get-in state state/projects-path)

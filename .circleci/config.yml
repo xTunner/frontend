@@ -25,7 +25,7 @@ references:
     key: v5-dependency-jars-{{ checksum "project.clj" }}
 
   js_cache_key: &js_cache_key
-    key: v5-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+    key: v6-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
     
   restore_jars: &restore_jars
     run:
@@ -103,7 +103,7 @@ jobs:
       - run:
           name: download dependencies
           command: |
-            if [ ! -d node_modules -o ! -d bower_components ]; then
+            if [ ! -d node_modules -o ! -d resources/components ]; then
               set -exu
               npm install
               node_modules/bower/bin/bower --allow-root install
@@ -112,10 +112,12 @@ jobs:
           <<: *js_cache_key
           paths:
             - /root/frontend/node_modules
-            - /root/frontend/bower_components
+            - /root/frontend/resources/components
       - run:
           name: Move dependencies to workspace
-          command: mv node_modules bower_components /tmp/workspace/
+          command: |
+            mv node_modules /tmp/workspace/
+            mv resources/components /tmp/workspace/bower_components
       - persist_to_workspace:
           root: *workspace_root
           paths:

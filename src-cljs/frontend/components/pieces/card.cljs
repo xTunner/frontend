@@ -5,13 +5,15 @@
             [frontend.components.pieces.tabs :as tabs]
             [frontend.utils :refer-macros [component html]]))
 
-(defn- exterior [content]
+(defn full-bleed
+  "A card with no padding. Content will touch the edge of the card."
+  [content]
   (component
     (html
      [:div
       content])))
 
-(defn- body [content]
+(defn- padding [content]
   (component
     (html
      [:div
@@ -26,9 +28,10 @@
         [:.action action])])))
 
 (defn basic
-  "The most basic of cards. The given content appears on a card."
+  "The most basic of cards. The given content appears on a card, with normal
+  padding."
   [& children]
-  (-> children body exterior))
+  (-> children padding full-bleed))
 
 (defn titled
   "A card with a title.
@@ -36,20 +39,20 @@
   :title - The card title.
   :action - (optional) An action to place on the right of the header."
   ([{:keys [title action]} & children]
-   (exterior
+   (full-bleed
     (list
      (header title action)
-     (body children)))))
+     (padding children)))))
 
 (defn tabbed
   "A card with a tab row.
 
   :tab-row - The tab row to attach to the card."
   ([{:keys [tab-row]} content]
-   (exterior
+   (full-bleed
     (list
      tab-row
-     (body content)))))
+     (padding content)))))
 
 (defn collection
   "A set of cards to layout together"
@@ -70,9 +73,14 @@
     {}
     {:classname "background-gray"})
 
+  (defcard full-bleed-card
+    (full-bleed "Some content.")
+    {}
+    {:classname "background-gray"})
+
   (defcard titled-card
     (titled {:title "Card Title (Generally in Title Case)"}
-     "Some content.")
+            "Some content.")
     {}
     {:classname "background-gray"})
 

@@ -108,8 +108,15 @@
     }
 
     .card-body {
-      height: 360px;
       padding: 20px 15px 15px;
+
+      &.fixed {
+        height: 360px;
+      }
+
+      &.failed-tests {
+        min-height: 100px;
+      }
     }
   }
 

@@ -23,6 +23,7 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
+            [frontend.state :as state]
             [om.core :as om :include-macros true]))
 
 (defn- summary-item [label value]

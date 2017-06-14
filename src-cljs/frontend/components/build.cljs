@@ -482,6 +482,9 @@
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
                                               :workflow-data workflow-data
                                               :current-tab current-tab
+                                              :branch (->> (state/project-branch-crumb-path app)
+                                                           (get-in app)
+                                                           :branch)
                                               :project-data project-data
                                               :user user
                                               :projects (get-in app state/projects-path)
