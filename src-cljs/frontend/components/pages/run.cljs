@@ -1,8 +1,7 @@
 (ns frontend.components.pages.run
   (:require [frontend.components.common :as common]
-            [frontend.components.pages.workflow :as workflow-page]
-            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.run-row :as run-row]
             [frontend.components.pieces.status :as status]
             [frontend.components.templates.main :as main-template]
             [frontend.datetime :as datetime]
@@ -119,9 +118,8 @@
         {:run/trigger-info [:trigger-info/branch]}
         {:run/errors [:workflow-error/message]}]}
      `{(:run-for-row {:< :routed-entity/run})
-       ~(om-next/get-query workflow-page/RunRow)}
+       ~(om-next/get-query run-row/RunRow)}
      `{(:run-for-jobs {:< :routed-entity/run})
-       ^{:component ~workflow-page/RunRow}
        [{(:jobs-for-jobs {:< :run/jobs}) ~(om-next/get-query Job)}
         ;; NB: We need the :component metadata and :job/id here to make sure the
         ;; merger constructs the ident successfully to merge properly. This
@@ -193,8 +191,8 @@
                 ;; dissoc that and see if we have anything else; when we do, we
                 ;; should have enough to render it.
                 (when-not (empty? (dissoc run :run/id))
-                  (workflow-page/run-row run))
-                
+                  (run-row/run-row run))
+
                 (if (seq errors)
                   [:div.alert.alert-warning.iconified
                    [:div [:img.alert-icon {:src (common/icon-path "Info-Warning")}]]

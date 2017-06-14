@@ -1,234 +1,20 @@
 (ns frontend.components.pages.workflow
-  (:require [clojure.string :as string]
-            [frontend.api :as api]
+  (:require [frontend.api :as api]
             [frontend.components.aside :as aside]
-            [frontend.components.common :as common]
-            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.icon :as icon]
+            [frontend.components.pieces.run-row :as run-row]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.templates.main :as main-template]
-            [frontend.datetime :as datetime]
-            [frontend.models.build :as build-model]
-            [frontend.models.feature :as feature]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.utils :refer [set-page-title!] :refer-macros [component element html]]
-            [frontend.utils.github :as gh-utils]
+            [frontend.utils :refer [set-page-title!] :refer-macros [component html]]
             [frontend.utils.legacy :refer [build-legacy]]
-            [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om]
             [om.next :as om-next :refer-macros [defui]]))
 
-(defn- status-class [run-status]
-  (case run-status
-    :run-status/running :status-class/running
-    :run-status/succeeded :status-class/succeeded
-    :run-status/failed :status-class/failed
-    (:run-status/canceled :run-status/not-run) :status-class/stopped))
-
-(def ^:private cancelable-statuses #{:run-status/not-run
-                                     :run-status/running})
-
-(def ^:private rerunnable-statuses #{:run-status/succeeded
-                                     :run-status/failed
-                                     :run-status/canceled})
-
-(def ^:private rerunnable-from-start-statuses #{:run-status/failed})
-
-(defn run-prs
-  "A om-next compatible version of
-  `frontend.components.builds-table/pull-requests`."
-  [pull-requests]
-  (html
-   (when-let [urls (seq (map :pull-request/url pull-requests))]
-     [:span.metadata-item.pull-requests {:title "Pull Requests"}
-      (icon/git-pull-request)
-      (interpose
-       ", "
-       (for [url urls
-             ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-             ;; When that happens, this code blows up the page. To work around that,
-             ;; we just skip the PR if its URL is nil.
-             :when url]
-         [:a {:href url}
-          "#"
-          (gh-utils/pull-request-number url)]))])))
-
-(defn- commit-link
-  "Om Next compatible version of `frontend.components.builds-table/commits`."
-  [vcs-type org repo sha]
-  (html
-   (when (and vcs-type org repo sha)
-     (let [pretty-sha (build-model/github-revision {:vcs_revision sha})]
-       [:span.metadata-item.revision
-        [:i.octicon.octicon-git-commit]
-        [:a {:title pretty-sha
-             :href (build-model/commit-url {:vcs_revision sha
-                                            :vcs_url (vcs-url/vcs-url vcs-type
-                                                                      org
-                                                                      repo)})}
-         pretty-sha]]))))
-
-(defn- transact-run-mutate [component mutation]
-  (om-next/transact!
-
-   ;; We transact on the reconciler, not the component; otherwise the
-   ;; component's props render as nil for a moment. This is odd.
-   ;;
-   ;; It looks like the transaction drops the run from the app state.
-   ;; Transacting on the component means the component immediately re-reads, so
-   ;; it immediately renders nil. Moments later, the query is read from the
-   ;; server again, delivering new data to the app state, and the component
-   ;; renders with data again.
-   ;;
-   ;; When we transact on the reconciler, we simply avoid rendering the first
-   ;; time, during the window when the run is missing. Of course, it shouldn't
-   ;; be missing in the first place.
-   ;;
-   ;; tl;dr: there's a bug in here, but it's not clear what, and this works fine
-   ;; for now.
-   (om-next/get-reconciler component)
-
-   ;; It's not clear why we have to manually transform-reads---Om should do that
-   ;; for us if we give a simple keyword---but it doesn't appear to be doing it,
-   ;; so we do it. This is another bug we're punting on.
-   (om-next/transform-reads
-    (om-next/get-reconciler component)
-    [mutation])))
-
-(defn- transact-run-retry
-  [component run-id jobs]
-  (transact-run-mutate component `(run/retry {:run/id ~run-id :run/jobs ~jobs})))
-
-(defn- transact-run-cancel
-  [component run-id]
-  (transact-run-mutate component `(run/cancel {:run/id ~run-id})))
-
-;; TODO: Move this to pieces.*, as it's used on the run page as well.
-(defui ^:once RunRow
-  ;; NOTE: this is commented out until bodhi handles queries for components with idents first
-  ;; static om-next/Ident
-  ;; (ident [this props]
-  ;;   [:run/by-id (:run/id props)])
-  static om-next/IQuery
-  (query [this]
-    [:run/id
-     :run/name
-     :run/status
-     :run/started-at
-     :run/stopped-at
-     {:run/errors [:workflow-error/message]}
-     {:run/jobs [:job/id]}
-     {:run/trigger-info [:trigger-info/vcs-revision
-                         :trigger-info/subject
-                         :trigger-info/body
-                         :trigger-info/branch
-                         {:trigger-info/pull-requests [:pull-request/url]}]}
-     {:run/project [:project/name
-                    {:project/organization [:organization/name
-                                            :organization/vcs-type]}]}])
-  Object
-  (render [this]
-    (component
-      (let [{:keys [run/id
-                    run/errors
-                    run/status
-                    run/started-at
-                    run/stopped-at
-                    run/trigger-info
-                    run/jobs]
-             run-name :run/name
-             {project-name :project/name
-              {org-name :organization/name
-               vcs-type :organization/vcs-type} :project/organization} :run/project}
-            (om-next/props this)
-            {commit-sha :trigger-info/vcs-revision
-             commit-body :trigger-info/body
-             commit-subject :trigger-info/subject
-             pull-requests :trigger-info/pull-requests
-             branch :trigger-info/branch} trigger-info
-            run-status-class (if (seq errors)
-                               :status-class/setup-needed
-                               (status-class status))]
-        
-        (card/basic
-         (element :content
-           (html
-            [:div
-             [:.status-and-button
-              [:div.status {:class (name run-status-class)}
-               [:a.exception {:href (routes/v1-run-path id)}
-                [:span.status-icon {:class (name run-status-class)}
-                 (case run-status-class
-                   :status-class/failed (icon/status-failed)
-                   :status-class/setup-needed (icon/status-setup-needed)
-                   :status-class/stopped (icon/status-canceled)
-                   :status-class/succeeded (icon/status-passed)
-                   :status-class/running (icon/status-running)
-                   :status-class/waiting (icon/status-queued))]
-                [:.status-string (if (seq errors)
-                                   "needs setup"
-                                   (string/replace (name status) #"-" " "))]]]
-              (cond (cancelable-statuses status)
-                    [:div.cancel-button {:on-click #(transact-run-cancel this id)}
-                     (icon/status-canceled)
-                     [:span "cancel"]]
-                    (rerunnable-statuses status)
-                    [:div.rebuild-button.dropdown
-                     (icon/rebuild)
-                     [:span "Rerun"]
-                     [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
-                     [:ul.dropdown-menu.pull-right
-                      (when (rerunnable-from-start-statuses status)
-                        [:li
-                         [:a
-                          {:on-click #(transact-run-retry this id [])}
-                          "Rerun failed jobs"]])
-                      [:li
-                       [:a
-                        {:on-click #(transact-run-retry this id jobs)}
-                        "Rerun from beginning"]]]])]
-             [:div.run-info
-              [:div.build-info-header
-               [:div.contextual-identifier
-                [:a {:href (routes/v1-run-path id)}
-                 [:span  branch " / " run-name]]]]
-              [:div.recent-commit-msg
-               [:span.recent-log
-                {:title (when commit-body
-                          commit-body)}
-                (when commit-subject
-                  commit-subject)]]]
-             [:div.metadata
-              [:div.metadata-row.timing
-               [:span.metadata-item.recent-time.start-time
-                [:i.material-icons "today"]
-                (if started-at
-                  [:span {:title (str "Started: " (datetime/full-datetime started-at))}
-                   (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
-                   [:span " ago"]]
-                  "-")]
-               [:span.metadata-item.recent-time.duration
-                [:i.material-icons "timer"]
-                (if stopped-at
-                  [:span {:title (str "Duration: "
-                                      (datetime/as-duration (- (.getTime stopped-at)
-                                                               (.getTime started-at))))}
-                   (build-legacy common/updating-duration {:start started-at
-                                                           :stop stopped-at})]
-                  "-")]]
-              [:div.metadata-row.pull-revision
-               (run-prs pull-requests)
-               (commit-link vcs-type
-                            org-name
-                            project-name
-                            commit-sha)]]])))))))
-
-(def run-row (om-next/factory RunRow {:keyfn :run/id}))
-
-(defn a-or-span [flag href & children]
+(defn- a-or-span [flag href & children]
   (if flag
     [:a {:href href} children]
     [:span children]))
@@ -238,19 +24,28 @@
   (query [this]
     [:connection/total-count
      :connection/offset
-     {:connection/edges [{:edge/node (om-next/get-query RunRow)}]}])
+     {:connection/edges [{:edge/node (om-next/get-query run-row/RunRow)}]}])
   Object
   (render [this]
     (component
       (let [{:keys [connection/total-count connection/offset connection/edges]} (om-next/props this)
             {:keys [empty-state prev-page-href next-page-href]} (om-next/get-computed this)]
-        (if-not (pos? total-count)
+        (cond
+          (not (contains? (om-next/props this) :connection/total-count))
+          (html
+           [:div
+            [:.page-info]
+            (card/collection (repeatedly 10 run-row/loading-run-row))])
+
+          (not (pos? total-count))
           empty-state
+
+          :else
           (html
            [:div
             [:.page-info "Showing " [:span.run-numbers (inc offset) "–" (+ offset (count edges))]]
             (card/collection
-             (map #(when % (run-row (:edge/node %))) edges))
+             (map #(if % (run-row/run-row (:edge/node %)) (run-row/loading-run-row)) edges))
             [:.list-pager
              (a-or-span (pos? offset)
                         prev-page-href
@@ -274,7 +69,7 @@
   (render [this]
     (component
       (let [props (om-next/props this)
-            page-num (get-in props ['[:app/route-params _] :page/number])
+            page-num (get-in props [:app/route-params :page/number])
             {project-name :project/name
              {vcs-type :organization/vcs-type
               org-name :organization/name} :project/organization} props]
@@ -391,7 +186,7 @@
               {vcs-type :organization/vcs-type
                org-name :organization/name} :project/organization} :branch/project} props
             page (:routed/page props)
-            page-num (get-in props ['[:app/route-params _] :page/number])]
+            page-num (get-in props [:app/route-params :page/number])]
         (run-list (om-next/computed
                    page
                    {:prev-page-href
@@ -474,7 +269,7 @@
             {vcs-type :organization/vcs-type
              org-name :organization/name} props
             page (:routed/page props)
-            page-num (get-in props ['[:app/route-params _] :page/number])]
+            page-num (get-in props [:app/route-params :page/number])]
         (run-list (om-next/computed
                    page
                    {:prev-page-href

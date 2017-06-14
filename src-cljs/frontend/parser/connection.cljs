@@ -40,7 +40,6 @@
             (-> (update-in result [:value :connection/edges] forgiving-subvec offset limit))))
         (next-read env))
 
-      ;; Until the backend supports offset and limit, strip these.
       (if (#{:connection/offset :connection/limit} key)
         {target nil}
         (next-read env)))))
