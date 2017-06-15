@@ -32,10 +32,11 @@
               )]
       (f x))))
 
-(defn- lower-case-keys [m]
-  (into {}
-        (map (fn [[k v]] [(str/lower-case k) v]))
-        m))
+(defn- response-headers [xhrio]
+  (->> xhrio
+       .getResponseHeaders
+       js->clj*
+       (into {} (map (fn [[k v]] [(str/lower-case k) v])))))
 
 ;; https://github.com/JulianBirch/cljs-ajax/blob/master/src/ajax/core.cljs
 ;; copy of the default json formatter, but returns a map with json body
@@ -52,10 +53,7 @@
      :or {start-time (time/now)}}]
      {:read (fn read-json [xhrio]
               (let [json (js/JSON.parse (.getResponseText xhrio))
-                    headers (->> xhrio
-                                 .getResponseHeaders
-                                 js->clj*
-                                 lower-case-keys)
+                    headers (response-headers xhrio)
                     request-time (try
                                    (time/in-millis (time/interval start-time (time/now)))
                                    (catch :default e
@@ -88,10 +86,7 @@
     :or {start-time (time/now)}}]
   {:read (fn read-transit [xhrio]
            (let [reader (transit/reader :json)
-                 headers (->> xhrio
-                              .getResponseHeaders
-                              js->clj
-                              lower-case-keys)
+                 headers (response-headers xhrio)
                  request-time (try
                                 (time/in-millis (time/interval start-time (time/now)))
                                 (catch :default e
