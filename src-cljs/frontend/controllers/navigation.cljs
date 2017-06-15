@@ -20,14 +20,6 @@
             [goog.string :as gstring])
   (:require-macros [cljs.core.async.macros :as am :refer [go]]))
 
-(defn- maybe-fetch-workflow-response-data! [state api-ch]
-  (let [{:keys [workflow-id]} (get-in state state/navigation-data-path)]
-    (when (= workflow-id "mock-workflow-id")
-      (ajax/ajax :post
-                 "http://localhost:3009/query"
-                 :workflow-status
-                 api-ch))))
-
 ;; TODO we could really use some middleware here, so that we don't forget to
 ;;      assoc things in state on every handler
 ;;      We could also use a declarative way to specify each page.
