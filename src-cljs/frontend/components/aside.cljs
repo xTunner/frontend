@@ -1,5 +1,6 @@
 (ns frontend.components.aside
   (:require [clojure.string :refer [lower-case]]
+            [frontend.analytics :as analytics]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
@@ -37,7 +38,15 @@
                                                                                               :repo repo-name}})}
        [:i.material-icons "settings"]])))
 
-(defn branch-list [{:keys [branches show-all-branches? navigation-data]} owner {:keys [identities show-project? workflows?]}]
+(defn branch-list [{:keys [branches
+                           show-all-branches?
+                           navigation-data]}
+                   owner
+                   {:keys [identities
+                           show-project?
+                           workflows?
+                           ;; only used when workflows? is true
+                           om-next-parent]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Branch List")
     om/IRender
@@ -71,10 +80,23 @@
                                                          :org (:username project)
                                                          :repo (:reponame project)
                                                          :branch (name branch-identifier)}))
-                      :on-click #((om/get-shared owner :track-event) {:event-type :branch-clicked
-                                                                      :properties {:repo repo-name
-                                                                                   :org org-name
-                                                                                   :branch (name branch-identifier)}})}
+                      :on-click (let [event {:event-type :branch-clicked
+                                             :properties {:repo repo-name
+                                                          :org org-name
+                                                          :branch (name branch-identifier)}}]
+                                  ;; if this is being rendered for
+                                  ;; workflows, use the om-next
+                                  ;; analytics mechanism. For links,
+                                  ;; this is necessary because using
+                                  ;; the om-previous analytics
+                                  ;; mechanism will record the `:view`
+                                  ;; property as the route being
+                                  ;; navigated *to*, rather than the
+                                  ;; view that's active at the time of
+                                  ;; the click.
+                                  (if workflows?
+                                    #(analytics/track! om-next-parent event)
+                                    #((om/get-shared owner :track-event) event)))}
                   [:.branch
                    [:.last-build-status (status/build-icon (build-model/build-status latest-build))]
                    [:.branch-info
@@ -99,7 +121,15 @@
                  (when show-project?
                    (project-settings-link {:project project} owner))]))])))))
 
-(defn project-aside [{:keys [project show-all-branches? navigation-data expanded-repos]} owner {:keys [identities workflows?]}]
+(defn project-aside [{:keys [project
+                             show-all-branches?
+                             navigation-data
+                             expanded-repos]}
+                     owner
+                     {:keys [identities
+                             workflows?
+                             ;; only used when workflows? is true
+                             om-next-parent]}]
   (reify
     om/IDisplayName (display-name [_] "Aside Project")
     om/IRender
@@ -125,11 +155,26 @@
                                           (routes/v1-project-dashboard-path {:vcs_type (:vcs_type project)
                                                                              :org (:username project)
                                                                              :repo (:reponame project)}))
-                                  :on-click #((om/get-shared owner :track-event) {:event-type :project-clicked
-                                                                                  :properties {:vcs-type (:vcs_type project)
-                                                                                               :org org-name
-                                                                                               :repo repo-name
-                                                                                               :component "branch-picker"}})}
+                                  :on-click (let [event {:event-type :project-clicked
+                                                         :properties {:vcs-type (:vcs_type project)
+                                                                      :org org-name
+                                                                      :repo repo-name
+                                                                      :component "branch-picker"}}]
+                                              ;; if this is being rendered for
+                                              ;; workflows, use the om-next
+                                              ;; analytics mechanism. For links,
+                                              ;; this is necessary because using
+                                              ;; the om-previous analytics
+                                              ;; mechanism will record the `:view`
+                                              ;; property as the route being
+                                              ;; navigated *to*, rather than the
+                                              ;; view that's active at the time of
+                                              ;; the click.
+                                              (if workflows?
+                                                #(analytics/track! om-next-parent
+                                                                   event)
+                                                #((om/get-shared owner :track-event)
+                                                  event)))}
                  (if (feature/enabled? "top-bar-ui-v-1")
                    (project-model/repo-name project)
                    (project-model/project-name project))]
@@ -143,7 +188,8 @@
                             :show-all-branches? show-all-branches?
                             :navigation-data navigation-data}
                            {:opts {:identities identities
-                                   :workflows? workflows?}}))])))))
+                                   :workflows? workflows?
+                                   :om-next-parent om-next-parent}}))])))))
 
 (defn expand-menu-items [items subpage]
   (for [item items]
@@ -338,7 +384,11 @@
         branch (:current-branch project)]
     (utils/md5 (str project-id branch))))
 
-(defn branch-activity-list [app owner {:keys [workflows?]}]
+(defn branch-activity-list [app
+                            owner
+                            {:keys [workflows?
+                                    ;; only used when workflows? is true
+                                    om-next-parent]}]
   (reify
     om/IRender
     (render [_]
@@ -389,7 +439,8 @@
                         :navigation-data (:navigation-data app)}
                        {:opts {:identities identities
                                :show-project? true
-                               :workflows? workflows?}})
+                               :workflows? workflows?
+                               :om-next-parent om-next-parent}})
              [:ul.projects
               (for [project (sort project-model/sidebar-sort projects)]
                 (om/build project-aside
@@ -399,7 +450,8 @@
                            :navigation-data (:navigation-data app)}
                           {:react-key (project-model/id project)
                            :opts {:identities identities
-                                  :workflows? workflows?}}))])
+                                  :workflows? workflows?
+                                  :om-next-parent om-next-parent}}))])
 
           (when-not (user/has-private-scopes? user)
             [:.add-private-project-card

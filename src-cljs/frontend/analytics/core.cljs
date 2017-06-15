@@ -115,8 +115,12 @@
     :project-settings-clicked
     :projects-icon-clicked
     :rebuild-clicked
+    :rerun-from-failed-clicked
+    :rerun-from-start-clicked
     :resource-class-docs-clicked
     :revision-link-clicked
+    :run-link-clicked
+    :run-status-clicked
     :save-clicked
     :select-plan-clicked
     :settings-icon-clicked
