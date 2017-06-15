@@ -167,26 +167,29 @@
        (take 10)))
 
 (defn- failed-tests-card [failed-tests junit-enabled?]
-  [:div.card
-   [:div.card-header
-    [:h2 "Failed Tests"]]
-   [:div.card-body.failed-tests
-    (cond
-      (not-empty failed-tests)
-      (om/build failed-tests-table failed-tests)
+  (popover/tooltip {:placement :top-left
+                    :body "Results pulled from the last ten failed builds."
+                    :trigger-mode :click}
+    [:div.card
+     [:div.card-header
+      [:h2 "Failed Tests"]]
+     [:div.card-body.failed-tests
+      (cond
+        (not-empty failed-tests)
+        (om/build failed-tests-table failed-tests)
 
-      (false? junit-enabled?)
-      [:span "Implement test metadata to view output. Find out more in the "
-       [:a {:href "https://circleci.com/docs/1.0/test-metadata/"
-            :target "_blank"}
-        "test metadata documentation"]
-       "."]
+        (false? junit-enabled?)
+        [:span "Implement test metadata to view output. Find out more in the "
+         [:a {:href "https://circleci.com/docs/1.0/test-metadata/"
+              :target "_blank"}
+          "test metadata documentation"]
+         "."]
 
-      (and (not (nil? failed-tests))
-           (empty? failed-tests))
-      [:span "No failed tests to show."]
+        (and (not (nil? failed-tests))
+          (empty? failed-tests))
+        [:span "No failed tests to show."]
 
-      :else (spinner))]])
+        :else (spinner))]]))
 
 (defn- build-status-card [chartable-builds bar-chart-builds]
   [:div.card
