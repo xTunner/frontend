@@ -315,48 +315,21 @@
    #{:run/name
      :run/status
      :run/started-at
-     :run/stopped-at}
-   (fn [{:keys [run/id] :as env} ast]
-     (-> ((get-in env [:apis :get-workflow-status]) id)
-         (p/then adapt-to-run)))
-
-   ;; The current implementation of `resolve` makes deeply-nested
-   ;; responses (using a parser like this) and matching multiple keys (using a
-   ;; set as a key in the resolvers map) not really work together well. Instead
-   ;; we have to repeat ourselves for each of these non-scalar parts of a run.
-   ;; This is something `resolve` should improve.
-
-   :run/errors
-   (fn [{:keys [run/id] :as env} ast]
+     :run/stopped-at
+     :run/errors
+     :run/jobs
+     :run/trigger-info
+     :run/project}
+   (fn [{:keys [run/id] :as env} asts]
      (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
-            (let [errors (:run/errors (adapt-to-run response))]
-              (mapv (partial resolve/query ast) errors))))))
-
-   :run/jobs
-   (fn [{:keys [run/id] :as env} ast]
-     (-> ((get-in env [:apis :get-workflow-status]) id)
-         (p/then
-          (fn [response]
-            (let [jobs (:run/jobs (adapt-to-run response))]
-              (mapv (partial resolve/query ast) jobs))))))
-
-   :run/trigger-info
-   (fn [{:keys [run/id] :as env} ast]
-     (-> ((get-in env [:apis :get-workflow-status]) id)
-         (p/then
-          (fn [response]
-            (let [adapted (:run/trigger-info (adapt-to-run response))]
-              (resolve/query ast adapted))))))
-
-   :run/project
-   (fn [{:keys [run/id] :as env} ast]
-     (-> ((get-in env [:apis :get-workflow-status]) id)
-         (p/then
-          (fn [response]
-            (let [adapted (:run/project (adapt-to-run response))]
-              (resolve/query ast adapted))))))})
+            (-> response
+                adapt-to-run
+                (update :run/errors #(mapv (partial resolve/query (:run/errors asts)) %))
+                (update :run/jobs #(mapv (partial resolve/query (:run/jobs asts)) %))
+                (update :run/trigger-info (partial resolve/query (:run/trigger-info asts)))
+                (update :run/project (partial resolve/query (:run/project asts))))))))})
 
 (defmulti send* key)
 

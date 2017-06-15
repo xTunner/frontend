@@ -31,7 +31,7 @@
      (:user/name env))
 
    #{:user/favorite-color :user/favorite-number :user/vehicle}
-   (fn [env ast]
+   (fn [env asts]
      (p/alet [get-user (get-in env [:apis :get-user])
               user (p/await (get-user {:name (:user/name env)}))]
        (-> user
@@ -41,7 +41,7 @@
            (update :user/vehicle set/rename-keys {:color :vehicle/color
                                                   :make :vehicle/make
                                                   :model :vehicle/model})
-           (update :user/vehicle (partial resolve/query ast)))))
+           (update :user/vehicle (partial resolve/query (:user/vehicle asts))))))
 
    :user/pets
    (fn [env ast]

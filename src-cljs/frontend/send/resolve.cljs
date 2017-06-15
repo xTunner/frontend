@@ -63,7 +63,8 @@
   * A (Promesa) promise of such a channel.
 
   A resolver function takes two args: the env map and the ast of the query node
-  that's being resolved.
+  that's being resolved (for single-key resolvers) or all of the asts being
+  resolved as a map (for set-of-keys resolvers).
 
   resolve returns `channel` and will put the novelty onto that channel. The
   novelty will come in pieces, streaming in as promises resolve (that is, as API
@@ -98,7 +99,7 @@
                          (chan 1 (map #(hash-map (:key ast) %)))))
           (if-let [[keys resolver]
                    (first (filter #(contains? (key %) read-from-key) resolvers))]
-            (pipe-values (resolver env ast)
+            (pipe-values (resolver env {read-from-key ast})
                          (chan 1 (comp
                                   (map #(get % read-from-key))
                                   (map #(hash-map (:key ast) %)))))
