@@ -362,7 +362,7 @@
                                               "denied"  not-granted-message
                                               "granted" "Thanks for turning on web notifications! If you want to change settings go to: "))
                                      [:a {:on-click #(raise! owner [:web-notifications-confirmation-account-settings-clicked {:response response}])}
-                                      "Account Notifications"]]
+                                      "User Notifications"]]
                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
           (when (and (seq crumbs)
                      (or (= :build (get-in app state/current-view-path))

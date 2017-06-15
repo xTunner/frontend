@@ -182,7 +182,7 @@
 
 (defmethod crumb :account
   [attrs]
-  (om/build crumb-node {:name "Account"
+  (om/build crumb-node {:name "User"
                         :path (routes/v1-account)}))
 
 (defmethod crumb :settings-base
