@@ -656,7 +656,7 @@
 
                              true
                              (conj {:name :config
-                                    :label (str "circle.yml"
+                                    :label (str "Configuration"
                                                 (when-let [errors (-> build build-model/config-errors)]
                                                   (gstring/format " (%s)" (count errors))))})
 
