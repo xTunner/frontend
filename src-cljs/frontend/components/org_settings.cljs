@@ -1449,9 +1449,14 @@
             [:div
              [:h1 "No OS X plan selected"]
              [:p
-              [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                                :vcs_type plan-vcs-type
-                                                                :_fragment "osx-pricing"})} "Choose an OS X plan"]] "."]])])))))
+              (let [link [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                                                           :vcs_type plan-vcs-type
+                                                                                           :_fragment "osx-pricing"})} "Choose an OS X plan"] "."]]
+                (if (pm/grandfathered? plan)
+                  (list link
+                        " Note: changes to your billing will update your entire account"
+                        " (including Linux plans) off of our legacy plans to our current pricing model.")
+                  link))]])])))))
 
 (defn github-marketplace-messaging []
   [:div "Current plan managed on "
