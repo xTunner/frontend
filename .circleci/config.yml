@@ -261,8 +261,8 @@ jobs:
             
   deploy:
     docker:
-      - image: circleci/build-image:trusty-latest
-    working_directory: /home/ubuntu/frontend
+      - image: python:2.7
+    working_directory: /root/frontend
     steps:
       - *attach_workspace
       - *load_code
@@ -272,6 +272,9 @@ jobs:
             rm -r resources
             mv /tmp/workspace/assets resources
       - add-ssh-keys
+      - run:
+          name: Install AWS CLI
+          command: pip install awscli      
       - run:
           name: deploy and trigger integration tests
           command: |
