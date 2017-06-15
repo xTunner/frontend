@@ -102,7 +102,8 @@
 (defn- org-admin?
   "Indicates whether or not user is an admin for this installation"
   [org]
-  (:admin org))
+  (or (:admin org)
+      (:admin? org)))
 
 (defn org-admin-authorized?
   "Does the current user have the permissions to view this org"

@@ -1649,7 +1649,8 @@
                   (om/build common/flashes (get-in app state/error-message-path))
                   [:div#subpage
                    [:div
-                    (if user-org-admin?
+                    (if (or user-org-admin?
+                            (:admin plan))
                       (om/build (get (main-component) subpage projects) app)
                       [:div (om/build non-admin-plan
                                       {:login (get-in app [:current-user :login])
