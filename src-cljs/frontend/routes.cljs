@@ -409,7 +409,7 @@
   "Would be better to match a map to frontend.components.app/routes
    but that creates all sorts of circular dependencies"
   [nav-point]
-  (->> nav-point str (re-matches #":route.*")))
+  (= "route" (namespace nav-point)))
 
 (defn new-org-path
   "Generate url to current navigation-point for new org
