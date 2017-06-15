@@ -10,6 +10,7 @@ fi
 
 # Git Configuration
 export GIT_SSH="$PWD/script/git-ssh-wrap.sh"
+echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
 
 # Distribute built public files and publish the sha1 of this branch.
 tar -cz resources/public/ | aws s3 cp - s3://$DEPLOY_S3_BUCKET/dist/$CIRCLE_SHA1.tgz
