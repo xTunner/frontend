@@ -18,6 +18,8 @@
 (def osx-key :osx)
 (def linux-key :paid)
 
+(def github-marketplace-id :gh-marketplace)
+
 (def student-trial-template "st2")
 (def osx-trial-template "osx-trial")
 
@@ -50,11 +52,20 @@
 (defn linux-template [plan]
   (-> plan :paid :template))
 
+(defn linux-template-id [plan]
+  (get-in plan [:paid :template :id]))
+
 (defn osx-plan-id [plan]
   (get-in plan [:osx :template :id]))
 
 (defn linux-trial-plan-id [plan]
   (get-in plan [:trial :template :id]))
+
+(defn github-marketplace-plan? [plan]
+  (-> plan
+      linux-template-id
+      keyword
+      (= github-marketplace-id)))
 
 (defn osx-trial-plan? [plan]
   (= osx-trial-template (osx-plan-id plan)))

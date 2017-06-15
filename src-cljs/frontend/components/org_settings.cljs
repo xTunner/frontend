@@ -668,92 +668,93 @@
                                          :close-fn close-fn
                                          :plan-type-key pm/linux-key}))
            [:div
-            [:form
-             (when-not (config/enterprise?)
-               [:div.container-picker
-                (if (pm/linux? plan)
-                  [:legend.update-plan "Update Linux Plan"]
-                  [:legend.update-plan "Choose Linux Plan"])
-                (maybe-show-error-banner! app owner)
-                [:h1.container-input
-                 [:span "Use "]
-                 [:input.form-control
-                  {:type "text" :value selected-containers
-                   :on-change #(utils/edit-input owner state/selected-containers-path %
-                                :value (int (.. % -target -value)))}]
-                 [:span.new-plan-total (if (config/enterprise?)
-                                        containers-str
-                                        (str "paid " containers-str
-                                             (str (when-not (zero? new-total) (str " at $" new-total "/month")))
-                                             " + " (str (if (pm/in-student-trial? plan)
-                                                          "3 free containers"
-                                                          "1 free container"))))]]
-                [:p
-                 (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")
-                 [:br]
-                 [:em "Changes to your Linux plan will not affect your OS X plan."]]])
-             [:fieldset
-              (if (and (not piggiebacked?)
-                       (or (config/enterprise?)
-                           (pm/stripe-customer? plan)))
-                (let [enterprise-text "Save changes"]
-                  (if (and (zero? new-total)
-                           (not (config/enterprise?))
-                           (not (zero? (pm/paid-linux-containers plan))))
-                    (button/button
-                      {:disabled? (not button-clickable?)
-                       :kind :danger
-                       :on-click #(om/set-state! owner :show-modal? true)}
-                      "Cancel Plan")
+            (when-not (pm/github-marketplace-plan? plan)
+              [:form
+               (when-not (config/enterprise?)
+                 [:div.container-picker
+                  (if (pm/linux? plan)
+                    [:legend.update-plan "Update Linux Plan"]
+                    [:legend.update-plan "Choose Linux Plan"])
+                  (maybe-show-error-banner! app owner)
+                  [:h1.container-input
+                   [:span "Use "]
+                   [:input.form-control
+                    {:type "text" :value selected-containers
+                     :on-change #(utils/edit-input owner state/selected-containers-path %
+                                                   :value (int (.. % -target -value)))}]
+                   [:span.new-plan-total (if (config/enterprise?)
+                                           containers-str
+                                           (str "paid " containers-str
+                                                (str (when-not (zero? new-total) (str " at $" new-total "/month")))
+                                                " + " (str (if (pm/in-student-trial? plan)
+                                                             "3 free containers"
+                                                             "1 free container"))))]]
+                  [:p
+                   (str "Our pricing is flexible and scales with you. Add as many containers as you want for $" linux-container-cost "/month each.")
+                   [:br]
+                   [:em "Changes to your Linux plan will not affect your OS X plan."]]])
+               [:fieldset
+                (if (and (not piggiebacked?)
+                         (or (config/enterprise?)
+                             (pm/stripe-customer? plan)))
+                  (let [enterprise-text "Save changes"]
+                    (if (and (zero? new-total)
+                             (not (config/enterprise?))
+                             (not (zero? (pm/paid-linux-containers plan))))
+                      (button/button
+                        {:disabled? (not button-clickable?)
+                         :kind :danger
+                         :on-click #(om/set-state! owner :show-modal? true)}
+                        "Cancel Plan")
+                      (button/managed-button
+                        {:success-text "Saved"
+                         :loading-text "Saving..."
+                         :disabled? (not button-clickable?)
+                         :on-click (when button-clickable?
+                                     #(do
+                                        (raise! owner [:update-containers-clicked
+                                                       {:containers selected-paid-containers}])
+                                        (analytics-track/update-plan-clicked {:owner owner
+                                                                              :new-plan selected-paid-containers
+                                                                              :previous-plan (pm/paid-linux-containers plan)
+                                                                              :plan-type pm/linux-plan-type
+                                                                              :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                         :kind :primary}
+                        (if (config/enterprise?)
+                          enterprise-text
+                          "Update Plan"))))
+                  (if-not checkout-loaded?
+                    (spinner)
                     (button/managed-button
-                      {:success-text "Saved"
-                       :loading-text "Saving..."
+                      {:success-text "Paid!"
+                       :loading-text "Paying..."
+                       :failed-text "Failed!"
                        :disabled? (not button-clickable?)
                        :on-click (when button-clickable?
-                                   #(do
-                                      (raise! owner [:update-containers-clicked
-                                                     {:containers selected-paid-containers}])
-                                      (analytics-track/update-plan-clicked {:owner owner
-                                                                            :new-plan selected-paid-containers
-                                                                            :previous-plan (pm/paid-linux-containers plan)
-                                                                            :plan-type pm/linux-plan-type
-                                                                            :upgrade? (> selected-paid-containers (pm/paid-linux-containers plan))})))
+                                   #(raise! owner [:new-plan-clicked
+                                                   {:containers selected-paid-containers
+                                                    :linux {:template (:id pm/default-template-properties)}
+                                                    :price new-total
+                                                    :description (str "$" new-total "/month, includes "
+                                                                      (pluralize selected-containers "container"))}]))
                        :kind :primary}
-                      (if (config/enterprise?)
-                        enterprise-text
-                        "Update Plan"))))
-                (if-not checkout-loaded?
-                  (spinner)
-                  (button/managed-button
-                    {:success-text "Paid!"
-                     :loading-text "Paying..."
-                     :failed-text "Failed!"
-                     :disabled? (not button-clickable?)
-                     :on-click (when button-clickable?
-                                 #(raise! owner [:new-plan-clicked
-                                                 {:containers selected-paid-containers
-                                                  :linux {:template (:id pm/default-template-properties)}
-                                                  :price new-total
-                                                  :description (str "$" new-total "/month, includes "
-                                                                    (pluralize selected-containers "container"))}]))
-                     :kind :primary}
-                    "Pay Now")))
-              (when-not (config/enterprise?)
-                 ;; TODO: Clean up conditional here - super nested and many interactions
-                 ;; FIXME CIRCLE-1833 ON CURRENT PLAN, ADD MESSAGE 'CHANGE CONTAINERS TO UPDATE PLAN'
-                (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
-                  [:div
-                   [:p.hint
-                    [:em (cond
-                          (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
-                          (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]]]
-                  (when-not (pm/in-student-trial? plan)
-                    (if (pm/in-trial? plan)
-                      [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                       "."]
-                      [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
-                       " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
-                       " ago. Pay now to enable builds of private projects."]))))]]]]])))))
+                      "Pay Now")))
+                (when-not (config/enterprise?)
+                  ;; TODO: Clean up conditional here - super nested and many interactions
+                  ;; FIXME CIRCLE-1833 ON CURRENT PLAN, ADD MESSAGE 'CHANGE CONTAINERS TO UPDATE PLAN'
+                  (if (or (pm/linux? plan) (and (pm/freemium? plan) (not (pm/in-trial? plan))))
+                    [:div
+                     [:p.hint
+                      [:em (cond
+                             (< old-total new-total) "We'll charge your card today, for the prorated difference between your new and old plans."
+                             (> old-total new-total) "We'll credit your account, for the prorated difference between your new and old plans.")]]]
+                    (when-not (pm/in-student-trial? plan)
+                      (if (pm/in-trial? plan)
+                        [:span "Your trial will end in " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                         "."]
+                        [:span "Your trial of " (pluralize (pm/trial-containers plan) "container")
+                         " ended " (pluralize (Math/abs (pm/days-left-in-trial plan)) "day")
+                         " ago. Pay now to enable builds of private projects."]))))]])]]])))))
 
 (defn pricing-tabs [{:keys [app plan checkout-loaded? selected-tab-name]} owner]
   (reify
@@ -1452,15 +1453,23 @@
                                                                 :vcs_type plan-vcs-type
                                                                 :_fragment "osx-pricing"})} "Choose an OS X plan"]] "."]])])))))
 
-(defn displayed-linux-plan-info [current-linux-cost containers trial-containers in-student-trial?]
-  (gstring/format "Current Linux plan: %s (%s) - $%s/month"
-                  (if in-student-trial?
-                    "Student"
-                    (gstring/format "%s%s"
-                      (if (= current-linux-cost 0) "Hobbyist" "Paid")
-                      (if (> trial-containers 0) " + Trial " " ")))
-                  (plural-multiples containers "container")
-                  current-linux-cost))
+(defn github-marketplace-messaging []
+  [:div "Current plan managed on "
+   [:a {:href "https://github.com/marketplace/circleci"
+        :target "_blank"}
+    "GitHub Marketplace"] "."])
+
+(defn displayed-linux-plan-info [{:keys [current-linux-cost containers trial-containers in-student-trial? github-marketplace-plan?]}]
+  (if github-marketplace-plan?
+    (github-marketplace-messaging)
+    (gstring/format "Current Linux plan: %s (%s) - $%s/month"
+                    (if in-student-trial?
+                      "Student"
+                      (gstring/format "%s%s"
+                        (if (= current-linux-cost 0) "Hobbyist" "Paid")
+                        (if (> trial-containers 0) " + Trial " " ")))
+                    (plural-multiples containers "container")
+                    current-linux-cost)))
 
 (defn displayed-linux-paid-info [paid-linux-containers]
   (gstring/format "%s %s paid"
@@ -1485,7 +1494,8 @@
           piggiebacked? (pm/piggieback? plan org-name vcs_type)
           current-linux-cost (pm/current-linux-cost plan)
           in-student-trial? (pm/in-student-trial? plan)
-          trial-containers (pm/trial-containers plan)]
+          trial-containers (pm/trial-containers plan)
+          github-marketplace-plan? (pm/github-marketplace-plan? plan)]
       [:div.split-plan-block
        [:div.explanation
         (when piggiebacked?
@@ -1499,30 +1509,35 @@
         (if (config/enterprise?)
           [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
           [:p
-           [:h1 (displayed-linux-plan-info current-linux-cost containers trial-containers in-student-trial?)]
-           (if (> current-linux-cost 0)
-             [:div
-              (displayed-linux-paid-info paid-linux-containers)
-              (if piggiebacked? ". "
-                                (list ", at $" (pm/current-linux-cost plan) "/month. "))
-              (if (pm/grandfathered? plan)
-                (list "We've changed our pricing model since this plan began, so its current price "
-                      "is grandfathered in. "
-                      "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
-                      "We'll switch it to the new model if you upgrade or downgrade. ")
-                (list
-                  (when (and (pm/freemium? plan) (> containers 1))
-                    [:span (displayed-linux-free-info in-student-trial?)])
-                  [:br]
-                  ;; make sure to link to the add-containers page of the plan's org,
-                  ;; in case of piggiebacking.
-                  (when-not piggiebacked?
-                    [:p "You can update your Linux plan below."])))]
-             [:div
-              (gstring/format "%s. %s." (displayed-linux-paid-info paid-linux-containers) (displayed-linux-free-info in-student-trial?))
-              [:p
-               [:strong "Add more containers to update your plan below"]
-               " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]])
+           [:h1 (displayed-linux-plan-info {:current-linux-cost current-linux-cost
+                                            :containers containers
+                                            :trial-containers trial-containers
+                                            :in-student-trial? in-student-trial?
+                                            :github-marketplace-plan? github-marketplace-plan?})]
+           (when-not github-marketplace-plan?
+             (if (> current-linux-cost 0)
+               [:div
+                (displayed-linux-paid-info paid-linux-containers)
+                (if piggiebacked? ". "
+                                  (list ", at $" (pm/current-linux-cost plan) "/month. "))
+                (if (pm/grandfathered? plan)
+                  (list "We've changed our pricing model since this plan began, so its current price "
+                    "is grandfathered in. "
+                    "It would be $" (pm/linux-cost plan (pm/linux-containers plan)) " at current prices. "
+                    "We'll switch it to the new model if you upgrade or downgrade. ")
+                  (list
+                    (when (and (pm/freemium? plan) (> containers 1))
+                      [:span (displayed-linux-free-info in-student-trial?)])
+                    [:br]
+                    ;; make sure to link to the add-containers page of the plan's org,
+                    ;; in case of piggiebacking.
+                    (when-not piggiebacked?
+                      [:p "You can update your Linux plan below."])))]
+               [:div
+                (gstring/format "%s. %s." (displayed-linux-paid-info paid-linux-containers) (displayed-linux-free-info in-student-trial?))
+                [:p
+                 [:strong "Add more containers to update your plan below"]
+                 " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]]))
            [:p "Questions? Check out the FAQs below."]])
         (when (and (> (pm/trial-containers plan) 0)
                    (not in-student-trial?))
@@ -1548,6 +1563,7 @@
           piggiebacked? (pm/piggieback? plan org-name vcs_type)
           current-linux-cost (pm/current-linux-cost plan)   ; why linux-container-cost then current-linux-cost?
           in-student-trial? (pm/in-student-trial? plan)
+          github-marketplace-plan? (pm/github-marketplace-plan? plan)
           trial-containers (pm/trial-containers plan)]
       [:div.overview-cards-container
        [:legend "Plan Overview"]
@@ -1568,8 +1584,14 @@
                   [:p "Your organization currently uses a maximum of " containers " containers. If your fleet size is larger than this, you should raise this to get access to your full capacity."]
 
                   [:div
-                   [:h1 (displayed-linux-plan-info current-linux-cost containers trial-containers in-student-trial?)]
-                   (when (and (= current-linux-cost 0) (not piggiebacked?))
+                   [:h1 (displayed-linux-plan-info {:current-linux-cost current-linux-cost
+                                                    :containers containers
+                                                    :trial-containers trial-containers
+                                                    :in-student-trial? in-student-trial?
+                                                    :github-marketplace-plan? github-marketplace-plan?})]
+                   (when (and (= current-linux-cost 0)
+                              (not piggiebacked?)
+                              (not github-marketplace-plan?))
                      [:div
                       [:p (gstring/format "%s. %s." (displayed-linux-paid-info paid-linux-containers) (displayed-linux-free-info in-student-trial?))]
                       [:p
@@ -1580,12 +1602,14 @@
                          "Add more containers to update your plan"]]
                        " and gain access to concurrent builds, parallelism, engineering support, insights, build timings, and other cool stuff."]])])
                 (when (and (> trial-containers 0)
+                           (not github-marketplace-plan?)
                            (not in-student-trial?))
                   [:p
                    (str trial-containers " of these are provided by a trial. They'll be around for "
                         (pluralize (pm/days-left-in-trial plan) "more day")
                         ".")])
                 (when (and (not (config/enterprise?))
+                           (not github-marketplace-plan?)
                            (pm/linux? plan))
                   [:p
                    (str (pm/paid-linux-containers plan) " of these are paid")
