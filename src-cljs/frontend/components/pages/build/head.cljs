@@ -13,7 +13,6 @@
             [frontend.components.pieces.status :as status]
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
-            [frontend.experimental.workflow-spike :as workflow]
             [frontend.models.build :as build-model]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
@@ -330,91 +329,14 @@
         (:build_num build)])
      [:div "not run yet"])))
 
-(defn build-head-content-workflow [{:keys [build-data project-data workflow-data] :as data} owner]
-  (reify
-    om/IRender
-    (render [_]
-      (component
-        (let [{:keys [project]} project-data
-              {:keys [build_num start_time
-
-                      stop_time parallel usage_queued_at
-                      pull_requests status canceler
-                      all_commit_details all_commit_details_truncated] :as build} (:build build-data)
-              {:keys [jobs
-                      trigger-resource]
-               workflow-id :id
-               workflow-name :name
-               :as workflow} (:workflow workflow-data)
-              current-job-index (->> jobs
-                                     (keep-indexed #(when (= (-> %2 :data :build :build_num) build_num)
-                                                      %1))
-                                     first)
-              {job-name :name} (get jobs current-job-index)
-              next-link
-              (if (< current-job-index (dec (count jobs)))
-                (om/build build-link {:job (get jobs (inc current-job-index))
-                                      :workflow workflow})
-                "n/a")
-              [job-trigger previous-link]
-              (if (zero? current-job-index)
-                [(om/build builds-table/commits {:build (:data trigger-resource)}) "n/a"]
-                (repeat (om/build build-link {:job (get jobs (dec current-job-index))
-                                              :workflow workflow})))]
-          (html
-           [:div
-            [:.details
-             (card/titled {:title (str "Job: " job-name (gstring/unescapeEntities " ") build_num)
-                           :action (status/build-badge (build-model/build-status build))}
-                          (element :job
-                            (html
-                             [:div
-                              [:.line
-                               [:span.head "Trigger"]
-                               [:span.value job-trigger]]
-                              [:.line
-                               [:span.head "Start Time"]
-                               [:span.value
-                                [:span {:title (str "Started: " (datetime/full-datetime (js/Date.parse (:start_time build))))}
-                                 [:i.material-icons "today"]
-                                 (om/build common/updating-duration {:start (:start_time build)} {:opts {:formatter datetime/time-ago-abbreviated}})
-                                 " ago"]]]
-                              [:.line
-                               [:span.head "Duration"]
-                               [:span.value {:title (str "Duration: " (build-model/duration build))}
-                                [:i.material-icons "timer"]
-                                (om/build common/updating-duration {:start (:start_time build)
-                                                                    :stop (:stop_time build)})]]])))]
-            [:.details
-             (card/titled {:title (str "Workflow: " workflow-name (gstring/unescapeEntities " ") workflow-id)
-                           :action (status/build-badge (build-model/build-status (workflow/build-status workflow)))}
-                          (element :workflow
-                            (html
-                             [:div
-                              [:.line
-                               [:span.head "Trigger"]
-                               [:span.value
-                                [:span.metadata-icon (icon/git-pull-request)]
-                                (when (build-model/has-pull-requests? (:data trigger-resource))
-                                  (om/build pull-requests (:pull_requests (:data trigger-resource))))
-                                (om/build builds-table/commits {:build (:data trigger-resource)})]]
-                              [:.line
-                               [:span.head "Previous Job"]
-                               [:span.value previous-link]]
-                              [:.line
-                               [:span.head "Next Job"]
-                               [:span.value next-link]]])))]]))))))
-
-(defn build-head [{:keys [workflow-data] :as data} owner]
+(defn build-head [data owner]
   (reify
     om/IRender
     (render [_]
       (component
         (html
          [:div
-          (if workflow-data
-            (om/build build-head-content-workflow (select-keys data [:build-data :project-data :workflow-data]))
-            (om/build build-head-content (select-keys data [:build-data :project-data])))
+          (om/build build-head-content (select-keys data [:build-data :project-data]))
           [:div.build-sub-head
            (om/build old-build-head/build-sub-head data)]])))))
 

@@ -464,7 +464,6 @@
     (render [_]
       (let [build (get-in app state/build-path)
             build-data (get-in app state/build-data-path)
-            workflow-data (get-in app state/workflow-data-path)
             container-data (get-in app state/container-data-path)
             invite-data (get-in app state/build-invite-data-path)
             project-data (get-in app state/project-data-path)
@@ -480,7 +479,6 @@
 
             [:div
              (om/build build-head/build-head {:build-data (dissoc build-data :container-data)
-                                              :workflow-data workflow-data
                                               :current-tab current-tab
                                               :branch (->> (state/project-branch-crumb-path app)
                                                            (get-in app)
