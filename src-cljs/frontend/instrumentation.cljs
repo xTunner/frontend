@@ -16,12 +16,12 @@
           state
           (let [{:keys [url method request-time response-headers]} api-data]
             (update-in state state/instrumentation-path conj {:url url
-                                                              :route (get response-headers "X-Route")
+                                                              :route (get response-headers "x-route")
                                                               :method method
                                                               :request-time request-time
-                                                              :circle-latency (js/parseInt (get response-headers "X-Circleci-Latency"))
-                                                              :query-count (js/parseInt (get response-headers "X-Circleci-Query-Count"))
-                                                              :query-latency (js/parseInt (get response-headers "X-Circleci-Query-Latency"))})))
+                                                              :circle-latency (js/parseInt (get response-headers "x-circleci-latency"))
+                                                              :query-count (js/parseInt (get response-headers "x-circleci-query-count"))
+                                                              :query-latency (js/parseInt (get response-headers "x-circleci-query-latency"))})))
         (catch :default e
           (utils/merror e)
           state)))))
