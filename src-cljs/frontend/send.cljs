@@ -275,9 +275,6 @@
 
    :organization/projects
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
-     ;; Unlike most of the api functions, api/get-org-settings takes the channel
-     ;; as its last argument, so we use `partial` to make a function which takes
-     ;; it first, as `api-promise-fn` requires.)
      (-> (((get-in env [:apis :get-org-settings]) name vcs-type))
          (p/then
           (fn [response]
@@ -294,10 +291,6 @@
 
    :organization/plan
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
-     ;; Unlike most of the api functions, api/get-org-settings takes the channel
-     ;; as its last argument, so we use `partial` to make a function which takes
-     ;; it first, as `api-promise-fn` requires.
-     ;;
      ;; Also: note that we do no processing/massaging of this data. The plan
      ;; data is currently used in it's old-api form rather than using new
      ;; namespaced, universal keys. This is debt.
@@ -322,9 +315,6 @@
    #{:job/build
      :job/required-jobs}
    (fn [{:keys [run/id job/name] :as env} ast]
-     ;; Unlike most of the api functions, api/get-org-settings takes the channel
-     ;; as its last argument, so we use `partial` to make a function which takes
-     ;; it first, as `api-promise-fn` requires.
      (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
