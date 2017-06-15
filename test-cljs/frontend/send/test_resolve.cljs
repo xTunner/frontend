@@ -4,7 +4,7 @@
             [cljs.core.async :as async :refer [chan take!]]
             [clojure.set :as set]
             [clojure.test :refer-macros [async is]]
-            [frontend.send.resolve :refer [resolve]]
+            [frontend.send.resolve :as resolve]
             [om.next :as om]
             [promesa.core :as p :include-macros true])
   (:require-macros [devcards.core :as dc :refer [deftest]]))
@@ -22,9 +22,9 @@
 
    :root/user
    (fn [env ast]
-     (resolve (assoc env :user/name (:user/name (:params ast)))
-              ast
-              (chan)))
+     (resolve/resolve (assoc env :user/name (:user/name (:params ast)))
+                      ast
+                      (chan)))
 
    :user/name
    (fn [env ast]
@@ -41,8 +41,7 @@
            (update :user/vehicle set/rename-keys {:color :vehicle/color
                                                   :make :vehicle/make
                                                   :model :vehicle/model})
-           (update :user/vehicle
-                   #(parser {:state (atom %)} (mapv om/ast->query (:children ast)))))))
+           (update :user/vehicle (partial resolve/query ast)))))
 
    :user/pets
    (fn [env ast]
@@ -52,15 +51,15 @@
             (map #(set/rename-keys % {:name :pet/name
                                       :species :pet/species
                                       :description :pet/description}))
-            (mapv #(parser {:state (atom %)} (mapv om/ast->query (:children ast)))))))
+            (map (partial resolve/query ast)))))
 
    :user/favorite-fellow-user
    (fn [env ast]
      (p/alet [get-user (get-in env [:apis :get-user])
               user (p/await (get-user {:name (:user/name env)}))]
-       (resolve (assoc env :user/name (:favorite-fellow-user-name user))
-                ast
-                (chan))))})
+       (resolve/resolve (assoc env :user/name (:favorite-fellow-user-name user))
+                        ast
+                        (chan))))})
 
 #_(deftest resolve-works
   (async done
@@ -87,41 +86,41 @@
                                            {:name "Otis"
                                             :species :pet-species/dog
                                             :description "pug"}]}
-          data-chan (resolve {:apis {:get-user
-                                     (memoize
-                                      (fn [params]
-                                        (p/do*
-                                         (swap! api-calls conj [:get-user params])
-                                         (get users params))))
+          data-chan (resolve/resolve {:apis {:get-user
+                                             (memoize
+                                              (fn [params]
+                                                (p/do*
+                                                 (swap! api-calls conj [:get-user params])
+                                                 (get users params))))
 
-                                     :get-user-pets
-                                     (memoize
-                                      (fn [params]
-                                        (p/do*
-                                         (swap! api-calls conj [:get-user-pets params])
-                                         (get user-pets params))))
+                                             :get-user-pets
+                                             (memoize
+                                              (fn [params]
+                                                (p/do*
+                                                 (swap! api-calls conj [:get-user-pets params])
+                                                 (get user-pets params))))
 
-                                     :do-something
-                                     (fn [params]
-                                       (p/do*
-                                        (swap! api-calls conj [:do-something params])
-                                        "Did something."))}
-                              :resolvers resolvers}
-                             '[(do/something {:very "important"})
-                               {(:root/user {:user/name "nipponfarm"})
-                                [:user/name
-                                 :user/favorite-color
-                                 :user/favorite-number
-                                 {:user/vehicle [:vehicle/make
-                                                 (:the-model {:< :vehicle/model})]}
-                                 {:user/pets [:pet/name]}
-                                 {:user/favorite-fellow-user [:user/name
-                                                              :user/favorite-color
-                                                              :user/favorite-number]}]}
-                               {(:jamie {:< :root/user :user/name "jburnford"})
-                                [:user/name
-                                 :user/favorite-color]}]
-                             (chan))]
+                                             :do-something
+                                             (fn [params]
+                                               (p/do*
+                                                (swap! api-calls conj [:do-something params])
+                                                "Did something."))}
+                                      :resolvers resolvers}
+                                     '[(do/something {:very "important"})
+                                       {(:root/user {:user/name "nipponfarm"})
+                                        [:user/name
+                                         :user/favorite-color
+                                         :user/favorite-number
+                                         {:user/vehicle [:vehicle/make
+                                                         (:the-model {:< :vehicle/model})]}
+                                         {:user/pets [:pet/name]}
+                                         {:user/favorite-fellow-user [:user/name
+                                                                      :user/favorite-color
+                                                                      :user/favorite-number]}]}
+                                       {(:jamie {:< :root/user :user/name "jburnford"})
+                                        [:user/name
+                                         :user/favorite-color]}]
+                                     (chan))]
       (take!
        (async/into #{} data-chan)
        (fn [v]

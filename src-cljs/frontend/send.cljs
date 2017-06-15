@@ -1,14 +1,10 @@
 (ns frontend.send
-  (:require [bodhi.aliasing :as aliasing]
-            [bodhi.core :as bodhi]
-            [cljs-time.coerce :as time-coerce]
+  (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as time]
             [cljs.core.async :refer [<! chan]]
-            [clojure.set :refer [rename-keys]]
             [frontend.api :as api]
-            [frontend.send.resolve :refer [resolve]]
+            [frontend.send.resolve :as resolve]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.next :as om-next]
             [om.next.impl.parser :as om-parser]
             [promesa.core :as p :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
@@ -141,13 +137,6 @@
   (= 'run/cancel (first expression)))
 
 
-;; The parser used by the resolvers when they return deeply nested data.
-(def parser
-  (om-next/parser {:read (bodhi/read-fn
-                          (-> bodhi/basic-read
-                              aliasing/read))}))
-
-
 (def apis
   {:get-workflow-status (api-promise-fn api/get-workflow-status)
    :get-org-plan (fn [name vcs-type] (api-promise-fn (partial api/get-org-plan name vcs-type)))
@@ -162,23 +151,23 @@
 (def resolvers
   {:circleci/organization
    (fn [env ast]
-     (resolve (assoc env
-                     :organization/vcs-type (:organization/vcs-type (:params ast))
-                     :organization/name (:organization/name (:params ast)))
-              ast
-              (chan)))
+     (resolve/resolve (assoc env
+                             :organization/vcs-type (:organization/vcs-type (:params ast))
+                             :organization/name (:organization/name (:params ast)))
+                      ast
+                      (chan)))
 
    :organization/project
    (fn [env ast]
-     (resolve (assoc env :project/name (:project/name (:params ast)))
-              ast
-              (chan)))
+     (resolve/resolve (assoc env :project/name (:project/name (:params ast)))
+                      ast
+                      (chan)))
 
    :project/branch
    (fn [env ast]
-     (resolve (assoc env :branch/name (:branch/name (:params ast)))
-              ast
-              (chan)))
+     (resolve/resolve (assoc env :branch/name (:branch/name (:params ast)))
+                      ast
+                      (chan)))
 
    :branch/name
    (fn [env ast]
@@ -186,9 +175,9 @@
 
    :branch/project
    (fn [env ast]
-     (resolve (dissoc env :branch/name)
-              ast
-              (chan)))
+     (resolve/resolve (dissoc env :branch/name)
+                      ast
+                      (chan)))
 
    :project/name
    (fn [env ast]
@@ -196,9 +185,9 @@
 
    :project/organization
    (fn [env ast]
-     (resolve (dissoc env :project/name)
-              ast
-              (chan)))
+     (resolve/resolve (dissoc env :project/name)
+                      ast
+                      (chan)))
 
    :organization/name
    (fn [env ast]
@@ -220,9 +209,7 @@
                            :connection/edges (->> (:results response)
                                                   (map adapt-to-run)
                                                   (mapv #(hash-map :edge/node %)))}]
-              ;; Run the adapted structure through a parser to match it to the
-              ;; rest of the query.
-              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+              (resolve/query ast adapted))))))
 
    :project/workflow-runs
    (fn [env ast]
@@ -239,9 +226,7 @@
                            :connection/edges (->> (:results response)
                                                   (map adapt-to-run)
                                                   (mapv #(hash-map :edge/node %)))}]
-              ;; Run the adapted structure through a parser to match it to the
-              ;; rest of the query.
-              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+              (resolve/query ast adapted))))))
 
    :app/current-user
    (fn [env ast]
@@ -253,9 +238,7 @@
                                             :organization/vcs-type (:vcs_type %)
                                             :organization/avatar-url (:avatar_url %))
                                  response)}]
-              ;; Run the adapted structure through a parser to match it to the
-              ;; rest of the query.
-              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+              (resolve/query ast adapted))))))
 
    :organization/vcs-type
    (fn [env ast]
@@ -287,7 +270,7 @@
                               :project/oss? (or (:oss p)
                                                 (get-in p [:feature_flags :oss]))
                               :project/follower-count (count (:followers p))})]
-              (mapv #(parser {:state (atom %)} (mapv om-next/ast->query (:children ast))) projects))))))
+              (mapv (partial resolve/query ast) projects))))))
 
    :organization/plan
    (fn [{:keys [organization/vcs-type organization/name] :as env} ast]
@@ -298,15 +281,15 @@
 
    :circleci/run
    (fn [env ast]
-     (resolve (assoc env :run/id (:run/id (:params ast)))
-              ast
-              (chan)))
+     (resolve/resolve (assoc env :run/id (:run/id (:params ast)))
+                      ast
+                      (chan)))
 
    :run/job
    (fn [env ast]
-     (resolve (assoc env :job/name (:job/name (:params ast)))
-              ast
-              (chan)))
+     (resolve/resolve (assoc env :job/name (:job/name (:params ast)))
+                      ast
+                      (chan)))
 
    :job/name
    (fn [env ast]
@@ -323,7 +306,7 @@
                                :run/jobs
                                (filter #(= name (:job/name %)))
                                first)]
-              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+              (resolve/query ast adapted))))))
 
    :run/id
    (fn [env ast]
@@ -349,17 +332,15 @@
          (p/then
           (fn [response]
             (let [errors (:run/errors (adapt-to-run response))]
-              (mapv #(parser {:state (atom %)}
-                             (mapv om-next/ast->query (:children ast)))
-                    errors))))))
-   
+              (mapv (partial resolve/query ast) errors))))))
+
    :run/jobs
    (fn [{:keys [run/id] :as env} ast]
      (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
             (let [jobs (:run/jobs (adapt-to-run response))]
-              (mapv #(parser {:state (atom %)} (mapv om-next/ast->query (:children ast))) jobs))))))
+              (mapv (partial resolve/query ast) jobs))))))
 
    :run/trigger-info
    (fn [{:keys [run/id] :as env} ast]
@@ -367,7 +348,7 @@
          (p/then
           (fn [response]
             (let [adapted (:run/trigger-info (adapt-to-run response))]
-              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))
+              (resolve/query ast adapted))))))
 
    :run/project
    (fn [{:keys [run/id] :as env} ast]
@@ -375,7 +356,7 @@
          (p/then
           (fn [response]
             (let [adapted (:run/project (adapt-to-run response))]
-              (parser {:state (atom adapted)} (mapv om-next/ast->query (:children ast))))))))})
+              (resolve/query ast adapted))))))})
 
 (defmulti send* key)
 
@@ -389,9 +370,9 @@
                      (cancel-run-expression? (first query))
                      send-cancel-run)]
     (send-fn (om-parser/expr->ast (first query)) cb query)
-    (let [ch (resolve {:resolvers resolvers
-                       :apis (memoize-apis apis)}
-                      query (chan))]
+    (let [ch (resolve/resolve {:resolvers resolvers
+                               :apis (memoize-apis apis)}
+                              query (chan))]
       (go-loop []
         (when-let [novelty (<! ch)]
           (cb novelty query)
