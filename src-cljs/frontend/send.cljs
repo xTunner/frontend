@@ -345,7 +345,6 @@
 
    :run/errors
    (fn [{:keys [run/id] :as env} ast]
-     (println "hello from :run/errors resolver")
      (-> ((get-in env [:apis :get-workflow-status]) id)
          (p/then
           (fn [response]
