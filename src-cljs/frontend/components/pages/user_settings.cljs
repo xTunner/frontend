@@ -20,7 +20,7 @@
 (defn nav-items []
   (remove
     nil?
-    [{:type :subpage :href (routes/v1-account) :title "User Integrations" :subpage :integrations}
+    [{:type :subpage :href (routes/v1-account) :title "Account Integrations" :subpage :integrations}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "notifications"}) :title "Notification Settings" :subpage :notifications}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "api"}) :title "Personal API Tokens" :subpage :api}
      {:type :subpage :href (routes/v1-account-subpage {:subpage "heroku"}) :title "Heroku API Key" :subpage :heroku}
