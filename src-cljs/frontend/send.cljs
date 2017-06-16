@@ -295,19 +295,6 @@
    (fn [env ast]
      (:job/name env))
 
-   #{:job/build
-     :job/required-jobs}
-   (fn [{:keys [run/id job/name] :as env} ast]
-     (-> ((get-in env [:apis :get-workflow-status]) id)
-         (p/then
-          (fn [response]
-            (let [adapted (->> response
-                               adapt-to-run
-                               :run/jobs
-                               (filter #(= name (:job/name %)))
-                               first)]
-              (resolve/query ast adapted))))))
-
    :run/id
    (fn [env ast]
      (:run/id env))
