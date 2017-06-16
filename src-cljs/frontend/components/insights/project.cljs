@@ -167,16 +167,16 @@
        (take 10)))
 
 (defn- failed-tests-card [failed-tests junit-enabled?]
-    [:div.card
-     [:div.card-header
-      [:h2
-       (popover/tooltip {:placement :top-left
-                         :body "Results pulled from the last ten failed builds."}
-         "Failed Tests")]]
-     [:div.card-body.failed-tests
-      (cond
-        (not-empty failed-tests)
-        (om/build failed-tests-table failed-tests)
+  [:div.card
+   [:div.card-header
+    [:h2
+     (popover/tooltip {:placement :top-left
+                       :body "Results pulled from the last ten failed builds."}
+       "Failed Tests")]]
+   [:div.card-body.failed-tests
+    (cond
+      (not-empty failed-tests)
+      (om/build failed-tests-table failed-tests)
 
         (false? junit-enabled?)
         [:span "Implement test metadata to view output. Find out more in the "
