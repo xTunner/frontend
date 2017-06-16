@@ -364,4 +364,26 @@
                     :trigger-mode :hover
                     :on-show #(println "popover shown")
                     :on-hide #(println "popover hidden")}
-                   trigger)])))))
+                   trigger)])))
+
+    (defcard popover-trigger-containers
+      (fn [state]
+        (html
+         [:div
+          [:div {:style {:margin-bottom 20}}
+           (popover {:title "Popover with block trigger"
+                     :body "Use :container :div when using block elements as triggers"
+                     :container :div
+                     :trigger-mode :hover}
+                    [:div {:style {:background-color "black"
+                                   :color "white"
+                                   :height 20}}
+                     "content"])]
+          [:div {:style {:margin-bottom 20}}
+           (popover {:title "Popover with inline trigger"
+                     :body "Use :container :span when using inline elements as triggers"
+                     :container :span
+                     :trigger-mode :hover}
+                    [:span {:style {:background-color "black"
+                                    :color "white"}}
+                     "content"])]])))))
