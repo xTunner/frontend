@@ -167,7 +167,8 @@
              [:.inner-content
               [:.status-and-button
                [:div.status {:class (if loading? "loading" (name run-status-class))}
-                [:a.exception {:href (routes/v1-run-path id)}
+                [(if id :a.exception :div)
+                 (when id {:href (routes/v1-run-path id)})
                  [:span.status-icon
                   (if loading?
                     (icon/simple-circle)
@@ -205,7 +206,8 @@
               [:div.run-info
                [:div.build-info-header
                 [:div.contextual-identifier
-                 [:a {:href (routes/v1-run-path id)}
+                 [(if id :a :span)
+                  (when id {:href (routes/v1-run-path id)})
                   (if loading?
                     (loading-placeholder 300)
                     [:span branch " / " run-name])]]]
@@ -252,7 +254,8 @@
 
 (def run-row (om-next/factory RunRow {:keyfn :run/id}))
 
-(defn loading-run-row [] (run-row (om-next/computed {:run/id (random-uuid)} {::loading? true})))
+(def loading-run-row* (om-next/factory RunRow))
+(defn loading-run-row [] (loading-run-row* (om-next/computed {} {::loading? true})))
 
 (dc/do
   (defcard run-row

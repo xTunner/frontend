@@ -82,7 +82,7 @@
             .flexy(center, center);
             background-color: transparent;
 
-            > a {
+            > a, > div {
               .flex(1 1 auto);
               align-self: stretch;
               .flexy(center, center);
@@ -244,9 +244,10 @@
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            color: @grayDarker;
 
-            a {
-              color: @grayDarker;
+            > a {
+              color: inherit;
             }
           }
 
