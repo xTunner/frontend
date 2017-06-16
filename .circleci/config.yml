@@ -160,11 +160,10 @@ jobs:
           command: |
             set -x
             docker build -t "$IMAGE_TAG" ci-testing-image
-            CONTAINER_NAME=$(docker create $IMAGE_TAG)
+            CONTAINER_NAME=$(docker create $IMAGE_TAG bash -c 'cd /root/frontend && lein doo chrome-headless test once')
             docker cp . "$CONTAINER_NAME:/root/frontend"
             docker cp /root/.m2/. "$CONTAINER_NAME:/root/.m2"
-            docker commit "$CONTAINER_NAME" $IMAGE_TAG
-            docker run $IMAGE_TAG bash -c 'cd /root/frontend && lein doo chrome-headless test once'
+            docker start -a $CONTAINER_NAME
           
   cljsbuild_whitespace:
     <<: *container_config
