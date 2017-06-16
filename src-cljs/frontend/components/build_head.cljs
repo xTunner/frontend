@@ -535,9 +535,7 @@
                                    source-hash)
             build-succeeded? (= "success" build-status)
 
-            by-time (reverse (sort-by :run_time (filter (comp number? :run_time)
-                                                        tests)))
-            slowest (first by-time)]
+            slowest (test-model/slowest-n-tests 1 tests)]
         (html
          [:div.test-results
           (if-not tests

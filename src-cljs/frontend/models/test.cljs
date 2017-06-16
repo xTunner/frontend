@@ -32,3 +32,17 @@
 
 (defn failed? [test]
   (not= "success" (:result test)))
+
+(defn by-time-descending
+  "Given a seq of tests, return them sorted by their run_time descending (so
+  slowest test to fastest test)."
+  [tests]
+  (->> tests
+       (filter (comp number? :run_time))
+       (sort-by :run_time >)))
+
+(defn slowest-n-tests
+  "Given a seq of tests and a number n, return the n slowest test by descending
+  time."
+  [n tests]
+  (take n (by-time-descending tests)))

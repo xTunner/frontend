@@ -14,7 +14,7 @@
     ;; This is an implementation detail.
     (into []
           (comp
-           (filter #{:right :shrink})
+           (remove nil?)
            (map name))
           type)))
 
@@ -30,6 +30,8 @@
                                    type, the column will align left.
                          :shrink - Column width shrinks to fit its content. Columns without
                                    :shrink will share any leftover space.
+                         :insights-last-col - Column width set so that the last columns of the
+                                              insights test tables line up.
   :rows     - A sequence of objects which will each generate a row. These will be passed to
               the columns' :cell-fns to generate each cell.
   :key-fn   - A function of a row object which returns a value to use as the React

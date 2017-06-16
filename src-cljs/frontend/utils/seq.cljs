@@ -59,3 +59,12 @@
               result
               (rf result input))))))))
   ([keyfn coll] (sequence (dedupe-by keyfn) coll)))
+
+(defn average-of-fn
+  "Takes a seq `s` and a function `f`.
+  Returns the average result of applying the function `f` to each item `x` of
+  the seq `s`."
+  [f s]
+  (let [sum (fn [sum x]
+              (+ (f x) sum))]
+    (/ (reduce sum 0 s) (count s))))

@@ -37,3 +37,7 @@
       ;; all the items.
       (is (= items
              (into [] (seq-utils/dedupe-by :b) items))))))
+
+(deftest average-of-fn-works
+  (testing "we correctly return the sum of a keyfn"
+    (is (= 2 (seq-utils/average-of-fn :a [{:a 1} {:a 2} {:a 3}])))))

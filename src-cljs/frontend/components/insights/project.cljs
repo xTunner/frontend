@@ -7,10 +7,13 @@
             [frontend.config :as config]
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
+            [frontend.models.test :as test-model]
+            [frontend.utils.seq :as utils-seq]
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.async :refer [raise!]]
             [frontend.utils :refer-macros [html defrender component]]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [cljs-time.format :as time-format]
@@ -94,47 +97,88 @@
 (s/defn build-status-bar-chart-hovercard [build :- insights/BarChartableBuild]
   (html
    [:div {:data-component `build-status-bar-chart-hovercard}
-   [:div.insights-metadata
-    [:div.metadata-row
-     [:div.metadata-item
-      [:i.material-icons "radio_button_checked"]
-      (:outcome build)]
-     [:div.metadata-item.recent-time
-      [:i.material-icons "today"]
-      (om/build common/updating-duration
-               {:start (:start_time build)}
-               {:opts {:formatter datetime/time-ago-abbreviated}}) " ago"]
-     [:div.metadata-item.recent-time
-      [:i.material-icons "timer"]
-      (first (datetime/millis-to-float-duration (:build_time_millis build)))]
-     [:div.metadata-item.recent-time
-      [:i.material-icons "hourglass_empty"]
-      (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
-     [:div.metadata-item
-      [:i.material-icons "storage"]
-      (:build_num build)]]]]))
+    [:div.insights-metadata
+     [:div.metadata-row
+      [:div.metadata-item
+       [:i.material-icons "radio_button_checked"]
+       (:outcome build)]
+      [:div.metadata-item.recent-time
+       [:i.material-icons "today"]
+       (om/build common/updating-duration
+                {:start (:start_time build)}
+                {:opts {:formatter datetime/time-ago-abbreviated}}) " ago"]
+      [:div.metadata-item.recent-time
+       [:i.material-icons "timer"]
+       (first (datetime/millis-to-float-duration (:build_time_millis build)))]
+      [:div.metadata-item.recent-time
+       [:i.material-icons "hourglass_empty"]
+       (first (datetime/millis-to-float-duration (:queued_time_millis build)))]
+      [:div.metadata-item
+       [:i.material-icons "storage"]
+       (:build_num build)]]]]))
 
-(defn- test-frequency-rows [failed-tests]
-  (let [failed-tests (map #(select-keys % [:classname :name]) failed-tests)
+(defn- test-frequency-rows [tests]
+  (let [failed-tests (map #(select-keys % [:classname :name]) tests)
         test-frequencies (frequencies failed-tests)] ;;Test frequencies is a map of failed tests; each mapped
     ;; to it's frequency throughout the last 10 builds.
     (for [test-frequency test-frequencies]
       (merge {:frequency (second test-frequency)} {:test-name (:name (first test-frequency))
                                                    :classname (:classname (first test-frequency))}))))
-(defn- failed-tests-table [failed-tests owner]
+
+(defn- failed-tests-table [tests owner]
   (reify
     om/IRender
     (render [_]
       (html
         [:div
-         (om/build table {:key-fn :name
-                          :rows (sort-by :frequency > (test-frequency-rows failed-tests))
+         (om/build table {:key-fn :failed-tests-table
+                          :rows (sort-by :frequency > (test-frequency-rows tests))
                           :columns [{:header "Test Suite"
                                      :cell-fn :classname}
                                     {:header "Test Name"
                                      :cell-fn :test-name}
                                     {:header "Frequency"
-                                     :cell-fn :frequency}]})]))))
+                                     :cell-fn :frequency
+                                     :type :insights-last-col}]})]))))
+
+(defn- tests-with-average-run-time
+  "Returns a sequence of maps, with :run_time updated to the average across the last 10 builds"
+  [grouped-tests]
+  (for [group grouped-tests]
+    (let [test-path (first group)
+          test-runs (second group)]
+      {:classname (:classname test-path)
+       :name (:name test-path)
+       :run_time (utils-seq/average-of-fn :run_time test-runs)})))
+
+(defn- average-slowest-tests-descending
+  "Returns map of tests sorted from slowest to fastest"
+  [tests]
+  (->> tests
+       (group-by #(select-keys % [:classname :name]))
+       (tests-with-average-run-time)))
+
+(defn- slowest-test-rows [tests]
+  (->> (average-slowest-tests-descending tests)
+       (test-model/slowest-n-tests 10)
+       (map (fn [test]
+              (update test :run_time #(gstring/format "%.2f" %))))))
+
+(defn- slowest-tests-table [tests owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div
+           (om/build table {:key-fn :slowest-tests-table
+                            :rows (slowest-test-rows tests)
+                            :columns [{:header "Test Suite"
+                                       :cell-fn :classname}
+                                      {:header "Test Name"
+                                       :cell-fn :name}
+                                      {:header "Average Time (s)"
+                                       :cell-fn :run_time
+                                       :type :insights-last-col}]})]))))
 
 (defn build-status-bar-chart [{:keys [plot-info builds]} owner]
   (reify
@@ -166,18 +210,18 @@
        (filter insights/build-failed?)
        (take 10)))
 
-(defn- failed-tests-card [failed-tests junit-enabled?]
+(defn- test-results [title table-fn tests junit-enabled?]
   [:div.card
    [:div.card-header
     [:h2
      (popover/tooltip {:placement :top-left
                        :body "Results pulled from the last ten failed builds."
                        :container :span}
-       "Failed Tests")]]
+       title)]]
    [:div.card-body.failed-tests
     (cond
-      (not-empty failed-tests)
-      (om/build failed-tests-table failed-tests)
+      (not-empty tests)
+      (om/build table-fn tests)
 
       (false? junit-enabled?)
       [:span "Implement test metadata to view output. Find out more in the "
@@ -185,12 +229,17 @@
             :target "_blank"}
         "test metadata documentation"]
        "."]
-
-      (and (not (nil? failed-tests))
-           (empty? failed-tests))
+      (and (not (nil? tests))
+           (empty? tests))
       [:span "No failed tests to show."]
 
       :else (spinner))]])
+
+(defn- failed-tests-card [tests junit-enabled?]
+  (test-results "Failed Tests" failed-tests-table tests junit-enabled?))
+
+(defn- slowest-tests-card [tests junit-enabled?]
+  (test-results "Slowest Failed Tests" slowest-tests-table tests junit-enabled?))
 
 (defn- build-status-card [chartable-builds bar-chart-builds]
   [:div.card
@@ -220,57 +269,58 @@
       (component
         (let [branch (-> state :navigation-data :branch)
               {:keys [parallel] :as project} (get-in state state/project-path)
-        timing-data (get-in project [:build-timing branch])
+              timing-data (get-in project [:build-timing branch])
               project-branch-builds (branch-builds project branch)
               chartable-builds (some->> project-branch-builds
                                   (filter insights/build-chartable?))
-        bar-chart-builds (->> chartable-builds
-                              (take (:max-bars build-time-bar-chart-plot-info))
+              bar-chart-builds (->> chartable-builds
+                                    (take (:max-bars build-time-bar-chart-plot-info))
                                     (map insights/add-queued-time))
               failed-tests (get-in state state/failed-builds-tests-path)
               junit-enabled? (get-in state state/failed-builds-junit-enabled?-path)]
-    (html
-     [:div.insights-project
-      [:div.insights-metadata-header
-       [:div.card.insights-metadata
-        [:dl
-         [:dt "last build"]
-         [:dd (om/build common/updating-duration
-                        {:start (->> chartable-builds
-                                     (filter :start_time)
-                                     first
-                                     :start_time)}
-                        {:opts {:formatter datetime/as-time-since
-                                :formatter-use-start? true}})]]]
-       [:div.card.insights-metadata
-        [:dl
-         [:dt "median build time"]
-                [:dd (-> (map :build_time_millis bar-chart-builds)
-                         (insights/median)
-                         (datetime/as-duration))" min"]]]
-       [:div.card.insights-metadata
-        [:dl
-         [:dt "median queue time"]
-                [:dd (-> (map :queued_time_millis bar-chart-builds)
-                         (insights/median)
-                         (datetime/as-duration))" min"]]]
-       [:div.card.insights-metadata
-        [:dl
-         [:dt "success rate"]
-         [:dd (insights/pass-percent chartable-builds)]]]
-       [:div.card.insights-metadata
-        [:dl
-         [:dt "current parallelism"]
-         [:dd parallel
-          (when (project-model/can-write-settings? project)
-           [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
-                                                                               :repo (:reponame project)
-                                                                               :_fragment "parallel-builds"})
-                                       :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked})}
-            [:i.material-icons "tune"]])]]]]
-             (failed-tests-card failed-tests junit-enabled?)
-             (build-status-card chartable-builds bar-chart-builds)
-             (build-performance-card timing-data)]))))))
+         (html
+          [:div.insights-project
+           [:div.insights-metadata-header
+            [:div.card.insights-metadata
+             [:dl
+              [:dt "last build"]
+              [:dd (om/build common/updating-duration
+                             {:start (->> chartable-builds
+                                          (filter :start_time)
+                                          first
+                                          :start_time)}
+                             {:opts {:formatter datetime/as-time-since
+                                     :formatter-use-start? true}})]]]
+            [:div.card.insights-metadata
+             [:dl
+              [:dt "median build time"]
+              [:dd (-> (map :build_time_millis bar-chart-builds)
+                       (insights/median)
+                       (datetime/as-duration))" min"]]]
+            [:div.card.insights-metadata
+             [:dl
+              [:dt "median queue time"]
+              [:dd (-> (map :queued_time_millis bar-chart-builds)
+                       (insights/median)
+                       (datetime/as-duration))" min"]]]
+            [:div.card.insights-metadata
+             [:dl
+              [:dt "success rate"]
+              [:dd (insights/pass-percent chartable-builds)]]]
+            [:div.card.insights-metadata
+             [:dl
+              [:dt "current parallelism"]
+              [:dd parallel
+               (when (project-model/can-write-settings? project)
+                [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
+                                                                                    :repo (:reponame project)
+                                                                                    :_fragment "parallel-builds"})
+                                            :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked})}
+                 [:i.material-icons "tune"]])]]]]
+           (failed-tests-card failed-tests junit-enabled?)
+           (slowest-tests-card failed-tests junit-enabled?)
+           (build-status-card chartable-builds bar-chart-builds)
+           (build-performance-card timing-data)]))))))
 
 (defrender header [state owner]
   (let [projects (get-in state state/projects-path)
