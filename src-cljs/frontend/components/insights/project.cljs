@@ -167,12 +167,12 @@
        (take 10)))
 
 (defn- failed-tests-card [failed-tests junit-enabled?]
-  (popover/tooltip {:placement :top-left
-                    :body "Results pulled from the last ten failed builds."
-                    :trigger-mode :click}
     [:div.card
      [:div.card-header
-      [:h2 "Failed Tests"]]
+      [:h2
+       (popover/tooltip {:placement :top-left
+                         :body "Results pulled from the last ten failed builds."}
+         "Failed Tests")]]
      [:div.card-body.failed-tests
       (cond
         (not-empty failed-tests)
@@ -189,7 +189,7 @@
           (empty? failed-tests))
         [:span "No failed tests to show."]
 
-        :else (spinner))]]))
+        :else (spinner))]])
 
 (defn- build-status-card [chartable-builds bar-chart-builds]
   [:div.card

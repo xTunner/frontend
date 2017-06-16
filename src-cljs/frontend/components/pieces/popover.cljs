@@ -17,19 +17,28 @@
 
   :placement
    The position of the element relative to the anchor element.
-   Can be one of [:top :bottom :left :right].
+   Can be one of [:top :top-left :bottom :left :right].
    (default: :top)
+
+  :container
+   The container element to be used for wrapping the anchor element.
+   To allow for finer grained control of anchor element layout
+   (i.e. as an inline or block element).
+   Can be one of [:div :span].
+   (default: :div)
 
   :element
    The element to position against the anchor."
-  [{:keys [placement element]} children]
+  [{:keys [placement container element]
+    :or {placement :top container :div}}
+   children]
   (component
    (html
-    [:div
+    [container
+     children
      [:.positioned-element
       {:class (name placement)}
-      element]
-     children])))
+      element]])))
 
 (defn- card
   "A popover card component that draws a static popover card that
@@ -43,7 +52,7 @@
 
   :placement
    The position of the popover relative to the trigger element.
-   Can be one of [:top :bottom :left :right].
+   Can be one of [:top :top-left :bottom :left :right].
    (default: :top)
 
   :visible?
@@ -96,6 +105,12 @@
    The position of the popover relative to the trigger element.
    Can be one of [:top :top-left :bottom :left :right].
    (default: :top)
+
+  :container
+   The container element to be used for wrapping the popover trigger.
+   To allow for finer grained control of popover trigger layout.
+   Can be one of [:div :span].
+   (default: :div)
 
   :trigger-mode
    The type of events on the trigger element that affect the
@@ -152,8 +167,8 @@
      true))
   (render [this]
     (component
-     (let [{:keys [title body placement trigger-mode]
-            :or {placement :top trigger-mode :click}}
+     (let [{:keys [title body placement container trigger-mode]
+            :or {placement :top container :div trigger-mode :click}}
            (om-next/props this)
 
            {:keys [visible-by-click? visible-by-hover?]}
@@ -169,11 +184,12 @@
            {:on-click
             #(om-next/update-state! this update :visible-by-click? not)}]
        (html
-        [:div (merge click-props
+        [container (merge click-props
                      (when (= :hover trigger-mode)
                        hover-props))
          (with-positioned-element
           {:placement placement
+           :container container
            :element (card {:title title
                            :body body
                            :placement placement
@@ -195,8 +211,14 @@
 
   :placement
    The position of the tooltip relative to the trigger element.
-   Can be one of [:top :bottom :left :right].
+   Can be one of [:top :top-left :bottom :left :right].
    (default: :top)
+
+  :container
+   The container element to be used for wrapping the tooltip trigger.
+   To allow for finer grained control of tooltip trigger layout.
+   Can be one of [:div :span].
+   (default: :div)
 
   :on-show (optional)
    Function to be triggered when tooltip is shown.
@@ -205,12 +227,13 @@
   :on-hide (optional)
    Function to be triggered when tooltip is hidden.
    Can be used to pass in an event-tracking function."
-  [{:keys [body placement on-show on-hide]
-    :or {placement :top}}
+  [{:keys [body placement container on-show on-hide]
+    :or {placement :top container :div}}
    children]
   (popover {:title nil
             :body body
             :placement placement
+            :container container
             :on-show on-show
             :on-hide on-hide
             :trigger-mode :hover}
