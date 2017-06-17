@@ -151,5 +151,6 @@
   the name and vcs type out of the URL, and later the rest of the org's information (such
   as the avatar url) are returned."
   [state]
-  (change-selected-org state (get-in state state/last-visited-org-path)))
+  (change-selected-org state (or (get-in state state/selected-org-path)
+                                 (get-in state state/last-visited-org-path))))
 

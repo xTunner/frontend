@@ -411,7 +411,9 @@
 
 (defmethod api-event [:organizations :success]
   [target message status {orgs :resp} state]
-  (assoc-in state state/user-organizations-path orgs))
+  (-> state
+      (assoc-in state/user-organizations-path orgs)
+      (state-utils/update-selected-org)))
 
 (defmethod post-api-event! [:organizations :success]
   [target message status args previous-state current-state comms]
