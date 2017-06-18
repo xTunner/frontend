@@ -99,7 +99,10 @@
   (render [this]
     (let [{:keys [empty-state? org]} (om-next/props this)]
       (button/link
-       {:href (routes/v1-add-projects-path {:org (:organization/name org) :vcs_type (:organization/vcs-type org)})
+        {:href (if (feature/enabled? "top-bar-ui-v-1")
+                 (routes/v1-add-projects-path {:org (:organization/name org)
+                                               :vcs_type (:organization/vcs-type org)})
+                 (routes/v1-add-projects))
         :kind :primary
         :size :small
         :on-click #(analytics/track! this {:event-type :add-project-clicked
