@@ -47,7 +47,7 @@
     "github"    (vcs-github?    item)))
 
 (defn loading-repos-for-vcs-type? [user vcs-type]
-  (get-in user [:repos-loading vcs-type]))
+  (get-in user [:repos-loading (keyword vcs-type)]))
 
 ;; This is only the keys that we're interested in in this namespace. We'd give
 ;; this a broader scope if we could, but that's the trouble with legacy keys:
