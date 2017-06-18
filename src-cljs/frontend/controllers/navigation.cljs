@@ -262,16 +262,12 @@
 (defmethod post-navigated-to! :add-projects
   [history-imp navigation-point _ previous-state current-state comms]
   (let [api-ch (:api comms)]
-    (when (and (feature/enabled? "top-bar-ui-v-1")
-               (not (get-in current-state state/add-projects-selected-org-path)))
-      (let [org (or (get-in current-state state/selected-org-path)
-                    (get-in current-state state/last-visited-org-path))]
-        (routes/org-centric-path {:current-org org
-                                  :nav-point navigation-point}))
-      ;; load orgs, collaborators, and repos
+    ;; TODO: after top-bar-ui-v-1 launched, only load repos we need and do not
+    ;; load orgs
+    ;; load orgs, collaborators, and repos
     (api/get-orgs api-ch :include-user? true)
     (load-repos current-state api-ch)
-    (set-page-title! "Add projects"))))
+    (set-page-title! "Add Projects")))
 
 (defmethod navigated-to :build-insights
   [history-imp navigation-point args state]
