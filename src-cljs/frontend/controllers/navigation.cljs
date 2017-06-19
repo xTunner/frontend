@@ -280,13 +280,14 @@
 (defmethod post-navigated-to! :build-insights
   [history-imp navigation-point args previous-state current-state comms]
   (let [api-ch (:api comms)]
-    ;; since build-insights users user centric and not org centric api calls,
-    ;; we need to use the plan endpoint to check if the current user has access.
-    ;; TODO: make org centric insights endpoints and use the status from those instead
-    (api/get-org-plan (org/name args)
-                      (org/vcs-type args)
-                      api-ch
-                      :org-check)
+    (when (feature/enabled? "top-bar-ui-v-1")
+      ;; since build-insights uses user centric and not org centric api calls,
+      ;; we need to use the plan endpoint to check if the current user has access.
+      ;; TODO: make org centric insights endpoints and use the status from those instead
+      (api/get-org-plan (org/name args)
+                        (org/vcs-type args)
+                        api-ch
+                        :org-check))
     (api/get-projects api-ch)
     (api/get-user-plans api-ch))
   (set-page-title! "Insights"))
