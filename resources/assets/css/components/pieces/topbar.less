@@ -34,13 +34,13 @@
       > .nav-options {
         .flexy;
 
+        height: 100%;
         margin-bottom: 0;
         padding-left: 0;
 
         &.collapsing-nav {
           &.disable {
             pointer-events: none;
-            
             > .org-dropdown > .dropdown-toggle {
                 > .org-name > .selected-org-name,
                 > .org-name > .org-picker-arrow,
@@ -75,7 +75,7 @@
             color: @white;
             text-decoration: none;
             white-space: nowrap;
-            padding: 20px;
+            padding: 0 20px;
 
             .transition(all .1s ease-in);
 
@@ -283,7 +283,7 @@
 
             > .avatar {
               .flexy(center, center);
-              height: 70px;
+              height: @top-bar-height;
               width: 70px;
             }
 
