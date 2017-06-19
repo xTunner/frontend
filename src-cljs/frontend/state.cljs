@@ -101,6 +101,7 @@
 (def navigation-subpage-path (conj navigation-data-path :subpage))
 (def navigation-tab-path (conj navigation-data-path :tab))
 (def current-action-id-path (conj navigation-data-path :action-id))
+(def selected-org-path (conj navigation-data-path :selected-org))
 
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
@@ -190,8 +191,6 @@
 (def user-in-beta-path (conj user-path user-in-beta-key))
 (def user-betas-key :enrolled_betas)
 (def user-betas-path (conj user-path user-betas-key))
-
-(def selected-org-path (conj user-path :selected-org))
 
 (def org-data-path [:current-org-data])
 (def org-name-path (conj org-data-path :name))
