@@ -885,9 +885,9 @@
     (if (org/same? (org/get-from-map context)
                    org)
       (-> state
-          (assoc-in state/add-projects-selected-org-path org) ;; Remove when top-bar-ui-v-1 applied
-          ;; universally. Point all references to
-          ;; state/selected-org-path
+          ;; Remove when top-bar-ui-v-1 applied
+          ;; universally. Point all references to state/selected-org-path
+          (assoc-in state/add-projects-selected-org-path org)
           (state-utils/change-selected-org org))
       state)))
 
@@ -1232,7 +1232,12 @@
 
 (defmethod post-api-event! [:org-settings-normalized :failed]
   [target message status {:keys [context] :as args} previous-state current-state comms]
-  (put! (:nav comms) [:error {:status (:status-code args)}]))
+  ;; We currently use the org-settings endpoint to get a list of projects for that org
+  ;; for the Import Variables feature on env-vars. However, you can have read and write
+  ;; access to projects which belong to orgs you are not a member of (not sure how but 
+  ;; I did confirm that a thing).
+  (when-not (= (get-in current-state state/current-view-path) :project-settings)
+    (put! (:nav comms) [:error {:status (:status-code args)}])))
 
 (defmethod api-event [:enterprise-site-status :success]
   [target message status {:keys [resp]} state]
