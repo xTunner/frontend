@@ -120,13 +120,7 @@
      `{(:run-for-row {:< :routed-entity/run})
        ~(om-next/get-query run-row/RunRow)}
      `{(:run-for-jobs {:< :routed-entity/run})
-       [{(:jobs-for-jobs {:< :run/jobs}) ~(om-next/get-query Job)}
-        ;; NB: We need the :component metadata and :job/id here to make sure the
-        ;; merger constructs the ident successfully to merge properly. This
-        ;; reflects a shortcoming in Bodhi.
-        {(:jobs-for-first {:< :run/jobs}) ^{:component ~Job} [:job/id
-                                                              :job/build
-                                                              :job/name]}]}
+       [{:run/jobs ~(om-next/get-query Job)}]}
      {:routed-entity/job [:job/name
                           {:job/build [:build/vcs-type
                                        :build/org
@@ -172,18 +166,10 @@
           :main-content
           (element :main-content
             (let [run (:run-for-row (om-next/props this))
-                  selected-job (or (not-empty
-                                    (:routed-entity/job (om-next/props this)))
-                                   (-> (om-next/props this)
-                                       :run-for-jobs
-                                       :jobs-for-first
-                                       first))
-                  selected-job-build (get-in (om-next/props this)
-                                             (into [:legacy/state]
-                                                   state/build-path))
-                  jobs (cond-> (-> (om-next/props this) :run-for-jobs :jobs-for-jobs)
-                         selected-job-build (assoc-in [0 :job/started-at]
-                                                      (:start_time selected-job-build)))]
+                  jobs (-> this
+                           om-next/props
+                           :run-for-jobs
+                           :run/jobs)]
               (html
                [:div
                 ;; We get the :run/id for free in the route params, so even
@@ -210,9 +196,4 @@
                     [:.hr-title
                      [:span (gstring/format "%s jobs in this workflow" (count jobs))]]]
                    (job-cards-row
-                    (map (fn [job-data]
-                           (job (om-next/computed
-                                 job-data
-                                 {:selected? (= (:job/name job-data)
-                                                (:job/name selected-job))})))
-                         jobs))])])))})))))
+                    (map job jobs))])])))})))))
