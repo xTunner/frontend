@@ -1,5 +1,6 @@
 (ns frontend.components.pieces.run-row
   (:require [clojure.string :as string]
+            [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
@@ -40,7 +41,7 @@
 (defn- run-prs
   "A om-next compatible version of
   `frontend.components.builds-table/pull-requests`."
-  [pull-requests]
+  [parent-component pull-requests]
   (when-let [urls (seq (map :pull-request/url pull-requests))]
     (html
      [:span.metadata-item.pull-requests {:title "Pull Requests"}
@@ -52,13 +53,16 @@
              ;; When that happens, this code blows up the page. To work around that,
              ;; we just skip the PR if its URL is nil.
              :when url]
-         [:a {:href url}
+         [:a
+          {:href url
+           :on-click #(analytics/track! parent-component
+                                        {:event-type :pr-link-clicked})}
           "#"
           (gh-utils/pull-request-number url)]))])))
 
 (defn- commit-link
   "Om Next compatible version of `frontend.components.builds-table/commits`."
-  [vcs-type org repo sha]
+  [parent-component vcs-type org repo sha]
   (when (and vcs-type org repo sha)
     (let [pretty-sha (build-model/github-revision {:vcs_revision sha})]
       (html
@@ -68,7 +72,9 @@
              :href (build-model/commit-url {:vcs_revision sha
                                             :vcs_url (vcs-url/vcs-url vcs-type
                                                                       org
-                                                                      repo)})}
+                                                                      repo)})
+             :on-click #(analytics/track! parent-component
+                                          {:event-type :revision-link-clicked})}
          pretty-sha]]))))
 
 (defn- transact-run-mutate [component mutation]
@@ -167,7 +173,11 @@
              [:.inner-content
               [:.status-and-button
                [:div.status {:class (if loading? "loading" (name run-status-class))}
-                [:a.exception {:href (routes/v1-run-path id)}
+                [:a.exception
+                 {:href (routes/v1-run-path id)
+                  :on-click #(analytics/track!
+                              this
+                              {:event-type :run-status-clicked})}
                  [:span.status-icon
                   (if loading?
                     (icon/simple-circle)
@@ -184,7 +194,10 @@
                (cond
                  loading? [:div.action-button [:svg]]
                  (contains? cancelable-statuses status)
-                 [:div.action-button.cancel-button {:on-click #(transact-run-cancel this id vcs-type org-name project-name)}
+                 [:div.action-button.cancel-button
+                  {:on-click (fn [_]
+                               (analytics/track! this {:event-type :cancel-clicked})
+                               (transact-run-cancel this id vcs-type org-name project-name))}
                   (icon/status-canceled)
                   [:span "cancel"]]
                  (contains? rerunnable-statuses status)
@@ -196,16 +209,26 @@
                    (when (rerunnable-from-start-statuses status)
                      [:li
                       [:a
-                       {:on-click #(transact-run-retry this id [])}
+                       {:on-click (fn [_event]
+                                    (transact-run-retry this id [])
+                                    (analytics/track! this
+                                                      {:event-type :rerun-clicked
+                                                       :properties {:is-from-failed true}}))}
                        "Rerun failed jobs"]])
                    [:li
                     [:a
-                     {:on-click #(transact-run-retry this id jobs)}
+                     {:on-click (fn [_event]
+                                  (transact-run-retry this id jobs)
+                                  (analytics/track! this
+                                                    {:event-type :rerun-clicked
+                                                     :properties {:is-from-failed false}}))}
                      "Rerun from beginning"]]]])]
               [:div.run-info
                [:div.build-info-header
                 [:div.contextual-identifier
-                 [:a {:href (routes/v1-run-path id)}
+                 [:a {:href (routes/v1-run-path id)
+                      :on-click #(analytics/track! this
+                                                   {:event-type :run-link-clicked})}
                   (if loading?
                     (loading-placeholder 300)
                     [:span branch " / " run-name])]]]
@@ -242,10 +265,11 @@
                [:div.metadata-row.pull-revision
                 (if loading?
                   [:span.metadata-item.pull-requests (loading-circle)]
-                  (run-prs pull-requests))
+                  (run-prs this pull-requests))
                 (if loading?
                   [:span.metadata-item.revision (loading-circle)]
-                  (commit-link vcs-type
+                  (commit-link this
+                               vcs-type
                                org-name
                                project-name
                                commit-sha))]]]])))))))
