@@ -101,7 +101,8 @@
 (def navigation-subpage-path (conj navigation-data-path :subpage))
 (def navigation-tab-path (conj navigation-data-path :tab))
 (def current-action-id-path (conj navigation-data-path :action-id))
-(def selected-org-path (conj navigation-data-path :selected-org))
+
+(def selected-org-path [:selected-org])
 
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
