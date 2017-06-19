@@ -115,8 +115,7 @@
     :project-settings-clicked
     :projects-icon-clicked
     :rebuild-clicked
-    :rerun-from-failed-clicked
-    :rerun-from-start-clicked
+    :rerun-clicked
     :resource-class-docs-clicked
     :revision-link-clicked
     :run-link-clicked
