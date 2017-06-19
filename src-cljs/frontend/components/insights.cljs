@@ -596,10 +596,10 @@
      [:div#build-insights
       (cond
         (not (user/has-code-identity? (get-in state state/user-path)))
-        (om/build non-code-empty-state/empty-state-main-page
+        (om/build non-code-empty-state/full-page-empty-state
           {:name "Insights"
            :icon (icon/insights)
-           :subheading "An interactive graph of your software builds, highlighting failed and successful builds. This page allows you to monitor your build performance holistically."
+           :description "An interactive graph of your software builds, highlighting failed and successful builds. This page allows you to monitor your build performance holistically."
            :demo-heading "Demos"
            :demo-description "The following graph is shown for demonstration. Click the title link for a larger graph of build performance or click a bar to see details for a single build."
            :content [:div#non-code-insights

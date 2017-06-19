@@ -122,10 +122,10 @@
                                                          :org org})}))
 
 (defn- non-code-ident-empty-state []
-  (build-legacy non-code-empty-state/empty-state-main-page
+  (build-legacy non-code-empty-state/full-page-empty-state
     {:name "Projects"
      :icon (icon/project)
-     :subheading "A list of your software projects with important summary information about each project’s pricing plan, team size, and settings link."
+     :description "A list of your software projects with important summary information about each project’s pricing plan, team size, and settings link."
      :demo-heading "Demos"
      :demo-description "The following list is shown for demonstration. Click the Parallelism link to see the current  number of parallel builds (1x, 2x, 3x) and the total number of containers in use in a demo plan. Click the Settings icon to see the Overview page and the full list of organization, build, test, notification, permission, and continuous deployment settings for each demo project."
      :content

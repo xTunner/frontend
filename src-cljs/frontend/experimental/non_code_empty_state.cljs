@@ -11,7 +11,7 @@
             [frontend.components.pieces.card :as card]
             [om.core :as om :include-macros true]))
 
-(defn- empty-state-header [{:keys [name icon subheading]}]
+(defn- empty-state-header [{:keys [name icon description]}]
   (component
     (html
       [:div
@@ -19,9 +19,9 @@
          [:.header
           [:.icon-container [:.icon icon]]
           [:h1 [:b name]]
-          [:p.subheading-text subheading]])])))
+          [:p.description-text description]])])))
 
-(defn- demo-warn-card [{:keys [demo-heading demo-description]}]
+(defn- empty-state-demo-card [{:keys [demo-heading demo-description]}]
   (component
     (html
       [:div
@@ -55,7 +55,36 @@
                              :on-click #(track-auth-button-clicked :bitbucket)}
                             "Authorize Bitbucket")]])]))))))
 
-(defn empty-state-main-page [{:keys [content] :as page-info} owner]
+(defn full-page-empty-state
+  [{:keys [content demo-heading demo-description]
+    :as page-info}
+   owner]
+  "A full-page component shown to users who have no code identities (gh, bb).
+   It contains a header with the page name, icon and a description, a footer
+   with CTAs to add a code identity, some static demo content for the page, and
+   an optional demo card to further explain the purpose of the page.
+
+   :content
+    The element to display as the main demo content for the page.
+    Ideally a card component.
+
+   :name
+    The name of the page this empty state is standing in for.
+
+   :icon
+    An icon that represents this page.
+    Should be the same icon used for this page on the nav bar.
+
+   :description
+    A more detailed description of what this page is used for.
+
+   :demo-heading (optional)
+    A heading for the optional demo card to be included below the header.
+    Use the demo card to further explain the contents of the page.
+
+   :demo-description (optional)
+    A description for the optional demo card to be included below the header.
+    Use the demo card to further explain the contents of the page."
   (reify
     om/IDidMount
     (did-mount [_]
@@ -67,7 +96,8 @@
           [:div
            (card/collection
              [(empty-state-header page-info)
-              (demo-warn-card page-info)
+              (when (or demo-heading demo-description)
+                (empty-state-demo-card page-info))
               content
               (om/build empty-state-footer {})])])))))
 
@@ -75,7 +105,7 @@
   (defcard empty-state-header
            (empty-state-header {:name "Insights"
                                 :icon (icon/insights)
-                                :subheading "CircleCI insights give performance overviews of your projects and offer ideas about how to increase build speeds. Experience insights by clicking on a test project or creating one of your own."}))
+                                :description "CircleCI insights give performance overviews of your projects and offer ideas about how to increase build speeds. Experience insights by clicking on a test project or creating one of your own."}))
 
   (defcard empty-state-footer
            (om/build empty-state-footer {})))
