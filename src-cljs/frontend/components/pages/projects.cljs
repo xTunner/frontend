@@ -10,7 +10,6 @@
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
             [frontend.data.projects :as test-data]
-            [frontend.experimental.non-code-empty-state :as non-code-empty-state]
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.user :as user]
@@ -122,7 +121,7 @@
                                                          :org org})}))
 
 (defn- non-code-ident-empty-state []
-  (build-legacy non-code-empty-state/full-page-empty-state
+  (build-legacy empty-state/full-page-empty-state
     {:name "Projects"
      :icon (icon/project)
      :description "A list of your software projects with important summary information about each project’s pricing plan, team size, and settings link."

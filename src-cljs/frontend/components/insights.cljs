@@ -3,13 +3,13 @@
             [devcards.core :as dc :refer-macros [defcard]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
+            [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.status :as status]
             [frontend.config :as config]
             [frontend.data.insights :as test-data]
             [frontend.datetime :as datetime]
-            [frontend.experimental.non-code-empty-state :as non-code-empty-state]
             [frontend.models.build :as build-model]
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
@@ -237,7 +237,7 @@
                                        (gstring/format "%s in %s"
                                                        (gstring/toTitleCase (unexterned-prop % "outcome"))
                                                        duration-str)))})
-        (.on #js {"click" #((om/get-shared owner :track-event) {:event-type :insights-bar-clicked 
+        (.on #js {"click" #((om/get-shared owner :track-event) {:event-type :insights-bar-clicked
                                                                 :properties {:build-url (unexterned-prop % "build_url")}})})
         (.select "rect.bar")
         (.attr #js {"class" #(str "bar " (-> %
@@ -596,13 +596,13 @@
      [:div#build-insights
       (cond
         (not (user/has-code-identity? (get-in state state/user-path)))
-        (om/build non-code-empty-state/full-page-empty-state
+        (om/build empty-state/full-page-empty-state
           {:name "Insights"
            :icon (icon/insights)
            :description "An interactive graph of your software builds, highlighting failed and successful builds. This page allows you to monitor your build performance holistically."
            :demo-heading "Demos"
            :demo-description "The following graph is shown for demonstration. Click the title link for a larger graph of build performance or click a bar to see details for a single build."
-           :content [:div#non-code-insights
+           :content [:div.insights-empty-state-content
                      (om/build project-insights {:project test-data/test-project
                                                  :opts {:clickable-header? false}})]})
 

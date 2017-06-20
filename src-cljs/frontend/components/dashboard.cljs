@@ -1,6 +1,7 @@
 (ns frontend.components.dashboard
   (:require [frontend.async :refer [raise!]]
             [frontend.components.builds-table :as builds-table]
+            [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.project.common :as project-common]
@@ -11,11 +12,10 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer-macros [html]]
-            [om.core :as om :include-macros true]
-            [frontend.experimental.non-code-empty-state :as non-code-empty-state]))
+            [om.core :as om :include-macros true]))
 
 (defn- non-code-identity-empty-dashboard []
-  (om/build non-code-empty-state/full-page-empty-state
+  (om/build empty-state/full-page-empty-state
     {:name "Builds"
      :icon (icon/builds)
      :description "A list of your software builds with corresponding status for monitoring all of the fixes and failures you care about."

@@ -11,7 +11,6 @@
             [frontend.components.pieces.spinner :refer [spinner]]
             [frontend.components.pieces.table :as table]
             [frontend.components.templates.main :as main-template]
-            [frontend.experimental.non-code-empty-state :as non-code-empty-state]
             [frontend.models.feature :as feature]
             [frontend.models.organization :as org]
             [frontend.models.user :as user]
@@ -24,12 +23,12 @@
             [om.core :as om :include-macros true]))
 
 (defn- non-code-empty-state []
-  (om/build non-code-empty-state/full-page-empty-state
+  (om/build empty-state/full-page-empty-state
     {:name "Team"
      :icon (icon/team)
      :description "A list of all of the users that follow CircleCI projects and the number of projects they follow, so you can easily invite teammates to your project."
      :content
-     [:.teams
+     [:.teams-empty-state-content
       [:img.placeholder-img {:src (utils/cdn-path "/img/empty-state-teams.png")}]]}))
 
 (defn- add-follow-counts [users projects]
