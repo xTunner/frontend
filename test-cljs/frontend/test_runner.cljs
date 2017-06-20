@@ -25,6 +25,7 @@
             [frontend.test-analytics]
             [frontend.test-datetime]
             [frontend.test-elevio]
+            [frontend.test-gencard]
             [frontend.test-parser]
             [frontend.test-pusher]
             [frontend.test-routes]
