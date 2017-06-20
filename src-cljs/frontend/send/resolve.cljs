@@ -1,5 +1,7 @@
 (ns frontend.send.resolve
-  (:require [cljs.core.async :as async :refer [chan close! put!]]
+  (:require [bodhi.aliasing :as aliasing]
+            [bodhi.core :as bodhi]
+            [cljs.core.async :as async :refer [chan close! put!]]
             [cljs.core.async.impl.protocols :as async-impl]
             [goog.log :as glog]
             [om.next :as om]
@@ -10,6 +12,18 @@
   (when ^boolean goog.DEBUG
     (.setCapturing (Console.) true)
     (glog/getLogger "frontend.send.resolve")))
+
+(def ^:private parser
+  (om/parser {:read (bodhi/read-fn
+                     (-> bodhi/basic-read
+                         aliasing/read))}))
+
+(defn query
+  "An easy way to return a value from a resolver when you have complex data from
+  an API. Queries the given AST against the value given. This will limit the
+  result to keys requested in the AST, as well as apply aliases to the keys."
+  [ast value]
+  (parser {:state (atom value)} (mapv om/ast->query (:children ast))))
 
 (defn- read-port? [x]
   (implements? async-impl/ReadPort x))
@@ -49,7 +63,8 @@
   * A (Promesa) promise of such a channel.
 
   A resolver function takes two args: the env map and the ast of the query node
-  that's being resolved.
+  that's being resolved (for single-key resolvers) or all of the asts being
+  resolved as a map (for set-of-keys resolvers).
 
   resolve returns `channel` and will put the novelty onto that channel. The
   novelty will come in pieces, streaming in as promises resolve (that is, as API
@@ -84,7 +99,7 @@
                          (chan 1 (map #(hash-map (:key ast) %)))))
           (if-let [[keys resolver]
                    (first (filter #(contains? (key %) read-from-key) resolvers))]
-            (pipe-values (resolver env ast)
+            (pipe-values (resolver env {read-from-key ast})
                          (chan 1 (comp
                                   (map #(get % read-from-key))
                                   (map #(hash-map (:key ast) %)))))

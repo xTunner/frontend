@@ -102,6 +102,8 @@
 (def navigation-tab-path (conj navigation-data-path :tab))
 (def current-action-id-path (conj navigation-data-path :action-id))
 
+(def selected-org-path [:selected-org])
+
 (def container-data-path [:current-build-data :container-data])
 (def containers-path [:current-build-data :container-data :containers])
 (def current-container-filter-path [:current-build-data :container-data :current-filter])
@@ -218,8 +220,7 @@
 (def instrumentation-path [:instrumentation])
 
 (def browser-settings-path [:settings :browser-settings])
-(def selected-org-path (conj browser-settings-path :selected-org))
-(def selected-org-admin?-path (conj selected-org-path :admin))
+(def last-visited-org-path (conj browser-settings-path :last-visited-org))
 (def show-instrumentation-line-items-path (conj browser-settings-path :show-instrumentation-line-items))
 (def show-admin-panel-path (conj browser-settings-path :show-admin-panel))
 (def show-all-branches-path (conj browser-settings-path :show-all-branches))

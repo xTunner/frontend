@@ -24,15 +24,13 @@
             [om.core :as om :include-macros true]))
 
 (defn- non-code-empty-state []
-  (om/build non-code-empty-state/empty-state-main-page
+  (om/build non-code-empty-state/full-page-empty-state
     {:name "Team"
      :icon (icon/team)
-     :subheading "A list of all of the users that follow CircleCI projects and the number of projects they follow, so you can easily invite teammates to your project."
-     :demo-heading "Demos"
-     :demo-description "The following list of users is shown for demonstration."
+     :description "A list of all of the users that follow CircleCI projects and the number of projects they follow, so you can easily invite teammates to your project."
      :content
      [:.teams
-      [:img {:src (utils/cdn-path "/img/empty-state-teams.png")}]]}))
+      [:img.placeholder-img {:src (utils/cdn-path "/img/empty-state-teams.png")}]]}))
 
 (defn- add-follow-counts [users projects]
   (for [user users

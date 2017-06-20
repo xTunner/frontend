@@ -47,7 +47,7 @@
     "github"    (vcs-github?    item)))
 
 (defn loading-repos-for-vcs-type? [user vcs-type]
-  (get-in user [:repos-loading vcs-type]))
+  (get-in user [:repos-loading (keyword vcs-type)]))
 
 ;; This is only the keys that we're interested in in this namespace. We'd give
 ;; this a broader scope if we could, but that's the trouble with legacy keys:
@@ -302,7 +302,7 @@
 
     om/IRenderState
     (render-state [_ {:keys [selected-tab-name]}]
-      (let [selected-org-login (:login selected-org)
+      (let [selected-org-login (org/name selected-org)
             loading-repos? (loading-repos-for-vcs-type? user (:vcs_type selected-org))
             repo-filter-string (get-in settings [:add-projects :repo-filter-string])
             show-forks (true? (get-in settings [:add-projects :show-forks]))]

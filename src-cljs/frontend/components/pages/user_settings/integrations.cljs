@@ -10,6 +10,7 @@
             [frontend.utils.function-query :as fq :include-macros true]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.google :as google]
+            [frontend.utils.slack :as slack]
             [om.next :as om-next :refer-macros [defui]]))
 
 (defn- code-identities? [name]
@@ -63,7 +64,8 @@
   (render [this]
     (let [{[github-identity] "github"
            [bitbucket-identity] "bitbucket"
-           [google-identity] "google"}
+           [google-identity] "google"
+           [slack-identity] "slack"}
           (group-by :identity/type
                     (-> (om-next/props this) :app/current-user :user/identities))]
       (html
@@ -79,13 +81,18 @@
                             :type "bitbucket"
                             :icon-path (common/icon-path "brand-bitbucket")
                             :auth-url (bitbucket/auth-url)
-                            :identity bitbucket-identity})]
-               (cond-> (feature/enabled? :connect-with-google)
-                 (conj (card this {:name "Google"
-                                   :type "google"
-                                   :icon-path (common/icon-path "brand-google")
-                                   :auth-url (google/auth-url)
-                                   :identity google-identity})))))]))))
+                            :identity bitbucket-identity})
+                (card this {:name "Google"
+                            :type "google"
+                            :icon-path (common/icon-path "brand-google")
+                            :auth-url (google/auth-url)
+                            :identity google-identity})]
+               (cond-> (feature/enabled? :sign-in-with-slack)
+                 (conj (card this {:name "Slack"
+                                   :type "slack"
+                                   :icon-path (common/icon-path "brand-slack")
+                                   :auth-url (slack/auth-url)
+                                   :identity slack-identity})))))]))))
 
 (dc/do
   (defcard github-card-disconnected

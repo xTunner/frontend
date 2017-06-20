@@ -1,5 +1,6 @@
 (ns frontend.test-analytics
-  (:require [cljs.test :refer-macros [is deftest testing]]
+  (:require [bond.james :as bond]
+            [cljs.test :refer-macros [is deftest testing]]
             [frontend.analytics :as analytics]
             [om.next :as om-next :refer-macros [defui]]))
 

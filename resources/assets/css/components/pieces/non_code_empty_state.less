@@ -1,5 +1,5 @@
 .ns("frontend.experimental.non-code-empty-state", {
-  .ui("empty-state-main-page", {
+  .ui("full-page-empty-state", {
     margin-top: @main-body-padding;
   });
 
@@ -13,7 +13,7 @@
       align-items: center;
       justify-content: center;
 
-      .icon-container {
+      > .icon-container {
         margin: 15px 0 10px;
         height: @icon-size;
         width: @icon-size;
@@ -23,16 +23,20 @@
         justify-content: center;
         align-items: center;
 
-        .icon {
+        > .icon {
           color: @grayDark;
           width: @icon-inner-size;
           height: @icon-inner-size;
         }
       }
 
-      .subheading-text {
+      > .description-text {
         text-align: center;
         width: 70%;
+
+        @media (max-width: @screen-xs-max) {
+          width: 100%;
+        }
       }
     }
   });
@@ -40,7 +44,7 @@
   .ui("empty-state-footer", {
     .ctas {
       > a {
-        margin-right: 10px;
+        margin: 10px 10px 0 0;
       }
     }
   });
@@ -56,9 +60,18 @@
     // which gives it a 15px margin -15px margin is
     // added to compensate that.
     margin: -15px 50px 50px 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    img {
+    > .placeholder-img {
       width: 100%;
+      // limit width of image to actual width to avoid enlarging
+      max-width: 1020px;
+    }
+
+    @media (max-width: @screen-xs-max) {
+      display: none;
     }
   }
 });

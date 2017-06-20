@@ -1,5 +1,6 @@
 (ns frontend.components.pages.workflow
-  (:require [frontend.api :as api]
+  (:require [frontend.analytics :as analytics]
+            [frontend.api :as api]
             [frontend.components.aside :as aside]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
@@ -113,7 +114,7 @@
 (defn- legacy-branch-picker
   "Wraps the branch picker in a legacy component which can load the project data
   on mount."
-  [{:keys [app org]} owner]
+  [{:keys [app org]} owner {:keys [om-next-parent]}]
   (reify
     om/IWillMount
     (will-mount [_]
@@ -127,30 +128,33 @@
     (render [_]
       (om/build aside/branch-activity-list
                 (assoc-in app state/selected-org-path (organization/modern-org->legacy-org org))
-                {:opts {:workflows? true}}))))
+                {:opts {:workflows? true
+                        :om-next-parent om-next-parent}}))))
 
 (defui ^:once ProjectPage
   static om-next/IQuery
   (query [this]
-    ['{:legacy/state [*]}
+    [{:legacy/state ['*]}
+     {:app/current-user [:user/login]}
      {:routed-entity/organization [:organization/vcs-type
                                    :organization/name]}
-     `{(:project-for-crumb {:< :routed-entity/project}) [:project/name]}
-     `{(:project-for-runs {:< :routed-entity/project}) ~(om-next/get-query ProjectWorkflowRuns)}])
-  ;; TODO: Add the correct analytics properties.
-  #_analytics/Properties
-  #_(properties [this]
-      (let [props (om-next/props this)]
-        {:user (get-in props [:app/current-user :user/login])
-         :view :projects
-         :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
+     {:routed-entity/project [:project/name]}
+     {'(:project-for-runs {:< :routed-entity/project}) (om-next/get-query ProjectWorkflowRuns)}])
+  analytics/Properties
+  (properties [this]
+    (let [props (om-next/props this)]
+      {:user (get-in props [:app/current-user :user/login])
+       :view :route/project-workflows
+       :org (get-in props [:routed-entity/organization :organization/name])
+       :vcs-type (get-in props [:routed-entity/organization :organization/vcs-type])
+       :repo (get-in props [:routed-entity/project :project/name])}))
   Object
   (componentDidMount [this]
     (set-page-title! "CircleCI"))
   (render [this]
     (let [{{org-name :organization/name
             vcs-type :organization/vcs-type} :routed-entity/organization
-           {project-name :project/name} :project-for-crumb}
+           {project-name :project/name} :routed-entity/project}
           (om-next/props this)]
       (main-template/template
        {:app (:legacy/state (om-next/props this))
@@ -163,8 +167,10 @@
                   :project project-name
                   :vcs_type vcs-type}]
         :header-actions (settings-link vcs-type org-name project-name)
-        :sidebar (build-legacy legacy-branch-picker {:app (:legacy/state (om-next/props this))
-                                                     :org (:routed-entity/organization (om-next/props this))})
+        :sidebar (build-legacy legacy-branch-picker
+                               {:app (:legacy/state (om-next/props this))
+                                :org (:routed-entity/organization (om-next/props this))}
+                               {:opts {:om-next-parent this}})
         :main-content (if-let [project (:project-for-runs (om-next/props this))]
                         (project-workflow-runs project)
                         (spinner))}))))
@@ -216,14 +222,23 @@
 (defui ^:once BranchPage
   static om-next/IQuery
   (query [this]
-    ['{:legacy/state [*]}
+    [{:legacy/state ['*]}
+     {:app/current-user [:user/login]}
      {:routed-entity/organization [:organization/vcs-type
                                    :organization/name]}
      {:routed-entity/project [:project/name]}
-     `{(:branch-for-crumb {:< :routed-entity/branch})
-       [:branch/name]}
-     `{(:branch-for-runs {:< :routed-entity/branch})
-       ~(om-next/get-query BranchWorkflowRuns)}])
+     {:routed-entity/branch [:branch/name]}
+     {'(:branch-for-runs {:< :routed-entity/branch})
+      (om-next/get-query BranchWorkflowRuns)}])
+  analytics/Properties
+  (properties [this]
+    (let [props (om-next/props this)]
+      {:user (get-in props [:app/current-user :user/login])
+       :view :route/project-branch-workflows
+       :org (get-in props [:routed-entity/organization :organization/name])
+       :vcs-type (get-in props [:routed-entity/organization :organization/vcs-type])
+       :repo (get-in props [:routed-entity/project :project/name])
+       :branch (get-in props [:routed-entity/branch :branch/name])}))
   Object
   (componentDidMount [this]
     (set-page-title! "CircleCI"))
@@ -231,7 +246,7 @@
     (let [{{org-name :organization/name
             vcs-type :organization/vcs-type} :routed-entity/organization
            {project-name :project/name} :routed-entity/project
-           {branch-name :branch/name} :branch-for-crumb
+           {branch-name :branch/name} :routed-entity/branch
            branch-for-runs :branch-for-runs}
           (om-next/props this)]
       (main-template/template
@@ -250,8 +265,10 @@
                   :vcs_type vcs-type
                   :branch branch-name}]
         :header-actions (settings-link vcs-type org-name project-name)
-        :sidebar (build-legacy legacy-branch-picker {:app (:legacy/state (om-next/props this))
-                                                     :org (:routed-entity/organization (om-next/props this))})
+        :sidebar (build-legacy legacy-branch-picker
+                               {:app (:legacy/state (om-next/props this))
+                                :org (:routed-entity/organization (om-next/props this))}
+                               {:opts {:om-next-parent this}})
         :main-content (if-let [branch (:branch-for-runs (om-next/props this))]
                         (branch-workflow-runs branch)
                         (spinner))}))))

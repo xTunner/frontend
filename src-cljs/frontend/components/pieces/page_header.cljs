@@ -260,24 +260,24 @@
                                   :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked
                                                                                   :properties {:component "topbar"
                                                                                                :treatment "top-bar-beta"}})}
-                                 "Provide Beta UI Feedback")])]
-                (when-not om-next-page?
-                  (button/link {:fixed? true
-                                :kind (if has-topbar?
-                                        :secondary
-                                        :primary)
-                                :size :small
-                                :href (if has-topbar?
-                                        "/dashboard"
-                                        (routes/new-org-path {:nav-point (:nav-point topbar-beta)
-                                                              :current-org (:org topbar-beta)}))
-                                :on-click #(do
-                                             (raise! owner [:preferences-updated {state/user-betas-key [toggle-topbar]}])
-                                             ((om/get-shared owner :track-event) {:event-type :topbar-toggled
-                                                                                  :properties {:toggle-topbar-text toggle-topbar-text
-                                                                                               :has-topbar has-topbar?
-                                                                                               :toggled-topbar-on (boolean toggle-topbar)}}))}
-                               toggle-topbar-text)))
+                      "Provide Beta UI Feedback")])])
+              (when-not om-next-page?
+                (button/link {:fixed? true
+                              :kind (if has-topbar?
+                                      :secondary
+                                      :primary)
+                              :size :small
+                              :href (if has-topbar?
+                                      "/dashboard"
+                                      (routes/org-centric-path {:nav-point (:nav-point topbar-beta)
+                                                                :current-org (:org topbar-beta)}))
+                              :on-click #(do
+                                           (raise! owner [:preferences-updated {state/user-betas-key [toggle-topbar]}])
+                                           ((om/get-shared owner :track-event) {:event-type :topbar-toggled
+                                                                                :properties {:toggle-topbar-text toggle-topbar-text
+                                                                                             :has-topbar has-topbar?
+                                                                                             :toggled-topbar-on (boolean toggle-topbar)}}))}
+                  toggle-topbar-text))
               actions]]))))))
 
 (dc/do

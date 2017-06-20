@@ -411,7 +411,7 @@
   [nav-point]
   (= "route" (namespace nav-point)))
 
-(defn new-org-path
+(defn org-centric-path
   "Generate url to current navigation-point for new org
    Routes that are not org-specic (e.g. landing) return
     nil. Nil responses are ignored."

@@ -19,12 +19,14 @@
             [frontend.controllers.ws :as ws-con]
             [frontend.history :as history]
             [frontend.instrumentation :refer [wrap-api-instrumentation]]
+            [frontend.models.organization :as org]
             [frontend.parser :as parser]
             [frontend.parser.connection :as connection]
             [frontend.pusher :as pusher]
             [frontend.routes :as routes]
             [frontend.send :as send]
             [frontend.state :as state]
+            [frontend.utils.state :as state-utils]
             [frontend.support :as support]
             [frontend.timer :as timer]
             [frontend.utils :as utils :refer [mlog set-canonical!]]
@@ -69,7 +71,10 @@
   (swallow-errors
    (binding [frontend.async/*uuid* (:uuid (meta value))]
      (let [previous-state @state]
-       (swap! state (partial nav-con/navigated-to history navigation-point args))
+       (swap! state (fn [state]
+                      (->> (org/get-from-map args)
+                           (state-utils/change-selected-org state)
+                           (nav-con/navigated-to history navigation-point args))))
        (nav-con/post-navigated-to! history navigation-point args previous-state @state comms)
        (set-canonical! (:_canonical args))
        (when-not (= navigation-point :navigate!)
