@@ -171,7 +171,8 @@
    [:div.card-header
     [:h2
      (popover/tooltip {:placement :top-left
-                       :body "Results pulled from the last ten failed builds."}
+                       :body "Results pulled from the last ten failed builds."
+                       :container :span}
        "Failed Tests")]]
    [:div.card-body.failed-tests
     (cond
