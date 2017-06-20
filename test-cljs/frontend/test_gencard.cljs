@@ -25,6 +25,7 @@
   (->> (gen/sample-seq (s/gen spec))
        (take 100)
        (group-by (comp signature component))
+       (sort-by (comp hash key))
        vals
        (map first)))
 
