@@ -261,6 +261,8 @@ jobs:
   deploy:
     docker:
       - image: python:2.7
+        environment:
+          BUILD_JSON_PATH: integration-test-build.json
     working_directory: /root/frontend
     steps:
       - *attach_workspace
@@ -273,7 +275,11 @@ jobs:
       - add-ssh-keys
       - run:
           name: Install AWS CLI
-          command: pip install awscli      
+          command: pip install awscli
+      - run:
+          name: Install jq
+          command: |
+            apt-get update && apt-get install jq
       - run:
           name: deploy and trigger integration tests
           command: |
@@ -288,6 +294,9 @@ jobs:
             --form revision=$CIRCLE_SHA1 \
             --form local_username=$CIRCLE_USERNAME
             fi
+      - run:
+          name: Wait for deploy/integration tests to complete
+          command: ./script/wait-for-deploy.sh
 
 workflows:
   version: 2

@@ -62,7 +62,7 @@ fi
 circle_api=https://circleci.com/api/v1
 tree_url=$circle_api/project/circleci/circle/tree/$backend_branch
 # BUILD_JSON_PATH should be set in ci config
-http_status=$(curl -o /dev/null \
+http_status=$(curl -o "$BUILD_JSON_PATH" \
                    --silent \
                    --write-out '%{http_code}\n' \
                    --header "Content-Type: application/json" \
