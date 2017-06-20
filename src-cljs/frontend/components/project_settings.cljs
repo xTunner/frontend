@@ -439,11 +439,20 @@
       (let [project-data (get-in data state/project-data-path)
             plan (get-in data state/project-plan-path)]
         (html
-          [:section
+          [:section.parallel-builds
            (when (and (plan-model/in-trial? plan)
                       (not (plan-model/in-student-trial? plan)))
              (om/build trial-activation-banner data))
            [:article
+            [:div.alert.alert-info.iconified
+             [:div
+              [:img.alert-icon {:src (common/icon-path "Info-Info")}]
+              [:span
+               "These settings are only for 1.0 builds. To define parallelism for 2.0 jobs, "
+               [:a
+                {:href "/docs/2.0/configuration-reference/#jobs"}
+                "read our documentation"]
+               "."]]]
             [:legend (str "Change parallelism for " (vcs-url/project-name (get-in project-data [:project :vcs_url])))]
             (if-not (:plan project-data)
               (spinner)
