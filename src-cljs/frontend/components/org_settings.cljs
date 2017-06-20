@@ -1436,9 +1436,8 @@
                                                                     :_fragment "osx-pricing"})} "Update OS X plan"]]
                   [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
                                                                     :vcs_type plan-vcs-type
-                                                                    :_fragment "osx-pricing"})} "Choose OS X plan"]])
+                                                                    :_fragment "osx-pricing"})} "Choose OS X plan"]])]
 
-                 "."]
                 [:fieldset
                  (when (and (pm/osx-trial-plan? plan) (not (pm/osx-trial-active? plan)))
                    [:p "The OS X trial you've selected has expired, please choose a plan below."])
@@ -1449,20 +1448,18 @@
             [:div
              [:h1 "No OS X plan selected"]
              [:p
-              (let [link [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
-                                                                                           :vcs_type plan-vcs-type
-                                                                                           :_fragment "osx-pricing"})} "Choose an OS X plan"] "."]]
-                (if (pm/grandfathered? plan)
-                  (list link
-                        " Note: changes to your billing will update your entire account"
-                        " (including Linux plans) off of our legacy plans to our current pricing model.")
-                  link))]])])))))
+              [:strong [:a {:href (routes/v1-org-settings-path {:org plan-org-name
+                                                                :vcs_type plan-vcs-type
+                                                                :_fragment "osx-pricing"})} "Choose an OS X plan"]]
+              (when (pm/grandfathered? plan)
+                [:p " Note: changes to your billing will update your entire account"
+                      " (including Linux plans) off of our legacy plans to our current pricing model."])]])])))))
 
 (defn github-marketplace-messaging []
   [:div "Current plan managed on "
    [:a {:href "https://github.com/marketplace/circleci"
         :target "_blank"}
-    "GitHub Marketplace"] "."])
+    "GitHub Marketplace"]])
 
 (defn displayed-linux-plan-info [{:keys [current-linux-cost containers trial-containers in-student-trial? github-marketplace-plan?]}]
   (if github-marketplace-plan?
