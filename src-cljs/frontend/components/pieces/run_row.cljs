@@ -1,10 +1,12 @@
 (ns frontend.components.pieces.run-row
-  (:require [clojure.string :as string]
+  (:require [clojure.spec :as s :include-macros true]
+            [clojure.string :as string]
             [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.datetime :as datetime]
+            [frontend.gencard :as gc]
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
@@ -298,6 +300,56 @@
                 :run/project {:project/name "anvil"
                               :project/organization {:organization/name "acme"
                                                      :organization/vcs-type :github}}})))
+
+  (s/def :run/entity (s/keys :req [:run/id
+                                   :run/name
+                                   :run/status
+                                   :run/started-at
+                                   :run/stopped-at
+                                   :run/trigger-info
+                                   :run/project]))
+
+  (s/def :run/trigger-info (s/keys :req [:trigger-info/vcs-revision
+                                         :trigger-info/subject
+                                         :trigger-info/body
+                                         :trigger-info/branch
+                                         :trigger-info/pull-requests]))
+
+  (s/def :run/project (s/keys :req [:project/name
+                                    :project/organization]))
+
+  (s/def :project/organization (s/keys :req [:organization/name
+                                             :organization/vcs-type]))
+
+  (s/def :run/id uuid?)
+  (s/def :run/name string?)
+  (s/def :run/status #{:run-status/running
+                       :run-status/succeeded
+                       :run-status/failed
+                       :run-status/canceled
+                       :run-status/not-run
+                       :run-status/needs-setup})
+  (s/def :run/started-at inst?)
+  (s/def :run/stopped-at inst?)
+  (s/def :trigger-info/vcs-revision string?)
+  (s/def :trigger-info/subject string?)
+  (s/def :trigger-info/body string?)
+  (s/def :trigger-info/branch string?)
+  ;; TODO: This generates lots of unnecessary morphs.
+  (s/def :trigger-info/pull-requests #_(s/every (s/keys :req [:pull-request/url])) #{[]})
+  (s/def :pull-request/url string?)
+  (s/def :project/name string?)
+  (s/def :organization/name string?)
+  (s/def :organization/vcs-type #{:github :bitbucket})
+
+  (defcard generated-run-rows
+    (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
+      (html
+       [:div
+        (let [data (gc/morph-data run-row :run/entity)]
+          (if data
+            (card/collection (map run-row data))
+            "Infinite morphs!"))])))
 
   (defcard loading-run-row
     (loading-run-row)))
