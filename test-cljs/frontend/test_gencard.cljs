@@ -2,12 +2,13 @@
   (:require [cljs.test :refer-macros [is testing]]
             [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
-            [goog.object :as gobject])
+            [goog.object :as gobject]
+            [om.next :as om-next :refer-macros [defui]])
   (:require-macros
    [devcards.core :as dc :refer [defcard deftest]]
    [sablono.core :refer [html]]))
 
-(def ignored-props #{"title"})
+(def ignored-props #{"title" "href" "onClick"})
 
 
 (defn signature [element]
@@ -21,11 +22,25 @@
                (remove (conj ignored-props "children")
                        (gobject/getKeys props))))))
 
-(defn morph-data [component spec]
+(defn morph-data [component-factory spec]
   (let [sample-size 100
+
+        ;; Wrap the factory. If it's a simple function returning a React DOM
+        ;; element (an element with a string type), keep it as is. Otherwise
+        ;; we've got a composite element (one whose type is a class), and we
+        ;; need to (shallow) render it to get DOM elements to examine.
+        component-factory
+        (fn [props & children]
+          (let [elt (apply component-factory props children)]
+            (if (string? (gobject/get elt "type"))
+              elt
+              (let [renderer (js/React.addons.TestUtils.createRenderer)]
+                (.render renderer elt)
+                (.getRenderOutput renderer)))))
+
         groups (->> (gen/sample-seq (s/gen spec))
                     (take sample-size)
-                    (group-by (comp signature component)))]
+                    (group-by (comp signature component-factory)))]
     (when (> sample-size (count groups))
       (->> groups
            (sort-by (comp hash key))
@@ -58,10 +73,26 @@
      (when (< 2 (count (::description props))) {:class "long"})
      (::description props)]]))
 
+(defui DemoComponentOm
+  Object
+  (render [this]
+    (demo-component (om-next/props this))))
+
+(def demo-component-om (om-next/factory DemoComponentOm))
+
 (deftest morph-data-test
-  (testing "Generates one set of data for each morph"
+  (testing "Generates one set of data for each morph of a functional component"
     (dotimes [_ 10]
       (let [data (morph-data demo-component ::data-for-component)]
+        (is (not (nil? data)))
+        (is (every? (partial s/valid? ::data-for-component) data))
+        (is (= 4 (count data)))
+        (is (= 2 (count (group-by ::type data)))))))
+
+  (testing "Generates one set of data for each morph of an Om component"
+    (dotimes [_ 10]
+      (let [data (morph-data demo-component-om ::data-for-component)]
+        (is (not (nil? data)))
         (is (every? (partial s/valid? ::data-for-component) data))
         (is (= 4 (count data)))
         (is (= 2 (count (group-by ::type data)))))))
