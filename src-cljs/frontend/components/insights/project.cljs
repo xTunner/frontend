@@ -139,7 +139,7 @@
                                      :cell-fn :test-name}
                                     {:header "Frequency"
                                      :cell-fn :frequency
-                                     :type :insights-last-col}]})]))))
+                                     :class :insights-last-col}]})]))))
 
 (defn- tests-with-average-run-time
   "Returns a sequence of maps, with :run_time updated to the average across the last 10 builds"
@@ -178,7 +178,7 @@
                                        :cell-fn :name}
                                       {:header "Average Time (s)"
                                        :cell-fn :run_time
-                                       :type :insights-last-col}]})]))))
+                                       :class :insights-last-col}]})]))))
 
 (defn build-status-bar-chart [{:keys [plot-info builds]} owner]
   (reify

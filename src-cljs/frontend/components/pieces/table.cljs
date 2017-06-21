@@ -14,8 +14,8 @@
     ;; This is an implementation detail.
     (into []
           (comp
-           (remove nil?)
-           (map name))
+            (filter #{:right :shrink})
+            (map name))
           type)))
 
 (defn table
@@ -30,8 +30,7 @@
                                    type, the column will align left.
                          :shrink - Column width shrinks to fit its content. Columns without
                                    :shrink will share any leftover space.
-                         :insights-last-col - Column width set so that the last columns of the
-                                              insights test tables line up.
+              :class   - A class to apply to this cell.
   :rows     - A sequence of objects which will each generate a row. These will be passed to
               the columns' :cell-fns to generate each cell.
   :key-fn   - A function of a row object which returns a value to use as the React
@@ -47,19 +46,19 @@
          [:table {:class (when striped? "striped")}
           [:thead
            [:tr
-            (for [[idx {:keys [header type]}] (map-indexed vector columns)]
+            (for [[idx {:keys [header type class]}] (map-indexed vector columns)]
               ;; We never reorder columns in a table, so the index works as a
               ;; React key. If we ever do reorder columns, we'll need to come up
               ;; with a key to identify them.
               [:th {:key idx
-                    :class (cell-classes type)}
+                    :class (conj (cell-classes type) class)}
                header])]]
           [:tbody
            (for [row rows]
              [:tr (when key-fn {:key (key-fn row)})
-              (for [[idx {:keys [cell-fn type]}] (map-indexed vector columns)]
+              (for [[idx {:keys [cell-fn type class]}] (map-indexed vector columns)]
                 [:td {:key idx
-                      :class (cell-classes type)}
+                      :class (conj (cell-classes type) class)}
                  (cell-fn row)])])]])))))
 
 (defn action-button
