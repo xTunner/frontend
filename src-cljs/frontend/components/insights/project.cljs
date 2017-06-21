@@ -262,13 +262,65 @@
           (empty? timing-data) [:div.no-builds.no-insights "No builds in the last 90 days."]
           :else (om/build build-time-line-chart timing-data))]])
 
-(defn project-insights [state owner]
+(defn insights-metadata [state owner]
   (reify
     om/IRender
     (render [_]
       (component
         (let [branch (-> state :navigation-data :branch)
               {:keys [parallel] :as project} (get-in state state/project-path)
+              project-branch-builds (branch-builds project branch)
+              chartable-builds (some->> project-branch-builds
+                                  (filter insights/build-chartable?))
+              bar-chart-builds (->> chartable-builds
+                                    (take (:max-bars build-time-bar-chart-plot-info))
+                                    (map insights/add-queued-time))]
+          (html
+            [:div.insights-metadata-header
+             [:div.card.insights-metadata
+              [:dl
+               [:dt "last build"]
+               [:dd (om/build common/updating-duration
+                              {:start (->> chartable-builds
+                                           (filter :start_time)
+                                           first
+                                           :start_time)}
+                              {:opts {:formatter datetime/as-time-since
+                                      :formatter-use-start? true}})]]]
+             [:div.card.insights-metadata
+              [:dl
+               [:dt "median build time"]
+               [:dd (-> (map :build_time_millis bar-chart-builds)
+                        (insights/median)
+                        (datetime/as-duration))" min"]]]
+             [:div.card.insights-metadata
+              [:dl
+               [:dt "median queue time"]
+               [:dd (-> (map :queued_time_millis bar-chart-builds)
+                        (insights/median)
+                        (datetime/as-duration))" min"]]]
+             [:div.card.insights-metadata
+              [:dl
+               [:dt "success rate"]
+               [:dd (insights/pass-percent chartable-builds)]]]
+             [:div.card.insights-metadata
+              [:dl
+               [:dt "current parallelism"]
+               [:dd parallel
+                (when (project-model/can-write-settings? project)
+                  [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
+                                                                                      :repo (:reponame project)
+                                                                                      :_fragment "parallel-builds"})
+                                              :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked})}
+                   [:i.material-icons "tune"]])]]]]))))))
+
+(defn project-insights [state owner]
+  (reify
+    om/IRender
+    (render [_]
+      (component
+        (let [branch (-> state :navigation-data :branch)
+              project (get-in state state/project-path)
               timing-data (get-in project [:build-timing branch])
               project-branch-builds (branch-builds project branch)
               chartable-builds (some->> project-branch-builds
@@ -280,43 +332,7 @@
               junit-enabled? (get-in state state/failed-builds-junit-enabled?-path)]
          (html
           [:div.insights-project
-           [:div.insights-metadata-header
-            [:div.card.insights-metadata
-             [:dl
-              [:dt "last build"]
-              [:dd (om/build common/updating-duration
-                             {:start (->> chartable-builds
-                                          (filter :start_time)
-                                          first
-                                          :start_time)}
-                             {:opts {:formatter datetime/as-time-since
-                                     :formatter-use-start? true}})]]]
-            [:div.card.insights-metadata
-             [:dl
-              [:dt "median build time"]
-              [:dd (-> (map :build_time_millis bar-chart-builds)
-                       (insights/median)
-                       (datetime/as-duration))" min"]]]
-            [:div.card.insights-metadata
-             [:dl
-              [:dt "median queue time"]
-              [:dd (-> (map :queued_time_millis bar-chart-builds)
-                       (insights/median)
-                       (datetime/as-duration))" min"]]]
-            [:div.card.insights-metadata
-             [:dl
-              [:dt "success rate"]
-              [:dd (insights/pass-percent chartable-builds)]]]
-            [:div.card.insights-metadata
-             [:dl
-              [:dt "current parallelism"]
-              [:dd parallel
-               (when (project-model/can-write-settings? project)
-                [:a.btn.btn-xs.btn-default {:href (routes/v1-project-settings-path {:org (:username project)
-                                                                                    :repo (:reponame project)
-                                                                                    :_fragment "parallel-builds"})
-                                            :on-click #((om/get-shared owner :track-event) {:event-type :parallelism-clicked})}
-                 [:i.material-icons "tune"]])]]]]
+           (om/build insights-metadata state)
            (failed-tests-card failed-tests junit-enabled?)
            (slowest-tests-card failed-tests junit-enabled?)
            (build-status-card chartable-builds bar-chart-builds)
