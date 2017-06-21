@@ -3,6 +3,7 @@
             [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
             [goog.object :as gobject]
+            [om.core :as om]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros
    [devcards.core :as dc :refer [defcard deftest]]
@@ -15,7 +16,8 @@
   (let [props (gobject/get element "props")
         children (->> (gobject/get props "children")
                       js/React.Children.toArray
-                      (filter js/React.isValidElement))]
+                      (filter js/React.isValidElement)
+                      (filter #(string? (gobject/get % "type"))))]
     (into {:type (gobject/get element "type")
            :children (map signature children)}
           (map (juxt identity (partial gobject/get props))
@@ -66,19 +68,38 @@
 
 (s/def ::description (s/and string? seq))
 
+
+(defn demo-child-component-om-prev [{:keys [description]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html [:div description]))))
+
+(defui DemoChildComponentOmNext
+  Object
+  (render [this]
+    (let [{:keys [description]} (om-next/props this)]
+      (html [:div description]))))
+
+(def demo-child-component-om-next (om-next/factory DemoChildComponentOmNext))
+
 (defn demo-component [props]
   (html
    [:div {:class (name (::type props))}
     [:.description
      (when (< 2 (count (::description props))) {:class "long"})
-     (::description props)]]))
+     (::description props)
 
-(defui DemoComponentOm
+     ;; Child components should be ignored.
+     (om/build demo-child-component-om-prev {:description (::description props)})
+     (demo-child-component-om-next {:description (::description props)})]]))
+
+(defui DemoComponentOmNext
   Object
   (render [this]
     (demo-component (om-next/props this))))
 
-(def demo-component-om (om-next/factory DemoComponentOm))
+(def demo-component-om-next (om-next/factory DemoComponentOmNext))
 
 (deftest morph-data-test
   (testing "Generates one set of data for each morph of a functional component"
@@ -91,7 +112,7 @@
 
   (testing "Generates one set of data for each morph of an Om component"
     (dotimes [_ 10]
-      (let [data (morph-data demo-component-om ::data-for-component)]
+      (let [data (morph-data demo-component-om-next ::data-for-component)]
         (is (not (nil? data)))
         (is (every? (partial s/valid? ::data-for-component) data))
         (is (= 4 (count data)))
