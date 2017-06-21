@@ -385,7 +385,8 @@
                                                                                   (get-in app)
                                                                                   :build
                                                                                   :platform))]
-                                                      platform)}))])))))
+                                                      platform)
+                                          :data app}))])))))
 
 (defn header [{:keys [app crumbs actions] :as props} owner]
   (reify
