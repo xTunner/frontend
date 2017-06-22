@@ -1,5 +1,7 @@
 (ns frontend.components.pieces.run-row
-  (:require [clojure.spec :as s :include-macros true]
+  (:require [cljs-time.coerce :as time-coerce]
+            [cljs-time.core :as time]
+            [clojure.spec :as s :include-macros true]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]
             [frontend.analytics :as analytics]
@@ -625,6 +627,16 @@
     (some (fn [[idx item]] (if (= value item) idx))
           (map-indexed vector coll)))
 
+  (defn- gen-inst-in
+    "Generates insts in the range from start to end (inclusive)."
+    [start end]
+    (gen/fmap #(js/Date. %)
+              (gen/choose (inst-ms start) (inst-ms end))))
+
+  (defn- gen-time-in-last-day []
+    (gen-inst-in (time-coerce/to-date (time/ago (time/days 1)))
+                 (js/Date.)))
+
   (defcard generated-run-rows
     (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
       (let [statuses [:run-status/needs-setup
@@ -636,9 +648,13 @@
             sort-by-status (partial sort-by (comp (partial index-of statuses) :run/status))]
         (html
          [:div
-          (let [data (gc/morph-data run-row :run/entity {:run/name #(dashed-lorem)
-                                                         :trigger-info/branch #(dashed-lorem)
-                                                         :trigger-info/subject #(lorem-sentence)})]
+          (let [data (gc/morph-data run-row :run/entity
+                                    {:run/name #(dashed-lorem)
+                                     ;; ::s/pred targets the case where the value is non-nil.
+                                     [:run/started-at ::s/pred] #(gen-time-in-last-day)
+                                     [:run/stopped-at ::s/pred] #(gen-time-in-last-day)
+                                     :trigger-info/branch #(dashed-lorem)
+                                     :trigger-info/subject #(lorem-sentence)})]
             (if data
               (card/collection (map run-row (sort-by-status data)))
               "Infinite morphs!"))]))))
