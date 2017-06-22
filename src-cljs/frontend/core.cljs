@@ -208,11 +208,12 @@
     (case type
       :prop {:keys #{}
              :next (assoc-in state path novelty)}
-      :join (if (vector? novelty)
+      :join (cond
               ;; Note that we use `:merge` here and not `merger`, which would go
               ;; one level deeper into the query/ast. This is analogous to
               ;; `basic-read` using `:read` instead of `:parser` when processing
               ;; vectors.
+              (vector? novelty)
               (reduce-kv
                (fn [result idx novelty']
                  (bodhi/update-merge-result result
@@ -230,6 +231,11 @@
                                                 ;; `(count nil)` is 0
                                                 (count old-vals)))))}
                novelty)
+
+              (nil? novelty)
+              {:keys #{} :next (assoc-in state path nil)}
+
+              :else
               (merger env)))))
 
 (defn ^:export setup! []

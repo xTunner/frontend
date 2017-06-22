@@ -286,7 +286,7 @@
           (fn [response]
             (if response
               (resolve/query ast (adapt-to-run response))
-              nil)))))})
+              {:error/type :error/not-found})))))})
 
 (defmulti send* key)
 
