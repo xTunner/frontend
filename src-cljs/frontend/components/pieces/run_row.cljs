@@ -620,16 +620,28 @@
          ""))
      (gen/vector (gen/elements lorem-words))))
 
+  ;; https://stackoverflow.com/questions/25324082/index-of-vector-in-clojurescript/32885837#32885837
+  (defn- index-of [coll value]
+    (some (fn [[idx item]] (if (= value item) idx))
+          (map-indexed vector coll)))
+
   (defcard generated-run-rows
     (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
-      (html
-       [:div
-        (let [data (gc/morph-data run-row :run/entity {:run/name #(dashed-lorem)
-                                                       :trigger-info/branch #(dashed-lorem)
-                                                       :trigger-info/subject #(lorem-sentence)})]
-          (if data
-            (card/collection (map run-row data))
-            "Infinite morphs!"))])))
+      (let [statuses [:run-status/needs-setup
+                      :run-status/not-run
+                      :run-status/running
+                      :run-status/succeeded
+                      :run-status/failed
+                      :run-status/canceled]
+            sort-by-status (partial sort-by (comp (partial index-of statuses) :run/status))]
+        (html
+         [:div
+          (let [data (gc/morph-data run-row :run/entity {:run/name #(dashed-lorem)
+                                                         :trigger-info/branch #(dashed-lorem)
+                                                         :trigger-info/subject #(lorem-sentence)})]
+            (if data
+              (card/collection (map run-row (sort-by-status data)))
+              "Infinite morphs!"))]))))
 
   (defcard loading-run-row
     (loading-run-row)))
