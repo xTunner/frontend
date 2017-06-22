@@ -48,12 +48,12 @@ brew update
 brew install nginx
 
 # next, create a self-signed certificate
-sudo mkdir /usr/local/etc/nginx/ssl && cd /usr/local/etc/nginx/ssl
+cd nginx/etc/nginx/ssl
 sudo openssl req -batch -new \
       -x509 -newkey rsa:2048 -sha256 -nodes -days 365 \
       -subj '/C=US/ST=California/L=San Francisco/O=CircleCI/CN=*.circlehost' \
-      -keyout /usr/local/etc/nginx/ssl/star.circlehost.key \
-      -out /usr/local/etc/nginx/ssl/star.circlehost.crt
+      -keyout star.circlehost.key \
+      -out star.circlehost.crt
 ```
 
 ### Hosts
