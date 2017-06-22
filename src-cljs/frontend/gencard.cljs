@@ -16,27 +16,29 @@
                (remove (conj ignored-props "children")
                        (gobject/getKeys props))))))
 
-(defn morph-data [component-factory spec]
-  (let [sample-size 100
+(defn morph-data
+  ([component-factory spec] (morph-data component-factory spec {}))
+  ([component-factory spec overrides]
+   (let [sample-size 100
 
-        ;; Wrap the factory. If it's a simple function returning a React DOM
-        ;; element (an element with a string type), keep it as is. Otherwise
-        ;; we've got a composite element (one whose type is a class), and we
-        ;; need to (shallow) render it to get DOM elements to examine.
-        component-factory
-        (fn [props & children]
-          (let [elt (apply component-factory props children)]
-            (if (string? (gobject/get elt "type"))
-              elt
-              (let [renderer (js/React.addons.TestUtils.createRenderer)]
-                (.render renderer elt)
-                (.getRenderOutput renderer)))))
+         ;; Wrap the factory. If it's a simple function returning a React DOM
+         ;; element (an element with a string type), keep it as is. Otherwise
+         ;; we've got a composite element (one whose type is a class), and we
+         ;; need to (shallow) render it to get DOM elements to examine.
+         component-factory
+         (fn [props & children]
+           (let [elt (apply component-factory props children)]
+             (if (string? (gobject/get elt "type"))
+               elt
+               (let [renderer (js/React.addons.TestUtils.createRenderer)]
+                 (.render renderer elt)
+                 (.getRenderOutput renderer)))))
 
-        groups (->> (gen/sample-seq (s/gen spec))
-                    (take sample-size)
-                    (group-by (comp signature component-factory)))]
-    (when (> sample-size (count groups))
-      (->> groups
-           (sort-by (comp hash key))
-           vals
-           (map first)))))
+         groups (->> (gen/sample-seq (s/gen spec overrides))
+                     (take sample-size)
+                     (group-by (comp signature component-factory)))]
+     (when (> sample-size (count groups))
+       (->> groups
+            (sort-by (comp hash key))
+            vals
+            (map first))))))

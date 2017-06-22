@@ -1,6 +1,7 @@
 (ns frontend.test-gencard
   (:require [cljs.test :refer-macros [is testing]]
             [clojure.spec :as s :include-macros true]
+            [clojure.test.check.generators :as gen]
             [frontend.gencard :as gc]
             [om.core :as om]
             [om.next :as om-next :refer-macros [defui]])
@@ -77,7 +78,12 @@
 
   (testing "Returns nil when there are infinite morphs"
     (let [faulty-component #(html [:div {:class (::description %)}])]
-      (is (nil? (gc/morph-data faulty-component ::data-for-component))))))
+      (is (nil? (gc/morph-data faulty-component ::data-for-component)))))
+
+  (testing "Accepts generator overrides"
+    (dotimes [_ 10]
+      (let [data (gc/morph-data demo-component ::data-for-component {::description #(gen/return "Mostly harmless.")})]
+        (is (every? (partial = "Mostly harmless.") (map ::description data)))))))
 
 (defcard demo
   (html

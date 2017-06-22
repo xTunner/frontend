@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.run-row
   (:require [clojure.spec :as s :include-macros true]
             [clojure.string :as string]
+            [clojure.test.check.generators :as gen]
             [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
@@ -301,13 +302,276 @@
                               :project/organization {:organization/name "acme"
                                                      :organization/vcs-type :github}}})))
 
-  (s/def :run/entity (s/keys :req [:run/id
-                                   :run/name
-                                   :run/status
-                                   :run/started-at
-                                   :run/stopped-at
-                                   :run/trigger-info
-                                   :run/project]))
+  (def lorem-words
+    ["alias"
+     "consequatur"
+     "aut"
+     "perferendis"
+     "sit"
+     "voluptatem"
+     "accusantium"
+     "doloremque"
+     "aperiam"
+     "eaque"
+     "ipsa"
+     "quae"
+     "ab"
+     "illo"
+     "inventore"
+     "veritatis"
+     "et"
+     "quasi"
+     "architecto"
+     "beatae"
+     "vitae"
+     "dicta"
+     "sunt"
+     "explicabo"
+     "aspernatur"
+     "aut"
+     "odit"
+     "aut"
+     "fugit"
+     "sed"
+     "quia"
+     "consequuntur"
+     "magni"
+     "dolores"
+     "eos"
+     "qui"
+     "ratione"
+     "voluptatem"
+     "sequi"
+     "nesciunt"
+     "neque"
+     "dolorem"
+     "ipsum"
+     "quia"
+     "dolor"
+     "sit"
+     "amet"
+     "consectetur"
+     "adipisci"
+     "velit"
+     "sed"
+     "quia"
+     "non"
+     "numquam"
+     "eius"
+     "modi"
+     "tempora"
+     "incidunt"
+     "ut"
+     "labore"
+     "et"
+     "dolore"
+     "magnam"
+     "aliquam"
+     "quaerat"
+     "voluptatem"
+     "ut"
+     "enim"
+     "ad"
+     "minima"
+     "veniam"
+     "quis"
+     "nostrum"
+     "exercitationem"
+     "ullam"
+     "corporis"
+     "nemo"
+     "enim"
+     "ipsam"
+     "voluptatem"
+     "quia"
+     "voluptas"
+     "sit"
+     "suscipit"
+     "laboriosam"
+     "nisi"
+     "ut"
+     "aliquid"
+     "ex"
+     "ea"
+     "commodi"
+     "consequatur"
+     "quis"
+     "autem"
+     "vel"
+     "eum"
+     "iure"
+     "reprehenderit"
+     "qui"
+     "in"
+     "ea"
+     "voluptate"
+     "velit"
+     "esse"
+     "quam"
+     "nihil"
+     "molestiae"
+     "et"
+     "iusto"
+     "odio"
+     "dignissimos"
+     "ducimus"
+     "qui"
+     "blanditiis"
+     "praesentium"
+     "laudantium"
+     "totam"
+     "rem"
+     "voluptatum"
+     "deleniti"
+     "atque"
+     "corrupti"
+     "quos"
+     "dolores"
+     "et"
+     "quas"
+     "molestias"
+     "excepturi"
+     "sint"
+     "occaecati"
+     "cupiditate"
+     "non"
+     "provident"
+     "sed"
+     "ut"
+     "perspiciatis"
+     "unde"
+     "omnis"
+     "iste"
+     "natus"
+     "error"
+     "similique"
+     "sunt"
+     "in"
+     "culpa"
+     "qui"
+     "officia"
+     "deserunt"
+     "mollitia"
+     "animi"
+     "id"
+     "est"
+     "laborum"
+     "et"
+     "dolorum"
+     "fuga"
+     "et"
+     "harum"
+     "quidem"
+     "rerum"
+     "facilis"
+     "est"
+     "et"
+     "expedita"
+     "distinctio"
+     "nam"
+     "libero"
+     "tempore"
+     "cum"
+     "soluta"
+     "nobis"
+     "est"
+     "eligendi"
+     "optio"
+     "cumque"
+     "nihil"
+     "impedit"
+     "quo"
+     "porro"
+     "quisquam"
+     "est"
+     "qui"
+     "minus"
+     "id"
+     "quod"
+     "maxime"
+     "placeat"
+     "facere"
+     "possimus"
+     "omnis"
+     "voluptas"
+     "assumenda"
+     "est"
+     "omnis"
+     "dolor"
+     "repellendus"
+     "temporibus"
+     "autem"
+     "quibusdam"
+     "et"
+     "aut"
+     "consequatur"
+     "vel"
+     "illum"
+     "qui"
+     "dolorem"
+     "eum"
+     "fugiat"
+     "quo"
+     "voluptas"
+     "nulla"
+     "pariatur"
+     "at"
+     "vero"
+     "eos"
+     "et"
+     "accusamus"
+     "officiis"
+     "debitis"
+     "aut"
+     "rerum"
+     "necessitatibus"
+     "saepe"
+     "eveniet"
+     "ut"
+     "et"
+     "voluptates"
+     "repudiandae"
+     "sint"
+     "et"
+     "molestiae"
+     "non"
+     "recusandae"
+     "itaque"
+     "earum"
+     "rerum"
+     "hic"
+     "tenetur"
+     "a"
+     "sapiente"
+     "delectus"
+     "ut"
+     "aut"
+     "reiciendis"
+     "voluptatibus"
+     "maiores"
+     "doloribus"
+     "asperiores"
+     "repellat"])
+
+  (s/def :run/entity (s/and
+                      (s/keys :req [:run/id
+                                    :run/name
+                                    :run/status
+                                    :run/started-at
+                                    :run/stopped-at
+                                    :run/trigger-info
+                                    :run/project])
+                      (fn [{:keys [:run/status :run/started-at :run/stopped-at]}]
+                        (case status
+                          (:run-status/running
+                           :run-status/not-run
+                           :run-status/needs-setup)
+                          (and started-at (nil? stopped-at))
+
+                          (:run-status/succeeded
+                           :run-status/failed
+                           :run-status/canceled)
+                          (and started-at stopped-at (< started-at stopped-at))))))
 
   (s/def :run/trigger-info (s/keys :req [:trigger-info/vcs-revision
                                          :trigger-info/subject
@@ -322,31 +586,47 @@
                                              :organization/vcs-type]))
 
   (s/def :run/id uuid?)
-  (s/def :run/name string?)
+  (s/def :run/name (s/and string? seq))
   (s/def :run/status #{:run-status/running
                        :run-status/succeeded
                        :run-status/failed
                        :run-status/canceled
                        :run-status/not-run
                        :run-status/needs-setup})
-  (s/def :run/started-at inst?)
-  (s/def :run/stopped-at inst?)
-  (s/def :trigger-info/vcs-revision string?)
+  (s/def :run/started-at (s/nilable inst?))
+  (s/def :run/stopped-at (s/nilable inst?))
+  (s/def :trigger-info/vcs-revision (s/with-gen
+                                      (s/and string? (partial re-matches #"[0-9a-f]{40}"))
+                                      #(gen/fmap (fn [n] (.toString n 16))
+                                                 (gen/choose 0 (dec (Math/pow 2 160))))))
   (s/def :trigger-info/subject string?)
   (s/def :trigger-info/body string?)
-  (s/def :trigger-info/branch string?)
+  (s/def :trigger-info/branch (s/and string? seq))
   ;; TODO: This generates lots of unnecessary morphs.
   (s/def :trigger-info/pull-requests #_(s/every (s/keys :req [:pull-request/url])) #{[]})
   (s/def :pull-request/url string?)
-  (s/def :project/name string?)
-  (s/def :organization/name string?)
+  (s/def :project/name (s/and string? seq))
+  (s/def :organization/name (s/and string? seq))
   (s/def :organization/vcs-type #{:github :bitbucket})
+
+  (defn dashed-lorem []
+    (gen/fmap (partial string/join "-") (gen/vector (gen/elements lorem-words))))
+
+  (defn lorem-sentence []
+    (gen/fmap
+     (fn [[first-word & words]]
+       (if first-word
+         (str (string/join " " (cons (string/capitalize first-word) words)) ".")
+         ""))
+     (gen/vector (gen/elements lorem-words))))
 
   (defcard generated-run-rows
     (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
       (html
        [:div
-        (let [data (gc/morph-data run-row :run/entity)]
+        (let [data (gc/morph-data run-row :run/entity {:run/name #(dashed-lorem)
+                                                       :trigger-info/branch #(dashed-lorem)
+                                                       :trigger-info/subject #(lorem-sentence)})]
           (if data
             (card/collection (map run-row data))
             "Infinite morphs!"))])))
