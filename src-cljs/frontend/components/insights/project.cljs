@@ -229,7 +229,7 @@
             :target "_blank"}
         "test metadata documentation"]
        "."]
-      (and (not (nil? tests))
+      (and (nil? tests)
            (empty? tests))
       [:span "No failed tests to show."]
 
