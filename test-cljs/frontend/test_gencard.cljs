@@ -19,14 +19,6 @@
                            [:span {:class "baz" :title "qux"}
                             "Some text."]])))))
 
-(s/def ::data-for-component
-  (s/keys :req [::type ::description]))
-
-(s/def ::type #{:type-a :type-b})
-
-(s/def ::description (s/and string? seq))
-
-
 (defn demo-child-component-om-prev [{:keys [description]} owner]
   (reify
     om/IRender
@@ -59,31 +51,52 @@
 
 (def demo-component-om-next (om-next/factory DemoComponentOmNext))
 
+(defn faulty-component [props]
+  (html [:div {:class (::description props)}]))
+
+
+(s/fdef demo-component
+  :args (s/cat :data ::data-for-component))
+
+(s/fdef demo-component-om-next
+  :args (s/cat :data ::data-for-component))
+
+(s/fdef faulty-component
+  :args (s/cat :data ::data-for-component))
+
+
+(s/def ::data-for-component
+  (s/keys :req [::type ::description]))
+
+(s/def ::type #{:type-a :type-b})
+
+(s/def ::description (s/and string? seq))
+
+
 (deftest morph-data-test
   (testing "Generates one set of data for each morph of a functional component"
     (dotimes [_ 10]
-      (let [data (gc/morph-data demo-component ::data-for-component)]
+      (let [data (gc/morph-data #'demo-component)]
         (is (not (nil? data)))
-        (is (every? (partial s/valid? ::data-for-component) data))
+        (is (every? (partial s/valid? (:args (s/get-spec #'demo-component))) data))
         (is (= 4 (count data)))
-        (is (= 2 (count (group-by ::type data)))))))
+        (is (= 2 (count (group-by (comp ::type first) data)))))))
 
   (testing "Generates one set of data for each morph of an Om component"
     (dotimes [_ 10]
-      (let [data (gc/morph-data demo-component-om-next ::data-for-component)]
+      (let [data (gc/morph-data #'demo-component-om-next)]
         (is (not (nil? data)))
-        (is (every? (partial s/valid? ::data-for-component) data))
+        (is (every? (partial s/valid? (:args (s/get-spec #'demo-component-om-next))) data))
         (is (= 4 (count data)))
-        (is (= 2 (count (group-by ::type data)))))))
+        (is (= 2 (count (group-by (comp ::type first) data)))))))
 
   (testing "Returns nil when there are infinite morphs"
-    (let [faulty-component #(html [:div {:class (::description %)}])]
-      (is (nil? (gc/morph-data faulty-component ::data-for-component)))))
+    (is (nil? (gc/morph-data #'faulty-component))))
 
   (testing "Accepts generator overrides"
     (dotimes [_ 10]
-      (let [data (gc/morph-data demo-component ::data-for-component {::description #(gen/return "Mostly harmless.")})]
-        (is (every? (partial = "Mostly harmless.") (map ::description data)))))))
+      (let [data (gc/morph-data #'demo-component {::description #(gen/return "Mostly harmless.")})]
+        (is (every? (partial = "Mostly harmless.") (map (comp ::description first) data)))))))
 
 (defcard demo
   (html
@@ -92,5 +105,5 @@
      ".type-a { background-color: blue; }
       .type-b { background-color: green; }
       .long { color: red; }"]
-    (let [data (gc/morph-data demo-component ::data-for-component)]
-      (map demo-component data))]))
+    (let [data (gc/morph-data #'demo-component)]
+      (map (partial apply demo-component) data))]))

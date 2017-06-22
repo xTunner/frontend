@@ -17,9 +17,11 @@
                        (gobject/getKeys props))))))
 
 (defn morph-data
-  ([component-factory spec] (morph-data component-factory spec {}))
-  ([component-factory spec overrides]
+  ([component-factory-var] (morph-data component-factory-var {}))
+  ([component-factory-var overrides]
    (let [sample-size 100
+
+         spec (:args (s/get-spec component-factory-var))
 
          ;; Wrap the factory. If it's a simple function returning a React DOM
          ;; element (an element with a string type), keep it as is. Otherwise
@@ -27,7 +29,7 @@
          ;; need to (shallow) render it to get DOM elements to examine.
          component-factory
          (fn [props & children]
-           (let [elt (apply component-factory props children)]
+           (let [elt (apply (deref component-factory-var) props children)]
              (if (string? (gobject/get elt "type"))
                elt
                (let [renderer (js/React.addons.TestUtils.createRenderer)]
@@ -36,7 +38,7 @@
 
          groups (->> (gen/sample-seq (s/gen spec overrides))
                      (take sample-size)
-                     (group-by (comp signature component-factory)))]
+                     (group-by (comp signature (partial apply component-factory))))]
      (when (> sample-size (count groups))
        (->> groups
             (sort-by (comp hash key))

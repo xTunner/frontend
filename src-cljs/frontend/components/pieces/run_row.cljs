@@ -623,6 +623,12 @@
   (s/def :organization/name (s/and string? seq))
   (s/def :organization/vcs-type #{:github :bitbucket})
 
+  (s/fdef prs
+    :args (s/cat :prs (s/every :pull-request/entity)))
+
+  (s/fdef run-row
+    :args (s/cat :run :run/entity))
+
   (defn dashed-lorem []
     (gen/fmap (partial string/join "-") (gen/vector (gen/elements lorem-words))))
 
@@ -659,31 +665,29 @@
                       :run-status/canceled]]
         (html
          [:div
-          (let [data (gc/morph-data run-row :run/entity
+          (let [data (gc/morph-data #'run-row
                                     {:run/name #(dashed-lorem)
                                      ;; ::s/pred targets the case where the value is non-nil.
-                                     [:run/started-at ::s/pred] #(gen-time-in-last-day)
-                                     [:run/stopped-at ::s/pred] #(gen-time-in-last-day)
+                                     [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
+                                     [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
                                      :trigger-info/branch #(dashed-lorem)
                                      :trigger-info/subject #(lorem-sentence)
                                      :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)})]
             (if data
               (card/collection (->> data
-                                    (sort-by #(-> % :run/trigger-info :trigger-info/pull-requests count))
-                                    (sort-by #(index-of statuses (:run/status %)))
-                                    (map run-row)))
+                                    (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
+                                    (sort-by #(->> % first :run/status (index-of statuses)))
+                                    (map (partial apply run-row))))
               "Infinite morphs!"))]))))
 
   (defcard prs
     (html
      [:div
-      (let [data (gc/morph-data prs (s/with-gen
-                                      (s/every :pull-request/entity)
-                                      #(gen/vector (s/gen :pull-request/entity) 0 5)))]
+      (let [data (gc/morph-data #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)})]
         (if data
           (card/collection (->> data
-                                (sort-by count)
-                                (map prs)))
+                                (sort-by (comp count first))
+                                (map (partial apply prs))))
           "Infinite morphs!"))]))
 
   (defcard loading-run-row
