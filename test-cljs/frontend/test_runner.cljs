@@ -21,6 +21,7 @@
             [frontend.models.test-plan]
             [frontend.models.test-project]
             [frontend.models.test-user]
+            [frontend.models.test-test]
             [frontend.parser.test-connection]
             [frontend.send.test-resolve]
             [frontend.test-analytics]
