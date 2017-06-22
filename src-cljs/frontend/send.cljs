@@ -284,7 +284,9 @@
      (-> ((get-in env [:apis :get-workflow-status]) (-> ast :params :run/id))
          (p/then
           (fn [response]
-            (resolve/query ast (adapt-to-run response))))))})
+            (if response
+              (resolve/query ast (adapt-to-run response))
+              nil)))))})
 
 (defmulti send* key)
 
