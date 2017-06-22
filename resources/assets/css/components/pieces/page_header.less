@@ -45,9 +45,12 @@
     border-bottom: solid 1px @grayLighter;
 
     > .breadcrumbs {
-      .flexy(center);
-      .text-overflow;
-      overflow: visible;
+      //.flexy(center);
+      //.text-overflow;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: @screen-sm-max;
+      overflow: hidden;
 
       margin: 0;
       padding: 0;
