@@ -46,3 +46,8 @@
   time."
   [n tests]
   (take n (by-time-descending tests)))
+
+(defn slowest-test
+  "Given a seq of tests, return the sloqest one."
+  [tests]
+  (first (slowest-n-tests 1 tests)))

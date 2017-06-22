@@ -535,7 +535,7 @@
                                    source-hash)
             build-succeeded? (= "success" build-status)
 
-            slowest (test-model/slowest-n-tests 1 tests)]
+            slowest (test-model/slowest-test tests)]
         (html
          [:div.test-results
           (if-not tests
