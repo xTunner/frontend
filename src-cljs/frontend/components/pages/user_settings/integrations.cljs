@@ -91,7 +91,7 @@
                  (conj (card this {:name "Slack"
                                    :type "slack"
                                    :icon-path (common/icon-path "brand-slack")
-                                   :auth-url (slack/auth-url)
+                                   :auth-url (slack/sign-in-url)
                                    :identity slack-identity})))))]))))
 
 (dc/do

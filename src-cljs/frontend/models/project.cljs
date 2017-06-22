@@ -53,12 +53,13 @@
 
 (def jira-keys [:jira_username :jira_password :jira_base_url])
 (def hipchat-keys [:hipchat_room :hipchat_api_token :hipchat_notify :hipchat_notify_prefs])
+(def slack-integration-keys [:slack_integration_channel :slack_integration_team :slack_integration_notify_prefs])
 (def slack-keys [:slack_channel_override :slack_channel :slack_subdomain :slack_api_token :slack_notify_prefs :slack_webhook_url])
 (def campfire-keys [:campfire_room :campfire_token :campfire_subdomain :campfire_notify_prefs])
 (def flowdock-keys [:flowdock_api_token])
 (def irc-keys [:irc_server :irc_channel :irc_keyword :irc_username :irc_password :irc_notify_prefs])
 
-(def notification-keys (concat jira-keys hipchat-keys slack-keys campfire-keys flowdock-keys irc-keys))
+(def notification-keys (concat jira-keys hipchat-keys slack-keys slack-integration-keys campfire-keys flowdock-keys irc-keys))
 
 (defn notification-settings [project]
   (select-keys project notification-keys))

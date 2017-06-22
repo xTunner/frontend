@@ -35,6 +35,7 @@
             [frontend.utils.state :as state-utils]
             [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
+            [frontend.utils.slack :as slack]
             [goog.crypt.base64 :as base64]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]))
@@ -1030,8 +1031,8 @@
                                      :title "Only send notifications for builds that fail or fix the tests and the first build on a new branch. Otherwise, send a notification for every build."}]])))))
 
 (defn chatroom-item [project-id settings owner
-                     {:keys [service doc inputs show-fixed-failed? top-section-content settings-keys]}]
-  (let [service-id (string/lower-case service)]
+                     {:keys [service service-id doc properties inputs show-fixed-failed? top-section-content settings-keys]
+                      :or {service-id (string/lower-case service)}}]
     [:div {:class (str "chat-room-item " service-id)}
      [:div.chat-room-head [:h4 {:class (str "chat-i-" service-id)} service]]
      [:div.chat-room-body
@@ -1041,11 +1042,12 @@
        (when show-fixed-failed?
          (om/build fixed-failed-input {:settings settings :field (keyword (str service-id "_notify_prefs"))}))]
       [:section
-       (for [{:keys [field placeholder] :as input} inputs
+       (for [{:keys [field placeholder read-only] :as input} inputs
              :when input]
          (list
           [:input {:id (string/replace (name field) "_" "-") :required true :type "text"
                    :value (str (get settings field))
+                   :read-only read-only
                    :on-change #(utils/edit-input owner (conj state/inputs-path field) %)}]
           [:label {:placeholder placeholder}]))
        (let [event-data {:project-id project-id :merge-paths (map vector settings-keys)}]
@@ -1059,7 +1061,7 @@
            [:button.test {:on-click #(raise! owner [:test-hook (assoc event-data :service service-id)])
                           :data-loading-text "Testing"
                           :data-success-text "Tested"}
-            "& Test Hook"])])]]]))
+            "& Test Hook"])])]]])
 
 (defn webhooks [project-data owner]
   (om/component
@@ -1073,6 +1075,45 @@
         [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
          "circle.yml file"]
         "."]]]])))
+
+(defn- legacy-slack-notifications-helper [{:keys [on-change show-slack-channel-override]}]
+  {:service "Slack"
+   :doc (list [:p "To get your Webhook URL, visit Slack's "
+               [:a {:href "https://my.slack.com/services/new/circleci"}
+                "CircleCI Integration"]
+               " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
+              [:div
+               [:label
+                [:input
+                 {:type "checkbox"
+                  :checked show-slack-channel-override
+                  :on-change on-change}]
+                [:span "Override room"]
+                [:i.fa.fa-question-circle {:id "slack-channel-override"
+                                           :title "If you want to send notifications to a different channel than the webhook URL was created for, enter the channel ID or channel name below."}]]])
+   :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}
+            (when show-slack-channel-override
+              {:field :slack_channel_override :placeholder "Room"})]
+   :show-fixed-failed? true
+   :settings-keys project-model/slack-keys})
+
+(defn- slack-integration-notifications-helper [{:keys [vcs-url]}]
+  ; TODO: may want to move this into a separate page pending design
+  {:service "Slack Integration"
+   :service-id "slack-integration"
+   :doc (html
+         [:.slack-notifications-settings
+          [:p "To configure Slack notifications, please click the \"Add to Slack\" button below and select a team and channel."]
+          [:.add-to-slack
+           [:a {:href (slack/add-to-slack-url vcs-url)}
+            [:img {:height 40
+                   :width 139
+                   :src "https://platform.slack-edge.com/img/add_to_slack.png"
+                   :src-set "https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"}]]]])
+   :inputs [{:field :slack_integration_team :placeholder "Team" :read-only true}
+            {:field :slack_integration_channel :placeholder "Channel" :read-only true}]
+   :show-fixed-failed? true
+   :settings-keys project-model/slack-integration-keys})
 
 (defn notifications [project-data owner]
   (reify
@@ -1099,27 +1140,13 @@
            [:p "If you want to control chat notifications on a per branch basis, "
             [:a {:href "https://circleci.com/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
            [:div.chat-rooms
-            (for [chat-spec [{:service "Slack"
-                              :doc (list [:p "To get your Webhook URL, visit Slack's "
-                                          [:a {:href "https://my.slack.com/services/new/circleci"}
-                                           "CircleCI Integration"]
-                                          " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
-                                         [:div
-                                          [:label
-                                           [:input
-                                            {:type "checkbox"
-                                             :checked (:show-slack-channel-override state)
-                                             :on-change #(do (om/update-state! owner :show-slack-channel-override not)
-                                                             (utils/edit-input owner (conj state/project-path :slack_channel_override) %
-                                                                               :value ""))}]
-                                           [:span "Override room"]
-                                           [:i.fa.fa-question-circle {:id "slack-channel-override"
-                                                                      :title "If you want to send notifications to a different channel than the webhook URL was created for, enter the channel ID or channel name below."}]]])
-                              :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}
-                                       (when (:show-slack-channel-override state)
-                                         {:field :slack_channel_override :placeholder "Room"})]
-                              :show-fixed-failed? true
-                              :settings-keys project-model/slack-keys}
+            (for [chat-spec [(when (feature/enabled? :sign-in-with-slack)
+                               (slack-integration-notifications-helper {:vcs-url project-id}))
+
+                             (legacy-slack-notifications-helper
+                               {:on-change #(do (om/update-state! owner :show-slack-channel-override not)
+                                                (utils/edit-input owner (conj state/project-path :slack_channel_override) % :value ""))
+                                :show-slack-channel-override (:show-slack-channel-override state)})
 
                              {:service "Hipchat"
                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
