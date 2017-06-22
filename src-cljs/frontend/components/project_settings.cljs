@@ -1140,7 +1140,7 @@
            [:p "If you want to control chat notifications on a per branch basis, "
             [:a {:href "https://circleci.com/docs/configuration#per-branch-notifications"} "see our documentation"] "."]
            [:div.chat-rooms
-            (for [chat-spec [(when (feature/enabled? :sign-in-with-slack)
+            (let [chat-spec [(when (feature/enabled? :sign-in-with-slack)
                                (slack-integration-notifications-helper {:vcs-url project-id}))
 
                              (legacy-slack-notifications-helper
@@ -1190,7 +1190,8 @@
                                        {:field :irc_password :placeholder "Password (optional)"}]
                               :show-fixed-failed? true
                               :settings-keys project-model/irc-keys}]]
-              (chatroom-item project-id settings owner chat-spec))]]])))))
+              (for [enabled-chat-spec (remove nil? chat-spec)]
+                (chatroom-item project-id settings owner enabled-chat-spec)))]]])))))
 
 (def status-styles
   {"badge" {:label "Badge" :string ".png?style=badge"}
