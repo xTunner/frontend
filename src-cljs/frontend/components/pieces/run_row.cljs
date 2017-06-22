@@ -45,27 +45,35 @@
 
 (def ^:private rerunnable-from-start-statuses #{:run-status/failed})
 
+(defui PRs
+  Object
+  (render [this]
+    (let [urls (map :pull-request/url (om-next/props this))]
+      (html
+       [:span
+        (interpose
+         ", "
+         (for [url urls
+               ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+               ;; When that happens, this code blows up the page. To work around that,
+               ;; we just skip the PR if its URL is nil.
+               :when url]
+           [:a {:href url
+                :on-click #(analytics/track! this {:event-type :pr-link-clicked})}
+            "#"
+            (gh-utils/pull-request-number url)]))]))))
+
+(def prs (om-next/factory PRs))
+
 (defn- run-prs
   "A om-next compatible version of
   `frontend.components.builds-table/pull-requests`."
-  [parent-component pull-requests]
-  (when-let [urls (seq (map :pull-request/url pull-requests))]
+  [pull-requests]
+  (when (seq pull-requests)
     (html
      [:span.metadata-item.pull-requests {:title "Pull Requests"}
       (icon/git-pull-request)
-      (interpose
-       ", "
-       (for [url urls
-             ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-             ;; When that happens, this code blows up the page. To work around that,
-             ;; we just skip the PR if its URL is nil.
-             :when url]
-         [:a
-          {:href url
-           :on-click #(analytics/track! parent-component
-                                        {:event-type :pr-link-clicked})}
-          "#"
-          (gh-utils/pull-request-number url)]))])))
+      (prs pull-requests)])))
 
 (defn- commit-link
   "Om Next compatible version of `frontend.components.builds-table/commits`."
@@ -273,7 +281,7 @@
                [:div.metadata-row.pull-revision
                 (if loading?
                   [:span.metadata-item.pull-requests (loading-circle)]
-                  (run-prs this pull-requests))
+                  (run-prs pull-requests))
                 (if loading?
                   [:span.metadata-item.revision (loading-circle)]
                   (commit-link this
@@ -604,9 +612,13 @@
   (s/def :trigger-info/subject string?)
   (s/def :trigger-info/body string?)
   (s/def :trigger-info/branch (s/and string? seq))
-  ;; TODO: This generates lots of unnecessary morphs.
-  (s/def :trigger-info/pull-requests #_(s/every (s/keys :req [:pull-request/url])) #{[]})
-  (s/def :pull-request/url string?)
+  (s/def :trigger-info/pull-requests (s/every :pull-request/entity))
+  (s/def :pull-request/entity (s/keys :req [:pull-request/url]))
+  ;; NOTE: :pull-request/url does not currently validate that it's a real URL,
+  ;; only that it's a string we can extract a PR number from.
+  (s/def :pull-request/url (s/with-gen
+                             (s/and string? (partial re-matches #".*/\d+"))
+                             #(gen/fmap (fn [[s n]] (str s "/" n)) (gen/tuple gen/string gen/nat))))
   (s/def :project/name (s/and string? seq))
   (s/def :organization/name (s/and string? seq))
   (s/def :organization/vcs-type #{:github :bitbucket})
@@ -644,8 +656,7 @@
                       :run-status/running
                       :run-status/succeeded
                       :run-status/failed
-                      :run-status/canceled]
-            sort-by-status (partial sort-by (comp (partial index-of statuses) :run/status))]
+                      :run-status/canceled]]
         (html
          [:div
           (let [data (gc/morph-data run-row :run/entity
@@ -654,10 +665,26 @@
                                      [:run/started-at ::s/pred] #(gen-time-in-last-day)
                                      [:run/stopped-at ::s/pred] #(gen-time-in-last-day)
                                      :trigger-info/branch #(dashed-lorem)
-                                     :trigger-info/subject #(lorem-sentence)})]
+                                     :trigger-info/subject #(lorem-sentence)
+                                     :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)})]
             (if data
-              (card/collection (map run-row (sort-by-status data)))
+              (card/collection (->> data
+                                    (sort-by #(-> % :run/trigger-info :trigger-info/pull-requests count))
+                                    (sort-by #(index-of statuses (:run/status %)))
+                                    (map run-row)))
               "Infinite morphs!"))]))))
+
+  (defcard prs
+    (html
+     [:div
+      (let [data (gc/morph-data prs (s/with-gen
+                                      (s/every :pull-request/entity)
+                                      #(gen/vector (s/gen :pull-request/entity) 0 5)))]
+        (if data
+          (card/collection (->> data
+                                (sort-by count)
+                                (map prs)))
+          "Infinite morphs!"))]))
 
   (defcard loading-run-row
     (loading-run-row)))
