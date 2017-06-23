@@ -196,8 +196,8 @@
                  (contains? cancelable-statuses status)
                  [:div.action-button.cancel-button
                   {:on-click (fn [_]
-                               (analytics/track! this {:event-type :cancel-clicked})
-                               (transact-run-cancel this id vcs-type org-name project-name))}
+                               (transact-run-cancel this id vcs-type org-name project-name)
+                               (analytics/track! this {:event-type :cancel-clicked}))}
                   (icon/status-canceled)
                   [:span "cancel"]]
                  (contains? rerunnable-statuses status)
