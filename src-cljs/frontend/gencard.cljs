@@ -16,29 +16,25 @@
                (remove (conj ignored-props "children")
                        (gobject/getKeys props))))))
 
+(defn- shallow-render
+  "Shallow-renders the component factory. If the factory actually returns a
+  React DOM element rather than a custom component element, returns that."
+  [factory props & children]
+  (let [elt (apply factory props children)]
+    (if (string? (gobject/get elt "type"))
+      elt
+      (let [renderer (js/React.addons.TestUtils.createRenderer)]
+        (.render renderer elt)
+        (.getRenderOutput renderer)))))
+
 (defn morph-data
   ([component-factory-var] (morph-data component-factory-var {}))
   ([component-factory-var overrides]
    (let [sample-size 100
-
          spec (:args (s/get-spec component-factory-var))
-
-         ;; Wrap the factory. If it's a simple function returning a React DOM
-         ;; element (an element with a string type), keep it as is. Otherwise
-         ;; we've got a composite element (one whose type is a class), and we
-         ;; need to (shallow) render it to get DOM elements to examine.
-         component-factory
-         (fn [props & children]
-           (let [elt (apply (deref component-factory-var) props children)]
-             (if (string? (gobject/get elt "type"))
-               elt
-               (let [renderer (js/React.addons.TestUtils.createRenderer)]
-                 (.render renderer elt)
-                 (.getRenderOutput renderer)))))
-
          groups (->> (gen/sample-seq (s/gen spec overrides))
                      (take sample-size)
-                     (group-by (comp signature (partial apply component-factory))))]
+                     (group-by (comp signature (partial apply shallow-render (deref component-factory-var)))))]
      (when (> sample-size (count groups))
        (->> groups
             (sort-by (comp hash key))
