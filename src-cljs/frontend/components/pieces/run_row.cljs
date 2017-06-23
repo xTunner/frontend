@@ -309,7 +309,8 @@
                         (case status
                           (:run-status/running
                            :run-status/not-run
-                           :run-status/needs-setup)
+                           :run-status/needs-setup
+                           :run-status/on-hold)
                           (and started-at (nil? stopped-at))
 
                           (:run-status/succeeded
@@ -336,7 +337,8 @@
                        :run-status/failed
                        :run-status/canceled
                        :run-status/not-run
-                       :run-status/needs-setup})
+                       :run-status/needs-setup
+                       :run-status/on-hold})
   (s/def :run/started-at (s/nilable inst?))
   (s/def :run/stopped-at (s/nilable inst?))
   (s/def :trigger-info/vcs-revision (s/with-gen
@@ -383,6 +385,7 @@
     (let [statuses [:run-status/needs-setup
                     :run-status/not-run
                     :run-status/running
+                    :run-status/on-hold
                     :run-status/succeeded
                     :run-status/failed
                     :run-status/canceled]]
