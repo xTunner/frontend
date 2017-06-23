@@ -1076,9 +1076,11 @@
          "circle.yml file"]
         "."]]]])))
 
-(defn- legacy-slack-notifications-helper [{:keys [on-change show-slack-channel-override]}]
+(defn- legacy-slack-notifications-helper [{:keys [on-change show-slack-channel-override show-legacy?]}]
   {:service "Slack"
-   :doc (list [:p "To get your Webhook URL, visit Slack's "
+   :doc (list (when show-legacy?
+                [:p "You're using a deprecated version of our slack integration. We encourage you to set up Slack using Webhook URL instead."])
+              [:p "To get your Webhook URL, visit Slack's "
                [:a {:href "https://my.slack.com/services/new/circleci"}
                 "CircleCI Integration"]
                " page, choose a default channel, and click the green \"Add CircleCI Integration\" button at the bottom of the page."]
@@ -1091,9 +1093,14 @@
                 [:span "Override room"]
                 [:i.fa.fa-question-circle {:id "slack-channel-override"
                                            :title "If you want to send notifications to a different channel than the webhook URL was created for, enter the channel ID or channel name below."}]]])
-   :inputs [{:field :slack_webhook_url :placeholder "Webhook URL"}
-            (when show-slack-channel-override
-              {:field :slack_channel_override :placeholder "Room"})]
+   :inputs (if show-legacy?
+             [{:field :slack_subdomain :placeholder "Subdomain"}
+              {:field :slack_channel :placeholder "Channel"}
+              {:field :slack_api_token :placeholder "API"}]
+
+             [{:field :slack_webhook_url :placeholder "Webhook URL"}
+              (when show-slack-channel-override
+                {:field :slack_channel_override :placeholder "Room"})])
    :show-fixed-failed? true
    :settings-keys project-model/slack-keys})
 
@@ -1146,7 +1153,13 @@
                              (legacy-slack-notifications-helper
                                {:on-change #(do (om/update-state! owner :show-slack-channel-override not)
                                                 (utils/edit-input owner (conj state/project-path :slack_channel_override) % :value ""))
-                                :show-slack-channel-override (:show-slack-channel-override state)})
+                                :show-slack-channel-override (:show-slack-channel-override state)
+                                ; only show legacy if slack_webhook_url isn't configured
+                                ; and there is existing legacy slack hook information.
+                                :show-legacy? (and (not (seq (:slack_webhook_url project)))
+                                                   (or (seq (:slack_subdomain project))
+                                                       (seq (:slack_api_token project))
+                                                       (seq (:slack_channel project))))})
 
                              {:service "Hipchat"
                               :doc (list [:p "To get your API token, create a \"notification\" token via the "
