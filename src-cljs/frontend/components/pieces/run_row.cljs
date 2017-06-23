@@ -658,8 +658,8 @@
     (gen-inst-in (time-coerce/to-date (time/ago (time/days 1)))
                  (js/Date.)))
 
-  (defn- update-morphs [this]
-    (let [morph-ch (:morphs (om-next/props this))]
+  (defn- update-morphs [this props]
+    (let [morph-ch (:morphs props)]
       (go-loop []
         (when-let [morph (<! morph-ch)]
           (om-next/update-state! this update :morphs conj morph)
@@ -671,15 +671,15 @@
   (defui ^:once Morphs
     Object
     (initLocalState [this]
-      {:morphs []})
+      {:morphs {}})
     (componentDidMount [this]
-      (update-morphs this))
+      (update-morphs this (om-next/props this)))
+    (componentWillReceiveProps [this next-props]
+      (update-morphs this next-props))
     (render [this]
       (let [{:keys [render-morphs]} (om-next/props this)
             {:keys [morphs]} (om-next/get-state this)]
-        (if morphs
-          (render-morphs morphs)
-          (html [:div "Infinite morphs!"])))))
+        (render-morphs (vals morphs)))))
 
   (def morphs (om-next/factory Morphs))
 

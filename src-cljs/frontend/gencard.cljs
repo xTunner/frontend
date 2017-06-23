@@ -36,6 +36,8 @@
          spec (:args (s/get-spec component-factory-var))
          samples (take sample-size (gen/sample-seq (s/gen spec overrides)))
          signature-of-sample (comp signature (partial apply shallow-render (deref component-factory-var)))
-         morphs-ch (chan 1 (distinct-by signature-of-sample))]
+         morphs-ch (chan 1 (comp
+                            (map (juxt signature-of-sample identity))
+                            (distinct-by first)))]
      (async/onto-chan morphs-ch samples)
      (async/pipe morphs-ch ch))))
