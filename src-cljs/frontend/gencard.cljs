@@ -1,7 +1,9 @@
 (ns frontend.gencard
-  (:require [clojure.spec :as s :include-macros true]
+  (:require [cljs.core.async :as async :refer [chan]]
+            [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
-            [goog.object :as gobject]))
+            [goog.object :as gobject]
+            [medley.core :refer [distinct-by]]))
 
 (def ignored-props #{"title" "href" "onClick"})
 (defn signature [element]
@@ -28,15 +30,12 @@
         (.getRenderOutput renderer)))))
 
 (defn morph-data
-  ([component-factory-var] (morph-data component-factory-var {}))
-  ([component-factory-var overrides]
+  ([ch component-factory-var] (morph-data ch component-factory-var {}))
+  ([ch component-factory-var overrides]
    (let [sample-size 100
          spec (:args (s/get-spec component-factory-var))
-         groups (->> (gen/sample-seq (s/gen spec overrides))
-                     (take sample-size)
-                     (group-by (comp signature (partial apply shallow-render (deref component-factory-var)))))]
-     (when (> sample-size (count groups))
-       (->> groups
-            (sort-by (comp hash key))
-            vals
-            (map first))))))
+         samples (take sample-size (gen/sample-seq (s/gen spec overrides)))
+         signature-of-sample (comp signature (partial apply shallow-render (deref component-factory-var)))
+         morphs-ch (chan 1 (distinct-by signature-of-sample))]
+     (async/onto-chan morphs-ch samples)
+     (async/pipe morphs-ch ch))))

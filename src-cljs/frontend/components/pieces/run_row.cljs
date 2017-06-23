@@ -1,6 +1,7 @@
 (ns frontend.components.pieces.run-row
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as time]
+            [cljs.core.async :as async :refer [<! chan]]
             [clojure.spec :as s :include-macros true]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]
@@ -18,7 +19,9 @@
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next :refer-macros [defui]])
-  (:require-macros [devcards.core :as dc :refer [defcard]]))
+  (:require-macros
+   [cljs.core.async.macros :as am :refer [go-loop]]
+   [devcards.core :as dc :refer [defcard]]))
 
 (defn loading-placeholder [width]
   (component (html [:div {:style {:width width}}])))
@@ -655,14 +658,28 @@
     (gen-inst-in (time-coerce/to-date (time/ago (time/days 1)))
                  (js/Date.)))
 
+  (defn- update-morphs [this]
+    (let [morph-ch (:morphs (om-next/props this))]
+      (go-loop []
+        (when-let [morph (<! morph-ch)]
+          (om-next/update-state! this update :morphs conj morph)
+          ;; This gives the browser a chance to draw what we've got before
+          ;; calculating more morphs.
+          (<! (async/timeout 1))
+          (recur)))))
+
   (defui ^:once Morphs
     Object
+    (initLocalState [this]
+      {:morphs []})
+    (componentDidMount [this]
+      (update-morphs this))
     (render [this]
       (let [{:keys [render-morphs]} (om-next/props this)
-            {:keys [morphs]} (om-next/props this)]
+            {:keys [morphs]} (om-next/get-state this)]
         (if morphs
           (render-morphs morphs)
-          "Infinite morphs!"))))
+          (html [:div "Infinite morphs!"])))))
 
   (def morphs (om-next/factory Morphs))
 
@@ -673,7 +690,8 @@
                     :run-status/succeeded
                     :run-status/failed
                     :run-status/canceled]]
-      (morphs {:morphs (gc/morph-data #'run-row
+      (morphs {:morphs (gc/morph-data (chan)
+                                      #'run-row
                                       {:run/name #(dashed-lorem)
                                        ;; ::s/pred targets the case where the value is non-nil.
                                        [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
@@ -690,7 +708,7 @@
                                          (map (partial apply run-row))))))})))
 
   (defcard prs
-    (morphs {:morphs (gc/morph-data #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)})
+    (morphs {:morphs (gc/morph-data (chan) #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)})
              :render-morphs
              (fn [morphs]
                (card/collection (->> morphs
