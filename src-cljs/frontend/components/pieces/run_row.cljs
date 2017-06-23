@@ -9,7 +9,7 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.datetime :as datetime]
-            [frontend.gencard :as gc]
+            [frontend.devcards.morphs :as morphs]
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
@@ -662,26 +662,26 @@
                     :run-status/succeeded
                     :run-status/failed
                     :run-status/canceled]]
-      (gc/render #'run-row {:run/name #(dashed-lorem)
-                            ;; ::s/pred targets the case where the value is non-nil.
-                            [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
-                            [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
-                            :trigger-info/branch #(dashed-lorem)
-                            :trigger-info/subject #(lorem-sentence)
-                            :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)}
-                 (fn [morphs]
-                   (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
-                     (card/collection (->> morphs
-                                           (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
-                                           (sort-by #(->> % first :run/status (index-of statuses)))
-                                           (map (partial apply run-row)))))))))
+      (morphs/render #'run-row {:run/name #(dashed-lorem)
+                                ;; ::s/pred targets the case where the value is non-nil.
+                                [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
+                                [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
+                                :trigger-info/branch #(dashed-lorem)
+                                :trigger-info/subject #(lorem-sentence)
+                                :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)}
+                     (fn [morphs]
+                       (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
+                         (card/collection (->> morphs
+                                               (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
+                                               (sort-by #(->> % first :run/status (index-of statuses)))
+                                               (map (partial apply run-row)))))))))
 
   (defcard prs
-    (gc/render #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)}
-               (fn [morphs]
-                 (card/collection (->> morphs
-                                       (sort-by (comp count first))
-                                       (map (partial apply prs)))))))
+    (morphs/render #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)}
+                   (fn [morphs]
+                     (card/collection (->> morphs
+                                           (sort-by (comp count first))
+                                           (map (partial apply prs)))))))
 
   (defcard loading-run-row
     (loading-run-row)))

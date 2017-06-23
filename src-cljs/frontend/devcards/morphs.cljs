@@ -1,8 +1,7 @@
-(ns frontend.gencard
+(ns frontend.devcards.morphs
   (:require [cljs.core.async :as async :refer [<! chan]]
             [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
-            [frontend.utils :refer-macros [element]]
             [goog.object :as gobject]
             [medley.core :refer [distinct-by]]
             [om.next :as om-next :refer-macros [defui]])
@@ -32,8 +31,10 @@
         (.render renderer elt)
         (.getRenderOutput renderer)))))
 
-(defn morphs
-  ([ch component-factory-var] (morphs ch component-factory-var {}))
+(defn generate
+  "Generates signature, morph pairs for component-factory-var (using optional
+  generator overrides) and puts them onto ch."
+  ([ch component-factory-var] (generate ch component-factory-var {}))
   ([ch component-factory-var overrides]
    (let [sample-size 100
          spec (:args (s/get-spec component-factory-var))
@@ -56,7 +57,7 @@
         (<! (async/timeout 1))
         (recur)))))
 
-(defui ^:once MorphDisplay
+(defui ^:once ^:private MorphDisplay
   Object
   (initLocalState [this]
     {:morphs {}})
@@ -69,11 +70,14 @@
           {:keys [morphs]} (om-next/get-state this)]
       (render-morphs (vals morphs)))))
 
-(def morph-display (om-next/factory MorphDisplay))
+(def ^:private morph-display (om-next/factory MorphDisplay))
 
 (defn render
+  "Renders morphs of component-factory-var (generated using optional generator
+  overrides). render-fn will be called with a collection of morphs and should
+  return a React element to render."
   ([component-factory-var render-fn]
    (render component-factory-var {} render-fn))
   ([component-factory-var overrides render-fn]
-   (morph-display {:morphs (morphs (chan) component-factory-var overrides)
+   (morph-display {:morphs (generate (chan) component-factory-var overrides)
                    :render-morphs render-fn})))

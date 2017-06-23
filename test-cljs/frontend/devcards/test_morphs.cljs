@@ -1,9 +1,9 @@
-(ns frontend.test-gencard
+(ns frontend.devcards.test-morphs
   (:require [cljs.core.async :as async :refer [<! chan]]
             [cljs.test :refer-macros [async is testing]]
             [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
-            [frontend.gencard :as gc]
+            [frontend.devcards.morphs :as morphs]
             [om.core :as om]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros
@@ -17,9 +17,9 @@
           :children [{:type "span"
                       "className" "baz"
                       :children []}]}
-         (gc/signature (html [:div {:class "foo" :title "bar"}
-                           [:span {:class "baz" :title "qux"}
-                            "Some text."]])))))
+         (morphs/signature (html [:div {:class "foo" :title "bar"}
+                                  [:span {:class "baz" :title "qux"}
+                                   "Some text."]])))))
 
 (defn demo-child-component-om-prev [{:keys [description]} owner]
   (reify
@@ -81,7 +81,7 @@
     (async done
       (go
         (dotimes [_ 10]
-          (let [data (<! (async/into [] (gc/morphs (chan) #'demo-component)))
+          (let [data (<! (async/into [] (morphs/generate (chan) #'demo-component)))
                 ;; Each value is a signature, morph pair.
                 morphs (map second data)]
             (is (every? (partial s/valid? (:args (s/get-spec #'demo-component))) morphs))
@@ -93,7 +93,7 @@
     (async done
       (go
         (dotimes [_ 10]
-          (let [data (<! (async/into [] (gc/morphs (chan) #'demo-component-om-next)))
+          (let [data (<! (async/into [] (morphs/generate (chan) #'demo-component-om-next)))
                 ;; Each value is a signature, morph pair.
                 morphs (map second data)]
             (is (every? (partial s/valid? (:args (s/get-spec #'demo-component-om-next))) morphs))
@@ -104,7 +104,7 @@
   (testing "Limited to 100 morphs"
     (async done
       (go
-        (let [data (<! (async/into [] (gc/morphs (chan) #'infinite-morph-component)))]
+        (let [data (<! (async/into [] (morphs/generate (chan) #'infinite-morph-component)))]
           ;; We generate 100 samples. infinite-morph-component should generate a
           ;; different morph for every sample, but because this is random,
           ;; sometimes we get a duplicate or two. Testing that we get more than
@@ -116,7 +116,7 @@
     (async done
       (go
         (dotimes [_ 10]
-          (let [data (<! (async/into [] (gc/morphs (chan) #'demo-component {::description #(gen/return "Mostly harmless.")})))
+          (let [data (<! (async/into [] (morphs/generate (chan) #'demo-component {::description #(gen/return "Mostly harmless.")})))
                 ;; Each value is a signature, morph pair.
                 morphs (map second data)]
             (is (every? (partial = "Mostly harmless.") (map (comp ::description first) morphs)))))
@@ -129,6 +129,6 @@
      ".type-a { background-color: blue; }
       .type-b { background-color: green; }
       .long { color: red; }"]
-    (gc/render #'demo-component
-               (fn [morphs]
-                 (html [:div (map (partial apply demo-component) morphs)])))]))
+    (morphs/render #'demo-component
+                   (fn [morphs]
+                     (html [:div (map (partial apply demo-component) morphs)])))]))
