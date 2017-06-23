@@ -51,17 +51,23 @@ if ! grep -e "refs/heads/${CIRCLE_BRANCH}$" $heads_file ; then
   # the z is so that it gets pushed to the end of the branch list
   backend_branch="zfe/$CIRCLE_BRANCH"
   git -C $backend_dir branch $backend_branch origin/production
-  git -C $backend_dir push origin $backend_branch:$backend_branch
-else
-  # Trigger a backend build of this sha1.
-  circle_api=https://circleci.com/api/v1
-  tree_url=$circle_api/project/circleci/circle/tree/$backend_branch
-  http_status=$(curl -o /dev/null \
-                     --silent \
-                     --write-out '%{http_code}\n' \
-                     --header "Content-Type: application/json" \
-                     --data "{\"build_parameters\": {\"FRONTEND_DEPLOY_SHA1\": \"$CIRCLE_SHA1\"}}" \
-                     --request POST \
-                     -L $tree_url?circle-token=$BACKEND_CIRCLE_TOKEN)
-  [[ 201 = $http_status ]]
+  git -C $backend_dir checkout $backend_branch
+  git config --global user.email "frank@circleci.com"
+  git config --global user.name "Frank Wang"
+  git -C $backend_dir commit --allow-empty -m "[ci skip] trigger zfe build"
+  git -C $backend_dir push --force-with-lease origin $backend_branch:$backend_branch
 fi
+
+# Trigger a backend build of this sha1.
+circle_api=https://circleci.com/api/v1
+tree_url=$circle_api/project/circleci/circle/tree/$backend_branch
+# BUILD_JSON_PATH should be set in ci config
+http_status=$(curl -o "$BUILD_JSON_PATH" \
+                   --silent \
+                   --write-out '%{http_code}\n' \
+                   --header "Content-Type: application/json" \
+                   --header "Accept: application/json" \
+                   --data "{\"build_parameters\": {\"FRONTEND_DEPLOY_SHA1\": \"$CIRCLE_SHA1\"}}" \
+                   --request POST \
+                   -L $tree_url?circle-token=$BACKEND_CIRCLE_TOKEN)
+[[ 201 = $http_status ]]
