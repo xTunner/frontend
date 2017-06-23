@@ -55,7 +55,12 @@ if ! grep -e "refs/heads/${CIRCLE_BRANCH}$" $heads_file ; then
   git config --global user.email "frank@circleci.com"
   git config --global user.name "Frank Wang"
   git -C $backend_dir commit --allow-empty -m "[ci skip] trigger zfe build"
-  git -C $backend_dir push --force-with-lease origin $backend_branch:$backend_branch
+  if ! grep -e "refs/heads/${backend_branch}" $heads_file ; then
+      git -C $backend_dir push origin $backend_branch:$backend_branch
+  else
+      # if the branch doesn't exist on the remote, --force-with-lease doesn't work
+      git -C $backend_dir push --force-with-lease origin $backend_branch:$backend_branch
+  fi
 fi
 
 # Trigger a backend build of this sha1.
