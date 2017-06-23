@@ -655,40 +655,47 @@
     (gen-inst-in (time-coerce/to-date (time/ago (time/days 1)))
                  (js/Date.)))
 
+  (defui ^:once Morphs
+    Object
+    (render [this]
+      (let [{:keys [render-morphs]} (om-next/props this)
+            {:keys [morphs]} (om-next/props this)]
+        (if morphs
+          (render-morphs morphs)
+          "Infinite morphs!"))))
+
+  (def morphs (om-next/factory Morphs))
+
   (defcard generated-run-rows
-    (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
-      (let [statuses [:run-status/needs-setup
-                      :run-status/not-run
-                      :run-status/running
-                      :run-status/succeeded
-                      :run-status/failed
-                      :run-status/canceled]]
-        (html
-         [:div
-          (let [data (gc/morph-data #'run-row
-                                    {:run/name #(dashed-lorem)
-                                     ;; ::s/pred targets the case where the value is non-nil.
-                                     [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
-                                     [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
-                                     :trigger-info/branch #(dashed-lorem)
-                                     :trigger-info/subject #(lorem-sentence)
-                                     :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)})]
-            (if data
-              (card/collection (->> data
-                                    (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
-                                    (sort-by #(->> % first :run/status (index-of statuses)))
-                                    (map (partial apply run-row))))
-              "Infinite morphs!"))]))))
+    (let [statuses [:run-status/needs-setup
+                    :run-status/not-run
+                    :run-status/running
+                    :run-status/succeeded
+                    :run-status/failed
+                    :run-status/canceled]]
+      (morphs {:morphs (gc/morph-data #'run-row
+                                      {:run/name #(dashed-lorem)
+                                       ;; ::s/pred targets the case where the value is non-nil.
+                                       [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
+                                       [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
+                                       :trigger-info/branch #(dashed-lorem)
+                                       :trigger-info/subject #(lorem-sentence)
+                                       :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)})
+               :render-morphs
+               (fn [morphs]
+                 (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
+                   (card/collection (->> morphs
+                                         (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
+                                         (sort-by #(->> % first :run/status (index-of statuses)))
+                                         (map (partial apply run-row))))))})))
 
   (defcard prs
-    (html
-     [:div
-      (let [data (gc/morph-data #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)})]
-        (if data
-          (card/collection (->> data
-                                (sort-by (comp count first))
-                                (map (partial apply prs))))
-          "Infinite morphs!"))]))
+    (morphs {:morphs (gc/morph-data #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)})
+             :render-morphs
+             (fn [morphs]
+               (card/collection (->> morphs
+                                     (sort-by (comp count first))
+                                     (map (partial apply prs)))))}))
 
   (defcard loading-run-row
     (loading-run-row)))
