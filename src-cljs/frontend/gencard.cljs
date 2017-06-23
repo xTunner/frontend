@@ -71,6 +71,9 @@
 
 (def morph-display (om-next/factory MorphDisplay))
 
-(defn render [component-factory-var overrides render-fn]
-  (morph-display {:morphs (morphs (chan) component-factory-var overrides)
-                  :render-morphs render-fn}))
+(defn render
+  ([component-factory-var render-fn]
+   (render component-factory-var {} render-fn))
+  ([component-factory-var overrides render-fn]
+   (morph-display {:morphs (morphs (chan) component-factory-var overrides)
+                   :render-morphs render-fn})))

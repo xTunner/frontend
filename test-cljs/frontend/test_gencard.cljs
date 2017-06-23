@@ -1,11 +1,13 @@
 (ns frontend.test-gencard
-  (:require [cljs.test :refer-macros [is testing]]
+  (:require [cljs.core.async :as async :refer [<! chan]]
+            [cljs.test :refer-macros [async is testing]]
             [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
             [frontend.gencard :as gc]
             [om.core :as om]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros
+   [cljs.core.async.macros :refer [go]]
    [devcards.core :as dc :refer [defcard deftest]]
    [sablono.core :refer [html]]))
 
@@ -23,13 +25,17 @@
   (reify
     om/IRender
     (render [_]
-      (html [:div description]))))
+      ;; A class name that varies will produce morphs. But this demonstrates
+      ;; that a class name inside a child component won't produce morphs of its
+      ;; parent. The child is treated as a black box.
+      (html [:div {:class description}]))))
 
 (defui DemoChildComponentOmNext
   Object
   (render [this]
     (let [{:keys [description]} (om-next/props this)]
-      (html [:div description]))))
+      ;; (See demo-child-component-om-prev.)
+      (html [:div {:class description}]))))
 
 (def demo-child-component-om-next (om-next/factory DemoChildComponentOmNext))
 
@@ -51,7 +57,7 @@
 
 (def demo-component-om-next (om-next/factory DemoComponentOmNext))
 
-(defn faulty-component [props]
+(defn infinite-morph-component [props]
   (html [:div {:class (::description props)}]))
 
 
@@ -61,42 +67,60 @@
 (s/fdef demo-component-om-next
   :args (s/cat :data ::data-for-component))
 
-(s/fdef faulty-component
+(s/fdef infinite-morph-component
   :args (s/cat :data ::data-for-component))
 
 
-(s/def ::data-for-component
-  (s/keys :req [::type ::description]))
-
+(s/def ::data-for-component (s/keys :req [::type ::description]))
 (s/def ::type #{:type-a :type-b})
-
 (s/def ::description (s/and string? seq))
 
 
 (deftest morph-data-test
   (testing "Generates one set of data for each morph of a functional component"
-    (dotimes [_ 10]
-      (let [data (gc/morph-data #'demo-component)]
-        (is (not (nil? data)))
-        (is (every? (partial s/valid? (:args (s/get-spec #'demo-component))) data))
-        (is (= 4 (count data)))
-        (is (= 2 (count (group-by (comp ::type first) data)))))))
+    (async done
+      (go
+        (dotimes [_ 10]
+          (let [data (<! (async/into [] (gc/morphs (chan) #'demo-component)))
+                ;; Each value is a signature, morph pair.
+                morphs (map second data)]
+            (is (every? (partial s/valid? (:args (s/get-spec #'demo-component))) morphs))
+            (is (= 4 (count morphs)))
+            (is (= 2 (count (group-by (comp ::type first) morphs))))))
+        (done))))
 
   (testing "Generates one set of data for each morph of an Om component"
-    (dotimes [_ 10]
-      (let [data (gc/morph-data #'demo-component-om-next)]
-        (is (not (nil? data)))
-        (is (every? (partial s/valid? (:args (s/get-spec #'demo-component-om-next))) data))
-        (is (= 4 (count data)))
-        (is (= 2 (count (group-by (comp ::type first) data)))))))
+    (async done
+      (go
+        (dotimes [_ 10]
+          (let [data (<! (async/into [] (gc/morphs (chan) #'demo-component-om-next)))
+                ;; Each value is a signature, morph pair.
+                morphs (map second data)]
+            (is (every? (partial s/valid? (:args (s/get-spec #'demo-component-om-next))) morphs))
+            (is (= 4 (count morphs)))
+            (is (= 2 (count (group-by (comp ::type first) morphs))))))
+        (done))))
 
-  (testing "Returns nil when there are infinite morphs"
-    (is (nil? (gc/morph-data #'faulty-component))))
+  (testing "Limited to 100 morphs"
+    (async done
+      (go
+        (let [data (<! (async/into [] (gc/morphs (chan) #'infinite-morph-component)))]
+          ;; We generate 100 samples. infinite-morph-component should generate a
+          ;; different morph for every sample, but because this is random,
+          ;; sometimes we get a duplicate or two. Testing that we get more than
+          ;; 95 is resilient and serves the purpose.
+          (is (< 95 (count data)))
+          (done)))))
 
   (testing "Accepts generator overrides"
-    (dotimes [_ 10]
-      (let [data (gc/morph-data #'demo-component {::description #(gen/return "Mostly harmless.")})]
-        (is (every? (partial = "Mostly harmless.") (map (comp ::description first) data)))))))
+    (async done
+      (go
+        (dotimes [_ 10]
+          (let [data (<! (async/into [] (gc/morphs (chan) #'demo-component {::description #(gen/return "Mostly harmless.")})))
+                ;; Each value is a signature, morph pair.
+                morphs (map second data)]
+            (is (every? (partial = "Mostly harmless.") (map (comp ::description first) morphs)))))
+        (done)))))
 
 (defcard demo
   (html
@@ -105,5 +129,6 @@
      ".type-a { background-color: blue; }
       .type-b { background-color: green; }
       .long { color: red; }"]
-    (let [data (gc/morph-data #'demo-component)]
-      (map (partial apply demo-component) data))]))
+    (gc/render #'demo-component
+               (fn [morphs]
+                 (html [:div (map (partial apply demo-component) morphs)])))]))
