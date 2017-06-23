@@ -229,7 +229,7 @@
             :target "_blank"}
         "test metadata documentation"]
        "."]
-      (and (nil? tests)
+      (and (not (nil? tests))
            (empty? tests))
       [:span "No failed tests to show."]
 
@@ -330,6 +330,8 @@
                                     (map insights/add-queued-time))
               failed-tests (get-in state state/failed-builds-tests-path)
               junit-enabled? (get-in state state/failed-builds-junit-enabled?-path)]
+         (if (nil? failed-tests)
+           (assoc-in state state/failed-builds-tests-path []))
          (html
           [:div.insights-project
            (om/build insights-metadata state)
