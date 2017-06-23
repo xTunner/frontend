@@ -1,7 +1,6 @@
 (ns frontend.components.pieces.run-row
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as time]
-            [cljs.core.async :as async :refer [<! chan]]
             [clojure.spec :as s :include-macros true]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]
@@ -19,9 +18,7 @@
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next :refer-macros [defui]])
-  (:require-macros
-   [cljs.core.async.macros :as am :refer [go-loop]]
-   [devcards.core :as dc :refer [defcard]]))
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn loading-placeholder [width]
   (component (html [:div {:style {:width width}}])))
@@ -658,31 +655,6 @@
     (gen-inst-in (time-coerce/to-date (time/ago (time/days 1)))
                  (js/Date.)))
 
-  (defn- update-morphs [this props]
-    (let [morph-ch (:morphs props)]
-      (go-loop []
-        (when-let [morph (<! morph-ch)]
-          (om-next/update-state! this update :morphs conj morph)
-          ;; This gives the browser a chance to draw what we've got before
-          ;; calculating more morphs.
-          (<! (async/timeout 1))
-          (recur)))))
-
-  (defui ^:once Morphs
-    Object
-    (initLocalState [this]
-      {:morphs {}})
-    (componentDidMount [this]
-      (update-morphs this (om-next/props this)))
-    (componentWillReceiveProps [this next-props]
-      (update-morphs this next-props))
-    (render [this]
-      (let [{:keys [render-morphs]} (om-next/props this)
-            {:keys [morphs]} (om-next/get-state this)]
-        (render-morphs (vals morphs)))))
-
-  (def morphs (om-next/factory Morphs))
-
   (defcard generated-run-rows
     (let [statuses [:run-status/needs-setup
                     :run-status/not-run
@@ -690,30 +662,26 @@
                     :run-status/succeeded
                     :run-status/failed
                     :run-status/canceled]]
-      (morphs {:morphs (gc/morph-data (chan)
-                                      #'run-row
-                                      {:run/name #(dashed-lorem)
-                                       ;; ::s/pred targets the case where the value is non-nil.
-                                       [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
-                                       [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
-                                       :trigger-info/branch #(dashed-lorem)
-                                       :trigger-info/subject #(lorem-sentence)
-                                       :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)})
-               :render-morphs
-               (fn [morphs]
-                 (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
-                   (card/collection (->> morphs
-                                         (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
-                                         (sort-by #(->> % first :run/status (index-of statuses)))
-                                         (map (partial apply run-row))))))})))
+      (gc/render #'run-row {:run/name #(dashed-lorem)
+                            ;; ::s/pred targets the case where the value is non-nil.
+                            [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
+                            [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
+                            :trigger-info/branch #(dashed-lorem)
+                            :trigger-info/subject #(lorem-sentence)
+                            :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)}
+                 (fn [morphs]
+                   (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
+                     (card/collection (->> morphs
+                                           (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
+                                           (sort-by #(->> % first :run/status (index-of statuses)))
+                                           (map (partial apply run-row)))))))))
 
   (defcard prs
-    (morphs {:morphs (gc/morph-data (chan) #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)})
-             :render-morphs
-             (fn [morphs]
-               (card/collection (->> morphs
-                                     (sort-by (comp count first))
-                                     (map (partial apply prs)))))}))
+    (gc/render #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)}
+               (fn [morphs]
+                 (card/collection (->> morphs
+                                       (sort-by (comp count first))
+                                       (map (partial apply prs)))))))
 
   (defcard loading-run-row
     (loading-run-row)))

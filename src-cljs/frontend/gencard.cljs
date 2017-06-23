@@ -1,9 +1,12 @@
 (ns frontend.gencard
-  (:require [cljs.core.async :as async :refer [chan]]
+  (:require [cljs.core.async :as async :refer [<! chan]]
             [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
+            [frontend.utils :refer-macros [element]]
             [goog.object :as gobject]
-            [medley.core :refer [distinct-by]]))
+            [medley.core :refer [distinct-by]]
+            [om.next :as om-next :refer-macros [defui]])
+  (:require-macros [cljs.core.async.macros :refer [go-loop]]))
 
 (def ignored-props #{"title" "href" "onClick"})
 (defn signature [element]
@@ -29,8 +32,8 @@
         (.render renderer elt)
         (.getRenderOutput renderer)))))
 
-(defn morph-data
-  ([ch component-factory-var] (morph-data ch component-factory-var {}))
+(defn morphs
+  ([ch component-factory-var] (morphs ch component-factory-var {}))
   ([ch component-factory-var overrides]
    (let [sample-size 100
          spec (:args (s/get-spec component-factory-var))
@@ -41,3 +44,33 @@
                             (distinct-by first)))]
      (async/onto-chan morphs-ch samples)
      (async/pipe morphs-ch ch))))
+
+
+(defn- update-morphs [this props]
+  (let [morph-ch (:morphs props)]
+    (go-loop []
+      (when-let [morph (<! morph-ch)]
+        (om-next/update-state! this update :morphs conj morph)
+        ;; This gives the browser a chance to draw what we've got before
+        ;; calculating more morphs.
+        (<! (async/timeout 1))
+        (recur)))))
+
+(defui ^:once MorphDisplay
+  Object
+  (initLocalState [this]
+    {:morphs {}})
+  (componentDidMount [this]
+    (update-morphs this (om-next/props this)))
+  (componentWillReceiveProps [this next-props]
+    (update-morphs this next-props))
+  (render [this]
+    (let [{:keys [render-morphs]} (om-next/props this)
+          {:keys [morphs]} (om-next/get-state this)]
+      (render-morphs (vals morphs)))))
+
+(def morph-display (om-next/factory MorphDisplay))
+
+(defn render [component-factory-var overrides render-fn]
+  (morph-display {:morphs (morphs (chan) component-factory-var overrides)
+                  :render-morphs render-fn}))
