@@ -281,42 +281,12 @@
 
    :circleci/run
    (fn [env ast]
-     (resolve/resolve (assoc env :run/id (:run/id (:params ast)))
-                      ast
-                      (chan)))
-
-   :run/job
-   (fn [env ast]
-     (resolve/resolve (assoc env :job/name (:job/name (:params ast)))
-                      ast
-                      (chan)))
-
-   :job/name
-   (fn [env ast]
-     (:job/name env))
-
-   :run/id
-   (fn [env ast]
-     (:run/id env))
-
-   #{:run/name
-     :run/status
-     :run/started-at
-     :run/stopped-at
-     :run/errors
-     :run/jobs
-     :run/trigger-info
-     :run/project}
-   (fn [{:keys [run/id] :as env} asts]
-     (-> ((get-in env [:apis :get-workflow-status]) id)
+     (-> ((get-in env [:apis :get-workflow-status]) (-> ast :params :run/id))
          (p/then
           (fn [response]
-            (-> response
-                adapt-to-run
-                (update :run/errors #(mapv (partial resolve/query (:run/errors asts)) %))
-                (update :run/jobs #(mapv (partial resolve/query (:run/jobs asts)) %))
-                (update :run/trigger-info (partial resolve/query (:run/trigger-info asts)))
-                (update :run/project (partial resolve/query (:run/project asts))))))))})
+            (if response
+              (resolve/query ast (adapt-to-run response))
+              {:error/type :error/not-found})))))})
 
 (defmulti send* key)
 

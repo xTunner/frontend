@@ -30,6 +30,9 @@
    (fn [env ast]
      (:user/name env))
 
+   :user/imaginary-friend
+   (fn [_ _] (p/promise nil))
+
    #{:user/favorite-color :user/favorite-number :user/vehicle}
    (fn [env asts]
      (p/alet [get-user (get-in env [:apis :get-user])
@@ -109,6 +112,7 @@
                                      '[(do/something {:very "important"})
                                        {(:root/user {:user/name "nipponfarm"})
                                         [:user/name
+                                         :user/imaginary-friend
                                          :user/favorite-color
                                          :user/favorite-number
                                          {:user/vehicle [:vehicle/make
@@ -126,6 +130,7 @@
        (fn [v]
          (is (= #{{'do/something "Did something."}
                   {:root/user {:user/name "nipponfarm"}}
+                  {:root/user {:user/imaginary-friend nil}}
                   {:root/user {:user/favorite-color :color/blue}}
                   {:root/user {:user/favorite-number 42}}
                   {:root/user {:user/vehicle {:vehicle/make "Toyota"

@@ -11,6 +11,7 @@
             [frontend.components.pages.run :as run]
             [frontend.components.pages.user-settings :as user-settings]
             [frontend.components.pages.workflow :as workflow]
+            [frontend.components.pages.not-found :as not-found]
             [frontend.components.pieces.flash-notification :as flash]
             [frontend.components.pieces.topbar :as topbar]
             [frontend.components.statuspage :as statuspage]
@@ -37,7 +38,8 @@
    :route/project-workflows workflow/ProjectPage
    :route/project-branch-workflows workflow/BranchPage
    :route/org-workflows workflow/OrgPage
-   :route/run run/Page})
+   :route/run run/Page
+   :route/not-found not-found/Page})
 
 (def index-route :route/loading)
 
@@ -136,7 +138,8 @@
               show-inspector? (get-in app state/show-inspector-path)
               ;; :landing is still used by Enterprise. It and :error are
               ;; still "outer" pages.
-              outer? (contains? #{:landing :error} (:navigation-point app))
+              outer? (or (contains? #{:landing :error} (:navigation-point app))
+                         (= :route/not-found (compassus/current-route this)))
               inner-with-user? (and (not outer?) user)]
           (html
            [:div {:class (if outer? "outer" "inner")

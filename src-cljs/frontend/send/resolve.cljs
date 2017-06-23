@@ -39,7 +39,7 @@
    (fn [v]
      (if (read-port? v)
        (async/pipe v to)
-       (doto to (put! v) (close!)))))
+       (doto to (put! (if (nil? v) ::nil v)) close!))))
   to)
 
 (defn resolve
@@ -59,7 +59,8 @@
 
   * The simple value,
   * A (Promesa) promise of the value,
-  * A core.async channel which will carry the value (or several values) and then close, or
+  * A core.async channel which will carry the value (or several values) and then
+    close, or
   * A (Promesa) promise of such a channel.
 
   A resolver function takes two args: the env map and the ast of the query node
@@ -96,14 +97,17 @@
         (if (contains? resolvers read-from-key)
           (let [resolver (get resolvers read-from-key)]
             (pipe-values (resolver env ast)
-                         (chan 1 (map #(hash-map (:key ast) %)))))
-          (if-let [[keys resolver]
+                         (chan 1 (comp
+                                  (map #(if (= ::nil %) nil %))
+                                  (map #(hash-map (:key ast) %))))))
+          (if-let [[_keys resolver]
                    (first (filter #(contains? (key %) read-from-key) resolvers))]
             (pipe-values (resolver env {read-from-key ast})
                          (chan 1 (comp
                                   (map #(get % read-from-key))
+                                  (map #(if (= ::nil %) nil %))
                                   (map #(hash-map (:key ast) %)))))
             (do
               (glog/error *logger* (str "No resolver found for key " read-from-key))
-              (doto (chan) (close!)))))))
+              (close! chan))))))
      channel)))
