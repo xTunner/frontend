@@ -539,6 +539,11 @@
                      (if (some :truncated action-log)
                        (assoc action :truncated-client-side? true)
                        action)))
+        (assoc-in (conj (state/action-path container-index action-index) :user-facing-output-filename)
+                  (gstring/format "build_%s_step_%s_container_%s.txt"
+                                  (:build_num build)
+                                  action-index
+                                  container-index))
         (assoc-in (conj (state/action-path container-index action-index) :user-facing-output-url)
                   (api-path/action-output-file
                    (vcs-url/vcs-type vcs-url)
@@ -1234,7 +1239,7 @@
   [target message status {:keys [context] :as args} previous-state current-state comms]
   ;; We currently use the org-settings endpoint to get a list of projects for that org
   ;; for the Import Variables feature on env-vars. However, you can have read and write
-  ;; access to projects which belong to orgs you are not a member of (not sure how but 
+  ;; access to projects which belong to orgs you are not a member of (not sure how but
   ;; I did confirm that a thing).
   (when-not (= (get-in current-state state/current-view-path) :project-settings)
     (put! (:nav comms) [:error {:status (:status-code args)}])))

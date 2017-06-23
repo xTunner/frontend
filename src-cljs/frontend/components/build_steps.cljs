@@ -91,7 +91,7 @@
           (if (= "running" (:status action))
             "You can download the output once this step is finished."
             [:a {:href (:user-facing-output-url action)
-                 :download "BuildOutput.txt"
+                 :download (:user-facing-output-filename action)
                  :target "_blank"}
              (if (:truncated action)
                (gstring/format "Download the first %s as a file." (:truncation_len action))
