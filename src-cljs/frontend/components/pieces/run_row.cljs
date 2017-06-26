@@ -31,7 +31,8 @@
     :run-status/on-hold :status-class/on-hold))
 
 (def ^:private cancelable-statuses #{:run-status/not-run
-                                     :run-status/running})
+                                     :run-status/running
+                                     :run-status/on-hold})
 
 (def ^:private rerunnable-statuses #{:run-status/succeeded
                                      :run-status/failed
