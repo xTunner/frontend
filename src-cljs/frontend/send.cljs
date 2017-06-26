@@ -77,7 +77,8 @@
       "failed" :run-status/failed
       "running" :run-status/running
       "not_run" :run-status/not-run
-      "canceled" :run-status/canceled)))
+      "canceled" :run-status/canceled
+      "on_hold" :run-status/on-hold)))
 
 (defn adapt-to-run
   [response]
