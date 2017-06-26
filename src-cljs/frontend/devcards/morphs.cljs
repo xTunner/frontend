@@ -11,7 +11,12 @@
 (defn signature [element]
   (let [props (gobject/get element "props")
         children (->> (gobject/get props "children")
-                      js/React.Children.toArray
+                      ;; React.Children.toArray is missing from the cljsjs
+                      ;; externs, and so fails under advanced compliation. When
+                      ;; this PR is accepted, we can use
+                      ;; js/React.Children.toArray directly.
+                      ;; https://github.com/cljsjs/packages/pull/1230
+                      ((gobject/get js/React.Children "toArray"))
                       (filter js/React.isValidElement)
                       (filter #(string? (gobject/get % "type"))))]
     (into {:type (gobject/get element "type")
