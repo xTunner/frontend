@@ -1,5 +1,5 @@
 (ns frontend.devcards.morphs
-  (:require [cljs.core.async :as async :refer [<! chan]]
+  (:require [cljs.core.async :as async :refer [<! chan close!]]
             [clojure.spec :as s :include-macros true]
             [clojure.test.check.generators :as gen]
             [goog.object :as gobject]
@@ -31,6 +31,23 @@
         (.render renderer elt)
         (.getRenderOutput renderer)))))
 
+(defn friendly-pipe
+  "Like core.async/pipe, but gives the browser an opportunity to run higher
+  priority tasks between each element."
+  ([from to] (friendly-pipe from to true))
+  ([from to close?]
+   (go-loop []
+     (let [v (<! from)]
+       (if (nil? v)
+         (when close? (close! to))
+         (when (>! to v)
+           ;; This gives the browser a chance to break away from the pipe
+           ;; process and return later.
+           (<! (async/timeout 0))
+           (recur)))))
+   to))
+
+
 (defn generate
   "Generates signature, morph pairs for component-factory-var (using optional
   generator overrides) and puts them onto ch."
@@ -40,10 +57,12 @@
          spec (:args (s/get-spec component-factory-var))
          samples (take sample-size (gen/sample-seq (s/gen spec overrides)))
          signature-of-sample (comp signature (partial apply shallow-render (deref component-factory-var)))
+         samples-ch (chan)
          morphs-ch (chan 1 (comp
                             (map (juxt signature-of-sample identity))
                             (distinct-by first)))]
-     (async/onto-chan morphs-ch samples)
+     (async/onto-chan samples-ch samples)
+     (friendly-pipe samples-ch morphs-ch)
      (async/pipe morphs-ch ch))))
 
 
@@ -52,9 +71,6 @@
     (go-loop []
       (when-let [morph (<! morph-ch)]
         (om-next/update-state! this update :morphs conj morph)
-        ;; This gives the browser a chance to draw what we've got before
-        ;; calculating more morphs.
-        (<! (async/timeout 1))
         (recur)))))
 
 (defui ^:once ^:private MorphDisplay
