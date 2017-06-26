@@ -305,8 +305,6 @@
             logged-out? (not user)
             license (get-in app state/license-path)
             project (get-in app state/project-path)
-            builds (get-in app state/recent-builds-path)
-            projects (get-in app state/projects-path)
             plan (get-in app state/project-plan-path)
             show-web-notif-banner? (not (get-in app state/remove-web-notification-banner-path))
             show-web-notif-banner-follow-up? (not (get-in app state/remove-web-notification-confirmation-banner-path))]
@@ -388,8 +386,7 @@
                                                                                   :build
                                                                                   :platform))]
                                                       platform)
-                                          :builds builds
-                                          :projects projects}))])))))
+                                          :show-nux-experience? (state-utils/show-nux-expeprience? app)}))])))))
 
 (defn header [{:keys [app crumbs actions] :as props} owner]
   (reify
