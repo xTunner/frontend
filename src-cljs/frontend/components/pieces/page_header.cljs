@@ -219,7 +219,7 @@
                  placed.
   :topbar-beta - Temporarily in place while user top-bar-ui-v-1 feature flag. Provides
                  nav-point and org to allow for toggling into and out of topbar beta view"
-  [{:keys [crumbs actions logged-out? platform topbar-beta data]} owner]
+  [{:keys [crumbs actions logged-out? platform topbar-beta builds projects]} owner]
   (let [crumbs-login (map #(assoc % :logged-out? logged-out?) crumbs)
         has-topbar? (feature/enabled? "top-bar-ui-v-1")
         toggle-topbar (when-not has-topbar? "top-bar-ui-v-1")
@@ -227,9 +227,7 @@
                              "Leave Beta UI"
                              "Join Beta UI")
         om-next-page? (-> topbar-beta :nav-point routes/om-next-nav-point?)
-        builds (get-in data state/recent-builds-path)
-        projects (get-in data state/projects-path)
-        new_user? (and (empty? builds)
+        new-user? (and (empty? builds)
                        projects
                        (empty? projects))]
     (reify
@@ -266,7 +264,7 @@
                                                                                   :properties {:component "topbar"
                                                                                                :treatment "top-bar-beta"}})}
                       "Provide Beta UI Feedback")])])
-              (when (and (false? om-next-page?) (false? new_user?))
+              (when (and (false? om-next-page?) (false? new-user?))
                 (button/link {:fixed? true
                               :kind (if has-topbar?
                                       :secondary
