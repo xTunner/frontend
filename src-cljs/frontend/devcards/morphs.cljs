@@ -72,24 +72,71 @@
 
 
 (defn- update-morphs [this props]
+  ;; This code does some juggling to handle Figwheel reloading well. In
+  ;; particular, it has two goals:
+  ;;
+  ;; * When the code reloads, we should still see the old morphs while new ones
+  ;;   are generated, as it would be annoying for them to disappear.
+  ;;
+  ;; * When the new version of the component no longer generates a particular
+  ;;   morph, *that* morph should disappear.
+  ;;
+  ;; Outdated morphs can't be thrown away until the latest generator is
+  ;; finished: this is when we can say for a fact that the latest code doesn't
+  ;; generate a particular morph. To do this, we keep the current generator's
+  ;; morphs separate from any previous morphs in the component state. Once we
+  ;; successfully complete generating the latest version's morphs (and there's
+  ;; been no new version of the component in the meantime), we can throw away
+  ;; the previous morphs, knowing that the current morphs are exactly the morphs
+  ;; we want to see.
   (let [morph-ch (:morphs props)]
+    (let [previous-channel (:current-channel (om-next/get-state this))]
+      ;; On update, any current channel becomes the previous channel.
+      (om-next/update-state! this (fn [state]
+                                    (-> state
+                                        ;; Move any morphs from :current-morphs to :previous-morphs
+                                        (update :previous-morphs merge (:current-morphs state))
+                                        ;; Clear the :current-morphs and note the new :current-morphs
+                                        (assoc :current-morphs {}
+                                               :current-channel morph-ch))))
+
+      ;; Now close the previous-channel, if any. This will halt the morph
+      ;; generator behind that channel, so we don't waste effort.
+      (when previous-channel (close! previous-channel)))
+
     (go-loop []
-      (when-let [morph (<! morph-ch)]
-        (om-next/update-state! this update :morphs conj morph)
-        (recur)))))
+      ;; Read morphs from the new channel.
+      (if-let [morph (<! morph-ch)]
+        (do
+          ;; Add each morph from the :current-channel to the :current-morphs.
+          (om-next/update-state! this
+                                 (fn [state]
+                                   (if (= morph-ch (:current-channel state))
+                                     (update state :current-morphs conj morph)
+                                     state)))
+          (recur))
+        ;; When the channel closes, if it's still the current channel, clear
+        ;; the :previous-morphs. This will happen only when the generator has
+        ;; finished generating morphs and the component has not reloaded and
+        ;; started a new morph generation process in the meantime. This means
+        ;; that :current-morphs is not a complete set of morphs, and any morphs
+        ;; in :previous-morphs but not :current-morphs are out of date and
+        ;; should disappear.
+        (om-next/update-state! this (fn [state]
+                                      (if (= morph-ch (:current-channel state))
+                                        (dissoc state :previous-morphs)
+                                        state)))))))
 
 (defui ^:once ^:private MorphDisplay
   Object
-  (initLocalState [this]
-    {:morphs {}})
   (componentDidMount [this]
     (update-morphs this (om-next/props this)))
   (componentWillReceiveProps [this next-props]
     (update-morphs this next-props))
   (render [this]
     (let [{:keys [render-morphs]} (om-next/props this)
-          {:keys [morphs]} (om-next/get-state this)]
-      (render-morphs (vals morphs)))))
+          {:keys [previous-morphs current-morphs]} (om-next/get-state this)]
+      (render-morphs (vals (merge previous-morphs current-morphs))))))
 
 (def ^:private morph-display (om-next/factory MorphDisplay))
 
