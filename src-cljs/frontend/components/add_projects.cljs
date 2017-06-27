@@ -172,7 +172,7 @@
 
 (defn empty-repo-list [loading-repos? repo-filter-string selected-org-login has-private-scopes? owner]
   (if loading-repos?
-    (spinner)
+    [:div.empty-placeholder (spinner)]
     [:div.add-repos
      (if repo-filter-string
        (str "No matching repos for organization " selected-org-login)
@@ -495,7 +495,7 @@
                             :selected-org (legacy-org->modern-org selected-org)
                             :on-org-click #(raise! owner [:selected-add-projects-org (modern-org->legacy-org %)])})
                           (when (get-in user [:repos-loading (keyword selected-vcs-type)])
-                            [:div.orgs-loading (spinner)])])]
+                            [:div.empty-placeholder (spinner)])])]
         (if bitbucket-possible?
           (let [tabs [{:name "github"
                        :icon (html [:i.octicon.octicon-mark-github])
