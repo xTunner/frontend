@@ -18,6 +18,22 @@
     (:job-run-status/canceled
      :job-run-status/not-run) :status-class/stopped))
 
+(defui ^:once Requires
+  static om-next/IQuery
+  (query [this]
+    [:job/name])
+  Object
+  (render [this]
+    (component
+      (html
+       [:div
+        [:.heading "Requires"]
+        [:ul.requirements
+         (for [required-job (om-next/props this)]
+           [:li.requirement (:job/name required-job)])]]))))
+
+(def requires (om-next/factory Requires))
+
 (defui ^:once Job
   static om-next/IQuery
   (query [this]
@@ -30,7 +46,7 @@
                   :build/org
                   :build/repo
                   :build/number]}
-     {:job/required-jobs [:job/name]}
+     {:job/required-jobs (om-next/get-query Requires)}
      {:job/run [:run/id]}])
   Object
   (render [this]
@@ -65,10 +81,7 @@
                    job-name])]
                (when (seq required-jobs)
                  [:.requires
-                  [:.requires-heading "Requires"]
-                  [:ul.requirements
-                   (for [required-job required-jobs]
-                     [:li.requirement (:job/name required-job)])]])]
+                  (requires required-jobs)])]
               [:.job-metadata
                [:.metadata-row
                 [:.metadata-item

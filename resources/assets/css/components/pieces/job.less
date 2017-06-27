@@ -1,4 +1,23 @@
 .ns("frontend.components.pieces.job", {
+  .ui("Requires", {
+    font-size: @fontSizeSmaller;
+
+    > .heading {
+      color: @grayLight;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    > .requirements {
+      list-style: none;
+      padding-left: 0;
+
+      > .requirement {
+        color: @grayLight;
+      }
+    }
+  });
+
   .ui("Job", {}, {
     .el("content", {
       @spacing: 8px;
@@ -37,22 +56,6 @@
             padding-left: @spacing + @frontend-components-pieces-status--width + @spacing + @spacing;
             padding-right: @spacing;
             padding-bottom: @spacing;
-            font-size: @fontSizeSmaller;
-
-            > .requires-heading {
-              color: @grayLight;
-              font-weight: bold;
-              text-transform: uppercase;
-            }
-
-            > .requirements {
-              list-style: none;
-              padding-left: 0;
-
-              > .requirement {
-                color: @grayLight;
-              }
-            }
           }
         }
 
