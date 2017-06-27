@@ -27,10 +27,12 @@
     :run-status/succeeded :status-class/succeeded
     :run-status/failed :status-class/failed
     (:run-status/canceled :run-status/not-run) :status-class/stopped
-    :run-status/needs-setup :status-class/setup-needed))
+    :run-status/needs-setup :status-class/setup-needed
+    :run-status/on-hold :status-class/on-hold))
 
 (def ^:private cancelable-statuses #{:run-status/not-run
-                                     :run-status/running})
+                                     :run-status/running
+                                     :run-status/on-hold})
 
 (def ^:private rerunnable-statuses #{:run-status/succeeded
                                      :run-status/failed
@@ -187,7 +189,7 @@
                       :status-class/stopped (icon/status-canceled)
                       :status-class/succeeded (icon/status-passed)
                       :status-class/running (icon/status-running)
-                      :status-class/waiting (icon/status-queued)))]
+                      :status-class/on-hold (icon/status-on-hold)))]
                  [:.status-string
                   (when-not loading?
                     (string/replace (name status) #"-" " "))]]]
