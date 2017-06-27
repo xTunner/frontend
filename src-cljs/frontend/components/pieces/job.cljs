@@ -46,39 +46,39 @@
               :as build} :job/build
              job-name :job/name}
             (om-next/props this)]
-        (card/basic
+        (card/full-bleed
          (element :content
            (html
             [:div
-             [:div.job-card-inner
-              [:div.status-heading
-               [:div.status-name
-                [:span.job-status (status/icon (status-class status))]
+             [:.job-card-inner
+              [:.body
+               [:.status-name
+                [:.status (status/icon (status-class status))]
                 (if (nil? build)
-                  [:span.job-name job-name]
+                  job-name
                   [:a {:href
-                     (routes/v1-build-path vcs-type
-                                           org
-                                           repo
-                                           nil
-                                           number)}
-                 [:span.job-name job-name]])]]
-              (when (seq required-jobs)
-                [:div.requires
-                 [:span.requires-heading "Requires"]
-                 [:ul.requirements
-                  (for [required-job required-jobs]
-                    [:li.requirement (:job/name required-job)])]])
-              [:div.metadata
-               [:div.metadata-row.timing
-                [:span.metadata-item.recent-time.start-time
+                       (routes/v1-build-path vcs-type
+                                             org
+                                             repo
+                                             nil
+                                             number)}
+                   job-name])]
+               (when (seq required-jobs)
+                 [:.requires
+                  [:.requires-heading "Requires"]
+                  [:ul.requirements
+                   (for [required-job required-jobs]
+                     [:li.requirement (:job/name required-job)])]])]
+              [:.job-metadata
+               [:.metadata-row
+                [:.metadata-item
                  [:i.material-icons "today"]
                  (if started-at
                    [:span {:title (str "Started: " (datetime/full-datetime started-at))}
                     (build-legacy common/updating-duration {:start started-at} {:opts {:formatter datetime/time-ago-abbreviated}})
                     [:span " ago"]]
                    "-")]
-                [:span.metadata-item.recent-time.duration
+                [:.metadata-item
                  [:i.material-icons "timer"]
                  (if stopped-at
                    [:span {:title (str "Duration: " (datetime/as-duration (- stopped-at started-at)))}

@@ -1,3 +1,6 @@
+// The width of a status icon.
+@frontend-components-pieces-status--width: 18px;
+
 .ns("frontend.components.pieces.status", {
   .ui("badge", {
     @badge-height: 25px;
@@ -48,7 +51,7 @@
   });
 
   .ui("icon", {
-    width: 18px;
+    width: @frontend-components-pieces-status--width;
 
     &.succeeded {
       color: @green;

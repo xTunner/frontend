@@ -1,7 +1,8 @@
 .ns("frontend.components.pieces.job", {
   .ui("Job", {}, {
     .el("content", {
-      margin: -15px;
+      @spacing: 8px;
+
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       background-color: @whiten;
 
@@ -19,97 +20,72 @@
       }
 
       > .job-card-inner {
-
-        > .status-heading {
-          .flexy(center, space-between);
-          padding: 8px 8px 0 8px;
+        > .body {
+          padding: @spacing;
 
           > .status-name {
             .flexy(center);
 
-            > .job-status {
-              margin-right: 8px;
-              padding: 8px;
+            > .status {
+              margin-right: @spacing;
+              padding: @spacing;
             }
           }
-        }
 
-        > .requires {
-          padding-left: 50px;
-          margin-bottom: 8px;
-          font-size: @fontSizeSmaller;
+          > .requires {
+            // Align with job name.
+            padding-left: @spacing + @frontend-components-pieces-status--width + @spacing + @spacing;
+            padding-right: @spacing;
+            padding-bottom: @spacing;
+            font-size: @fontSizeSmaller;
 
-          > .requires-heading {
-            color: @grayLight;
-            font-weight: bold;
-            text-transform: uppercase;
-          }
-
-          > .requirements {
-            list-style: none;
-            padding-left: 0;
-
-            > .requirement {
+            > .requires-heading {
               color: @grayLight;
+              font-weight: bold;
+              text-transform: uppercase;
+            }
+
+            > .requirements {
+              list-style: none;
+              padding-left: 0;
+
+              > .requirement {
+                color: @grayLight;
+              }
             }
           }
         }
 
-
-        > .metadata {
-          margin-top: 8px;
+        > .job-metadata {
           @build-padding: 12px;
           @build-item-inner-border: 1px solid rgba(0, 0, 0, 0.1);
-          width: auto;
 
           > .metadata-row {
             .flexy(row, flex-end);
-            margin-top: 0;
-            padding-left: 0;
-            padding-right: 0;
-
             border-top: @build-item-inner-border;
-            padding: 0;
-
-            &:first-of-type {
-              margin-bottom: 0;
-            }
 
             > .metadata-item {
+              .flex(0 0 50%);
               .flexy(center);
-              .flex(1 0 auto);
 
               font-size: @fontSizeSmaller;
+              padding: @spacing;
 
-              padding: 8px;
-
-              &:last-child {
-                .flex(0 0 50%);
+              &:not(:first-child) {
                 border-left: @build-item-inner-border;
               }
 
-              &.start-time,
-              &.duration,
-              &.pull-requests,
-              &.revision {
-                i, svg {
-                  font-size: @fontSizeLarge;
-                  height: 19px; // magic number to make all the things the same height
-                  width: 18px;
-                  margin-right: 8px;
-                  margin-left: 0;
-                  padding-top: 1px;
-                  color: @grayLighter;
-                  max-width: @fontSizeLarge;
-                  display: inline;
-                  text-align: center;
-                }
-              }
-
-              &.pull-requests,
-              &.revision {
-                padding-top: 8px;
-                padding-bottom: 8px;
+              > i {
+                font-size: @fontSizeLarge;
+                height: 19px; // magic number to make all the things the same height
+                width: 18px;
+                margin-right: @spacing;
+                margin-left: 0;
+                padding-top: 1px;
+                color: @grayLighter;
+                max-width: @fontSizeLarge;
+                display: inline;
+                text-align: center;
               }
             }
           }
