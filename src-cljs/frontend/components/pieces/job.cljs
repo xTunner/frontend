@@ -19,9 +19,6 @@
      :job-run-status/not-run) :status-class/stopped))
 
 (defui ^:once Job
-  static om-next/Ident
-  (ident [this {:keys [job/id]}]
-    [:job/by-id id])
   static om-next/IQuery
   (query [this]
     [:job/id
@@ -29,7 +26,10 @@
      :job/started-at
      :job/stopped-at
      :job/name
-     :job/build
+     {:job/build [:build/vcs-type
+                  :build/org
+                  :build/repo
+                  :build/number]}
      {:job/required-jobs [:job/name]}
      {:job/run [:run/id]}])
   Object
