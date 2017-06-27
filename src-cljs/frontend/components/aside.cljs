@@ -453,6 +453,17 @@
                                   :workflows? workflows?
                                   :om-next-parent om-next-parent}}))])
 
+          (when (empty? projects)
+            [:.no-projects-followed-card
+             (card/basic
+               (html
+                 [:div
+                  [:p "No projects listed?"]
+                  (button/link {:href (routes/v1-add-projects-path (org/for-route selected-org))
+                                :kind :secondary}
+                    [:span
+                     [:i.material-icons "library_add"]
+                     "Add projects"])]))])
           (when-not (user/has-private-scopes? user)
             [:.add-private-project-card
              (card/basic

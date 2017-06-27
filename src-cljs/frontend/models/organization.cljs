@@ -89,6 +89,11 @@
     {:login (name map)
      :vcs_type (vcs-type map)}))
 
+(defn for-route
+  [org]
+  {:org (name org)
+   :vcs_type (vcs-type org)})
+
 (defn in-orgs?
   "Given an org, and a list of orgs, is the org in the list of orgs"
   [org orgs]
