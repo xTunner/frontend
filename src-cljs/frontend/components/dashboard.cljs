@@ -52,7 +52,7 @@
                     (and current-user (nil? projects)))
                 [:div.empty-placeholder (spinner)]
 
-                (state-utils/show-nux-expeprience? data)
+                (state-utils/show-nux-experience? data)
 
                 (if (not (user/has-code-identity? current-user))
                   (non-code-identity-empty-dashboard)

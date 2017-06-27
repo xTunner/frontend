@@ -386,7 +386,7 @@
                                                                                   :build
                                                                                   :platform))]
                                                       platform)
-                                          :show-nux-experience? (state-utils/show-nux-expeprience? app)}))])))))
+                                          :show-nux-experience? (state-utils/show-nux-experience? app)}))])))))
 
 (defn header [{:keys [app crumbs actions] :as props} owner]
   (reify
