@@ -7,6 +7,7 @@
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.modal :as modal]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
@@ -140,7 +141,9 @@
         organizations (orgs-from-repos (:current-user data) projects)
         project-orgs (group-by project-model/org-name projects)
         projects-loaded? (:projects-loaded? data)
-        cta-button-text "Follow and Build"
+        cta-button-text (if (feature/enabled? :onboarding-v1)
+                          "Follow"
+                          "Follow and Build")
         {:keys [total-selected-projects-count selected-building-projects-count selected-not-building-projects-count]
          :as event-properties} (event-properties cta-button-text projects)
         follow-and-build-action #(do
@@ -162,10 +165,11 @@
                [:div.getting-started
                 [:div
                  "Choose projects to follow and populate your dashboard to see what builds pass/fail and show how fast they run."]
-                [:div
-                 "Projects that have never been built on CircleCI before have a "
-                 [:span.new-badge]
-                 "before the project name."]
+                (when-not (feature/enabled? :onboarding-v1)
+                  [:div
+                   "Projects that have never been built on CircleCI before have a "
+                   [:span.new-badge]
+                   "before the project name."])
                 [:div.org-projects-container
                  (map (fn [org]
                         (om/build project-list {:org org

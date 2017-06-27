@@ -1283,6 +1283,9 @@
         process-resp (fn [action current-val]
                        (->> resp
                             (remove repo-model/requires-invite?)
+                            (#(if (feature/enabled? :onboarding-v1)
+                               (filter repo-model/building-on-circle? %)
+                               %))
                             (map #(assoc % :checked true))
                             (map-utils/coll-to-map :vcs_url)
                             (merge current-val)))]
