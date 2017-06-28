@@ -1,5 +1,6 @@
 (ns frontend.components.pieces.job
   (:require [frontend.components.common :as common]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.status :as status]
             [frontend.datetime :as datetime]
@@ -8,15 +9,25 @@
             [frontend.utils.legacy :refer [build-legacy]]
             [om.next :as om-next :refer-macros [defui]]))
 
-(defn- status-class [run-status]
+(defn- status-class [run-status type]
   (case run-status
     (:job-run-status/waiting
-     :job-run-status/not-running) :status-class/waiting
-    :job-run-status/running :status-class/running
+     :job-run-status/not-running)
+    :status-class/waiting
+
+    :job-run-status/running
+    (if (= :job-type/approval type)
+      :status-class/on-hold
+      :status-class/running)
+
     :job-run-status/succeeded :status-class/succeeded
-    (:job-run-status/failed :job-run-status/timed-out) :status-class/failed
+
+    (:job-run-status/failed :job-run-status/timed-out)
+    :status-class/failed
+
     (:job-run-status/canceled
-     :job-run-status/not-run) :status-class/stopped))
+     :job-run-status/not-run)
+    :status-class/stopped))
 
 (defui ^:once Requires
   static om-next/IQuery
@@ -39,6 +50,7 @@
   (query [this]
     [:job/id
      :job/status
+     :job/type
      :job/started-at
      :job/stopped-at
      :job/name
@@ -52,6 +64,7 @@
   (render [this]
     (component
       (let [{:keys [job/status
+                    job/type
                     job/started-at
                     job/stopped-at
                     job/required-jobs]
@@ -69,7 +82,7 @@
              [:.job-card-inner
               [:.body
                [:.status-name
-                [:.status (status/icon (status-class status))]
+                [:.status (status/icon (status-class status type))]
                 (if (nil? build)
                   job-name
                   [:a {:href
@@ -79,6 +92,15 @@
                                              nil
                                              number)}
                    job-name])]
+               (when (= :job-type/approval type)
+                 [:.approval
+                  (button/button
+                   {:kind :primary
+                    :disabled? (not= :job-run-status/running status)}
+                   (case status
+                     :job-run-status/succeeded "Workflow Accepted"
+                     :job-run-status/failed "Workflow Rejected"
+                     "Continue Workflow"))])
                (when (seq required-jobs)
                  [:.requires
                   (requires required-jobs)])]

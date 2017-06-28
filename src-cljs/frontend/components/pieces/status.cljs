@@ -11,7 +11,8 @@
     :status-class/stopped (icon/status-canceled)
     :status-class/succeeded (icon/status-passed)
     :status-class/running (icon/status-running)
-    :status-class/waiting (icon/status-queued)))
+    :status-class/waiting (icon/status-queued)
+    :status-class/on-hold (icon/status-on-hold)))
 
 (defn icon
   "A status icon corresponding to the given status class."
@@ -62,6 +63,7 @@
   (def ^:private status-classes
     [:status-class/waiting
      :status-class/running
+     :status-class/on-hold
      :status-class/succeeded
      :status-class/failed
      :status-class/stopped])

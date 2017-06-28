@@ -29,6 +29,11 @@
       text-transform: uppercase;
     }
 
+    &.on-hold {
+      color: @purple;
+      background: @purpleLight;
+    }
+
     &.succeeded {
       background: @green;
     }
@@ -52,6 +57,10 @@
 
   .ui("icon", {
     width: @frontend-components-pieces-status--width;
+
+    &.on-hold {
+      color: @purple;
+    }
 
     &.succeeded {
       color: @green;

@@ -51,11 +51,14 @@
             }
           }
 
-          > .requires {
+          > .approval, > .requires {
             // Align with job name.
             padding-left: @spacing + @frontend-components-pieces-status--width + @spacing + @spacing;
             padding-right: @spacing;
-            padding-bottom: @spacing;
+          }
+
+          > .approval + .requires {
+            padding-top: @spacing;
           }
         }
 
