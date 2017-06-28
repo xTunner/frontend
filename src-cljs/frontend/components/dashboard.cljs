@@ -12,6 +12,7 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :refer-macros [html]]
+            [frontend.utils.state :as state-utils]
             [om.core :as om :include-macros true]))
 
 (defn- non-code-identity-empty-dashboard []
@@ -51,9 +52,7 @@
                     (and current-user (nil? projects)))
                 [:div.empty-placeholder (spinner)]
 
-                (and (empty? builds)
-                     projects
-                     (empty? projects))
+                (state-utils/show-nux-experience? data)
 
                 (if (not (user/has-code-identity? current-user))
                   (non-code-identity-empty-dashboard)

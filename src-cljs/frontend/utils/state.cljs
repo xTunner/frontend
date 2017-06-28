@@ -154,3 +154,12 @@
   (change-selected-org state (or (get-in state state/selected-org-path)
                                  (get-in state state/last-visited-org-path))))
 
+(defn show-nux-experience?
+  "Returns `true` if user should be in `new user experience` mode, `false` otherwise."
+  [state]
+  (let [builds (get-in state state/recent-builds-path)
+        projects (get-in state state/projects-path)]
+    (and (empty? builds)
+         projects
+         (empty? projects)
+         (= (get-in state state/current-view-path) :dashboard))))
