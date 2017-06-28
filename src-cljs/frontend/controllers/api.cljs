@@ -169,13 +169,17 @@
   (if-not (every? deref all-page-results)
     state
     (let [all-recent-builds (apply concat (map deref all-page-results))
+          failed-builds (project-insights/failed-builds all-recent-builds)
           add-recent-build (fn [project]
                               (let [{:keys [branch]} target-key
                                     project-key (api/project-build-key project)]
                                 (cond-> project
                                   (= (dissoc project-key :branch) (dissoc target-key :branch))
                                   (assoc-in (state/recent-builds-branch-path branch)
-                                            all-recent-builds))))]
+                                            all-recent-builds))))
+          state (if (empty? failed-builds)
+                  (assoc-in state state/failed-builds-tests-path [])
+                  state)]
       (if (= (:navigation-point state) :project-insights)
         (update-in state state/project-path add-recent-build)
         (update-in state state/projects-path (partial map add-recent-build))))))
