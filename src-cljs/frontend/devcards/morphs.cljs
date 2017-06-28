@@ -136,7 +136,10 @@
   (render [this]
     (let [{:keys [render-morphs]} (om-next/props this)
           {:keys [previous-morphs current-morphs]} (om-next/get-state this)]
-      (render-morphs (vals (merge previous-morphs current-morphs))))))
+      (->> (merge previous-morphs current-morphs)
+           (sort-by (comp hash key))
+           vals
+           render-morphs))))
 
 (def ^:private morph-display (om-next/factory MorphDisplay))
 
