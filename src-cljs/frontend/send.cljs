@@ -54,8 +54,16 @@
     ("waiting" "queued" "not_running" "blocked" "pending") :job-run-status/waiting
     :job-run-status/unknown))
 
+(defn- job-type [job-type-str]
+  (case job-type-str
+    "approval" :job-type/approval
+    "build" :job-type/build
+    :job-type/unknown))
+
 (defn adapt-to-job [job-response]
-  (update job-response :job/status job-run-status))
+  (-> job-response
+      (update :job/status job-run-status)
+      (update :job/type job-type)))
 
 (defn denormalize-required [job jobs-by-id]
   (assoc job
