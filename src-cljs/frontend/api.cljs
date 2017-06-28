@@ -34,12 +34,13 @@
              :context {:page page
                        :vcs :github}))
 
-(defn follow-projects [vcs-urls api-ch uuid]
+(defn follow-projects [vcs-urls api-ch uuid on-success]
   (ajax/ajax :post (str "/api/v1.1/user/follow-projects")
              :follow-projects
              api-ch
              :params {:vcs-urls vcs-urls}
-             :context {:uuid uuid}))
+             :context {:uuid uuid
+                       :on-success on-success}))
 
 (defn get-bitbucket-repos [api-ch & {:keys [message] :or {message :bitbucket-repos}}]
   (ajax/ajax :get (str "/api/v1.1/user/repos/bitbucket")

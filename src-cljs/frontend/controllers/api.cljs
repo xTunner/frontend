@@ -1292,10 +1292,17 @@
                                %))
                             (map #(assoc % :checked true))
                             (map-utils/coll-to-map :vcs_url)
-                            (merge current-val)))]
+                            (merge current-val)))
+        buildable-projects (fn [current-val]
+                             (->> resp
+                                  (remove repo-model/requires-invite?)
+                                  (remove repo-model/building-on-circle?)
+                                  (map-utils/coll-to-map :vcs_url)
+                                  (merge current-val)))]
     ;; Add the items on this page of results to the state.
     (-> state
-        (update-in state/repos-building-path #(process-resp filter %)))))
+        (update-in state/repos-building-path #(process-resp filter %))
+        (update-in state/setup-project-projects-path #(buildable-projects %)))))
 
 (defmethod api-event [:all-repos :failed]
   [target message status {:keys [context]} state]
@@ -1318,9 +1325,13 @@
   [_ _ status {:keys [context]} previous-state current-state comms]
   (let [api-ch (:api comms)]
     (forms/release-button! (:uuid context) status)
-    (api/get-dashboard-builds {} api-ch)
-    (api/get-projects api-ch)
-    (api/get-me api-ch)))
+    (if (feature/enabled? :onboarding-v1)
+      ; To display a success confirmation note after successfully follow the projects.
+      ((:on-success context))
+      (do
+        (api/get-dashboard-builds {} api-ch)
+        (api/get-projects api-ch)
+        (api/get-me api-ch)))))
 
 (defmethod post-api-event! [:follow-projects :failed]
   [_ _ status {:keys [context]} previous-state current-state comms]

@@ -11,11 +11,13 @@
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
             [frontend.models.user :as user-model]
+            [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [html]]
             [frontend.utils.github :as gh-utils]
             [goog.string :as gstring]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true]
+            [frontend.api :as api]))
 
 (defn count-projects [{:keys [building? projects]}]
   (let [action (if building? filter remove)]
@@ -134,20 +136,19 @@
                [:div.projects-container.maybe-border-bottom
                 (spinner)]))])))))
 
-(defn nux-bootstrap-content [data owner]
-  (let [projects (->> (:projects data)
-                      vals
-                      (remove nil?))
-        organizations (orgs-from-repos (:current-user data) projects)
-        project-orgs (group-by project-model/org-name projects)
-        projects-loaded? (:projects-loaded? data)
+(defn nux-bootstrap-content [{:keys [projects current-user projects-loaded? on-success] :as data} owner]
+  (let [processed-projects (->> projects
+                                vals
+                                (remove nil?))
+        organizations (orgs-from-repos current-user processed-projects)
+        project-orgs (group-by project-model/org-name processed-projects)
         cta-button-text (if (feature/enabled? :onboarding-v1)
                           "Follow"
                           "Follow and Build")
         {:keys [total-selected-projects-count selected-building-projects-count selected-not-building-projects-count]
-         :as event-properties} (event-properties cta-button-text projects)
+         :as event-properties} (event-properties cta-button-text processed-projects)
         follow-and-build-action #(do
-                                   (raise! owner [:followed-projects])
+                                   (raise! owner [:followed-projects {:on-success on-success}])
                                    ((om/get-shared owner :track-event) {:event-type :follow-and-build-projects-clicked
                                                                         :properties event-properties}))]
     (reify
@@ -194,48 +195,105 @@
                   [:div.explanation (gstring/format "Follow (%s) projects currently building on CircleCI" selected-building-projects-count)])
                 (when (and projects-loaded? (> selected-not-building-projects-count 0))
                   [:div.explanation (gstring/format "Add (%s) projects not yet building on CircleCI" selected-not-building-projects-count)])]))))))))
+(defn- add-project-href
+  [top-bar-nav-org]
+  (if (feature/enabled? "top-bar-ui-v-1")
+    (routes/v1-add-projects-path top-bar-nav-org)
+    (routes/v1-add-projects)))
 
-(defn build-empty-state [{:keys [current-user projects-loaded? organizations] :as data} owner]
+(defn- success-confirmation [{:keys [selected-org new-projects projects] :as data} owner]
   (reify
+    om/IRender
+    (render [_]
+      (let [org-name (:login selected-org)
+            vcs-type (:vcs_type selected-org)
+            top-bar-nav-org {:org org-name :vcs_type vcs-type}
+            count-projects (fn [projs filter-fn]
+                             (->> projs
+                                  vals
+                                  filter-fn
+                                  (remove nil?)
+                                  count))]
+        (card/titled
+          {:title (gstring/format "Successfully Following %s Projects"
+                                  (count-projects projects #(filter :checked %)))}
+          (html
+            [:div
+             [:p "We noticed you have "
+              [:b (count-projects new-projects identity)]
+              " new projects on CircleCI. You can build these projects at any time from the "
+              [:a {:href (add-project-href top-bar-nav-org)}
+               "Add Projects"]
+              " page."]
+             [:p "New projects can be made using our old 1.0 architecture or a new and improved 2.0 architecture."]
+             [:div
+              (button/link
+                {:href (if (feature/enabled? "top-bar-ui-v-1")
+                         (routes/v1-organization-dashboard-path top-bar-nav-org)
+                         (routes/v1-dashboard-path {}))
+                 :on-click #(let [api-ch (om/get-shared owner [:comms :api])]
+                              (api/get-dashboard-builds {} api-ch)
+                              (api/get-projects api-ch)
+                              (api/get-me api-ch))
+                 :kind :primary}
+                "View Builds")
+
+              [:a.add-projects-button-link
+               {:href (add-project-href top-bar-nav-org)
+                :kind :secondary}
+               "Setup New Projects"]]]))))))
+
+(defn build-empty-state [{:keys [selected-org current-user projects-loaded? organizations new-projects projects] :as data} owner]
+  (reify
+    om/IInitState
+    (init-state [_]
+      {:show-success? false})
+
     om/IDidMount
     (did-mount [_]
       (raise! owner [:nux-bootstrap]))
-    om/IRender
-    (render [_]
+    om/IRenderState
+    (render-state [_ {:keys [show-success?]}]
       (let [avatar-url (get-in data [:current-user :identities :github :avatar_url])]
         (html
           [:div.no-projects-block
-           (card/collection
-             [(card/basic
-                (empty-state/empty-state
-                  {:icon (empty-state/avatar-icons
-                           [(gh-utils/make-avatar-url {:avatar_url avatar-url} :size 60)])
-                   :heading (html [:span (empty-state/important "Welcome to CircleCI!")])
-                   :subheading (html
-                                 [:div
-                                  "You've joined the ranks of 100,000+ teams who ship better code, faster."
-                                  [:br]
-                                  (when-not (user-model/has-private-scopes? current-user)
-                                    (button/link {:href (gh-utils/auth-url)
-                                                  :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
-                                                                                                  :properties {:component "nux"}})
-                                                  :kind :primary}
-                                      "Add private repos"))])}))
+           (if (and (feature/enabled? :onboarding-v1)
+                    show-success?)
+             (om/build success-confirmation {:selected-org selected-org
+                                             :new-projects new-projects
+                                             :projects projects})
 
-              (if organizations
-                (om/build nux-bootstrap-content data)
-                (card/basic (spinner)))
-              (if organizations
-                (card/titled
-                 {:title "Looking for something else?"}
-                 (html
-                   [:div
-                    [:div
-                     "Project not listed? Visit the "
-                     [:a {:href "/add-projects"} "Add Projects"]
-                     " page to find it."]
-                    [:div
-                     "Interested in a tour? "
-                     [:a {:href "https://circleci.com/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
-                          :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
-                      "See how Spotify uses CircleCI"]]])))])])))))
+             (card/collection
+               [(card/basic
+                  (empty-state/empty-state
+                    {:icon (empty-state/avatar-icons
+                             [(gh-utils/make-avatar-url {:avatar_url avatar-url} :size 60)])
+                     :heading (html [:span (empty-state/important "Welcome to CircleCI!")])
+                     :subheading (html
+                                   [:div
+                                    "You've joined the ranks of 100,000+ teams who ship better code, faster."
+                                    [:br]
+                                    (when-not (user-model/has-private-scopes? current-user)
+                                      (button/link {:href (gh-utils/auth-url)
+                                                    :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
+                                                                                                    :properties {:component "nux"}})
+                                                    :kind :primary}
+                                                   "Add private repos"))])}))
+
+                (if organizations
+                  (om/build nux-bootstrap-content (assoc data :on-success #(om/set-state! owner :show-success? true)))
+                  (card/basic (spinner)))
+                (if organizations
+                  (card/titled
+                    {:title "Looking for something else?"}
+                    (html
+                      [:div
+                       [:div
+                        "Project not listed? Visit the "
+                        [:a {:href "/add-projects"} "Add Projects"]
+                        " page to find it."]
+                       [:div
+                        "Interested in a tour? "
+                        [:a {:href "https://circleci.com/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
+                             :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
+                         "See how Spotify uses CircleCI"]]])))]))])))))

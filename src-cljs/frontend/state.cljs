@@ -182,6 +182,7 @@
   (conj user-path :nux vcs-type :repos-loaded))
 
 (def repos-building-path (conj user-path :nux :repos))
+(def setup-project-projects-path (conj user-path :setup-project :projects))
 
 (def user-email-prefs-key :basic_email_prefs)
 (def user-email-prefs-path (conj user-path :basic_email_prefs))

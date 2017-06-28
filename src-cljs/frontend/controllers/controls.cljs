@@ -1750,7 +1750,7 @@
     (put! nav-ch [:navigate! {:path (routes/v1-account-subpage {:subpage "notifications"})}])))
 
 (defmethod post-control-event! :followed-projects
-  [_ _ _ previous-state current-state comms]
+  [_ _ {:keys [on-success]} previous-state current-state comms]
   (let [api-ch (:api comms)
         vcs-urls (->> (concat (get-in current-state state/repos-building-path))
                       vals
@@ -1758,7 +1758,7 @@
                       (map :vcs_url))
         uuid frontend.async/*uuid*]
     (button-ajax :post
-                 (api/follow-projects vcs-urls api-ch uuid)
+                 (api/follow-projects vcs-urls api-ch uuid on-success)
                  :follow-projects
                  api-ch)))
 
@@ -1777,6 +1777,7 @@
     (reduce (fn [state vcs]
               (-> state
                   (assoc-in (state/all-repos-loaded-path vcs) false)
+                  (assoc-in state/setup-project-projects-path {})
                   (assoc-in state/repos-building-path {})))
             state
             [:github :bitbucket])))

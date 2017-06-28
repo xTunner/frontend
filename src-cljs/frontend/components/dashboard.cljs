@@ -58,7 +58,9 @@
                 (if (not (user/has-code-identity? current-user))
                   (non-code-identity-empty-dashboard)
                   (om/build nux-bootstrap/build-empty-state
-                            {:projects (get-in data state/repos-building-path)
+                            {:selected-org (get-in data state/selected-org-path)
+                             :projects (get-in data state/repos-building-path)
+                             :new-projects (get-in data state/setup-project-projects-path)
                              :projects-loaded? (and (get-in data (state/all-repos-loaded-path :github))
                                                     (get-in data (state/all-repos-loaded-path :bitbucket)))
                              :current-user current-user
