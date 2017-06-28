@@ -18,7 +18,9 @@
      :job-run-status/not-running) :status-class/waiting
     :job-run-status/running :status-class/running
     :job-run-status/succeeded :status-class/succeeded
-    (:job-run-status/failed :job-run-status/timed-out) :status-class/failed
+    (:job-run-status/failed
+     :job-run-status/timed-out
+     :job-run-status/unknown) :status-class/failed
     (:job-run-status/canceled
      :job-run-status/not-run) :status-class/stopped))
 
