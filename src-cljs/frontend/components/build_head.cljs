@@ -485,7 +485,7 @@
               (when-not (empty? bottom-map)
                 (list
                  [:hr]
-                 [:li
+                 [:span
                   [:a.build-tests-toggle {:on-click #(om/update-state! owner [:is-open?] not)}
                    [:span
                     [:i.fa.build-tests-toggle-icon {:class (if (om/get-state owner :is-open?) "expanded")}]
@@ -494,7 +494,7 @@
                       "More")]]]
                  (when (om/get-state owner :is-open?)
                    (om/build-all build-tests-file-block bottom-map))))))
-           [:div.link-to-insights
+           [:div.bottom-right-cta
             (button/link {:fixed? true
                           :kind :primary
                           :target "_blank"
