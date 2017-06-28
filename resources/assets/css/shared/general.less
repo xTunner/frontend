@@ -311,3 +311,15 @@ button [spinner], button [data-spinner]{
     display: none !important;
   }
 }
+
+// Override some arcaic bootstrap styles
+// we were overriding them on most of our ol's and ul's individually anyways
+ul,
+ol {
+  margin-top: auto;
+  margin-bottom: auto;
+  ul,
+  ol {
+    margin-bottom: auto;
+  }
+}
