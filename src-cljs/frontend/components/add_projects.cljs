@@ -116,25 +116,40 @@
          (cond (repo-model/can-follow? repo)
                [:li.repo-follow
                 title-el
+                ; TODO: remove this after :onboarding-v1 is out of treament.
                 (when building?
                   [:div.building "Starting first build..."])
-                (managed-button
-                 [:button {:on-click #(do
-                                        (raise! owner [:followed-repo (assoc repo
-                                                                             :login login
-                                                                             :type type)])
-                                        (when (not building-on-circle?)
-                                          (om/set-state! owner :building? true)
-                                          ((om/get-shared owner :track-event)
-                                           {:event-type :build-project-clicked
-                                            :properties {:project-vcs-url repo-url
-                                                         :repo repo-name
-                                                         :org login}})))
-                           :title (if building-on-circle?
-                                    "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
-                                    "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project.")
-                           :data-spinner true}
-                  (if building-on-circle? "Follow project" "Build project")])]
+
+                (if (and (feature/enabled? :onboarding-v1)
+                         (not building-on-circle?))
+                  (button/link
+                    {:kind :primary
+                     :href (if (feature/enabled? "top-bar-ui-v-1")
+                             (routes/v1-setup-project-path {:org login :vcs_type type})
+                             (routes/v1-setup-project))}
+                    "Build project")
+
+                  (managed-button
+                    [:button {:on-click #(do
+                                           (raise! owner [:followed-repo (assoc repo
+                                                                           :login login
+                                                                           :type type)])
+                                           ; TODO: rm not building-on-circle? content when :onboarding-v1
+                                           ; it out of treatment.
+                                           (when (not building-on-circle?)
+                                             (om/set-state! owner :building? true)
+                                             ((om/get-shared owner :track-event)
+                                               {:event-type :build-project-clicked
+                                                :properties {:project-vcs-url repo-url
+                                                             :repo repo-name
+                                                             :org login}})))
+                              ; TODO: rm not building-on-circle? content when :onboarding-v1
+                              :title (if building-on-circle?
+                                       "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
+                                       "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project.")
+                              :data-spinner true}
+                     ; TODO: rm not building-on-circle? content when :onboarding-v1
+                     (if building-on-circle? "Follow project" "Build project")]))]
 
                (:following repo)
                [:li.repo-unfollow

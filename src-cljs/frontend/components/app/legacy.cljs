@@ -7,6 +7,7 @@
             [frontend.components.insights :as insights]
             [frontend.components.landing :as landing]
             [frontend.components.org-settings :as org-settings]
+            [frontend.components.pages.setup-project :as setup-project]
             [frontend.components.pages.add-projects :as add-projects]
             [frontend.components.pages.build :as build]
             [frontend.components.pages.project-insights :as project-insights]
@@ -62,6 +63,7 @@
     :build build/page
     :project-insights project-insights/page
     :project-settings project-settings/page
+    :setup-project setup-project/page
     :team team/page}
    ;; Old-World dominant component functions which need to be wrapped in the `main` template.
    ;; As we migrate these, we'll move them into the map above.

@@ -47,7 +47,7 @@
   }
 
   .repoButtonColor(@color) {
-    button {
+    button, a {
       .subtleButton(@color);
       &:not(.disabled) {
         &:hover {
@@ -65,6 +65,10 @@
           }
         }
       }
+    }
+
+    a {
+      font-weight: normal;
     }
   }
 
@@ -107,7 +111,7 @@
     .unfollow-repos {
       .repoButtonColor(@redLight);
 
-      button {
+      button, a {
         min-width: 180px;
 
         svg {
@@ -386,7 +390,7 @@
       }
     }
 
-    button {
+    button, a {
       &.disabled {
         position: relative;
         span {
@@ -429,6 +433,11 @@
         white-space: nowrap;
         margin-right: 1em;
         color: @grayLight;
+      }
+
+      // override button link height
+      a {
+        height: 30px;
       }
     }
   }

@@ -182,6 +182,10 @@
   [params]
   (generate-url-str "/add-projects/:vcs_type/:org" params))
 
+(defn v1-setup-project-path
+  [params]
+  (generate-url-str "/setup-project/:vcs_type/:org" params))
+
 (defn v1-team-path
   [params]
   (generate-url-str "/team/:vcs_type/:org" params))
@@ -346,8 +350,14 @@
   (defroute v1-add-projects "/add-projects" {:keys [_fragment]}
     (open-to-inner! app nav-ch :add-projects {:tab _fragment}))
 
+  (defroute v1-setup-project "/setup-project" {:keys [_fragment]}
+    (open-to-inner! app nav-ch :setup-project {:tab _fragment}))
+
   (defroute v1-organization-add-projects "/add-projects/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name _fragment]}
     (open-to-inner! app nav-ch :add-projects {:tab _fragment :vcs_type (vcs/->lengthen-vcs short-vcs-type) :login org-name}))
+
+  (defroute v1-organization-setup-project "/setup-project/:short-vcs-type/:org-name" {:keys [short-vcs-type org-name _fragment]}
+    (open-to-inner! app nav-ch :setup-project {:tab _fragment :vcs_type (vcs/->lengthen-vcs short-vcs-type) :login org-name}))
 
   (defroute v1-insights "/build-insights" []
     (open-to-inner! app nav-ch :build-insights {}))
@@ -431,6 +441,7 @@
       :project-insights (v1-organization-insights-path org)
       :route/account (v1-account)
       :route/projects (v1-organization-projects-path org)
+      :setup-project (v1-setup-project-path org)
       :team (v1-team-path org)
 
       (:route/workflows
