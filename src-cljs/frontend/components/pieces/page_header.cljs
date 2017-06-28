@@ -261,10 +261,9 @@
                                                                                   :properties {:component "topbar"
                                                                                                :treatment "top-bar-beta"}})}
                       "Provide Beta UI Feedback")])])
+
               (when (and (false? om-next-page?)
-                         (or (false? show-nux-experience?)
-                             (and (true? show-nux-experience?)
-                                  (not= (:nav-point topbar-beta) :dashboard))))
+                         (false? show-nux-experience?))
                 (button/link {:fixed? true
                               :kind (if has-topbar?
                                       :secondary

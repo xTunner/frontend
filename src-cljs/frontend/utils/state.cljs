@@ -161,4 +161,5 @@
         projects (get-in state state/projects-path)]
     (and (empty? builds)
          projects
-         (empty? projects))))
+         (empty? projects)
+         (= (get-in state state/current-view-path) :dashboard))))
