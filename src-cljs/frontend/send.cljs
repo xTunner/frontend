@@ -51,7 +51,8 @@
     "canceled" :job-run-status/canceled
     ("skipped" "not_run") :job-run-status/not-run
     "running" :job-run-status/running
-    ("waiting" "queued" "not_running" "blocked" "pending") :job-run-status/waiting))
+    ("waiting" "queued" "not_running" "blocked" "pending") :job-run-status/waiting
+    :job-run-status/unknown))
 
 (defn adapt-to-job [job-response]
   (update job-response :job/status job-run-status))
