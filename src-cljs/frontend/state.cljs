@@ -183,6 +183,7 @@
 
 (def repos-building-path (conj user-path :nux :repos))
 (def setup-project-projects-path (conj user-path :setup-project :projects))
+(def setup-project-selected-project-path (conj user-path :setup-project :selected-project))
 
 (def user-email-prefs-key :basic_email_prefs)
 (def user-email-prefs-path (conj user-path :basic_email_prefs))

@@ -375,13 +375,22 @@
       state
       (update-in state state/build-path merge resp))))
 
+(defn- setup-project-projects [resp current-val]
+  (->> resp
+       (remove repo-model/requires-invite?)
+       (remove repo-model/building-on-circle?)
+       (map-utils/coll-to-map :vcs_url)
+       (merge current-val)))
+
 (defmethod api-event [:github-repos :success]
-  [target message status args state]
-  (if (empty? (:resp args))
+  [target message status {:keys [resp]} state]
+  (if (empty? resp)
     ;; this is the last api request, update the loading flag.
     (assoc-in state state/github-repos-loading-path false)
     ;; Add the items on this page of results to the state.
-    (update-in state state/repos-path #(into % (:resp args)))))
+    (-> state
+        (update-in state/repos-path #(into % resp))
+        (update-in state/setup-project-projects-path #(setup-project-projects resp %)))))
 
 (defmethod post-api-event! [:github-repos :success]
   [target message status args previous-state current-state comms]
@@ -1292,17 +1301,11 @@
                                %))
                             (map #(assoc % :checked true))
                             (map-utils/coll-to-map :vcs_url)
-                            (merge current-val)))
-        buildable-projects (fn [current-val]
-                             (->> resp
-                                  (remove repo-model/requires-invite?)
-                                  (remove repo-model/building-on-circle?)
-                                  (map-utils/coll-to-map :vcs_url)
-                                  (merge current-val)))]
+                            (merge current-val)))]
     ;; Add the items on this page of results to the state.
     (-> state
         (update-in state/repos-building-path #(process-resp filter %))
-        (update-in state/setup-project-projects-path #(buildable-projects %)))))
+        (update-in state/setup-project-projects-path #(setup-project-projects resp %)))))
 
 (defmethod api-event [:all-repos :failed]
   [target message status {:keys [context]} state]

@@ -527,3 +527,10 @@
       :system-settings (do
                          (api/get-all-system-settings api-ch)
                          (set-page-title! "System Settings")))))
+
+(defmethod post-navigated-to! :setup-project
+  [history-imp navigation-point _ previous-state current-state comms]
+  (let [api-ch (:api comms)
+        buildable-projects (get-in current-state state/setup-project-projects-path)]
+    (when (nil? buildable-projects)
+      (api/get-all-repos api-ch))))

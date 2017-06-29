@@ -126,7 +126,8 @@
                     {:kind :primary
                      :href (if (feature/enabled? "top-bar-ui-v-1")
                              (routes/v1-setup-project-path {:org login :vcs_type type})
-                             (routes/v1-setup-project))}
+                             (routes/v1-setup-project))
+                     :on-click #(raise! owner [:setup-project-select-project repo-id])}
                     "Build project")
 
                   (managed-button

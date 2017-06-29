@@ -1786,3 +1786,9 @@
   [target message args previous-state current-state comms]
   (api/get-orgs (:api comms) :include-user? true)
   (api/get-all-repos (:api comms)))
+
+(defmethod control-event :setup-project-select-project
+  [target message repo-id state]
+  (assoc-in state
+            state/setup-project-selected-project-path
+            (get-in state (conj state/setup-project-projects-path repo-id))))
