@@ -95,7 +95,9 @@
       (or (= env "dev")
           (= server-name "dev.circlehost"))
       (if (= (:uri req) "/query-api")
-        {:proto "http" :host "localhost:3009" :uri "/query"}
+        {:proto "http" :host (if (= env "docker")
+                               "api-service:3000"
+                               "localhost:3009") :uri "/query"}
         {:proto "http" :host "dev.circlehost:8080"})
 
       (or (= env "prod")
