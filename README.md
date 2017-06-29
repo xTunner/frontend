@@ -76,10 +76,17 @@ If you have access to the backend code, you can also add this line:
 
 ### Development Processes
 
-You must use [foreman](https://github.com/ddollar/foreman#installation) (or goreman) to run the frontend and nginx.
+You can use [foreman](https://github.com/ddollar/foreman#installation) (or goreman) to run the frontend and nginx.
 
 ```
 foreman start # (or) goreman start
+```
+
+You can also use `docker-compose`, in which case you need to start figwheel separately.
+
+```
+docker-compose up -d
+lein figwheel dev devcards
 ```
 
 Then visit https://prod.circlehost:4443 or https://dev.circlehost:4443 (if you
