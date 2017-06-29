@@ -126,21 +126,13 @@
                        :organization/vcs-type (keyword vcs-type)
                        :opts opts}}))
 
-(defn request-retry-run [api-ch params]
+(defn mutate [api-ch mutation]
   (ajax/ajax :post
              "/query-api"
              :uncatchable-by-old-controller
              api-ch
              :format :transit
-             :params `(run/retry ~params)))
-
-(defn request-cancel-run [api-ch run-id]
-  (ajax/ajax :post
-             "/query-api"
-             :uncatchable-by-old-controller
-             api-ch
-             :format :transit
-             :params `(run/cancel {:run/id ~run-id})))
+             :params mutation))
 
 (defn get-user-plans [api-ch]
   (ajax/ajax :get "/api/v1/user/organizations/plans"

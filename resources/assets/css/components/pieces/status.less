@@ -1,3 +1,6 @@
+// The width of a status icon.
+@frontend-components-pieces-status--width: 18px;
+
 .ns("frontend.components.pieces.status", {
   .ui("badge", {
     @badge-height: 25px;
@@ -26,6 +29,11 @@
       text-transform: uppercase;
     }
 
+    &.on-hold {
+      color: @purple;
+      background: @purpleLight;
+    }
+
     &.succeeded {
       background: @green;
     }
@@ -48,7 +56,11 @@
   });
 
   .ui("icon", {
-    width: 18px;
+    width: @frontend-components-pieces-status--width;
+
+    &.on-hold {
+      color: @purple;
+    }
 
     &.succeeded {
       color: @green;

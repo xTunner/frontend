@@ -170,6 +170,10 @@
   [_env _key _params]
   {:remote true})
 
+(defmethod mutate 'job/approve
+  [_env _key _params]
+  {:remote true})
+
 (defn- legacy-route?
   "Is this route a Om (now) route?"
   [state route]

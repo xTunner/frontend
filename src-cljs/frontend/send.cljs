@@ -1,11 +1,11 @@
 (ns frontend.send
   (:require [cljs-time.coerce :as time-coerce]
             [cljs-time.core :as time]
-            [cljs.core.async :refer [<! chan]]
+            [cljs.core.async :refer [<! chan close!]]
             [frontend.api :as api]
             [frontend.send.resolve :as resolve]
             [frontend.utils.vcs-url :as vcs-url]
-            [om.next.impl.parser :as om-parser]
+            [om.util :as om-util]
             [promesa.core :as p :include-macros true])
   (:require-macros [cljs.core.async.macros :as am :refer [go-loop]]))
 
@@ -54,8 +54,16 @@
     ("waiting" "queued" "not_running" "blocked" "pending") :job-run-status/waiting
     :job-run-status/unknown))
 
+(defn- job-type [job-type-str]
+  (case job-type-str
+    "approval" :job-type/approval
+    "build" :job-type/build
+    :job-type/unknown))
+
 (defn adapt-to-job [job-response]
-  (update job-response :job/status job-run-status))
+  (-> job-response
+      (update :job/status job-run-status)
+      (update :job/type job-type)))
 
 (defn denormalize-required [job jobs-by-id]
   (assoc job
@@ -110,33 +118,6 @@
      :run/project {:project/name repo
                    :project/organization {:organization/vcs-type vcs-type
                                           :organization/name org}}}))
-
-(def ^:private ignore-response-callback (fn [_response] nil))
-
-(defn- request-run-retry-from-api-service
-  [params]
-  (api/request-retry-run (callback-api-chan ignore-response-callback) params))
-
-(defn- request-run-cancel-from-api-service
-  [id]
-  (api/request-cancel-run (callback-api-chan ignore-response-callback) id))
-
-(defn- send-retry-run
-  [{:keys [params]} merge-fn query]
-  (request-run-retry-from-api-service params))
-
-(defn- send-cancel-run
-  [{:keys [params]} merge-fn query]
-  (let [{:keys [run/id]} params]
-    (request-run-cancel-from-api-service id)))
-
-(defn- retry-run-expression?
-  [expression]
-  (= 'run/retry (first expression)))
-
-(defn- cancel-run-expression?
-  [expression]
-  (= 'run/cancel (first expression)))
 
 
 (def apis
@@ -295,13 +276,12 @@
 ;; This implementation is merely a prototype, which does some rudimentary
 ;; pattern-matching against a few expected cases to decide which APIs to hit. A
 ;; more rigorous implementation will come later.
-(defmethod send* :remote [[_ query] cb]
-  (if-let [send-fn (cond
-                     (retry-run-expression? (first query))
-                     send-retry-run
-                     (cancel-run-expression? (first query))
-                     send-cancel-run)]
-    (send-fn (om-parser/expr->ast (first query)) cb query)
+(defmethod send* :remote [[remote [first-expr & rest-of-query :as query]] cb]
+  (if (om-util/mutation? first-expr)
+    (do
+      ;; Pass a closed channel to ignore the result.
+      (api/mutate (doto (chan) close!) first-expr)
+      (send* [remote rest-of-query] cb))
     (let [ch (resolve/resolve {:resolvers resolvers
                                :apis (memoize-apis apis)}
                               query (chan))]
