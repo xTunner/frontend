@@ -276,12 +276,12 @@
 ;; This implementation is merely a prototype, which does some rudimentary
 ;; pattern-matching against a few expected cases to decide which APIs to hit. A
 ;; more rigorous implementation will come later.
-(defmethod send* :remote [[remote query] cb]
-  (if (om-util/mutation? (first query))
+(defmethod send* :remote [[remote [first-expr & rest-of-query :as query]] cb]
+  (if (om-util/mutation? first-expr)
     (do
       ;; Pass a closed channel to ignore the result.
-      (api/mutate (doto (chan) close!) (first query))
-      (send* [remote (next query)] cb))
+      (api/mutate (doto (chan) close!) first-expr)
+      (send* [remote rest-of-query] cb))
     (let [ch (resolve/resolve {:resolvers resolvers
                                :apis (memoize-apis apis)}
                               query (chan))]
