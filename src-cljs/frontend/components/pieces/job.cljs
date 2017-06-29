@@ -63,7 +63,8 @@
   Object
   (render [this]
     (component
-      (let [{:keys [job/status
+      (let [{:keys [job/id
+                    job/status
                     job/type
                     job/started-at
                     job/stopped-at
@@ -73,7 +74,8 @@
                      build/repo
                      build/number]
               :as build} :job/build
-             job-name :job/name}
+             job-name :job/name
+             {run-id :run/id} :job/run}
             (om-next/props this)]
         (card/full-bleed
          (element :content
@@ -96,7 +98,8 @@
                  [:.approval
                   (button/button
                    {:kind :primary
-                    :disabled? (not= :job-run-status/running status)}
+                    :disabled? (not= :job-run-status/running status)
+                    :on-click #(om-next/transact! this [`(job/approve {:job/id ~id :run/id ~run-id})])}
                    (case status
                      :job-run-status/succeeded "Workflow Accepted"
                      :job-run-status/failed "Workflow Rejected"
