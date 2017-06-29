@@ -14,14 +14,9 @@ RUN lein deps
 ADD package.json /frontend/package.json
 RUN npm install
 
-ADD .bowerrc /frontend/.bowerrc
-ADD bower.json /frontend/bower.json
-RUN node_modules/.bin/bower --allow-root install
-
 ADD . /frontend
-#RUN lein cljsbuild once dev
 
-EXPOSE 13000 17888 13449 14443 14444
+EXPOSE 14443
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
