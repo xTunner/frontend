@@ -207,6 +207,17 @@
          [:tspan {:x "8" :y "17"}
           "2.0"]]]])))
 
+(defn platform-tooltip [href tracking-fn]
+  (popover/tooltip
+    {:body
+     (html [:span "This build ran on 2.0. "
+            [:div [:a {:href href
+                       :target "_blank"
+                       :on-click (tracking-fn)}
+                   "Learn more →"]]])
+     :placement :bottom}
+    (engine-2)))
+
 (defn header
   "The page header.
 
@@ -235,19 +246,14 @@
           (html
             [:div
              [:ol.breadcrumbs
-              (map crumb crumbs-login)
-              (when (= platform "2.0")
-                (popover/tooltip {:body
-                                  (html [:span "This build ran on 2.0. "
-                                         (let [href "https://circleci.com/docs/2.0/"]
-                                           [:div [:a {:href href
-                                                      :target "_blank"
-                                                      :on-click #((om/get-shared owner :track-event) {:event-type :beta-link-clicked
-                                                                                                      :properties {:href href}})}
-                                                  "Learn more →"]])])
-                                  :placement :bottom}
-                                 (engine-2)))]
+              (map crumb crumbs-login)]
              [:.actions
+              (when (= platform "2.0")
+                (let [href "https://circleci.com/docs/2.0/"]
+                  (platform-tooltip href
+                                    #((om/get-shared owner :track-event)
+                                      {:event-type :beta-link-clicked
+                                       :properties {:href href}}))))
               (when (feature/enabled? "top-bar-beta-button")
                 [:div.topbar-toggle
                  (when (and has-topbar? (not om-next-page?))
