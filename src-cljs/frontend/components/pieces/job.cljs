@@ -101,9 +101,9 @@
                     :disabled? (not= :job-run-status/running status)
                     :on-click #(om-next/transact! this [`(job/approve {:job/id ~id :run/id ~run-id})])}
                    (case status
-                     :job-run-status/succeeded "Workflow Accepted"
-                     :job-run-status/failed "Workflow Rejected"
-                     "Continue Workflow"))])
+                     :job-run-status/succeeded "Approved"
+                     :job-run-status/failed "Declined"
+                     "Approve"))])
                (when (seq required-jobs)
                  [:.requires
                   (requires required-jobs)])]
