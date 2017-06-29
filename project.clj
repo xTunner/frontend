@@ -42,6 +42,7 @@
                  [prismatic/schema "1.1.3"]
                  [devcards "0.2.1-6"]
                  [funcool/promesa "1.8.1"]
+                 [medley "1.0.0"]
 
                  ;; Frontend tests
                  [org.clojure/tools.reader "1.0.0-beta3"]

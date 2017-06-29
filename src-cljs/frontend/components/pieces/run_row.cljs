@@ -1,10 +1,16 @@
 (ns frontend.components.pieces.run-row
-  (:require [clojure.string :as string]
+  (:require [cljs-time.coerce :as time-coerce]
+            [cljs-time.core :as time]
+            [clojure.spec :as s :include-macros true]
+            [clojure.string :as string]
+            [clojure.test.check.generators :as gen]
             [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.datetime :as datetime]
+            [frontend.devcards.faker :as faker]
+            [frontend.devcards.morphs :as morphs]
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
@@ -40,27 +46,35 @@
 
 (def ^:private rerunnable-from-start-statuses #{:run-status/failed})
 
+(defui PRs
+  Object
+  (render [this]
+    (let [urls (map :pull-request/url (om-next/props this))]
+      (html
+       [:span
+        (interpose
+         ", "
+         (for [url urls
+               ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
+               ;; When that happens, this code blows up the page. To work around that,
+               ;; we just skip the PR if its URL is nil.
+               :when url]
+           [:a {:href url
+                :on-click #(analytics/track! this {:event-type :pr-link-clicked})}
+            "#"
+            (gh-utils/pull-request-number url)]))]))))
+
+(def prs (om-next/factory PRs))
+
 (defn- run-prs
   "A om-next compatible version of
   `frontend.components.builds-table/pull-requests`."
-  [parent-component pull-requests]
-  (when-let [urls (seq (map :pull-request/url pull-requests))]
+  [pull-requests]
+  (when (seq pull-requests)
     (html
      [:span.metadata-item.pull-requests {:title "Pull Requests"}
       (icon/git-pull-request)
-      (interpose
-       ", "
-       (for [url urls
-             ;; WORKAROUND: We have/had a bug where a PR URL would be reported as nil.
-             ;; When that happens, this code blows up the page. To work around that,
-             ;; we just skip the PR if its URL is nil.
-             :when url]
-         [:a
-          {:href url
-           :on-click #(analytics/track! parent-component
-                                        {:event-type :pr-link-clicked})}
-          "#"
-          (gh-utils/pull-request-number url)]))])))
+      (prs pull-requests)])))
 
 (defn- commit-link
   "Om Next compatible version of `frontend.components.builds-table/commits`."
@@ -268,7 +282,7 @@
                [:div.metadata-row.pull-revision
                 (if loading?
                   [:span.metadata-item.pull-requests (loading-circle)]
-                  (run-prs this pull-requests))
+                  (run-prs pull-requests))
                 (if loading?
                   [:span.metadata-item.revision (loading-circle)]
                   (commit-link this
@@ -283,21 +297,118 @@
 (defn loading-run-row [] (loading-run-row* (om-next/computed {} {::loading? true})))
 
 (dc/do
-  (defcard run-row
-    (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
-      (run-row {:run/id (random-uuid)
-                :run/name "a-workflow"
-                :run/status :run-status/succeeded
-                :run/started-at #inst "2017-05-31T18:59:19.517-00:00"
-                :run/stopped-at #inst "2017-05-31T19:59:19.517-00:00"
-                :run/trigger-info {:trigger-info/vcs-revision "abcd123"
-                                   :trigger-info/subject "Changed something."
-                                   :trigger-info/body "Actually, changed a lot of things."
-                                   :trigger-info/branch "change-stuff"
-                                   :trigger-info/pull-requests [{:pull-request/url "https://github.com/acme/anvil/pull/1974"}]}
-                :run/project {:project/name "anvil"
-                              :project/organization {:organization/name "acme"
-                                                     :organization/vcs-type :github}}})))
+  (s/def :run/entity (s/and
+                      (s/keys :req [:run/id
+                                    :run/name
+                                    :run/status
+                                    :run/started-at
+                                    :run/stopped-at
+                                    :run/trigger-info
+                                    :run/project])
+                      (fn [{:keys [:run/status :run/started-at :run/stopped-at]}]
+                        (case status
+                          (:run-status/running
+                           :run-status/not-run
+                           :run-status/needs-setup
+                           :run-status/on-hold)
+                          (and started-at (nil? stopped-at))
+
+                          (:run-status/succeeded
+                           :run-status/failed
+                           :run-status/canceled)
+                          (and started-at stopped-at (< started-at stopped-at))))))
+
+  (s/def :run/trigger-info (s/keys :req [:trigger-info/vcs-revision
+                                         :trigger-info/subject
+                                         :trigger-info/body
+                                         :trigger-info/branch
+                                         :trigger-info/pull-requests]))
+
+  (s/def :run/project (s/keys :req [:project/name
+                                    :project/organization]))
+
+  (s/def :project/organization (s/keys :req [:organization/name
+                                             :organization/vcs-type]))
+
+  (s/def :run/id uuid?)
+  (s/def :run/name (s/and string? seq))
+  (s/def :run/status #{:run-status/running
+                       :run-status/succeeded
+                       :run-status/failed
+                       :run-status/canceled
+                       :run-status/not-run
+                       :run-status/needs-setup
+                       :run-status/on-hold})
+  (s/def :run/started-at (s/nilable inst?))
+  (s/def :run/stopped-at (s/nilable inst?))
+  (s/def :trigger-info/vcs-revision (s/with-gen
+                                      (s/and string? (partial re-matches #"[0-9a-f]{40}"))
+                                      #(gen/fmap (fn [n] (.toString n 16))
+                                                 (gen/choose 0 (dec (Math/pow 2 160))))))
+  (s/def :trigger-info/subject string?)
+  (s/def :trigger-info/body string?)
+  (s/def :trigger-info/branch (s/and string? seq))
+  (s/def :trigger-info/pull-requests (s/every :pull-request/entity))
+  (s/def :pull-request/entity (s/keys :req [:pull-request/url]))
+  ;; NOTE: :pull-request/url does not currently validate that it's a real URL,
+  ;; only that it's a string we can extract a PR number from.
+  (s/def :pull-request/url (s/with-gen
+                             (s/and string? (partial re-matches #".*/\d+"))
+                             #(gen/fmap (fn [[s n]] (str s "/" n)) (gen/tuple gen/string gen/nat))))
+  (s/def :project/name (s/and string? seq))
+  (s/def :organization/name (s/and string? seq))
+  (s/def :organization/vcs-type #{:github :bitbucket})
+
+  (s/fdef prs
+    :args (s/cat :prs (s/every :pull-request/entity)))
+
+  (s/fdef run-row
+    :args (s/cat :run :run/entity))
+
+
+  ;; https://stackoverflow.com/questions/25324082/index-of-vector-in-clojurescript/32885837#32885837
+  (defn- index-of [coll value]
+    (some (fn [[idx item]] (if (= value item) idx))
+          (map-indexed vector coll)))
+
+  (defn- gen-inst-in
+    "Generates insts in the range from start to end (inclusive)."
+    [start end]
+    (gen/fmap #(js/Date. %)
+              (gen/choose (inst-ms start) (inst-ms end))))
+
+  (defn- gen-time-in-last-day []
+    (gen-inst-in (time-coerce/to-date (time/ago (time/days 1)))
+                 (js/Date.)))
+
+  (defcard run-rows
+    (let [statuses [:run-status/needs-setup
+                    :run-status/not-run
+                    :run-status/running
+                    :run-status/on-hold
+                    :run-status/succeeded
+                    :run-status/failed
+                    :run-status/canceled]]
+      (morphs/render #'run-row {:run/name #(faker/snake-case-identifier)
+                                ;; ::s/pred targets the case where the value is non-nil.
+                                [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
+                                [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
+                                :trigger-info/branch #(faker/snake-case-identifier)
+                                :trigger-info/subject #(faker/sentence)
+                                :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)}
+                     (fn [morphs]
+                       (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
+                         (card/collection (->> morphs
+                                               (sort-by #(-> % first :run/trigger-info :trigger-info/pull-requests count))
+                                               (sort-by #(->> % first :run/status (index-of statuses)))
+                                               (map (partial apply run-row)))))))))
+
+  (defcard prs
+    (morphs/render #'prs {[:prs] (gen/vector (s/gen :pull-request/entity) 0 5)}
+                   (fn [morphs]
+                     (card/collection (->> morphs
+                                           (sort-by (comp count first))
+                                           (map (partial apply prs)))))))
 
   (defcard loading-run-row
     (loading-run-row)))

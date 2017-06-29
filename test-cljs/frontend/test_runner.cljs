@@ -14,6 +14,7 @@
             [frontend.controllers.test-api]
             [frontend.controllers.test-controls]
             [frontend.controllers.test-ws]
+            [frontend.devcards.test-morphs]
             [frontend.models.test-action]
             [frontend.models.test-build]
             [frontend.models.test-feature]
