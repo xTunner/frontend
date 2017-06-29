@@ -180,7 +180,8 @@
   (query [this]
     [:branch/name
      {:branch/project [:project/name
-                       {:project/organization [:organization/name]}]}
+                       {:project/organization [:organization/vcs-type
+                                               :organization/name]}]}
      `{(:routed/page {:page/connection :branch/workflow-runs
                       :page/count 30})
        ~(om-next/get-query RunList)}
