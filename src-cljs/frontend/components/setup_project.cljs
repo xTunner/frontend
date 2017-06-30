@@ -17,7 +17,7 @@
     (render [_]
       (html
         [:.projects-dropdown
-         [:h4 "Repository"]
+         [:h2 "Repository"]
          (if (nil? projects)
            [:.spinner-placeholder (spinner)]
            (dropdown/dropdown
@@ -31,6 +31,24 @@
                             (map (fn [repo]
                                    (let [repo-id (repo-model/id repo)]
                                      [repo-id (vcs-url/project-name (:vcs_url repo))]))))}))]))))
+
+(defn- one-platform [{:keys [selected-project]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [org-login (:username selected-project)
+              repo-name (:name selected-project)
+              vcs-type (:vcs_type selected-project)]
+          [:div.one-platform
+           [:p "Know what you are doing? " [:a {:href "#"} "Read Documentation"]]])))))
+
+(defn- two-platform [{:keys [selected-project]} owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        [:div "Language: " (:language selected-project)]))))
 
 (def ^:private platform-osx-default {:os :osx :platform "1.0"})
 (def ^:private platform-linux-default {:os :linux :platform "1.0"})
@@ -107,7 +125,9 @@
                   "2.0 "
                   [:span.new-badge]])]
               [:p "CircleCI 2.0 offers teams more power, flexibility, and control with configurable Jobs that are broken into Steps. Compose these steps within a job at your discretion. Also supports most public Docker images and custom images with your own dependencies."]]]]
-           [:div "Repo Language: " (:language selected-project)]])))))
+           (if (= platform "1.0")
+             (om/build one-platform {:selected-project selected-project})
+             (om/build two-platform {:selected-project selected-project}))])))))
 
 ; https://stackoverflow.com/a/30810322
 (defn- copy-to-clipboard [config-string]
@@ -136,7 +156,6 @@
               [:div
                [:h1 "Setup Project"]
                [:p "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI. To kick things off, you'll need to choose a project to build. We'll start a new build for you each time someone pushes a new commit."]
-               [:p "Know what you are doing? " [:a {:href "#"} "Read Documentation"]]
                (om/build projects-dropdown {:projects projects
                                             :selected-project selected-project})]))
           (when selected-project
