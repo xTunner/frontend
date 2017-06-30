@@ -158,21 +158,46 @@
                           :padding "0.5em"
                           :height "calc(1em + 23px)"}}]))])]))
 
-(defn show-columns-svg [things-in-columns]
+(defn coords [columns]
+  (into {}
+        (map-indexed
+         (fn [x column]
+           (map-indexed
+            (fn [y thing]
+              [thing [x y]])
+            column))
+         columns)))
+
+(defn show-columns-svg [things-in-columns edges]
   (let [width 150
-        height 40]
+        height 40
+        cs (coords things-in-columns)]
     (html
      [:svg {:width "100%"
             :height "500"}
       (for [[x things] (map-indexed vector things-in-columns)]
         (for [[y thing] (map-indexed vector things)]
           (if thing
-            [:rect {:style {:stroke "black"
-                            :fill "none"
-                            :width width
-                            :height height
-                            :x (* x (+ width 10))
-                            :y (* y (+ height 10))}}])))])))
+            [:rect {:stroke "black"
+                    :fill "none"
+                    :width width
+                    :height height
+                    :x (* x (+ width 10))
+                    :y (* y (+ height 10))}])))
+      (for [[from to] edges
+            :let [[fx fy] (get cs from)
+                  [tx ty] (get cs to)]]
+        (let [start (fn [x y]
+                      [(+ width (* x (+ width 10)))
+                       (+ (/ height 2) (* y (+ height 10)))])
+              end (fn [x y]
+                    [(* x (+ width 10))
+                     (+ (/ height 2) (* y (+ height 10)))])]
+          [:path {:stroke "black"
+                  :d (str "M"
+                          (string/join "," (start fx fy))
+                          "L"
+                          (string/join "," (end tx ty)))}]))])))
 
 (defn has-far-arrows? [graph columns node]
   (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
@@ -202,4 +227,4 @@
     (html
      [:div
       (show-columns columns)
-      (show-columns-svg columns)])))
+      (show-columns-svg columns (g/edges g))])))
