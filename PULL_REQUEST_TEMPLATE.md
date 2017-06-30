@@ -1,5 +1,3 @@
-Please make sure to add the zfe badge before submitting your PR
-
 **Rationale**
 What was overarching product goal of this PR, any pertinent history of changes
 
