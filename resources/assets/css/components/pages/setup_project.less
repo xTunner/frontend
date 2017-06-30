@@ -5,6 +5,30 @@
     padding-left: 0;
   }
 
+  .projects-dropdown {
+    select {
+      width: 30%;
+      max-width: 400px;
+    }
+  }
+
+  // https://stackoverflow.com/a/30810322
+  .hidden-config {
+    // Copy to clipboard is easy with visible input.
+    // We can't select 'none' or 'hidden' text display.
+    // This is a work-around to hide the text area.
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 0;
+    width: 2rem;
+    height: 2rem;
+    box-shadow: none;
+    outline: none;
+    border: none;
+    background: transparent;
+  }
+
   .platform-selector {
 
     .os-label i {

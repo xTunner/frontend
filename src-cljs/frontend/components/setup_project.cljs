@@ -1,5 +1,6 @@
 (ns frontend.components.setup-project
   (:require [frontend.async :refer [raise!]]
+            [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.popover :as popover]
@@ -107,6 +108,22 @@
                   [:span.new-badge]])]
               [:p "CircleCI 2.0 offers teams more power, flexibility, and control with configurable Jobs that are broken into Steps. Compose these steps within a job at your discretion. Also supports most public Docker images and custom images with your own dependencies."]]]]
            [:div "Repo Language: " (:language selected-project)]])))))
+
+; https://stackoverflow.com/a/30810322
+(defn- copy-to-clipboard [config-string]
+  [:div
+   (button/button
+     {:kind :primary
+      :on-click (fn []
+                  ; Select the hidden text area.
+                  (-> js/document
+                      (.querySelector ".hidden-config")
+                      .select)
+                  ; Copy to clipboard.
+                  (.execCommand js/document "copy"))}
+     "Copy to Clipboard")
+   [:textarea.hidden-config
+    {:value config-string}]])
 
 (defrender setup-project [data owner]
   (let [projects (get-in data state/setup-project-projects-path)
