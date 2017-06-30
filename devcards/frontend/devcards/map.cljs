@@ -158,6 +158,22 @@
                           :padding "0.5em"
                           :height "calc(1em + 23px)"}}]))])]))
 
+(defn show-columns-svg [things-in-columns]
+  (let [width 150
+        height 40]
+    (html
+     [:svg {:width "100%"
+            :height "500"}
+      (for [[x things] (map-indexed vector things-in-columns)]
+        (for [[y thing] (map-indexed vector things)]
+          (if thing
+            [:rect {:style {:stroke "black"
+                            :fill "none"
+                            :width width
+                            :height height
+                            :x (* x (+ width 10))
+                            :y (* y (+ height 10))}}])))])))
+
 (defn has-far-arrows? [graph columns node]
   (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
                        node)))
@@ -179,7 +195,11 @@
         :columns (conj columns next-column)}))))
 
 (defcard map
-  (let [g (transitive-reduction frontend-graph)]
-    (show-columns (show-columns {:graph g
-                                 :remaining-ranks (reverse (ranks g))
-                                 :columns ()}))))
+  (let [g (transitive-reduction frontend-graph)
+        columns (build-columns {:graph g
+                                :remaining-ranks (reverse (ranks g))
+                                :columns ()})]
+    (html
+     [:div
+      (show-columns columns)
+      (show-columns-svg columns)])))
