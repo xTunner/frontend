@@ -282,7 +282,7 @@
 
 (defcard arrow
   (html
-   [:html
+   [:div
     [:svg {:width "100%"
            :height "200"}
      (arrow [0 100] [200 10] 130 10)]
