@@ -228,3 +228,29 @@
      [:div
       (show-columns columns)
       (show-columns-svg columns (g/edges g))])))
+
+(defn move-to [x y]
+  (str "M" x "," y))
+
+(defn line-to [x y]
+  (str "L" x "," y))
+
+(defn arc-to [rx ry x-axis-rotate large-arc-flag sweep-flag x y]
+  (str "A" rx "," ry "," x-axis-rotate "," large-arc-flag "," sweep-flag "," x "," y))
+
+(defn arrow [start end strut-pos radius]
+  [:path {:stroke "black"
+          :fill "none"
+          :d (str
+              (apply move-to start)
+              (line-to (- strut-pos radius) (second start))
+              (arc-to radius radius 0 0 0 strut-pos (- (second start) radius))
+              (line-to strut-pos (+ (second end) radius))
+              (arc-to radius radius 0 0 1 (+ strut-pos radius) (second end))
+              (apply line-to end))}])
+
+(defcard arrow
+  (html
+   [:svg {:width "100%"
+          :height "500"}
+    (arrow [0 100] [200 10] 130 10)]))
