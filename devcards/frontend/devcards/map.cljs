@@ -216,13 +216,15 @@
              :height "500"}
        (for [[x things] (map-indexed vector things-in-columns)]
          (for [[y thing] (map-indexed vector things)]
-           (if thing
-             [:rect {:stroke "black"
-                     :fill "none"
-                     :width width
-                     :height height
-                     :x (* x (+ width x-spacing))
-                     :y (* y (+ height 10))}])))
+           (when thing
+             [:g {:transform (str "translate(" (* x (+ width x-spacing)) "," (* y (+ height 10)) ")")}
+              [:rect {:stroke "black"
+                      :fill "none"
+                      :width width
+                      :height height}]
+              [:text {:x 10
+                      :y 25}
+               thing]])))
        (for [[from to] edges
              :let [[fx fy] (get cs from)
                    [tx ty] (get cs to)]]
