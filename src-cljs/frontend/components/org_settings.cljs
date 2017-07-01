@@ -425,12 +425,18 @@
             [:.inner.modal-contents
              [:div.org-cancel
               [:div.top-value
-               [:p.value-prop "If you cancel your plan, you will no longer have access to speed enabled by parallelism and concurrency."]
-               [:p.value-prop "You will also lose access to engineer support, insights, and more premium features."]]
+               [:p.value-prop "By switching to our free plan, you will lose access to:"]
+               [:ul
+                [:li.premium-feature "Build History"]
+                [:li.premium-feature "Parallelism"]
+                [:li.premium-feature "Concurrency"]
+                [:li.premium-feature "Engineer Support"]
+                [:li.premium-feature "Insights"]
+                [:li.premium-feature "Other Premium Features"]]]
               [:div.bottom-value
-               [:p.value-prop "Your cancelation will be effective immediately"]]
+               [:p.value-prop "Your cancelation will be effective immediately."]]
               [:div.row-fluid
-               [:h1
+               [:p
                 {:data-bind "attr: {alt: cancelFormErrorText}"}
                 "Please tell us why you're canceling. This helps us make CircleCI better!"]
                [:form
