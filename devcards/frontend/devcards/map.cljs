@@ -168,9 +168,47 @@
             column))
          columns)))
 
-(defn show-columns-svg [things-in-columns edges]
+(defn move-to [x y]
+  (str "M" x "," y))
+
+(defn line-to [x y]
+  (str "L" x "," y))
+
+(defn arc-to [rx ry x-axis-rotate large-arc-flag sweep-flag x y]
+  (str "A" rx "," ry "," x-axis-rotate "," large-arc-flag "," sweep-flag "," x "," y))
+
+(defn arrow [start end strut-pos radius]
+  [:path
+   {:stroke "black"
+    :fill "none"
+    :d (cond
+         (> (second start) (second end))
+         (str
+          (apply move-to start)
+          (line-to (- strut-pos radius) (second start))
+          (arc-to radius radius 0 0 0 strut-pos (- (second start) radius))
+          (line-to strut-pos (+ (second end) radius))
+          (arc-to radius radius 0 0 1 (+ strut-pos radius) (second end))
+          (apply line-to end))
+
+         (< (second start) (second end))
+         (str
+          (apply move-to start)
+          (line-to (- strut-pos radius) (second start))
+          (arc-to radius radius 0 0 1 strut-pos (+ (second start) radius))
+          (line-to strut-pos (- (second end) radius))
+          (arc-to radius radius 0 0 0 (+ strut-pos radius) (second end))
+          (apply line-to end))
+
+         :else
+         (str
+          (apply move-to start)
+          (apply line-to end)))}])
+
+(defn map-svg [things-in-columns edges]
   (let [width 150
         height 40
+        x-spacing 50
         cs (coords things-in-columns)]
     (html
      [:svg {:width "100%"
@@ -182,22 +220,21 @@
                     :fill "none"
                     :width width
                     :height height
-                    :x (* x (+ width 10))
+                    :x (* x (+ width x-spacing))
                     :y (* y (+ height 10))}])))
       (for [[from to] edges
             :let [[fx fy] (get cs from)
                   [tx ty] (get cs to)]]
         (let [start (fn [x y]
-                      [(+ width (* x (+ width 10)))
+                      [(+ width (* x (+ width x-spacing)))
                        (+ (/ height 2) (* y (+ height 10)))])
               end (fn [x y]
-                    [(* x (+ width 10))
+                    [(* x (+ width x-spacing))
                      (+ (/ height 2) (* y (+ height 10)))])]
-          [:path {:stroke "black"
-                  :d (str "M"
-                          (string/join "," (start fx fy))
-                          "L"
-                          (string/join "," (end tx ty)))}]))])))
+          (arrow (start fx fy)
+                 (end tx ty)
+                 (- (first (end tx ty)) 20)
+                 10)))])))
 
 (defn has-far-arrows? [graph columns node]
   (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
@@ -227,30 +264,17 @@
     (html
      [:div
       (show-columns columns)
-      (show-columns-svg columns (g/edges g))])))
-
-(defn move-to [x y]
-  (str "M" x "," y))
-
-(defn line-to [x y]
-  (str "L" x "," y))
-
-(defn arc-to [rx ry x-axis-rotate large-arc-flag sweep-flag x y]
-  (str "A" rx "," ry "," x-axis-rotate "," large-arc-flag "," sweep-flag "," x "," y))
-
-(defn arrow [start end strut-pos radius]
-  [:path {:stroke "black"
-          :fill "none"
-          :d (str
-              (apply move-to start)
-              (line-to (- strut-pos radius) (second start))
-              (arc-to radius radius 0 0 0 strut-pos (- (second start) radius))
-              (line-to strut-pos (+ (second end) radius))
-              (arc-to radius radius 0 0 1 (+ strut-pos radius) (second end))
-              (apply line-to end))}])
+      (map-svg columns (g/edges g))])))
 
 (defcard arrow
   (html
-   [:svg {:width "100%"
-          :height "500"}
-    (arrow [0 100] [200 10] 130 10)]))
+   [:html
+    [:svg {:width "100%"
+           :height "200"}
+     (arrow [0 100] [200 10] 130 10)]
+    [:svg {:width "100%"
+           :height "200"}
+     (arrow [0 10] [200 100] 130 10)]
+    [:svg {:width "100%"
+           :height "200"}
+     (arrow [0 50] [200 50] 130 10)]]))
