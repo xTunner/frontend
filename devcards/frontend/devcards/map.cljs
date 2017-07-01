@@ -208,33 +208,36 @@
 (defn map-svg [things-in-columns edges]
   (let [width 150
         height 40
-        x-spacing 50
+        x-spacing 100
         cs (coords things-in-columns)]
     (html
-     [:svg {:width "100%"
-            :height "500"}
-      (for [[x things] (map-indexed vector things-in-columns)]
-        (for [[y thing] (map-indexed vector things)]
-          (if thing
-            [:rect {:stroke "black"
-                    :fill "none"
-                    :width width
-                    :height height
-                    :x (* x (+ width x-spacing))
-                    :y (* y (+ height 10))}])))
-      (for [[from to] edges
-            :let [[fx fy] (get cs from)
-                  [tx ty] (get cs to)]]
-        (let [start (fn [x y]
-                      [(+ width (* x (+ width x-spacing)))
-                       (+ (/ height 2) (* y (+ height 10)))])
-              end (fn [x y]
-                    [(* x (+ width x-spacing))
-                     (+ (/ height 2) (* y (+ height 10)))])]
-          (arrow (start fx fy)
-                 (end tx ty)
-                 (- (first (end tx ty)) 20)
-                 10)))])))
+     [:div {:style {:overflow "auto"}}
+      [:svg {:width "2000"
+             :height "500"}
+       (for [[x things] (map-indexed vector things-in-columns)]
+         (for [[y thing] (map-indexed vector things)]
+           (if thing
+             [:rect {:stroke "black"
+                     :fill "none"
+                     :width width
+                     :height height
+                     :x (* x (+ width x-spacing))
+                     :y (* y (+ height 10))}])))
+       (for [[from to] edges
+             :let [[fx fy] (get cs from)
+                   [tx ty] (get cs to)]]
+         (let [start (fn [x y]
+                       [(+ width (* x (+ width x-spacing)))
+                        (+ (/ height 2) (* y (+ height 10)))])
+               end (fn [x y]
+                     [(* x (+ width x-spacing))
+                      (+ (/ height 2) (* y (+ height 10)))])
+               steps-back (- (count (nth things-in-columns tx)) ty)
+               strut-offset (* 20 steps-back)]
+           (arrow (start fx fy)
+                  (end tx ty)
+                  (- (first (end tx ty)) strut-offset)
+                  10)))]])))
 
 (defn has-far-arrows? [graph columns node]
   (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
