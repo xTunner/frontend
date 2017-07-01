@@ -213,7 +213,7 @@
     (html
      [:div {:style {:overflow "auto"}}
       [:svg {:width "2000"
-             :height "500"}
+             :height "300"}
        (for [[x things] (map-indexed vector things-in-columns)]
          (for [[y thing] (map-indexed vector things)]
            (when thing
@@ -269,7 +269,16 @@
     (html
      [:div
       (show-columns columns)
-      (map-svg columns (g/edges g))])))
+      (map-svg columns (g/edges g))
+      (map-svg (-> columns
+                   vec
+                   (assoc 2 ["cljsbuild_test" "cljsbuild_whitespace" "cljsbuild_production" "clojure_test"]))
+               (g/edges g))
+      (map-svg (-> columns
+                   vec
+                   (assoc 2 ["cljsbuild_whitespace" "cljsbuild_production" "cljsbuild_test" "clojure_test"])
+                   (assoc 3 ["precompile_assets" "cljs_test"]))
+               (g/edges g))])))
 
 (defcard arrow
   (html
