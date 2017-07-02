@@ -82,7 +82,7 @@ You can use [foreman](https://github.com/ddollar/foreman#installation) (or gorem
 foreman start # (or) goreman start
 ```
 
-You can also use `docker-compose`, in which case you need to start figwheel separately.
+If you're using Docker for Mac, you can also use `docker-compose`, in which case you need to start figwheel separately.
 
 ```
 docker-compose up -d
