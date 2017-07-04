@@ -197,7 +197,7 @@
   (map (fn [pr]
          (-> pr
              :url
-             github/pull-request-number)) 
+             github/pull-request-number))
        (:pull_requests build)))
 
 (defn current-user-ssh?
@@ -266,12 +266,14 @@
                                               (range (inc last-step-index))))))))))
 
 (defn containers [build]
+  ;; if a step ran multile times - let's use the one that ran the last
   (let [steps (-> build fill-steps :steps)
         parallel (:parallel build)
+        last-run (fn [acts] (->> acts (sort-by :start_time) last))
         actions (reduce (fn [groups {:keys [actions]}]
                           (map-indexed (fn [i group]
-                                         (conj group (or (first (filter #(= i (:index %)) actions))
-                                                         (first (filter #(= false (:parallel %)) actions))
+                                         (conj group (or (last-run (filter #(= i (:index %)) actions))
+                                                         (last-run (filter #(= false (:parallel %)) actions))
                                                          (filtered-action i (-> actions first :step)))))
                                        groups))
                         (repeat (or parallel 1) []) steps)]
