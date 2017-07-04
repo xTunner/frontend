@@ -4,6 +4,7 @@ services:
     build: .
     ports:
       - "4443:14443"
+      - "4444:14444"
     volumes:
       - .:/frontend
       - ~/.m2:/root/.m2

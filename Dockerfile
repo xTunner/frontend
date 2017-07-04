@@ -17,6 +17,7 @@ RUN npm install
 ADD . /frontend
 
 EXPOSE 14443
+EXPOSE 14444
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 

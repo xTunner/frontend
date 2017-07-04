@@ -38,6 +38,14 @@ listen http
   timeout connect 3600s
   timeout server 3600s
 
+listen figwheel
+  bind 0.0.0.0:14444 ssl crt ${SERVER_CERT_FILE}
+  mode tcp
+  server master docker.for.mac.localhost:3449
+  timeout client 3600s
+  timeout connect 3600s
+  timeout server 3600s
+
 EOF
 ) > /etc/haproxy/haproxy.cfg
 
