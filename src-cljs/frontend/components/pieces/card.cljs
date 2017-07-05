@@ -1,9 +1,9 @@
 (ns frontend.components.pieces.card
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [om.core :as om :include-macros true]
+  (:require [om.core :as om :include-macros true]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.tabs :as tabs]
-            [frontend.utils :refer-macros [component html]]))
+            [frontend.utils :refer-macros [component html]])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn full-bleed
   "A card with no padding. Content will touch the edge of the card."

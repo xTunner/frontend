@@ -1,11 +1,11 @@
 (ns frontend.components.pieces.org-picker
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.pieces.icon :as icon]
+  (:require [frontend.components.pieces.icon :as icon]
             [frontend.utils :refer-macros [component html]]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.github :as gh-utils]
             [om.core :as om :include-macros true]
-            [om.next :as om-next :refer-macros [defui]]))
+            [om.next :as om-next :refer-macros [defui]])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defui ^:once Organization
   static om-next/Ident

@@ -1,10 +1,10 @@
 (ns frontend.components.pieces.form
-  (:require [devcards.core :as dc :refer-macros [defcard defcard-om]]
-            [om.core :as om :include-macros true]
+  (:require [om.core :as om :include-macros true]
             [om.next :as om-next :refer-macros [defui]]
             [frontend.components.pieces.button :as button]
             [frontend.utils :refer-macros [component element html]]
-            [goog.events :as gevents]))
+            [goog.events :as gevents])
+  (:require-macros [devcards.core :as dc :refer [defcard defcard-om]]))
 
 (defn- field-wrapper [{:keys [label id validation-error field]} owner]
   (reify

@@ -1,12 +1,12 @@
 (ns frontend.components.pieces.popover
   (:require [clojure.string :as string]
-            [devcards.core :as dc :refer-macros [defcard defcard-doc]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.icon :as icon]
             [frontend.utils :refer-macros [component html]]
             [goog.string :as gstring]
             [om.dom :as om-dom]
-            [om.next :as om-next :refer-macros [defui]]))
+            [om.next :as om-next :refer-macros [defui]])
+  (:require-macros [devcards.core :as dc :refer [defcard defcard-doc]]))
 
 (defn- with-positioned-element
   "A component responsible for ensuring an element is positioned

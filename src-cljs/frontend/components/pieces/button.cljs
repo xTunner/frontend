@@ -1,8 +1,8 @@
 (ns frontend.components.pieces.button
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.forms :as forms]
+  (:require [frontend.components.forms :as forms]
             [frontend.components.pieces.icon :as icon]
-            [frontend.utils :refer-macros [component html]]))
+            [frontend.utils :refer-macros [component html]])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn button
   "A standard button.

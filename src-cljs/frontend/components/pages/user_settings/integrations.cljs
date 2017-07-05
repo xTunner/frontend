@@ -1,6 +1,5 @@
 (ns frontend.components.pages.user-settings.integrations
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.analytics :as analytics]
+  (:require [frontend.analytics :as analytics]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
@@ -11,7 +10,8 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.google :as google]
             [frontend.utils.slack :as slack]
-            [om.next :as om-next :refer-macros [defui]]))
+            [om.next :as om-next :refer-macros [defui]])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn- code-identities? [name]
   (contains? #{"GitHub" "Bitbucket"} name))
