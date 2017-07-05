@@ -178,9 +178,8 @@
   (str "A" rx "," ry "," x-axis-rotate "," large-arc-flag "," sweep-flag "," x "," y))
 
 (defn arrow [start end strut-pos radius]
-  [:path
-   {:stroke "black"
-    :fill "none"
+  [:path.arrow
+   {:fill "none"
     :d (cond
          (> (second start) (second end))
          (str
@@ -211,35 +210,37 @@
         x-spacing 100
         cs (coords things-in-columns)]
     (html
-     [:div {:style {:overflow "auto"}}
+     [:div {:style {;; :overflow "auto"
+                    :background "white"}}
       [:svg {:width "2000"
-             :height "300"}
-       (for [[x things] (map-indexed vector things-in-columns)]
-         (for [[y thing] (map-indexed vector things)]
-           (when thing
-             [:g {:transform (str "translate(" (* x (+ width x-spacing)) "," (* y (+ height 10)) ")")}
-              [:rect {:stroke "black"
-                      :fill "none"
-                      :width width
-                      :height height}]
-              [:text {:x 10
-                      :y 25}
-               thing]])))
-       (for [[from to] edges
-             :let [[fx fy] (get cs from)
-                   [tx ty] (get cs to)]]
-         (let [start (fn [x y]
-                       [(+ width (* x (+ width x-spacing)))
-                        (+ (/ height 2) (* y (+ height 10)))])
-               end (fn [x y]
-                     [(* x (+ width x-spacing))
-                      (+ (/ height 2) (* y (+ height 10)))])
-               steps-back (- (count (nth things-in-columns tx)) ty)
-               strut-offset (* 20 steps-back)]
-           (arrow (start fx fy)
-                  (end tx ty)
-                  (- (first (end tx ty)) strut-offset)
-                  10)))]])))
+             :height "300"
+             :style {:background "white"}}
+       [:g {:transform "translate(3,3)"}
+        (for [[from to] edges
+              :let [[fx fy] (get cs from)
+                    [tx ty] (get cs to)]]
+          (let [start (fn [x y]
+                        [(+ width (* x (+ width x-spacing)))
+                         (+ (/ height 2) (* y (+ height 10)))])
+                end (fn [x y]
+                      [(* x (+ width x-spacing))
+                       (+ (/ height 2) (* y (+ height 10)))])
+                steps-back (- (count (nth things-in-columns tx)) ty)
+                strut-offset (* 20 steps-back)]
+            (arrow (start fx fy)
+                   (end tx ty)
+                   (- (first (end tx ty)) strut-offset)
+                   10)))
+        (for [[x things] (map-indexed vector things-in-columns)]
+          (for [[y thing] (map-indexed vector things)]
+            (when thing
+              [:g {:transform (str "translate(" (* x (+ width x-spacing)) "," (* y (+ height 10)) ")")}
+               [:rect.job {:fill "none"
+                           :width width
+                           :height height}]
+               [:text {:x 10
+                       :y 25}
+                thing]])))]]])))
 
 (defn has-far-arrows? [graph columns node]
   (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
@@ -265,24 +266,39 @@
   (let [g (transitive-reduction frontend-graph)
         columns (build-columns {:graph g
                                 :remaining-ranks (reverse (ranks g))
-                                :columns ()})]
+                                :columns ()})
+        edges (conj (g/edges g)
+                    ["cljsbuild_test" "precompile_assets"]
+                    ["npm_bower_dependencies" "cljsbuild_whitespace"])]
     (html
      [:div
-      (show-columns columns)
+      #_(show-columns columns)
       (map-svg columns (g/edges g))
       (map-svg (-> columns
                    vec
-                   (assoc 2 ["cljsbuild_test" "cljsbuild_whitespace" "cljsbuild_production" "clojure_test"]))
-               (g/edges g))
+                   (assoc 2 [nil "cljsbuild_test" "cljsbuild_whitespace" "cljsbuild_production" "clojure_test"]))
+               edges)
       (map-svg (-> columns
                    vec
+                   (update 1 conj nil)
                    (assoc 2 ["cljsbuild_whitespace" "cljsbuild_production" "cljsbuild_test" "clojure_test"])
                    (assoc 3 ["precompile_assets" "cljs_test"]))
-               (g/edges g))])))
+               edges)])))
 
 (defcard arrow
   (html
    [:div
+    [:style
+     "path.arrow {
+        stroke-width: 2px;
+        stroke: #CCCCCC;
+      }
+
+      rect.job {
+        stroke-width: 1px;
+        stroke: #333333;
+        fill: #FFFFFF;
+      }"]
     [:svg {:width "100%"
            :height "200"}
      (arrow [0 100] [200 10] 130 10)]
