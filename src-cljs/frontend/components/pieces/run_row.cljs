@@ -1,7 +1,5 @@
 (ns frontend.components.pieces.run-row
-  (:require [cljs-time.coerce :as time-coerce]
-            [cljs-time.core :as time]
-            [clojure.spec :as s :include-macros true]
+  (:require [clojure.spec :as s :include-macros true]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]
             [frontend.analytics :as analytics]
@@ -17,6 +15,7 @@
             [frontend.utils :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
+            [frontend.utils.seq :refer [index-of]]
             [frontend.utils.vcs-url :as vcs-url]
             [om.next :as om-next :refer-macros [defui]])
   (:require-macros [devcards.core :as dc :refer [defcard]]))
@@ -365,21 +364,6 @@
     :args (s/cat :run :run/entity))
 
 
-  ;; https://stackoverflow.com/questions/25324082/index-of-vector-in-clojurescript/32885837#32885837
-  (defn- index-of [coll value]
-    (some (fn [[idx item]] (if (= value item) idx))
-          (map-indexed vector coll)))
-
-  (defn- gen-inst-in
-    "Generates insts in the range from start to end (inclusive)."
-    [start end]
-    (gen/fmap #(js/Date. %)
-              (gen/choose (inst-ms start) (inst-ms end))))
-
-  (defn- gen-time-in-last-day []
-    (gen-inst-in (time-coerce/to-date (time/ago (time/days 1)))
-                 (js/Date.)))
-
   (defcard run-rows
     (let [statuses [:run-status/needs-setup
                     :run-status/not-run
@@ -390,8 +374,8 @@
                     :run-status/canceled]]
       (morphs/render #'run-row {:run/name #(faker/snake-case-identifier)
                                 ;; ::s/pred targets the case where the value is non-nil.
-                                [:run :run/started-at ::s/pred] #(gen-time-in-last-day)
-                                [:run :run/stopped-at ::s/pred] #(gen-time-in-last-day)
+                                [:run :run/started-at ::s/pred] #(faker/inst-in-last-day)
+                                [:run :run/stopped-at ::s/pred] #(faker/inst-in-last-day)
                                 :trigger-info/branch #(faker/snake-case-identifier)
                                 :trigger-info/subject #(faker/sentence)
                                 :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)}

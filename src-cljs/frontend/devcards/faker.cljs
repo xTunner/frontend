@@ -1,5 +1,7 @@
 (ns frontend.devcards.faker
-  (:require [clojure.string :as string]
+  (:require [cljs-time.coerce :as time-coerce]
+            [cljs-time.core :as time]
+            [clojure.string :as string]
             [clojure.test.check.generators :as gen]))
 
 (def lorem-words
@@ -255,8 +257,10 @@
 
 (defn snake-case-identifier
   "Returns a generator which generates snake-case identifiers like \"at-qui-suscipit-cumque\"."
-  []
-  (gen/fmap (partial string/join "-") (gen/vector (gen/elements lorem-words))))
+  ([]
+   (gen/fmap (partial string/join "-") (gen/vector (gen/elements lorem-words))))
+  ([min-words max-words]
+   (gen/fmap (partial string/join "-") (gen/vector (gen/elements lorem-words) min-words max-words))))
 
 (defn sentence
   "Returns a generator which generates a sentence of lorem words (or the empty string)."
@@ -267,3 +271,15 @@
        (str (string/join " " (cons (string/capitalize first-word) words)) ".")
        ""))
    (gen/vector (gen/elements lorem-words))))
+
+(defn inst-in
+  "Generates insts in the range from start to end (inclusive)."
+  [start end]
+  (gen/fmap #(js/Date. %)
+            (gen/choose (inst-ms start) (inst-ms end))))
+
+(defn inst-in-last-day
+  "Generates an inst in the last 1 day."
+  []
+  (inst-in (time-coerce/to-date (time/ago (time/days 1)))
+           (js/Date.)))

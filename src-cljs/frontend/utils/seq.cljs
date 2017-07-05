@@ -5,6 +5,11 @@
   [filter-fn coll]
   (first (keep-indexed (fn [i x] (when (filter-fn x) i)) coll)))
 
+(defn index-of
+  "Finds index of x in coll"
+  [coll x]
+  (find-index (partial = x) coll))
+
 (def sentinel (js-obj))
 
 (defn select-in
