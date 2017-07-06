@@ -205,13 +205,42 @@
           (apply line-to end)))}])
 
 (defn map-svg [things-in-columns edges]
-  (let [width 150
-        height 40
+  (let [box-width 150
+        box-height 40
         x-spacing 100
-        cs (coords things-in-columns)]
+        y-spacing 10
+        strut-spacing 20
+        arrow-radius 10
+
+        cs (coords things-in-columns)
+
+        box-x-position
+        (fn [x]
+          (* x (+ box-width x-spacing)))
+
+        box-y-position
+        (fn [y]
+          (* y (+ box-height y-spacing)))
+
+        arrow-start
+        (fn [x y]
+          [(+ box-width (box-x-position x))
+           (+ (/ box-height 2) (box-y-position y))])
+
+        arrow-end
+        (fn [x y]
+          [(box-x-position x)
+           (+ (/ box-height 2) (box-y-position y))])
+
+        strut-offset
+        (fn [tx ty]
+          (* strut-spacing (- (count (nth things-in-columns tx)) ty)))
+
+        strut-position
+        (fn [tx ty]
+          (- (first (arrow-end tx ty)) (strut-offset tx ty)))]
     (html
-     [:div {:style {;; :overflow "auto"
-                    :background "white"}}
+     [:div {:style {:background "white"}}
       [:svg {:width "2000"
              :height "300"
              :style {:background "white"}}
@@ -219,25 +248,17 @@
         (for [[from to] edges
               :let [[fx fy] (get cs from)
                     [tx ty] (get cs to)]]
-          (let [start (fn [x y]
-                        [(+ width (* x (+ width x-spacing)))
-                         (+ (/ height 2) (* y (+ height 10)))])
-                end (fn [x y]
-                      [(* x (+ width x-spacing))
-                       (+ (/ height 2) (* y (+ height 10)))])
-                steps-back (- (count (nth things-in-columns tx)) ty)
-                strut-offset (* 20 steps-back)]
-            (arrow (start fx fy)
-                   (end tx ty)
-                   (- (first (end tx ty)) strut-offset)
-                   10)))
+          (arrow (arrow-start fx fy)
+                 (arrow-end tx ty)
+                 (strut-position tx ty)
+                 arrow-radius))
         (for [[x things] (map-indexed vector things-in-columns)]
           (for [[y thing] (map-indexed vector things)]
             (when thing
-              [:g {:transform (str "translate(" (* x (+ width x-spacing)) "," (* y (+ height 10)) ")")}
+              [:g {:transform (str "translate(" (box-x-position x) "," (box-y-position y) ")")}
                [:rect.job {:fill "none"
-                           :width width
-                           :height height}]
+                           :width box-width
+                           :height box-height}]
                [:text {:x 10
                        :y 25}
                 thing]])))]]])))
