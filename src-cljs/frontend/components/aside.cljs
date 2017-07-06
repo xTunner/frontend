@@ -506,13 +506,14 @@
       [:i.material-icons "storage"]
       [:div.nav-label "Builds"]]
 
-     [:a.aside-item {:class (when (contains? state/workflows-routes current-route) "current")
-                     :data-placement "right"
-                     :data-trigger "hover"
-                     :title "Workflows"
-                     :href (routes/v1-workflows)}
-      (icon/workflows)
-      [:div.nav-label "Workflows"]]
+     (when-not (config/enterprise?)
+       [:a.aside-item {:class (when (contains? state/workflows-routes current-route) "current")
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Workflows"
+                       :href (routes/v1-workflows)}
+        (icon/workflows)
+        [:div.nav-label "Workflows"]])
 
      [:a.aside-item {:class (when (contains? state/insights-routes current-route)
                               "current")
@@ -634,15 +635,16 @@
       [:i.material-icons "storage"]
       [:div.nav-label "Builds"]]
 
-     [:a.aside-item {:class (when (contains? state/workflows-routes current-route)
-                              "current")
-                     :data-placement "right"
-                     :data-trigger "hover"
-                     :title "Workflows"
-                     :href (routes/v1-org-workflows-path (:vcs_type org)
-                                                         (:org org))}
-      (icon/workflows)
-      [:div.nav-label "Workflows"]]
+     (when-not (config/enterprise?)
+       [:a.aside-item {:class (when (contains? state/workflows-routes current-route)
+                                "current")
+                       :data-placement "right"
+                       :data-trigger "hover"
+                       :title "Workflows"
+                       :href (routes/v1-org-workflows-path (:vcs_type org)
+                                                           (:org org))}
+        (icon/workflows)
+        [:div.nav-label "Workflows"]])
 
      [:a.aside-item {:class (when (contains? state/insights-routes current-route)
                               "current")
