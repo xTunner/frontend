@@ -204,41 +204,28 @@
           (apply move-to start)
           (apply line-to end)))}])
 
-(defn map-svg [things-in-columns edges]
-  (let [box-width 150
-        box-height 40
-        x-spacing 100
-        y-spacing 10
-        strut-spacing 20
-        arrow-radius 10
+(defn box-x-position [{:keys [box-width x-spacing]} x]
+ (* x (+ box-width x-spacing)))
 
-        cs (coords things-in-columns)
+(defn box-y-position [{:keys [box-height y-spacing]} y]
+ (* y (+ box-height y-spacing)))
 
-        box-x-position
-        (fn [x]
-          (* x (+ box-width x-spacing)))
+(defn arrow-start [{:keys [box-width box-height] :as config} x y]
+ [(+ box-width (box-x-position config x))
+  (+ (/ box-height 2) (box-y-position config y))])
 
-        box-y-position
-        (fn [y]
-          (* y (+ box-height y-spacing)))
+(defn arrow-end [{:keys [box-height] :as config} x y]
+ [(box-x-position config x)
+  (+ (/ box-height 2) (box-y-position config y))])
 
-        arrow-start
-        (fn [x y]
-          [(+ box-width (box-x-position x))
-           (+ (/ box-height 2) (box-y-position y))])
+(defn strut-offset [{:keys [strut-spacing]} things-in-columns tx ty]
+ (* strut-spacing (- (count (nth things-in-columns tx)) ty)))
 
-        arrow-end
-        (fn [x y]
-          [(box-x-position x)
-           (+ (/ box-height 2) (box-y-position y))])
+(defn strut-position [config things-in-columns tx ty]
+ (- (first (arrow-end config tx ty)) (strut-offset config things-in-columns tx ty)))
 
-        strut-offset
-        (fn [tx ty]
-          (* strut-spacing (- (count (nth things-in-columns tx)) ty)))
-
-        strut-position
-        (fn [tx ty]
-          (- (first (arrow-end tx ty)) (strut-offset tx ty)))]
+(defn map-svg [{:keys [box-width box-height arrow-radius] :as config} things-in-columns edges]
+  (let [cs (coords things-in-columns)]
     (html
      [:div {:style {:background "white"}}
       [:svg {:width "2000"
@@ -248,14 +235,14 @@
         (for [[from to] edges
               :let [[fx fy] (get cs from)
                     [tx ty] (get cs to)]]
-          (arrow (arrow-start fx fy)
-                 (arrow-end tx ty)
-                 (strut-position tx ty)
+          (arrow (arrow-start config fx fy)
+                 (arrow-end config tx ty)
+                 (strut-position config things-in-columns tx ty)
                  arrow-radius))
         (for [[x things] (map-indexed vector things-in-columns)]
           (for [[y thing] (map-indexed vector things)]
             (when thing
-              [:g {:transform (str "translate(" (box-x-position x) "," (box-y-position y) ")")}
+              [:g {:transform (str "translate(" (box-x-position config x) "," (box-y-position config y) ")")}
                [:rect.job {:fill "none"
                            :width box-width
                            :height box-height}]
@@ -290,20 +277,26 @@
                                 :columns ()})
         edges (conj (g/edges g)
                     ["cljsbuild_test" "precompile_assets"]
-                    ["npm_bower_dependencies" "cljsbuild_whitespace"])]
+                    ["npm_bower_dependencies" "cljsbuild_whitespace"])
+        config {:box-width 150
+                :box-height 40
+                :x-spacing 100
+                :y-spacing 10
+                :strut-spacing 20
+                :arrow-radius 10}]
     (html
      [:div
       #_(show-columns columns)
-      (map-svg columns (g/edges g))
-      (map-svg (-> columns
-                   vec
-                   (assoc 2 [nil "cljsbuild_test" "cljsbuild_whitespace" "cljsbuild_production" "clojure_test"]))
+      (map-svg config columns (g/edges g))
+      (map-svg config (-> columns
+                          vec
+                          (assoc 2 [nil "cljsbuild_test" "cljsbuild_whitespace" "cljsbuild_production" "clojure_test"]))
                edges)
-      (map-svg (-> columns
-                   vec
-                   (update 1 conj nil)
-                   (assoc 2 ["cljsbuild_whitespace" "cljsbuild_production" "cljsbuild_test" "clojure_test"])
-                   (assoc 3 ["precompile_assets" "cljs_test"]))
+      (map-svg config (-> columns
+                          vec
+                          (update 1 conj nil)
+                          (assoc 2 ["cljsbuild_whitespace" "cljsbuild_production" "cljsbuild_test" "clojure_test"])
+                          (assoc 3 ["precompile_assets" "cljs_test"]))
                edges)])))
 
 (defcard arrow
