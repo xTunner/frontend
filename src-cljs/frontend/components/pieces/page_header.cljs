@@ -1,6 +1,5 @@
 (ns frontend.components.pieces.page-header
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.popover :as popover]
             [frontend.models.feature :as feature]
@@ -8,7 +7,8 @@
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [component html]]
             [frontend.utils.devcards :refer [iframe]]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn crumb-node [{:keys [active name path track-event-type demo? logged-out?]} owner]
   "Individual breadcrumbs in page header.

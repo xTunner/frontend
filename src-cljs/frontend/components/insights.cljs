@@ -1,6 +1,5 @@
 (ns frontend.components.insights
   (:require [clojure.string :as string]
-            [devcards.core :as dc :refer-macros [defcard]]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.pieces.empty-state :as empty-state]
@@ -21,7 +20,8 @@
             [goog.events :as gevents]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
-            [schema.core :as s :include-macros true]))
+            [schema.core :as s :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (def BarChartableBuild
   {:build_num s/Int

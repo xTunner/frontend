@@ -17,8 +17,8 @@
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [cljs-time.format :as time-format]
-            [devcards.core :as dc :refer-macros [defcard]]
-            cljsjs.c3))
+            cljsjs.c3)
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (def build-time-bar-chart-plot-info
   {:top 30
