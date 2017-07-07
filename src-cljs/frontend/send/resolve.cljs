@@ -1,4 +1,5 @@
 (ns frontend.send.resolve
+  (:refer-clojure :exclude [resolve])
   (:require [bodhi.aliasing :as aliasing]
             [bodhi.core :as bodhi]
             [cljs.core.async :as async :refer [chan close! put!]]
