@@ -16,7 +16,7 @@
 (def page prod-page)
 (def page-url (str "https://" page ".statuspage.io/api/v2/summary.json"))
 
-(comment def sample-status
+
 ;; There are 2 methods to set sample statuses when testing the statuspage.io
 ;; widget.
 ;; - The most simple is to (def page test-page) and log in to
@@ -24,26 +24,26 @@
 ;;   add `:Authorization` into the request headers. For example:
 ;;   `(ajax/managed-ajax :get page-url :headers {:Authorization "OAuth someApiKey"})`
 ;;   And change the "CircleCI Test" page status as required.
-;; -  The second method is to load one of the sample JSON files listed below
-;;   and (def sample-status) to the loaded document. When loading, the JSON
-;;   keys should be converted to Cloure keywords, using something like this:
-;;   (clojure.data.json/read (clojure.java.io/reader file-name :key-fn keyword))
-;; The om state for [:statuspage :summary] should then be set as in the comment
-;; in update-statuspage-state
-;;
-;; The following test data is commited to the repo:
-;; test/json/statuspage.io/github-degraded.json
-;; test/json/statuspage.io/github-preventing-builds.json
-;; test/json/statuspage.io/incident-and-mutliple-components.json
-;; test/json/statuspage.io/normal.json
+
+;; -  The second method is to copy one of the edn files listed below inside (def sample-status).
+;;    The following test data is commited to the repo:
+;;    test/edn/statuspage.io/github-degraded.edn
+;;    test/edn/statuspage.io/github-preventing-builds.edn
+;;    test/edn/statuspage.io/incident-and-mutliple-components.edn
+;;    test/edn/statuspage.io/normal.edn
+
+(def sample-status
+
+  ;; Copy one of the edn files above and paste here instead of the {}
   {})
 
 (defn update-statuspage-state [component]
-  (comment om/set-state! component :statuspage {:summary sample-status})
-  (go
-   (let [res (<! (ajax/managed-ajax :get page-url))]
-     (when (= :success (:status res))
-       (om/set-state! component :statuspage {:summary (->> res :resp)})))))
+  (if-not (empty? sample-status)
+    (om/set-state! component :statuspage {:summary sample-status})
+    (go
+     (let [res (<! (ajax/managed-ajax :get page-url))]
+       (when (= :success (:status res))
+         (om/set-state! component :statuspage {:summary (->> res :resp)}))))))
 
 (defn incident-markup [incident]
   (let [status (first (:incident_updates incident))]
