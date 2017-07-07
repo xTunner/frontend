@@ -122,13 +122,14 @@
 
                 (if (and (feature/enabled? :onboarding-v1)
                          (not building-on-circle?))
-                  (button/link
-                    {:kind :primary
-                     :href (if (feature/enabled? "top-bar-ui-v-1")
-                             (routes/v1-setup-project-path {:org login :vcs_type type})
-                             (routes/v1-setup-project))
-                     :on-click #(raise! owner [:setup-project-select-project repo-id])}
-                    "Build project")
+                  [:.setup-column
+                   (button/link
+                     {:kind :primary
+                      :href (if (feature/enabled? "top-bar-ui-v-1")
+                              (routes/v1-setup-project-path {:org login :vcs_type type})
+                              (routes/v1-setup-project))
+                      :on-click #(raise! owner [:setup-project-select-project repo-id])}
+                     "Setup project")]
 
                   (managed-button
                     [:button {:on-click #(do
