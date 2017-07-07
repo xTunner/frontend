@@ -2,10 +2,13 @@
   (:require [compassus.core :as compassus]
             [frontend.components.common :as common]
             [frontend.components.pieces.job :as job]
+            [frontend.components.pieces.map :as map]
             [frontend.components.pieces.run-row :as run-row]
             [frontend.components.templates.main :as main-template]
+            [frontend.models.feature :as feature]
             [frontend.utils :refer-macros [component element html]]
             [goog.string :as gstring]
+            [loom.graph :as g]
             [om.next :as om-next :refer-macros [defui]]))
 
 (defn job-cards-row
@@ -33,6 +36,8 @@
                                                :organization/name]}]}
         {:run/trigger-info [:trigger-info/branch]}
         {:run/errors [:workflow-error/message]}
+        {:run/jobs [:job/name
+                    {:job/required-jobs [:job/name]}]}
         :error/type]}
      `{(:run-for-row {:< :routed-entity/run})
        ~(om-next/get-query run-row/RunRow)}
@@ -116,4 +121,24 @@
                           [:.hr-title
                            [:span (gstring/format "%s jobs in this workflow" (count jobs))]]]
                          (job-cards-row
-                          (map job/job jobs))])])))})))))
+                          (map job/job jobs))
+                         (if (feature/enabled? :workflow-map)
+                           (let [jobs (-> this
+                                          om-next/props
+                                          :routed-entity/run
+                                          :run/jobs)
+                                 nodes (map :job/name jobs)
+                                 edges (for [job jobs
+                                             required (:job/required-jobs job)]
+                                         [(:job/name required)
+                                          (:job/name job)])
+                                 graph (-> (g/digraph)
+                                           (g/add-nodes* nodes)
+                                           (g/add-edges* edges))
+                                 config {:box-width 150
+                                         :box-height 40
+                                         :x-spacing 100
+                                         :y-spacing 10
+                                         :strut-spacing 20
+                                         :arrow-radius 10}]
+                             (map/map-svg config graph)))])])))})))))

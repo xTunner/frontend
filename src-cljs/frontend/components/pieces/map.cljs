@@ -132,7 +132,8 @@
         :content thing})}))
 
 (defn map-svg [{:keys [box-width box-height arrow-radius] :as config} g]
-  (let [columns (build-columns {:graph g
+  (let [g (transitive-reduction g)
+        columns (build-columns {:graph g
                                 :remaining-ranks (reverse (ranks g))
                                 :columns ()})
         {:keys [arrows boxes]} (map-layout config columns (g/edges g))]
@@ -141,6 +142,17 @@
       [:svg {:width "2000"
              :height "300"
              :style {:background "white"}}
+       [:style
+        "path.arrow {
+          stroke-width: 2px;
+          stroke: #CCCCCC;
+        }
+
+        rect.job {
+          stroke-width: 1px;
+          stroke: #333333;
+          fill: #FFFFFF;
+        }"]
        [:g {:transform "translate(3,3)"}
         (for [{:keys [start end strut-position radius]} arrows]
           (arrow start end strut-position radius))
@@ -261,14 +273,13 @@
       (str "```\n" (graph->draw-io (transitive-reduction frontend-graph)) "\n```"))
 
   (defcard map
-    (let [g (transitive-reduction frontend-graph)
-          config {:box-width 150
+    (let [config {:box-width 150
                   :box-height 40
                   :x-spacing 100
                   :y-spacing 10
                   :strut-spacing 20
                   :arrow-radius 10}]
-      (map-svg config g)))
+      (map-svg config frontend-graph)))
 
   (defcard arrow
     (html
