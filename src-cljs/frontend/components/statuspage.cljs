@@ -43,7 +43,7 @@
     (go
      (let [res (<! (ajax/managed-ajax :get page-url))]
        (when (= :success (:status res))
-         (om/set-state! component :statuspage {:summary (->> res :resp)}))))))
+         (om/set-state! component :statuspage {:summary (:resp res)}))))))
 
 (defn incident-markup [incident]
   (let [status (first (:incident_updates incident))]
