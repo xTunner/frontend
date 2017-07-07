@@ -83,6 +83,26 @@
 (defn strut-position [config columns tx ty]
   (- (first (arrow-end config tx ty)) (strut-offset config columns tx ty)))
 
+(defn has-far-arrows? [graph columns node]
+  (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
+                       node)))
+
+(defn build-columns [{:keys [graph remaining-ranks columns]}]
+  (if (empty? remaining-ranks)
+    columns
+    (let [{far-arrows false no-far-arrows true}
+          (group-by #(has-far-arrows? graph columns %) (first remaining-ranks))
+          next-column
+          (if far-arrows
+            (let [height-to-clear (->> (conj columns no-far-arrows) (map count) (apply max))
+                  padding (- height-to-clear (count no-far-arrows))]
+              (concat no-far-arrows (take padding (repeat nil)) far-arrows))
+            no-far-arrows)]
+      (recur
+       {:graph graph
+        :remaining-ranks (rest remaining-ranks)
+        :columns (conj columns next-column)}))))
+
 (defn map-layout [{:keys [box-width box-height arrow-radius] :as config} columns edges]
   (let [coords (into {}
                      (map-indexed
@@ -111,8 +131,11 @@
         :height box-height
         :content thing})}))
 
-(defn map-svg [{:keys [box-width box-height arrow-radius] :as config} columns edges]
-  (let [{:keys [arrows boxes]} (map-layout config columns edges)]
+(defn map-svg [{:keys [box-width box-height arrow-radius] :as config} g]
+  (let [columns (build-columns {:graph g
+                                :remaining-ranks (reverse (ranks g))
+                                :columns ()})
+        {:keys [arrows boxes]} (map-layout config columns (g/edges g))]
     (html
      [:div {:style {:background "white"}}
       [:svg {:width "2000"
@@ -129,26 +152,6 @@
            [:text {:x 10
                    :y 25}
             content]])]]])))
-
-(defn has-far-arrows? [graph columns node]
-  (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
-                       node)))
-
-(defn build-columns [{:keys [graph remaining-ranks columns]}]
-  (if (empty? remaining-ranks)
-    columns
-    (let [{far-arrows false no-far-arrows true}
-          (group-by #(has-far-arrows? graph columns %) (first remaining-ranks))
-          next-column
-          (if far-arrows
-            (let [height-to-clear (->> (conj columns no-far-arrows) (map count) (apply max))
-                  padding (- height-to-clear (count no-far-arrows))]
-              (concat no-far-arrows (take padding (repeat nil)) far-arrows))
-            no-far-arrows)]
-      (recur
-       {:graph graph
-        :remaining-ranks (rest remaining-ranks)
-        :columns (conj columns next-column)}))))
 
 (dc/do
   (def json
@@ -259,32 +262,13 @@
 
   (defcard map
     (let [g (transitive-reduction frontend-graph)
-          columns (build-columns {:graph g
-                                  :remaining-ranks (reverse (ranks g))
-                                  :columns ()})
-          edges (conj (g/edges g)
-                      ["cljsbuild_test" "precompile_assets"]
-                      ["npm_bower_dependencies" "cljsbuild_whitespace"])
           config {:box-width 150
                   :box-height 40
                   :x-spacing 100
                   :y-spacing 10
                   :strut-spacing 20
                   :arrow-radius 10}]
-      (html
-       [:div
-        #_(show-columns columns)
-        (map-svg config columns (g/edges g))
-        (map-svg config (-> columns
-                            vec
-                            (assoc 2 [nil "cljsbuild_test" "cljsbuild_whitespace" "cljsbuild_production" "clojure_test"]))
-                 edges)
-        (map-svg config (-> columns
-                            vec
-                            (update 1 conj nil)
-                            (assoc 2 ["cljsbuild_whitespace" "cljsbuild_production" "cljsbuild_test" "clojure_test"])
-                            (assoc 3 ["precompile_assets" "cljs_test"]))
-                 edges)])))
+      (map-svg config g)))
 
   (defcard arrow
     (html
