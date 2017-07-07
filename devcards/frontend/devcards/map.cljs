@@ -143,10 +143,10 @@
 
     (pr-str (alg/shortest-path g 1 6))))
 
-(defn show-columns [things-in-columns]
+(defn show-columns [columns]
   (html
    [:div {:style {:display "flex"}}
-    (for [things things-in-columns]
+    (for [things columns]
       [:div
        (for [thing things]
          (if thing
@@ -157,16 +157,6 @@
            [:div {:style {:margin "0.5em"
                           :padding "0.5em"
                           :height "calc(1em + 23px)"}}]))])]))
-
-(defn coords [columns]
-  (into {}
-        (map-indexed
-         (fn [x column]
-           (map-indexed
-            (fn [y thing]
-              [thing [x y]])
-            column))
-         columns)))
 
 (defn move-to [x y]
   (str "M" x "," y))
@@ -218,37 +208,58 @@
  [(box-x-position config x)
   (+ (/ box-height 2) (box-y-position config y))])
 
-(defn strut-offset [{:keys [strut-spacing]} things-in-columns tx ty]
- (* strut-spacing (- (count (nth things-in-columns tx)) ty)))
+(defn strut-offset [{:keys [strut-spacing]} columns tx ty]
+ (* strut-spacing (- (count (nth columns tx)) ty)))
 
-(defn strut-position [config things-in-columns tx ty]
- (- (first (arrow-end config tx ty)) (strut-offset config things-in-columns tx ty)))
+(defn strut-position [config columns tx ty]
+ (- (first (arrow-end config tx ty)) (strut-offset config columns tx ty)))
 
-(defn map-svg [{:keys [box-width box-height arrow-radius] :as config} things-in-columns edges]
-  (let [cs (coords things-in-columns)]
+(defn map-layout [{:keys [box-width box-height arrow-radius] :as config} columns edges]
+  (let [coords (into {}
+                     (map-indexed
+                      (fn [x column]
+                        (map-indexed
+                         (fn [y thing]
+                           [thing [x y]])
+                         column))
+                      columns))]
+    {:arrows
+     (for [[from to] edges
+           :let [[fx fy] (get coords from)
+                 [tx ty] (get coords to)]]
+       {:start (arrow-start config fx fy)
+        :end (arrow-end config tx ty)
+        :strut-position (strut-position config columns tx ty)
+        :radius arrow-radius})
+
+     :boxes
+     (for [[x things] (map-indexed vector columns)
+           [y thing] (map-indexed vector things)
+           :when thing]
+       {:x (box-x-position config x)
+        :y (box-y-position config y)
+        :width box-width
+        :height box-height
+        :content thing})}))
+
+(defn map-svg [{:keys [box-width box-height arrow-radius] :as config} columns edges]
+  (let [{:keys [arrows boxes]} (map-layout config columns edges)]
     (html
      [:div {:style {:background "white"}}
       [:svg {:width "2000"
              :height "300"
              :style {:background "white"}}
        [:g {:transform "translate(3,3)"}
-        (for [[from to] edges
-              :let [[fx fy] (get cs from)
-                    [tx ty] (get cs to)]]
-          (arrow (arrow-start config fx fy)
-                 (arrow-end config tx ty)
-                 (strut-position config things-in-columns tx ty)
-                 arrow-radius))
-        (for [[x things] (map-indexed vector things-in-columns)]
-          (for [[y thing] (map-indexed vector things)]
-            (when thing
-              [:g {:transform (str "translate(" (box-x-position config x) "," (box-y-position config y) ")")}
-               [:rect.job {:fill "none"
-                           :width box-width
-                           :height box-height}]
-               [:text {:x 10
-                       :y 25}
-                thing]])))]]])))
+        (for [{:keys [start end strut-position radius]} arrows]
+          (arrow start end strut-position radius))
+        (for [{:keys [x y width height content]} boxes]
+          [:g {:transform (str "translate(" x "," y ")")}
+           [:rect.job {:fill "none"
+                       :width width
+                       :height height}]
+           [:text {:x 10
+                   :y 25}
+            content]])]]])))
 
 (defn has-far-arrows? [graph columns node]
   (zero? (g/out-degree (g/subgraph graph (conj (apply concat (rest columns)) node))
