@@ -131,6 +131,7 @@
     :show-all-builds-toggled
     :show-queued-builds-clicked
     :signup-clicked
+    :submit-language-clicked
     ;; This is a special event that is sent when we send a signup event on
     ;; the backend, to work around the fact that some Segment integrations
     ;; don't properly support backend events

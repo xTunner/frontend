@@ -5,6 +5,32 @@
     padding-left: 0;
   }
 
+  .radio,
+  .checkbox {
+    // override forms.less block formatting
+    display: inline-block;
+  }
+
+  input[type=radio] {
+    display: none;
+
+    &:checked + label {
+      background-color: @blueLightest;
+      border: solid 1px @blueLight;
+    }
+  }
+
+  label {
+    border: solid 1px @grayLighter;
+    border-radius: 3px;
+    margin: 5px 10px 0 0;
+
+    cursor: pointer;
+    font-weight: normal;
+    color: @grayDark;
+    line-height: 22px;
+  }
+
   .projects-dropdown {
     select {
       width: 30%;
@@ -29,22 +55,25 @@
     background: transparent;
   }
 
-  .platform-selector {
+  @tile-width: 135px;
 
-    .os-label i {
-      margin-right: 5px;
-      margin-left: 0;
-      color: @grayLight;
+  .platform-selector {
+    .os {
+      label {
+        height: @button-primary-height;
+        padding: 5px 10px;
+        width: @tile-width;
+      }
+
     }
 
     .platform-item {
       display: inline-block;
       vertical-align: top;
-      padding-right: 50px;
-      width: 30%;
+      width: 30%; // TODO: Make these guys the same height
 
-      p {
-        margin-left: 20px;
+      label {
+        padding: 15px;
       }
     }
   }
@@ -59,4 +88,36 @@
     font-size: 9px;
     font-weight: bold;
   }
+
+  .languages {
+    .language-list {
+      label {
+        width: @tile-width;
+        padding: 5px;
+
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    }
+
+    .missing-languages {
+      display: inline;
+
+      .requested-language {
+        width: 30%;
+        margin: 10px;
+        height: @button-primary-height;
+        padding: 8px 10px;
+        line-height: 18px;
+        border: solid 1px @blueLight;
+        border-radius: 3px;
+        cursor: pointer;
+
+        font-weight: normal;
+        color: @grayDark;
+      }
+    }
+  }
+
+
 }
