@@ -14,6 +14,7 @@
             [frontend.async :refer [raise!]]
             [frontend.utils :refer-macros [html defrender component]]
             [goog.string :as gstring]
+            [goog.dom :as gdom]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [cljs-time.format :as time-format]
@@ -189,16 +190,22 @@
     om/IRenderState
     (render-state [_ {focused-build :focused-build
                       [x y] :mouse-location}]
-      (html
-       [:div {:data-component (str `build-status-bar-chart)
-              :style {:position "relative"}}
-        (om/build insights/build-status-bar-chart {:plot-info plot-info
-                                                   :builds builds
-                                                   :on-focus-build #(om/set-state! owner :focused-build %)
-                                                   :on-mouse-move #(om/set-state! owner :mouse-location %)})
-        [:div.hovercard {:style {:position "absolute" :left x :top y}}
-         (when focused-build
-           (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]]))))
+      (let [window-size-height (.-height (gdom/getViewportSize))
+            window-size-width  (.-width (gdom/getViewportSize))
+            hover-card-width 200 ;; hovercard width is 180px (project.less), and a cushion of 20px was added.
+            x-position (if (>= (+ x hover-card-width) window-size-width)
+                         (- x hover-card-width)
+                         x)]
+        (html
+         [:div {:data-component (str `build-status-bar-chart)
+                :style {:position "relative"}}
+          (om/build insights/build-status-bar-chart {:plot-info plot-info
+                                                     :builds builds
+                                                     :on-focus-build #(om/set-state! owner :focused-build %)
+                                                     :on-mouse-move #(om/set-state! owner :mouse-location %)})
+          [:div.hovercard {:style {:position "absolute" :left x-position :top y}}
+           (when focused-build
+             (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]])))))
 
 (defn branch-builds
   [project branch]
