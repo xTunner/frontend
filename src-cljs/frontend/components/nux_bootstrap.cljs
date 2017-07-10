@@ -6,7 +6,9 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.modal :as modal]
+            [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.models.organization :as org]
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
@@ -136,6 +138,12 @@
                [:div.projects-container.maybe-border-bottom
                 (spinner)]))])))))
 
+(defn- add-project-href
+  [top-bar-nav-org]
+  (if (feature/enabled? "top-bar-ui-v-1")
+    (routes/v1-add-projects-path top-bar-nav-org)
+    (routes/v1-add-projects)))
+
 (defn nux-bootstrap-content [{:keys [projects current-user projects-loaded? on-success] :as data} owner]
   (let [processed-projects (->> projects
                                 vals
@@ -145,6 +153,7 @@
         cta-button-text (if (feature/enabled? :onboarding-v1)
                           "Follow"
                           "Follow and Build")
+        skip-button-text "Skip to setup projects"
         {:keys [total-selected-projects-count selected-building-projects-count selected-not-building-projects-count]
          :as event-properties} (event-properties cta-button-text processed-projects)
         follow-and-build-action #(do
@@ -191,15 +200,26 @@
                                                              :selected-building-projects-count selected-building-projects-count
                                                              :selected-not-building-projects-count selected-not-building-projects-count
                                                              :do-it-fn follow-and-build-action}))
+                (when (feature/enabled? :onboarding-v1)
+                  [:.setup-project-button-link
+                   (popover/tooltip {:placement :top
+                                     :tigger-mode :hover
+                                     :body [:span "Proceed to Add Projects page and choose a project to set up on CircleCI."
+                                            [:br] [:br]
+                                            "You will be able to follow additional projects from the Add Projects page."]}
+                     (button/link {:href (add-project-href (-> organizations
+                                                               org/default
+                                                               org/for-route))
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :setup-projects-clicked
+                                                                                   :properties {:button-text skip-button-text
+                                                                                                :follow-skipped? true
+                                                                                                :component "NUX"}})}
+
+                       skip-button-text))])
                 (when (and projects-loaded? (> selected-building-projects-count 0))
                   [:div.explanation (gstring/format "Follow (%s) projects currently building on CircleCI" selected-building-projects-count)])
                 (when (and projects-loaded? (> selected-not-building-projects-count 0))
                   [:div.explanation (gstring/format "Add (%s) projects not yet building on CircleCI" selected-not-building-projects-count)])]))))))))
-(defn- add-project-href
-  [top-bar-nav-org]
-  (if (feature/enabled? "top-bar-ui-v-1")
-    (routes/v1-add-projects-path top-bar-nav-org)
-    (routes/v1-add-projects)))
 
 (defn- success-confirmation [{:keys [selected-org new-projects projects] :as data} owner]
   (reify

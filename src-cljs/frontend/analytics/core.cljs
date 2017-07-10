@@ -127,6 +127,7 @@
     :set-up-junit-impression
     :setup-docs-clicked
     :setup-docs-impression
+    :setup-projects-clicked
     :show-all-branches-toggled
     :show-all-builds-toggled
     :show-queued-builds-clicked
