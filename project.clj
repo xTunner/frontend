@@ -150,6 +150,7 @@
                                   :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                              :output-dir "resources/public/cljs/test"
                                              :optimizations :advanced
+                                             :language-in  :ecmascript5
                                              :parallel-build true
                                              :main frontend.test-runner
                                              ;; :advanced uses the minified versions of libraries (:file-min), but the
@@ -172,6 +173,7 @@
                                                    :output-to "resources/public/cljs/production/frontend.js"
                                                    :output-dir "resources/public/cljs/production"
                                                    :optimizations :advanced
+                                                   :language-in  :ecmascript5
                                                    :parallel-build true
                                                    :closure-defines {frontend.config/DEV false}
                                                    :externs ["src-cljs/js/pusher-externs.js"
