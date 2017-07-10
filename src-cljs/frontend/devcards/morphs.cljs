@@ -1,6 +1,6 @@
 (ns frontend.devcards.morphs
   (:require [cljs.core.async :as async :refer [<! chan close!]]
-            [clojure.spec :as s :include-macros true]
+            [clojure.spec.alpha :as s :include-macros true]
             [clojure.test.check.generators :as gen]
             [goog.object :as gobject]
             [medley.core :refer [distinct-by]]

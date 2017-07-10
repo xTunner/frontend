@@ -19,7 +19,7 @@
                  ;; Prerelease version to avoid conflict with cljs.core/record?
                  ;; https://github.com/noprompt/ankha/commit/64423e04bf05459f96404ff087740bce1c9f9d37
                  [ankha "0.1.5.1-64423e"]
-                 [org.clojure/clojurescript "1.9.227"]
+                 [org.clojure/clojurescript "1.9.671"]
                  [org.clojure/core.async "0.3.443"]
                  [org.clojure/core.match "0.3.0-alpha4"]
                  [org.clojure/test.check "0.9.0"]
@@ -38,8 +38,8 @@
                  [hiccups "0.3.0"]
                  [sablono "0.7.2"]
                  [secretary "1.2.2"]
-                 [com.andrewmcveigh/cljs-time "0.4.0"]
-                 [prismatic/schema "1.1.3"]
+                 [com.andrewmcveigh/cljs-time "0.5.0"]
+                 [prismatic/schema "1.1.6"]
                  [devcards "0.2.1-6"]
                  [funcool/promesa "1.8.1"]
                  [medley "1.0.0"]
