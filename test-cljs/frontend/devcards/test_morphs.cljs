@@ -5,11 +5,11 @@
             [clojure.test.check.generators :as gen]
             [frontend.devcards.morphs :as morphs]
             [om.core :as om]
-            [om.next :as om-next :refer-macros [defui]])
+            [om.next :as om-next :refer-macros [defui]]
+            [sablono.core :as html :refer-macros [html]])
   (:require-macros
    [cljs.core.async.macros :refer [go]]
-   [devcards.core :as dc :refer [defcard deftest]]
-   [sablono.core :refer [html]]))
+   [devcards.core :as dc :refer [defcard deftest]]))
 
 (deftest signature-test
   (is (= {:type "div"
