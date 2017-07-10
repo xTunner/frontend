@@ -1,10 +1,10 @@
 (ns frontend.components.pieces.map
   (:require [clojure.string :as string]
+            [frontend.utils :refer-macros [html]]
             [loom.alg :as alg]
             [loom.graph :as g])
   (:require-macros
-   [devcards.core :as dc :refer [defcard]]
-   [frontend.utils :refer [html]]))
+   [devcards.core :as dc :refer [defcard]]))
 
 (defn roots [g]
   (filter (comp zero? (partial g/in-degree g)) (g/nodes g)))
