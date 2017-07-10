@@ -38,7 +38,7 @@
                  [hiccups "0.3.0"]
                  [sablono "0.7.2"]
                  [secretary "1.2.2"]
-                 [com.andrewmcveigh/cljs-time "0.4.0"]
+                 [com.andrewmcveigh/cljs-time "0.5.0"]
                  [prismatic/schema "1.1.6"]
                  [devcards "0.2.1-6"]
                  [funcool/promesa "1.8.1"]
