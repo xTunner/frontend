@@ -1,5 +1,8 @@
 (ns frontend.components.insights.project
-  (:require [frontend.components.common :as common]
+  (:require [cljs-time.format :as time-format]
+            [devcards.core :as dc :refer-macros [defcard]]
+            [frontend.async :refer [raise!]]
+            [frontend.components.common :as common]
             [frontend.components.insights :as insights]
             [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.spinner :refer [spinner]]
@@ -8,17 +11,15 @@
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
             [frontend.models.test :as test-model]
-            [frontend.utils.seq :as utils-seq]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.async :refer [raise!]]
             [frontend.utils :refer-macros [html defrender component]]
+            [frontend.utils.seq :as utils-seq]
+            [goog.dom :as gdom]
             [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
-            [cljs-time.format :as time-format]
-            cljsjs.c3)
-  (:require-macros [devcards.core :as dc :refer [defcard]]))
+            cljsjs.c3))
 
 (def build-time-bar-chart-plot-info
   {:top 30
@@ -189,16 +190,23 @@
     om/IRenderState
     (render-state [_ {focused-build :focused-build
                       [x y] :mouse-location}]
-      (html
-       [:div {:data-component (str `build-status-bar-chart)
-              :style {:position "relative"}}
-        (om/build insights/build-status-bar-chart {:plot-info plot-info
-                                                   :builds builds
-                                                   :on-focus-build #(om/set-state! owner :focused-build %)
-                                                   :on-mouse-move #(om/set-state! owner :mouse-location %)})
-        [:div.hovercard {:style {:position "absolute" :left x :top y}}
-         (when focused-build
-           (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]]))))
+      (let [window-size-height (.-height (gdom/getViewportSize))
+            window-size-width  (.-width (gdom/getViewportSize))
+            hover-card-width 180
+            padded-width (+ hover-card-width 20)
+            x-position (if (>= (+ x padded-width) window-size-width)
+                         (- x padded-width)
+                         x)]
+        (html
+         [:div {:data-component (str `build-status-bar-chart)
+                :style {:position "relative"}}
+          (om/build insights/build-status-bar-chart {:plot-info plot-info
+                                                     :builds builds
+                                                     :on-focus-build #(om/set-state! owner :focused-build %)
+                                                     :on-mouse-move #(om/set-state! owner :mouse-location %)})
+          [:div.hovercard {:style {:position "absolute" :width hover-card-width :left x-position :top y}}
+           (when focused-build
+             (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]])))))
 
 (defn branch-builds
   [project branch]
