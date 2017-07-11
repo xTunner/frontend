@@ -1,12 +1,12 @@
 (ns frontend.components.pieces.empty-state
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.pieces.button :as button]
+  (:require [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
             [frontend.utils :refer-macros [component html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn important
   "An Empty State heading should contain (generally) one important term (often a

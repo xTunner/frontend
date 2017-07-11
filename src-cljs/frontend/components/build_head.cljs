@@ -365,7 +365,7 @@
 
 (defn tests-ad [owner language platform build-succeeded?]
   (let [junit-link (if (= platform "2.0")
-                     "/docs/2.0/configuration-reference/#storetestresults"
+                     "/docs/2.0/configuration-reference/#store_test_results"
                      (case language
                        "Clojure" "/docs/test-metadata/#test2junit-for-clojure-tests"
                        "Ruby" "/docs/test-metadata/#rspec"

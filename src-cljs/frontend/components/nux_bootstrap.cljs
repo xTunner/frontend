@@ -6,7 +6,9 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.modal :as modal]
+            [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.models.organization :as org]
             [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.models.repo :as repo-model]
@@ -136,6 +138,12 @@
                [:div.projects-container.maybe-border-bottom
                 (spinner)]))])))))
 
+(defn- add-project-href
+  [top-bar-nav-org]
+  (if (feature/enabled? "top-bar-ui-v-1")
+    (routes/v1-add-projects-path top-bar-nav-org)
+    (routes/v1-add-projects)))
+
 (defn nux-bootstrap-content [{:keys [projects current-user projects-loaded? on-success] :as data} owner]
   (let [processed-projects (->> projects
                                 vals
@@ -145,6 +153,7 @@
         cta-button-text (if (feature/enabled? :onboarding-v1)
                           "Follow"
                           "Follow and Build")
+        skip-button-text "Skip - I don't want to follow any projects"
         {:keys [total-selected-projects-count selected-building-projects-count selected-not-building-projects-count]
          :as event-properties} (event-properties cta-button-text processed-projects)
         follow-and-build-action #(do
@@ -165,7 +174,8 @@
              (when-not (empty? organizations)
                [:div.getting-started
                 [:div
-                 "Choose projects to follow and populate your dashboard to see what builds pass/fail and show how fast they run."]
+                 [:p "On this page, choose projects to populate your dashboard from the ones that are " [:b "already building"] " on CircleCI."]
+                 [:p "In the next view, you'll be able to " [:b "set up new projects"] "."]]
                 (when-not (feature/enabled? :onboarding-v1)
                   [:div
                    "Projects that have never been built on CircleCI before have a "
@@ -191,17 +201,29 @@
                                                              :selected-building-projects-count selected-building-projects-count
                                                              :selected-not-building-projects-count selected-not-building-projects-count
                                                              :do-it-fn follow-and-build-action}))
+                (when (feature/enabled? :onboarding-v1)
+                  [:.setup-project-button-link
+                   (popover/tooltip {:placement :top
+                                     :tigger-mode :hover
+                                     :body [:span "Proceed to Add Projects page and choose a project to set up on CircleCI."
+                                            [:br] [:br]
+                                            "You will be able to follow additional projects from the Add Projects page."]}
+                     (button/link {:href (add-project-href (-> organizations
+                                                               org/default
+                                                               org/for-route))
+                                   :kind :flat
+                                   :on-click #((om/get-shared owner :track-event) {:event-type :setup-projects-clicked
+                                                                                   :properties {:button-text skip-button-text
+                                                                                                :follow-skipped? true
+                                                                                                :component "NUX"}})}
+
+                       skip-button-text))])
                 (when (and projects-loaded? (> selected-building-projects-count 0))
                   [:div.explanation (gstring/format "Follow (%s) projects currently building on CircleCI" selected-building-projects-count)])
                 (when (and projects-loaded? (> selected-not-building-projects-count 0))
                   [:div.explanation (gstring/format "Add (%s) projects not yet building on CircleCI" selected-not-building-projects-count)])]))))))))
-(defn- add-project-href
-  [top-bar-nav-org]
-  (if (feature/enabled? "top-bar-ui-v-1")
-    (routes/v1-add-projects-path top-bar-nav-org)
-    (routes/v1-add-projects)))
 
-(defn- success-confirmation [{:keys [selected-org new-projects projects] :as data} owner]
+(defn- success-confirmation [{:keys [selected-org new-projects projects current-user] :as data} owner]
   (reify
     om/IRender
     (render [_]
@@ -215,18 +237,23 @@
                                   (remove nil?)
                                   count))]
         (card/titled
-          {:title (gstring/format "Successfully Following %s Projects"
-                                  (count-projects projects #(filter :checked %)))}
+          {:title (gstring/format "Success, %s! Ready to Add More Projects?"
+                                  (user-model/login current-user))}
           (html
             [:div
-             [:p "We noticed you have "
+             [:p "Excellent! Now that you are successfully following "
+              [:b (gstring/format "%s" (count-projects projects #(filter :checked %)))]
+              " project(s), you're ready to start using CircleCI."]
+             [:p "We noticed that you have "
               [:b (count-projects new-projects identity)]
-              " new projects on CircleCI. You can build these projects at any time from the "
-              [:a {:href (add-project-href top-bar-nav-org)}
-               "Add Projects"]
-              " page."]
-             [:p "New projects can be made using our old 1.0 architecture or a new and improved 2.0 architecture."]
+              " new projects not yet building on CircleCI. Would you like to set one up now?"]
              [:div
+              [:.add-projects-button-link
+               (button/link
+                 {:href (add-project-href top-bar-nav-org)
+                  :kind :primary
+                  :fixed? true}
+                 "Setup New Project")]
               (button/link
                 {:href (if (feature/enabled? "top-bar-ui-v-1")
                          (routes/v1-organization-dashboard-path top-bar-nav-org)
@@ -235,13 +262,9 @@
                               (api/get-dashboard-builds {} api-ch)
                               (api/get-projects api-ch)
                               (api/get-me api-ch))
-                 :kind :primary}
-                "View Builds")
-
-              [:a.add-projects-button-link
-               {:href (add-project-href top-bar-nav-org)
-                :kind :secondary}
-               "Setup New Projects"]]]))))))
+                 :kind :flat
+                 :fixed :true}
+                "Skip to dashboard")]]))))))
 
 (defn build-empty-state [{:keys [selected-org current-user projects-loaded? organizations new-projects projects] :as data} owner]
   (reify
@@ -261,7 +284,8 @@
                     show-success?)
              (om/build success-confirmation {:selected-org selected-org
                                              :new-projects new-projects
-                                             :projects projects})
+                                             :projects projects
+                                             :current-user current-user})
 
              (card/collection
                [(card/basic
@@ -272,28 +296,22 @@
                      :subheading (html
                                    [:div
                                     "You've joined the ranks of 100,000+ teams who ship better code, faster."
-                                    [:br]
                                     (when-not (user-model/has-private-scopes? current-user)
                                       (button/link {:href (gh-utils/auth-url)
                                                     :on-click #((om/get-shared owner :track-event) {:event-type :add-private-repos-clicked
                                                                                                     :properties {:component "nux"}})
                                                     :kind :primary}
-                                                   "Add private repos"))])}))
+                                        "Add private repos"))])}))
 
                 (if organizations
                   (om/build nux-bootstrap-content (assoc data :on-success #(om/set-state! owner :show-success? true)))
                   (card/basic (spinner)))
                 (if organizations
                   (card/titled
-                    {:title "Looking for something else?"}
+                    {:title "Interested in a tour?"}
                     (html
                       [:div
-                       [:div
-                        "Project not listed? Visit the "
-                        [:a {:href "/add-projects"} "Add Projects"]
-                        " page to find it."]
-                       [:div
-                        "Interested in a tour? "
-                        [:a {:href "https://circleci.com/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
-                             :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
-                         "See how Spotify uses CircleCI"]]])))]))])))))
+                       [:a {:href "https://circleci.com/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
+                            :target "_blank"
+                            :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
+                        "See how Spotify uses CircleCI"] ". You'll be able to to see what builds pass/fail and show how fast they run."])))]))])))))

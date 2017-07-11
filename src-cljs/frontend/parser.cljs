@@ -72,20 +72,20 @@
 
       (next-read env))))
 
-;; Describes the mapping from :routed-entity/* keys, which refer to entities
-;; specified by route params, to the queries that actually read those entities.
-;; In the given functions, the first parameter is the subquery to be read from
-;; that entity, and the second is the map of route params set by the routes. The
+;; Describes the mapping from :routed/* keys, which refer to entities specified
+;; by route params, to the queries that actually read those entities. In the
+;; given functions, the first parameter is the subquery to be read from that
+;; entity, and the second is the map of route params set by the routes. The
 ;; vector before the function is a path into the resulting data which will find
 ;; the entity.
 ;;
 ;; Note that we always alias (`:<`) the outermost expression we return in these,
 ;; in case the key is already used elsewhere in the same query. For instance, if
-;; we use `:routed-entity/organization` and `:routed-entity/project` on the same
-;; page and didn't alias the expression, we'd have two expressions reading
+;; we use `:routed/organization` and `:routed/project` on the same page and
+;; didn't alias the expression, we'd have two expressions reading
 ;; `:circleci/organization` in the same place, which would break.
 (def ^:private routed-data-query-map
-  {:routed-entity/organization
+  {:routed/organization
    [[:routed-organization]
     (fn [{:keys [organization/vcs-type
                  organization/name]} query]
@@ -95,7 +95,7 @@
                                  :organization/name ~name})
           ~query}))]
 
-   :routed-entity/project
+   :routed/project
    [[:org-for-routed-project :organization/project]
     (fn [route-params query]
       `{(:org-for-routed-project
@@ -106,7 +106,7 @@
            ~(select-keys route-params [:project/name]))
           ~query}]})]
 
-   :routed-entity/branch
+   :routed/branch
    [[:org-for-routed-project :organization/project :project/branch]
     (fn [route-params query]
       (when (:branch/name route-params)
@@ -120,14 +120,14 @@
                 ~(select-keys route-params [:branch/name]))
                ~query}]}]}))]
 
-   :routed-entity/run
+   :routed/run
    [[:routed-run]
     (fn [{:keys [run/id]} query]
       `{(:routed-run {:< :circleci/run
                       :run/id ~id})
         ~query})]
 
-   :routed-entity/job
+   :routed/job
    [[:run-for-routed-job :run/job]
     (fn [route-params query]
       (when (:job/name route-params)

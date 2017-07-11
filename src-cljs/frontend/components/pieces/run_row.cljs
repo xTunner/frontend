@@ -1,5 +1,5 @@
 (ns frontend.components.pieces.run-row
-  (:require [clojure.spec :as s :include-macros true]
+  (:require [clojure.spec.alpha :as s :include-macros true]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]
             [frontend.analytics :as analytics]

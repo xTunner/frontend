@@ -1,6 +1,5 @@
 (ns frontend.components.pages.build
-  (:require [devcards.core :as dc :refer-macros [defcard-om]]
-            [frontend.async :refer [raise!]]
+  (:require [frontend.async :refer [raise!]]
             [frontend.components.build :as build-com]
             [frontend.components.jira-modal :as jira-modal]
             [frontend.components.pieces.button :as button]
@@ -14,7 +13,8 @@
             [frontend.routes :as routes]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [component html]]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [defcard-om]]))
 
 (defn- ssh-available?
   "Show the SSH button unless it's disabled"

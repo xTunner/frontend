@@ -1077,7 +1077,7 @@
       [:legend "Webhooks"]
       [:div.doc
        [:p
-        "CircleCI also supports webhooks, which run at the end of a build. They can be configured in your "
+        "The CircleCI 1.0 platform also supports webhooks, which run at the end of a build. They can be configured in your "
         [:a {:href "https://circleci.com/docs/configuration#notify" :target "_blank"}
          "circle.yml file"]
         "."]]]])))

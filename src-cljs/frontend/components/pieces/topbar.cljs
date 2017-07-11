@@ -1,6 +1,5 @@
 (ns frontend.components.pieces.topbar
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.api :as api]
+  (:require [frontend.api :as api]
             [frontend.async :refer [raise!]]
             [frontend.components.common :as common]
             [frontend.components.pieces.icon :as icon]
@@ -12,7 +11,8 @@
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.html :as html]
             [om.core :as om])
-  (:require-macros [frontend.utils :refer [component html]]))
+  (:require-macros [devcards.core :as dc :refer [defcard]]
+                   [frontend.utils :refer [component html]]))
 
 (defn orgs-dropdown-selector [orgs selected-org current-route owner]
   [:li.dropdown.org-dropdown

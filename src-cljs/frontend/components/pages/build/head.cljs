@@ -1,7 +1,6 @@
 (ns frontend.components.pages.build.head
   (:require [cljs.core.async :as async :refer [chan]]
             [clojure.string :as string]
-            [devcards.core :as dc :refer-macros [defcard-om]]
             [frontend.async :refer [raise!]]
             [frontend.components.build-head :as old-build-head]
             [frontend.components.builds-table :as builds-table]
@@ -24,7 +23,8 @@
             [frontend.utils.vcs-url :as vcs-url]
             [goog.string :as gstring]
             [frontend.state :as state]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [defcard-om]]))
 
 (defn- summary-item [label value]
   (component

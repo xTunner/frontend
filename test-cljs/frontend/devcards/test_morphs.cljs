@@ -1,7 +1,7 @@
 (ns frontend.devcards.test-morphs
   (:require [cljs.core.async :as async :refer [<! chan]]
             [cljs.test :refer-macros [async is testing]]
-            [clojure.spec :as s :include-macros true]
+            [clojure.spec.alpha :as s :include-macros true]
             [clojure.test.check.generators :as gen]
             [frontend.devcards.morphs :as morphs]
             [om.core :as om]

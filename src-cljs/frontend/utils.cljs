@@ -557,3 +557,9 @@ top.  The remaining keys/values goes into the bottom."
                                               remainder))
           processed-children (map dissoc-nil-react-keys children)]
       (into [tag safe-attrs] processed-children))))
+
+(def platform-2-0-docs-url
+  "https://circleci.com/docs/2.0/")
+
+(def platform-1-0-docs-url
+  "https://circleci.com/docs/1.0/")

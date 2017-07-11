@@ -1,8 +1,8 @@
 (ns frontend.components.pieces.dropdown
-  (:require [devcards.core :as dc :refer-macros [defcard-om]]
-            [frontend.utils :refer-macros [html]]
+  (:require [frontend.utils :refer-macros [html]]
             [frontend.utils.seq :refer [find-index]]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [defcard-om]]))
 
 (defn dropdown
   "A standard dropdown select control.

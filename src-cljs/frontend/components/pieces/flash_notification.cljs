@@ -1,12 +1,11 @@
 (ns frontend.components.pieces.flash-notification
   (:require [cljs.core.async :refer [<! chan close! put! timeout]]
-            [devcards.core :as dc :refer-macros [defcard]]
             [frontend.components.pieces.button :as button]
             [frontend.utils.seq :refer [dedupe-by]]
             [om.next :as om-next :refer-macros [defui]])
-  (:require-macros
-   [cljs.core.async.macros :refer [alt! go]]
-   [frontend.utils :refer [component element html while-let]]))
+  (:require-macros [cljs.core.async.macros :refer [alt! go]]
+                   [devcards.core :as dc :refer [defcard]]
+                   [frontend.utils :refer [component element html while-let]]))
 
 (defui
   ^{:doc

@@ -7,8 +7,8 @@
   center with the text using flexbox and size the icon to `1em`. See the devcards
   for examples."
   (:refer-clojure :exclude [key])
-  (:require [devcards.core :as dc :refer-macros [defcard defcard-doc]]
-            [frontend.utils :refer-macros [html component ns-docstring]]))
+  (:require [frontend.utils :refer-macros [html component ns-docstring]])
+  (:require-macros [devcards.core :as dc :refer [defcard defcard-doc]]))
 
 (defn- icon
   "The svg element of an icon. Our icon SVG sizes are standardized so that the

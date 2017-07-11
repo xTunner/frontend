@@ -1,7 +1,7 @@
 (ns frontend.components.pieces.spinner
-  (:require [devcards.core :as dc :refer-macros [defcard]]
-            [frontend.components.common :as common]
-            [frontend.utils :refer-macros [html component]]))
+  (:require [frontend.components.common :as common]
+            [frontend.utils :refer-macros [html component]])
+  (:require-macros [devcards.core :as dc :refer [defcard]]))
 
 (defn spinner []
   (component

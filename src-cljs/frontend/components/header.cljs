@@ -306,6 +306,7 @@
             license (get-in app state/license-path)
             project (get-in app state/project-path)
             plan (get-in app state/project-plan-path)
+            nav-point (get-in app state/current-view-path)
             show-web-notif-banner? (not (get-in app state/remove-web-notification-banner-path))
             show-web-notif-banner-follow-up? (not (get-in app state/remove-web-notification-confirmation-banner-path))]
         (html
@@ -365,12 +366,12 @@
                                       "User Notifications"]]
                            :dismiss-fn #(raise! owner [:dismiss-web-notifications-confirmation-banner])}))))
           (when (and (seq crumbs)
-                     (or (= :build (get-in app state/current-view-path))
-                         (-> user :projects empty? not)))
+                     (or (not (= :dashboard (get-in app state/current-view-path)))
+                         (not (empty? (get-in app state/projects-path)))))
             (om/build page-header/header {:crumbs crumbs
                                           :logged-out? (not (:name user))
                                           :topbar-beta {:org (state-utils/last-visited-or-default-org app)
-                                                        :nav-point (get-in app state/current-view-path)}
+                                                        :nav-point nav-point}
                                           :actions (cond-> []
                                                      (show-settings-link? app)
                                                      (conj (settings-link app owner))
@@ -380,7 +381,7 @@
 
                                                      (show-follow-project-button? app)
                                                      (conj (html [:.follow-project (om/build follow-project-button project)])))
-                                          :platform (when-let [platform (and (= :build (:navigation-point app))
+                                          :platform (when-let [platform (and (= :build nav-point)
                                                                              (->> state/build-data-path
                                                                                   (get-in app)
                                                                                   :build

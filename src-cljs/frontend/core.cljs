@@ -357,10 +357,3 @@
 (defn ^:export explode []
   (swallow-errors
    (assoc [] :deliberate :exception)))
-
-
-;; Figwheel offers an event when JS is reloaded but not when CSS is reloaded. A
-;; PR is waiting to add this; until then fire that event from here.
-;; See: https://github.com/bhauman/lein-figwheel/pull/463
-(defn handle-css-reload [files]
-  (figwheel-utils/dispatch-custom-event "figwheel.css-reload" files))

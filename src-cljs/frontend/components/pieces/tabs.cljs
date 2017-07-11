@@ -1,8 +1,8 @@
 (ns frontend.components.pieces.tabs
-  (:require [devcards.core :as dc :refer-macros [defcard-om]]
-            [frontend.config :as config]
+  (:require [frontend.config :as config]
             [frontend.utils :refer-macros [defrender html]]
-            [om.core :as om :include-macros true]))
+            [om.core :as om :include-macros true])
+  (:require-macros [devcards.core :as dc :refer [defcard-om]]))
 
 (defn tab-row
   "A row of tabs, suitable for the top of a card.

@@ -1,5 +1,5 @@
 (ns frontend.components.pieces.job
-  (:require [clojure.spec :as s :include-macros true]
+  (:require [clojure.spec.alpha :as s :include-macros true]
             [clojure.test.check.generators :as gen]
             [frontend.components.common :as common]
             [frontend.components.pieces.button :as button]
