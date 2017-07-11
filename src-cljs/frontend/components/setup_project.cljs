@@ -6,6 +6,7 @@
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.spinner :refer [spinner]]
+            [frontend.components.pieces.table :as table]
             [frontend.models.repo :as repo-model]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [defrender html]]
@@ -116,6 +117,7 @@
   [:div
    (button/button
      {:kind :primary
+      :fixed? true
       :on-click (fn []
                   ; Select the hidden text area.
                   (-> js/document
@@ -123,13 +125,78 @@
                     .select)
                   ; Copy to clipboard.
                   (.execCommand js/document "copy"))}
-     "Copy to Clipboard")
+     "Copy to clipboard")
    [:textarea.hidden-config
     {:value config-string}]])
 
-(defrender config-display
-  [config-string]
-  (om/build build-config {:config-string config-string}))
+(defn- start-build-button [selected-project owner]
+  (reify
+    om/IRender
+    (render [_]
+      (html
+        (let [org-login (:username selected-project)
+              repo-name (:name selected-project)
+              vcs-type (:vcs_type selected-project)]
+          (button/managed-button {:title "This project is not building on CircleCI. Clicking will cause CircleCI to start building the project."
+                                  :data-spinner true
+                                  :fixed? true
+                                  :success-text "Sent"
+                                  :on-click #(do
+                                               (raise! owner [:followed-repo (assoc selected-project :login org-login
+                                                                                                     :type vcs-type)])
+
+                                               ((om/get-shared owner :track-event)
+                                                 {:event-type :build-project-clicked
+                                                  :properties {:project-vcs-url (repo-model/id selected-project)
+                                                               :repo repo-name
+                                                               :org org-login}}))
+                                  :kind :primary}
+            "Start building"))))))
+
+(defn instructions-table
+  [selected-config-string selected-project]
+  [{:number "1."
+    :text [:p
+           "Create a folder named " [:code ".circleci"] " and add a file" [:code "config.yml"]
+           " (so that the filepath be in " [:code ".circleci/config.yml"] ")."]
+    :button ""}
+   {:number "2."
+    :text [:p "Populate the config.yml with the contents of the sample .yml (shown below)."]
+    :button (copy-to-clipboard selected-config-string)}
+   {:number "3."
+    :text [:p "Upate the sample .yml to reflect your project's configuration."]
+    :button ""}
+   {:number "4."
+    :text [:p "Push this change up to your version control service (GitHub, Bitbucket)."]
+    :button ""}
+   {:number "5."
+    :text [:p "Start building! This will launch your project on CircleCI and make our webhooks listen for updates to your work."]
+    :button (om/build start-build-button selected-project)}])
+
+(defrender sample-yml
+  [{:keys [selected-config-string selected-project]} owner]
+  (html
+    [:div
+     [:h2 "Next Steps"]
+     [:p "You're almost there! We're going to walk you through setting up a configuration file, committing it, and turning on our listener so that CircleCI can test your commits."]
+     [:p "Want to skip ahead? Jump right " [:a {:target "_blank"
+                               :href utils/platform-2-0-docs-url}
+                           "into our documentation"]  ", set up a .yml file, and kick off your build with the button below."]
+     [:.checklist
+      (om/build table/table {:rows (instructions-table selected-config-string selected-project)
+                             :key-fn :test-table
+                             :columns [{:header ""
+                                        :cell-fn :number}
+                                       {:header ""
+                                        :cell-fn :text}
+                                       {:header ""
+                                        :cell-fn :button}]})]
+     [:br]
+     [:p "If you start building before you've added the .yml, there's no need to panic. Our platform will try to run Circle 1.0 build using inference. To get back on track, simply add the .yml and your configuration will do the rest."]
+     (when selected-config-string
+       [:div
+        [:h2 "Sample .yml File"]
+        (om/build build-config {:config-string selected-config-string})])]))
 
 (defn- select-language
   [{:keys [selected-project selected-language-name set-submit-disabled? set-selected-language-name]} owner]
@@ -147,33 +214,39 @@
     om/IRenderState
     (render-state [_ {:keys [selected-language-name submit-disabled?]}]
       (let [languages (languages-list)
-            selected-config-string (language-config (language languages selected-language-name))]
+            selected-config-string (language-config (language languages selected-language-name))
+            submit-button-text (if submit-disabled? "Submitted" "Submit")]
         (html
           [:div
            [:.languages
-            [:h1 "Language"]
+            [:h2 "Language"]
             [:.language-list
              [:ul
               (language-tiles set-selected-language-name selected-language-name languages)]]
-            [:.missing-languages "Request a language: "
-             [:input
-              {:class "requested-language"
-               :type "text"}]
-             (button/button {:on-click #(do
-                                          ((om/get-shared owner :track-event)
-                                            {:event-type :submit-language-clicked
-                                             :properties (assoc selected-project
-                                                           :calculated-language selected-language-name
-                                                           :requested-language (-> js/document
-                                                                                 (.querySelector ".requested-language")
-                                                                                 .-value))})
-                                          (om/set-state! owner :submit-disabled? true))
-                             :kind :primary
-                             :disabled? submit-disabled?}
-               "Submit")
-             (when submit-disabled? [:p "Submitted"])]]
-           (om/build config-display selected-config-string)
-           (copy-to-clipboard selected-config-string)])))))
+            (if (= selected-language-name "Other")
+              [:.missing-languages
+               (when-not submit-disabled?
+                 [:span "Request a language: "
+                  [:input
+                   {:class "requested-language"
+                    :type "text"}]])
+
+               (button/button {:on-click #(do
+                                            ((om/get-shared owner :track-event)
+                                              {:event-type :submit-language-clicked
+                                               :properties (assoc selected-project
+                                                             :calculated-language selected-language-name
+                                                             :requested-language (-> js/document
+                                                                                   (.querySelector ".requested-language")
+                                                                                   .-value))})
+                                            (om/set-state! owner :submit-disabled? true))
+                               :kind :primary
+                               :disabled? submit-disabled?}
+                 submit-button-text)
+               (when submit-disabled?
+                 [:p.thank-you "Thank you for your feedback! Below is a sample yml to get you started."])])]
+           (om/build sample-yml {:selected-config-string selected-config-string
+                                 :selected-project selected-project})])))))
 
 (defn- platform-2-0 [{:keys [select-language-args]} owner]
   (reify
@@ -192,7 +265,22 @@
               repo-name (:name selected-project)
               vcs-type (:vcs_type selected-project)]
           [:div.one-platform
-           [:p "Know what you are doing? " [:a {:href "#"} "Read Documentation"]]])))))
+           [:div.experienced
+            [:h2 "Want to skip ahead?"]
+            [:p "Jump right " [:a {:href utils/platform-1-0-docs-url
+                                   :target "_blank"} "into our documentation"]
+               ", set up a .yml, and kick off your build with the button below."]
+            [:p "Note: If you start a build without adding a .yml file, we'll use inference."]
+            [:p "You can always add a .yml file to your project at a later date."]]
+
+           [:div.inference
+            [:h2 "New here?"]
+            [:p "We'll try to run your build without a .yml in place, using inference."]
+            [:p "Just click on the button below to kick off a build."]]
+
+           [:br]
+           (om/build start-build-button selected-project)
+           ])))))
 
 (def ^:private platform-osx-default {:os :osx :platform "1.0"})
 (def ^:private platform-linux-default {:os :linux :platform "2.0"})
@@ -212,8 +300,25 @@
                                         %)
                                      identity)]
     [:div.platform
-     [:h1 "Platform"]
+     [:h2 "Platform"]
      [:ul
+      [:div.platform-item
+       [:li.radio
+        (maybe-osx-disabled-tooltip
+          [:div
+           [:input
+            {:type "radio"
+             :id "2.0"
+             :disabled (= os :osx)
+             :checked (= platform "2.0")
+             :on-change #(set-platform "2.0")}]
+           [:label {:for "2.0"}
+            [:p "2.0 " [:span.new-badge]]
+            [:p "The new version of our platform enables the most power, flexibility and control available to speed up your builds. This version offers more for all and is especially ideal for Docker projects. "
+             [:a {:href utils/platform-2-0-docs-url
+                  :target "_blank"}
+              "Learn more"]]
+            [:p "Getting started on 2.0 involves reviewing sample configurations to help you compose your own config file."]]])]]
       [:div.platform-item
        [:li.radio
         [:input
@@ -223,25 +328,14 @@
           :on-change #(set-platform "1.0")}]
         [:label {:for "1.0"}
          [:p "1.0"]
-         [:p "The classic version of our platform offers all the standard features available for CI/CD minus the configurability and speed made available on CircleCI 2.0."]]]]
-      [:div.platform-item
-       [:li.radio
-        (maybe-osx-disabled-tooltip
-          [:div
-           [:input
-            {:type "radio"
-             :id "2.0"
-             :disabled (= os :osx)  ;; TODO: Format when disabled
-             :checked (= platform "2.0")
-             :on-change #(set-platform "2.0")}]
-           [:label {:for "2.0"}
-            [:p "2.0 " [:span.new-badge]]
-            [:p "CircleCI 2.0 offers teams more power, flexibility, and control with configurable Jobs that are broken into Steps. Compose these steps within a job at your discretion. Also supports most public Docker images and custom images with your own dependencies."]]])]]]]))
+         [:p "The classic version of our platform offers all the standard features over 100,000 developers have adopted."]
+         [:br]
+         [:p "Getting started on 1.0 involves first an automated attempt to infer your settings and if that fails, it requires setting up a basic configuration file."]]]]]]))
 
 (defn- select-operating-system
   [{:keys [os set-os]}]
   [:div
-   [:h1 "Operating System"]
+   [:h2 "Operating System"]
    [:ul.os
     [:li.radio
      [:input
@@ -324,16 +418,12 @@
         selected-project (get-in data state/setup-project-selected-project-path)]
     (html
       [:div#setup-project
-       (card/collection
-         [(card/basic
-            (html
-              [:div
-               [:h1 "Setup Project"]
-               [:p "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI. To kick things off, you'll need to choose a project to build. We'll start a new build for you each time someone pushes a new commit."]
-               (om/build projects-dropdown {:projects projects
-                                            :selected-project selected-project})]))
-          (when selected-project
-            (card/basic
-              (html
-                [:div
-                 (om/build setup-options {:selected-project selected-project})])))])])))
+       (card/titled {:title "Setup Project"}
+         (html
+           [:div
+            [:p "CircleCI helps you ship better code, faster. Let's add some projects on CircleCI. To kick things off, you'll need to choose a project to build. We'll start a new build for you each time someone pushes a new commit."]
+            (om/build projects-dropdown {:projects projects
+                                         :selected-project selected-project})])
+         (when selected-project
+           [:div
+            (om/build setup-options {:selected-project selected-project})]))])))

@@ -109,3 +109,7 @@
   "Does the current user have the permissions to view this org"
   [user org]
   (or (org-admin? org) (installation-admin? user)))
+
+(defn login
+  [user]
+  (:login user))

@@ -92,7 +92,7 @@
                                             :links-to "beta-access"
                                             :owner owner})
                             (platform-link {:body-text "This build ran on 2.0.\n"
-                                            :link "https://circleci.com/docs/2.0/"
+                                            :link utils/platform-2-0-docs-url
                                             :links-to "beta-docs"
                                             :owner owner}))
                     :placement :left

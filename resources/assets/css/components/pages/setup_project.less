@@ -75,6 +75,16 @@
       label {
         padding: 15px;
       }
+
+      input[type=radio] {
+
+        &:disabled + label {
+          background-color: @grayLightest;
+          border: solid 1px @grayLighter;
+          cursor: not-allowed;
+          color: @gray;
+        }
+      }
     }
   }
 
@@ -119,5 +129,11 @@
     }
   }
 
+  .checklist {
+    p {
+      margin: 0;
+      line-height: @button-primary-height;
+    }
+  }
 
 }
