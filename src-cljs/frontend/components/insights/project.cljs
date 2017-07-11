@@ -1,5 +1,8 @@
 (ns frontend.components.insights.project
-  (:require [frontend.components.common :as common]
+  (:require [cljs-time.format :as time-format]
+            [devcards.core :as dc :refer-macros [defcard]]
+            [frontend.async :refer [raise!]]
+            [frontend.components.common :as common]
             [frontend.components.insights :as insights]
             [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.spinner :refer [spinner]]
@@ -8,17 +11,14 @@
             [frontend.datetime :as datetime]
             [frontend.models.project :as project-model]
             [frontend.models.test :as test-model]
-            [frontend.utils.seq :as utils-seq]
             [frontend.routes :as routes]
             [frontend.state :as state]
-            [frontend.async :refer [raise!]]
             [frontend.utils :refer-macros [html defrender component]]
-            [goog.string :as gstring]
+            [frontend.utils.seq :as utils-seq]
             [goog.dom :as gdom]
+            [goog.string :as gstring]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
-            [cljs-time.format :as time-format]
-            [devcards.core :as dc :refer-macros [defcard]]
             cljsjs.c3))
 
 (def build-time-bar-chart-plot-info
@@ -192,9 +192,10 @@
                       [x y] :mouse-location}]
       (let [window-size-height (.-height (gdom/getViewportSize))
             window-size-width  (.-width (gdom/getViewportSize))
-            hover-card-width 200 ;; hovercard width is 180px (project.less), and a cushion of 20px was added.
-            x-position (if (>= (+ x hover-card-width) window-size-width)
-                         (- x hover-card-width)
+            hover-card-width 180
+            padded-width (+ hover-card-width 20)
+            x-position (if (>= (+ x padded-width) window-size-width)
+                         (- x padded-width)
                          x)]
         (html
          [:div {:data-component (str `build-status-bar-chart)
@@ -203,7 +204,7 @@
                                                      :builds builds
                                                      :on-focus-build #(om/set-state! owner :focused-build %)
                                                      :on-mouse-move #(om/set-state! owner :mouse-location %)})
-          [:div.hovercard {:style {:position "absolute" :left x-position :top y}}
+          [:div.hovercard {:style {:position "absolute" :width hover-card-width :left x-position :top y}}
            (when focused-build
              (build-status-bar-chart-hovercard (js->clj focused-build :keywordize-keys true)))]])))))
 
