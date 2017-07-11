@@ -321,12 +321,6 @@
                                       [:div
                                        [:span
                                         (button/button
-                                          {:kind :secondary
-                                           :size :small
-                                           :on-click #(raise! owner [:org-settings-normalized {:org-name org-name :vcs-type vcs-type}])}
-                                          (str "Resync with " vcs-label))]
-                                       [:span
-                                        (button/button
                                           {:kind :primary
                                            :size :small
                                            :on-click #(do
