@@ -164,7 +164,7 @@
     :text [:p "Populate the config.yml with the contents of the sample .yml (shown below)."]
     :button (copy-to-clipboard selected-config-string)}
    {:number "3."
-    :text [:p "Upate the sample .yml to reflect your project's configuration."]
+    :text [:p "Update the sample .yml to reflect your project's configuration."]
     :button ""}
    {:number "4."
     :text [:p "Push this change up to your version control service (GitHub, Bitbucket)."]
