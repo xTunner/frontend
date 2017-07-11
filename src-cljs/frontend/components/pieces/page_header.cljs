@@ -237,8 +237,8 @@
         has-topbar? (feature/enabled? "top-bar-ui-v-1")
         toggle-topbar (when-not has-topbar? "top-bar-ui-v-1")
         toggle-topbar-text (if has-topbar?
-                             "Leave Beta UI"
-                             "Join Beta UI")
+                             "Go Back to Our Old Look"
+                             "Check Out Our New Look")
         om-next-page? (-> topbar-beta :nav-point routes/om-next-nav-point?)]
     (reify
       om/IDisplayName (display-name [_] "User Header")
@@ -265,7 +265,7 @@
                                   :on-click #((om/get-shared owner :track-event) {:event-type :feedback-clicked
                                                                                   :properties {:component "topbar"
                                                                                                :treatment "top-bar-beta"}})}
-                      "Provide Beta UI Feedback")])])
+                      "Give Topbar UI Feedback")])])
 
               (when (and (false? om-next-page?)
                          (false? show-nux-experience?))
