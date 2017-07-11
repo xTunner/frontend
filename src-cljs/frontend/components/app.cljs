@@ -114,10 +114,10 @@
   static om-next/IQuery
   (query [this]
     '[{:legacy/state [*]}
-      {:routed-entity/organization [:organization/vcs-type
-                                    :organization/name
-                                    :organization/avatar-url
-                                    :organization/current-user-is-admin?]}])
+      {:routed/organization [:organization/vcs-type
+                             :organization/name
+                             :organization/avatar-url
+                             :organization/current-user-is-admin?]}])
   Object
   (render [this]
     (let [app (:legacy/state (om-next/props this))
@@ -128,7 +128,7 @@
               orgs (get-in app state/user-organizations-path)
               ;; use the first org in the org list as the default
               current-route (current-route app owner)
-              selected-org (or (some-> (:routed-entity/organization (om-next/props this))
+              selected-org (or (some-> (:routed/organization (om-next/props this))
                                        org/modern-org->legacy-org)
                                (get-in app state/selected-org-path)
                                (state-utils/last-visited-or-default-org app))

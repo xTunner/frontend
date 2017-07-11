@@ -136,25 +136,25 @@
   (query [this]
     [{:legacy/state ['*]}
      {:app/current-user [:user/login]}
-     {:routed-entity/organization [:organization/vcs-type
-                                   :organization/name]}
-     {:routed-entity/project [:project/name]}
-     {'(:project-for-runs {:< :routed-entity/project}) (om-next/get-query ProjectWorkflowRuns)}])
+     {:routed/organization [:organization/vcs-type
+                            :organization/name]}
+     {:routed/project [:project/name]}
+     {'(:project-for-runs {:< :routed/project}) (om-next/get-query ProjectWorkflowRuns)}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
       {:user (get-in props [:app/current-user :user/login])
        :view :route/project-workflows
-       :org (get-in props [:routed-entity/organization :organization/name])
-       :vcs-type (get-in props [:routed-entity/organization :organization/vcs-type])
-       :repo (get-in props [:routed-entity/project :project/name])}))
+       :org (get-in props [:routed/organization :organization/name])
+       :vcs-type (get-in props [:routed/organization :organization/vcs-type])
+       :repo (get-in props [:routed/project :project/name])}))
   Object
   (componentDidMount [this]
     (set-page-title! "CircleCI"))
   (render [this]
     (let [{{org-name :organization/name
-            vcs-type :organization/vcs-type} :routed-entity/organization
-           {project-name :project/name} :routed-entity/project}
+            vcs-type :organization/vcs-type} :routed/organization
+           {project-name :project/name} :routed/project}
           (om-next/props this)]
       (main-template/template
        {:app (:legacy/state (om-next/props this))
@@ -169,7 +169,7 @@
         :header-actions (settings-link vcs-type org-name project-name)
         :sidebar (build-legacy legacy-branch-picker
                                {:app (:legacy/state (om-next/props this))
-                                :org (:routed-entity/organization (om-next/props this))}
+                                :org (:routed/organization (om-next/props this))}
                                {:opts {:om-next-parent this}})
         :main-content (if-let [project (:project-for-runs (om-next/props this))]
                         (project-workflow-runs project)
@@ -225,29 +225,29 @@
   (query [this]
     [{:legacy/state ['*]}
      {:app/current-user [:user/login]}
-     {:routed-entity/organization [:organization/vcs-type
-                                   :organization/name]}
-     {:routed-entity/project [:project/name]}
-     {:routed-entity/branch [:branch/name]}
-     {'(:branch-for-runs {:< :routed-entity/branch})
+     {:routed/organization [:organization/vcs-type
+                            :organization/name]}
+     {:routed/project [:project/name]}
+     {:routed/branch [:branch/name]}
+     {'(:branch-for-runs {:< :routed/branch})
       (om-next/get-query BranchWorkflowRuns)}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
       {:user (get-in props [:app/current-user :user/login])
        :view :route/project-branch-workflows
-       :org (get-in props [:routed-entity/organization :organization/name])
-       :vcs-type (get-in props [:routed-entity/organization :organization/vcs-type])
-       :repo (get-in props [:routed-entity/project :project/name])
-       :branch (get-in props [:routed-entity/branch :branch/name])}))
+       :org (get-in props [:routed/organization :organization/name])
+       :vcs-type (get-in props [:routed/organization :organization/vcs-type])
+       :repo (get-in props [:routed/project :project/name])
+       :branch (get-in props [:routed/branch :branch/name])}))
   Object
   (componentDidMount [this]
     (set-page-title! "CircleCI"))
   (render [this]
     (let [{{org-name :organization/name
-            vcs-type :organization/vcs-type} :routed-entity/organization
-           {project-name :project/name} :routed-entity/project
-           {branch-name :branch/name} :routed-entity/branch
+            vcs-type :organization/vcs-type} :routed/organization
+           {project-name :project/name} :routed/project
+           {branch-name :branch/name} :routed/branch
            branch-for-runs :branch-for-runs}
           (om-next/props this)]
       (main-template/template
@@ -268,7 +268,7 @@
         :header-actions (settings-link vcs-type org-name project-name)
         :sidebar (build-legacy legacy-branch-picker
                                {:app (:legacy/state (om-next/props this))
-                                :org (:routed-entity/organization (om-next/props this))}
+                                :org (:routed/organization (om-next/props this))}
                                {:opts {:om-next-parent this}})
         :main-content (if-let [branch (:branch-for-runs (om-next/props this))]
                         (branch-workflow-runs branch)
@@ -312,10 +312,10 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     `{(:org-for-crumb {:< :routed-entity/organization})
+     `{(:org-for-crumb {:< :routed/organization})
        [:organization/vcs-type
         :organization/name]}
-     `{(:org-for-runs {:< :routed-entity/organization})
+     `{(:org-for-runs {:< :routed/organization})
        ~(om-next/get-query OrgWorkflowRuns)}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
@@ -347,8 +347,8 @@
   static om-next/IQuery
   (query [this]
     ['{:legacy/state [*]}
-     {:routed-entity/organization [:organization/vcs-type
-                                   :organization/name]}])
+     {:routed/organization [:organization/vcs-type
+                            :organization/name]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -364,7 +364,7 @@
      {:app (:legacy/state (om-next/props this))
       :crumbs [{:type :workflows}]
       :sidebar (build-legacy legacy-branch-picker {:app (:legacy/state (om-next/props this))
-                                                   :org (:routed-entity/organization (om-next/props this))})
+                                                   :org (:routed/organization (om-next/props this))})
       :main-content (card/basic
                      (empty-state/empty-state
                       {:icon (icon/workflows)
