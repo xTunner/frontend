@@ -26,7 +26,7 @@
   (query [this]
     ['{:legacy/state [*]}
      {:app/route-params [:route-params/tab :route-params/container-id]}
-     `{:routed-entity/run
+     `{:routed/run
        [:run/id
         {:run/project [:project/name
                        {:project/organization [:organization/vcs-type
@@ -34,15 +34,15 @@
         {:run/trigger-info [:trigger-info/branch]}
         {:run/errors [:workflow-error/message]}
         :error/type]}
-     `{(:run-for-row {:< :routed-entity/run})
+     `{(:run-for-row {:< :routed/run})
        ~(om-next/get-query run-row/RunRow)}
-     `{(:run-for-jobs {:< :routed-entity/run})
+     `{(:run-for-jobs {:< :routed/run})
        [{:run/jobs ~(om-next/get-query job/Job)}]}
-     {:routed-entity/job [:job/name
-                          {:job/build [:build/vcs-type
-                                       :build/org
-                                       :build/repo
-                                       :build/number]}]}])
+     {:routed/job [:job/name
+                   {:job/build [:build/vcs-type
+                                :build/org
+                                :build/repo
+                                :build/number]}]}])
   ;; TODO: Add the correct analytics properties.
   #_analytics/Properties
   #_(properties [this]
@@ -55,7 +55,7 @@
   #_(componentDidMount [this]
       (set-page-title! "Projects"))
   (componentWillUpdate [this next-props _next-state]
-    (when (= :error/not-found (get-in next-props [:routed-entity/run :error/type]))
+    (when (= :error/not-found (get-in next-props [:routed/run :error/type]))
       (compassus/set-route! this :route/not-found)))
   (render [this]
     (let [{{project-name :project/name
@@ -64,7 +64,7 @@
            {branch-name :trigger-info/branch} :run/trigger-info
            id :run/id
            errors :run/errors}
-          (:routed-entity/run (om-next/props this))]
+          (:routed/run (om-next/props this))]
       (component
        (main-template/template
         {:app (:legacy/state (om-next/props this))

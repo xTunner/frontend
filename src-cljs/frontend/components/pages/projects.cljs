@@ -194,14 +194,14 @@
                          :user/bitbucket-authorized?
                          :user/github-oauth-scopes]}
 
-     `{(:org-for-projects {:< :routed-entity/organization}) ~(om-next/get-query OrgProjects)}
-     `{:routed-entity/organization [:organization/name]}])
+     `{(:org-for-projects {:< :routed/organization}) ~(om-next/get-query OrgProjects)}
+     `{:routed/organization [:organization/name]}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
       {:user (get-in props [:app/current-user :user/login])
        :view :projects
-       :org (get-in props [:routed-entity/organization :organization/name :organization/vcs-type])}))
+       :org (get-in props [:routed/organization :organization/name :organization/vcs-type])}))
   Object
   (componentDidMount [this]
     (set-page-title! "Projects"))
@@ -211,11 +211,11 @@
             not-have-code-identity? (not (user/has-code-identity? current-user))]
         (main-template/template
           {:app (:legacy/state (om-next/props this))
-           :selected-org (:routed-entity/organization (om-next/props this))
+           :selected-org (:routed/organization (om-next/props this))
            :crumbs [{:type :projects}]
            :header-actions (when-not not-have-code-identity?
                              (add-project-button {:empty-state? false
-                                                  :org (:routed-entity/organization (om-next/props this))}))
+                                                  :org (:routed/organization (om-next/props this))}))
            :main-content
            (if not-have-code-identity?
              (non-code-ident-empty-state)
@@ -230,7 +230,8 @@
                          (if orgs
                            (org-picker/picker
                              {:orgs orgs
-                              :selected-org (first (filter #(= (select-keys (:routed-entity/organization (om-next/props this)) [:organization/vcs-type :organization/name])
+                              :selected-org (first (filter #(= (select-keys (:routed/organization (om-next/props this))
+                                                                            [:organization/vcs-type :organization/name])
                                                                (select-keys % [:organization/vcs-type :organization/name]))
                                                            orgs))
                               :on-org-click (fn [{:keys [organization/vcs-type organization/name]}]
