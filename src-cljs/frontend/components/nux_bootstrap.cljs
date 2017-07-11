@@ -142,7 +142,7 @@
                                 vals
                                 (remove nil?))
         organizations (orgs-from-repos current-user processed-projects)
-        project-orgs (project-model/group-by-org-name-and-vsc-type processed-projects)
+        project-orgs (project-model/group-by-org-name-and-vcs-type processed-projects)
         cta-button-text (if (feature/enabled? :onboarding-v1)
                           "Follow"
                           "Follow and Build")
