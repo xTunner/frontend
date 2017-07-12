@@ -1656,7 +1656,7 @@
      :users users
      :projects projects}
     (when (feature/enabled? :contexts-v1)
-      {:contexts contexts/main-component})
+      {:contexts contexts/main})
     (if (config/enterprise?)
       {:containers overview}
       {:containers cloud-pricing

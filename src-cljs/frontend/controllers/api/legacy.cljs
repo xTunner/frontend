@@ -4,7 +4,6 @@
             [frontend.api.path :as api-path]
             [frontend.async :refer [put!]]
             [frontend.components.forms :as forms :refer [release-button!]]
-            frontend.controllers.api.contexts
             [frontend.controllers.api.impl :refer [api-event post-api-event!]]
             [frontend.elevio :as elevio]
             frontend.favicon
