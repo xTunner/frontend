@@ -1,6 +1,11 @@
 (ns frontend.api.path
   (:require [goog.string :as gstring]))
 
+(def query-api
+  "This is the sole endpoint for the Query API. All calls requesting to
+  use the Query API should use this constant."
+  "/query-api")
+
 (defn- base-project-url-path [vcs-type]
   (gstring/format
    "/api/v1.1/project/%s"

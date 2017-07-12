@@ -196,6 +196,8 @@
 (def user-betas-path (conj user-path user-betas-key))
 
 (def org-data-path [:current-org-data])
+(def org-analytics-id-path (conj org-data-path :analytics_id))
+(def org-contexts-path (conj org-data-path :contexts))
 (def org-name-path (conj org-data-path :name))
 (def org-vcs_type-path (conj org-data-path :vcs_type))
 (def org-plan-path (conj org-data-path :plan))

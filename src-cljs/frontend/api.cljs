@@ -79,7 +79,7 @@
 
 (defn get-workflow-status [api-ch run-id]
   (ajax/ajax :post
-             "/query-api"
+             path/query-api
              :uncatchable-by-old-controller
              api-ch
              :format :transit
@@ -89,7 +89,7 @@
 
 (defn get-project-workflows [api-ch vcs-type org-name repo-name opts]
   (ajax/ajax :post
-             "/query-api"
+             path/query-api
              :uncatchable-by-old-controller
              api-ch
              :format :transit
@@ -102,7 +102,7 @@
 
 (defn get-branch-workflows [api-ch vcs-type org-name repo-name branch-name opts]
   (ajax/ajax :post
-             "/query-api"
+             path/query-api
              :uncatchable-by-old-controller
              api-ch
              :format :transit
@@ -116,7 +116,7 @@
 
 (defn get-org-workflows [api-ch vcs-type org-name opts]
   (ajax/ajax :post
-             "/query-api"
+             path/query-api
              :uncatchable-by-old-controller
              api-ch
              :format :transit
@@ -128,7 +128,7 @@
 
 (defn mutate [api-ch mutation]
   (ajax/ajax :post
-             "/query-api"
+             path/query-api
              :uncatchable-by-old-controller
              api-ch
              :format :transit

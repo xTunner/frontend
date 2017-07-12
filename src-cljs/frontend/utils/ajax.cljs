@@ -2,6 +2,7 @@
   (:require [ajax.core :as clj-ajax]
             [cljs.core.async :as async :refer [>! <! alts! chan sliding-buffer close!]]
             [cljs-time.core :as time]
+            [clojure.spec.alpha :as s :include-macros true]
             [clojure.string :as str]
             [cognitect.transit :as transit]
             [frontend.async :refer [put!]]
@@ -158,6 +159,12 @@
         (merge opts)
         ajax-opts
         clj-ajax/ajax-request)))
+
+(s/def ::ajax-request #(satisfies? clj-ajax/AjaxRequest %))
+
+(s/fdef
+ ajax
+ :ret ::ajax-request)
 
 (defn managed-ajax [method url & {:as opts}]
   (let [channel (chan)

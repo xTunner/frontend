@@ -20,6 +20,11 @@
     (is repo2-following?)
     (is (not repo1-following?)))))
 
+(defn filter-piggieback-helper [orgs]
+  "Return subset of orgs that aren't covered by piggyback plans."
+  (let [covered-orgs (into #{} (apply concat (map :piggieback_orgs orgs)))]
+    (remove (comp covered-orgs :login) orgs)))
+
 (deftest filter-piggieback
   (testing "piggiebacked orgs are removed from list"
     (let [orgs [{:login "foo1"
@@ -34,7 +39,7 @@
                  :avatar_url "http://localhost/piggie2.png"
                  :org true
                  :piggieback_orgs []}]
-          filtered-orgs (api/filter-piggieback orgs)]
+          filtered-orgs (filter-piggieback-helper orgs)]
       (is (= filtered-orgs (take 1 orgs))))))
 
 (deftest api-event-project-envvar-success
