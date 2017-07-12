@@ -1763,10 +1763,11 @@
                  api-ch)))
 
 (defmethod control-event :check-all-activity-repos
-  [_ _ {:keys [org-name checked]} state]
+  [_ _ {:keys [org-name vcs-type checked]} state]
   (update-in state state/repos-building-path (fn [current-vals]
                                                (map-utils/map-vals (fn [project]
-                                                                     (if (= org-name (project-model/org-name project))
+                                                                     (if (and (= org-name (project-model/org-name project))
+                                                                              (= vcs-type (project-model/vcs-type project)))
                                                                        (assoc project :checked checked)
                                                                        project))
                                                                    current-vals))))

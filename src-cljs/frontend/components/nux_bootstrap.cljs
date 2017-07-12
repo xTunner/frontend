@@ -81,6 +81,7 @@
     om/IRenderState
     (render-state [_ {:keys [expanded?]}]
       (let [org-name (:login org)
+            vcs-type (:vcs_type org)
             toggle-expand-fn #(om/set-state! owner :expanded? (not expanded?))
             projects-count (count projects)
             selected-projects-count (->> projects
@@ -115,7 +116,7 @@
               (fn []
                 (let [action-text (if all-selected? "Deselect" "Select")]
                   [:div [:a {:on-click #(do
-                                          (raise! owner [:check-all-activity-repos {:org-name org-name :checked (not all-selected?)}])
+                                          (raise! owner [:check-all-activity-repos {:org-name org-name :vcs-type vcs-type :checked (not all-selected?)}])
                                           ((om/get-shared owner :track-event) {:event-type :checked-all-projects-clicked
                                                                                :properties (-> (event-properties action-text projects)
                                                                                                (assoc :org-name org-name))}))}
@@ -149,7 +150,7 @@
                                 vals
                                 (remove nil?))
         organizations (orgs-from-repos current-user processed-projects)
-        project-orgs (group-by project-model/org-name processed-projects)
+        project-orgs (project-model/group-by-org-name-and-vcs-type processed-projects)
         cta-button-text (if (feature/enabled? :onboarding-v1)
                           "Follow"
                           "Follow and Build")
@@ -185,7 +186,7 @@
                  (map (fn [org]
                         (om/build project-list {:org org
                                                 :projects-loaded? projects-loaded?
-                                                :projects (get project-orgs (:login org))}))
+                                                :projects (get project-orgs {:username (:login org), :vcs_type (:vcs_type org)})}))
                       organizations)]
                 (if (< total-selected-projects-count 25)
                   (button/managed-button {:kind :primary

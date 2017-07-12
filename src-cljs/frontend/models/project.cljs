@@ -30,6 +30,9 @@
 (defn org-name [project]
   (:username project))
 
+(defn group-by-org-name-and-vcs-type [projects]
+  (group-by #(select-keys % [:username :vcs_type]) projects))
+
 (defn default-branch? [branch-name project]
   (= (name branch-name) (:default_branch project)))
 
