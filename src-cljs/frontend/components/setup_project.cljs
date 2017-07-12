@@ -10,6 +10,7 @@
             [frontend.models.repo :as repo-model]
             [frontend.state :as state]
             [frontend.utils :as utils :refer-macros [defrender html]]
+            [frontend.utils.vcs :as vcs]
             [frontend.utils.vcs-url :as vcs-url]
             [om.core :as om :include-macros true]))
 
@@ -167,7 +168,7 @@
     :text [:p "Update the sample .yml to reflect your project's configuration."]
     :button ""}
    {:number "4."
-    :text [:p "Push this change up to your version control service (GitHub, Bitbucket)."]
+    :text [:p "Push this change up to " (vcs/name-capitalization (:vcs_type selected-project)) "."]
     :button ""}
    {:number "5."
     :text [:p "Start building! This will launch your project on CircleCI and make our webhooks listen for updates to your work."]

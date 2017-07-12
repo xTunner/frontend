@@ -33,3 +33,13 @@
 
 (def ->short-vcs
   (partial adjust-vcs long-to-short-vcs))
+
+(defn name-capitalization
+  "GitHub has funky capitalization, other VCS providers
+  may as well. Return company's preferred capitalization"
+  [name-str]
+  (let [name (short-to-long-vcs name-str)]
+    (cond
+      (= name "bitbucket") "Bitbucket"
+      (= name "github") "GitHub"
+      :else nil)))
