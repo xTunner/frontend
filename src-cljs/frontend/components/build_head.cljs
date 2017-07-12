@@ -569,8 +569,9 @@
 
 (defn circle-yml-ad []
   [:div
-   [:p "We didn't find a circle.yml for this build. You can specify deployment or override our inferred test steps from a circle.yml checked in to your repo's root directory."]
-   [:p "More information " [:a {:href "https://circleci.com/docs/configuration/"} "in our docs"] "."]])
+   [:p "We couldn't find a configuration file for this build.  Specify deployment or test steps by creating a configuration file in the root directory of your repository."]
+   [:p "See CircleCI's "[:a {:href "https://circleci.com/docs/1.0/introduction/"} "Getting Started 1.0 documentation "] "for instructions for CircleCI 1.0 builds."]
+   [:p "See CircleCI's "[:a {:href "https://circleci.com/docs/2.0/about-circleci/"} "Getting Started 2.0 documentation "] "for instructions for CircleCI 2.0 builds."]])
 
 (defn build-config [{:keys [config-string build build-data]} owner opts]
   (reify
