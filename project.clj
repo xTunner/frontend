@@ -43,6 +43,7 @@
                  [devcards "0.2.1-6"]
                  [funcool/promesa "1.8.1"]
                  [medley "1.0.0"]
+                 [aysylu/loom "1.0.0"]
 
                  ;; Frontend tests
                  [org.clojure/tools.reader "1.0.0-beta3"]
@@ -148,6 +149,7 @@
                                   :compiler {:output-to "resources/public/cljs/test/frontend-test.js"
                                              :output-dir "resources/public/cljs/test"
                                              :optimizations :advanced
+                                             :language-in  :ecmascript5
                                              :parallel-build true
                                              :main frontend.test-runner
                                              ;; :advanced uses the minified versions of libraries (:file-min), but the
@@ -170,6 +172,7 @@
                                                    :output-to "resources/public/cljs/production/frontend.js"
                                                    :output-dir "resources/public/cljs/production"
                                                    :optimizations :advanced
+                                                   :language-in  :ecmascript5
                                                    :parallel-build true
                                                    :closure-defines {frontend.config/DEV false}
                                                    :externs ["src-cljs/js/pusher-externs.js"
