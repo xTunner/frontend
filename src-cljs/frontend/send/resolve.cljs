@@ -73,11 +73,11 @@
   calls finish). Each piece of novelty will be in a form that matches the
   original query, so it will be suitable to be merged into the app state using
   that query. For instance, the query
-  `[{:app/current-user [:user/name :user/favorite-color]}] might yield the
+  `[{:circleci/viewer [:user/name :user/favorite-color]}] might yield the
   following separate maps on the channel:
 
-  * `{:app/current-user {:user/name \"Sarah\"}`
-  * `{:app/current-user {:user/favorite-color :color/red}
+  * `{:circleci/viewer {:user/name \"Sarah\"}`
+  * `{:circleci/viewer {:user/favorite-color :color/red}
   * `nil` (channel closed)
 
   Rather than wait for the entire query to be fulfilled, this allows the app to

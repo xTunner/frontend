@@ -189,17 +189,17 @@
     ;; wrapper, not the template, renders the header.
     ;; See https://circleci.atlassian.net/browse/CIRCLE-2412
     ['{:legacy/state [*]}
-     {:app/current-user [{:user/organizations (om-next/get-query org-picker/Organization)}
-                         :user/login
-                         :user/bitbucket-authorized?
-                         :user/github-oauth-scopes]}
+     {:circleci/viewer [{:user/organizations (om-next/get-query org-picker/Organization)}
+                        :user/login
+                        :user/bitbucket-authorized?
+                        :user/github-oauth-scopes]}
 
      `{(:org-for-projects {:< :routed/organization}) ~(om-next/get-query OrgProjects)}
      `{:routed/organization [:organization/name]}])
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
-      {:user (get-in props [:app/current-user :user/login])
+      {:user (get-in props [:circleci/viewer :user/login])
        :view :projects
        :org (get-in props [:routed/organization :organization/name :organization/vcs-type])}))
   Object
@@ -207,7 +207,7 @@
     (set-page-title! "Projects"))
   (render [this]
     (component
-      (let [current-user (:app/current-user (om-next/props this))
+      (let [current-user (:circleci/viewer (om-next/props this))
             not-have-code-identity? (not (user/has-code-identity? current-user))]
         (main-template/template
           {:app (:legacy/state (om-next/props this))
@@ -221,7 +221,7 @@
              (non-code-ident-empty-state)
              (element
                :main-content
-               (let [orgs (get-in (om-next/props this) [:app/current-user :user/organizations])]
+               (let [orgs (get-in (om-next/props this) [:circleci/viewer :user/organizations])]
                  (html
                    [:div
                     (when-not (feature/enabled? "top-bar-ui-v-1")

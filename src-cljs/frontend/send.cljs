@@ -211,7 +211,7 @@
                                                   (mapv #(hash-map :edge/node %)))}]
               (resolve/query ast adapted))))))
 
-   :app/current-user
+   :circleci/viewer
    (fn [env ast]
      (-> ((get-in env [:apis :get-orgs]) :include-user? true)
          (p/then

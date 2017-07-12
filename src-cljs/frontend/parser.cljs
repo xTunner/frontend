@@ -210,7 +210,7 @@
              (analytics/track {:event-type :pageview
                                :navigation-point route
                                :subpage :default
-                               :properties {:user (get-in @state [:app/current-user :user/login])
+                               :properties {:user (get-in @state [:circleci/viewer :user/login])
                                             :view route
                                             :org (get-in route-params [:organization/name])}}))})
 

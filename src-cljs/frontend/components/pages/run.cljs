@@ -47,7 +47,7 @@
   #_analytics/Properties
   #_(properties [this]
       (let [props (om-next/props this)]
-        {:user (get-in props [:app/current-user :user/login])
+        {:user (get-in props [:circleci/viewer :user/login])
          :view :projects
          :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
   Object
