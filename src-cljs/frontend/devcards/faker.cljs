@@ -255,12 +255,14 @@
    "asperiores"
    "repellat"])
 
+(def lorem-word (gen/elements lorem-words))
+
 (defn snake-case-identifier
   "Returns a generator which generates snake-case identifiers like \"at-qui-suscipit-cumque\"."
   ([]
-   (gen/fmap (partial string/join "-") (gen/vector (gen/elements lorem-words))))
+   (gen/fmap (partial string/join "-") (gen/vector lorem-word)))
   ([min-words max-words]
-   (gen/fmap (partial string/join "-") (gen/vector (gen/elements lorem-words) min-words max-words))))
+   (gen/fmap (partial string/join "-") (gen/vector lorem-word min-words max-words))))
 
 (defn sentence
   "Returns a generator which generates a sentence of lorem words (or the empty string)."
@@ -270,7 +272,7 @@
      (if first-word
        (str (string/join " " (cons (string/capitalize first-word) words)) ".")
        ""))
-   (gen/vector (gen/elements lorem-words))))
+   (gen/vector lorem-word)))
 
 (defn inst-in
   "Generates insts in the range from start to end (inclusive)."

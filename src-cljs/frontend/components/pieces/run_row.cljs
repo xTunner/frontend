@@ -1,5 +1,6 @@
 (ns frontend.components.pieces.run-row
-  (:require [clojure.spec.alpha :as s :include-macros true]
+  (:require [cemerick.url :as url]
+            [clojure.spec.alpha :as s :include-macros true]
             [clojure.string :as string]
             [clojure.test.check.generators :as gen]
             [frontend.analytics :as analytics]
@@ -12,7 +13,7 @@
             [frontend.models.build :as build-model]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
-            [frontend.utils :refer-macros [component element html]]
+            [frontend.utils :as utils :refer-macros [component element html]]
             [frontend.utils.github :as gh-utils]
             [frontend.utils.legacy :refer [build-legacy]]
             [frontend.utils.seq :refer [index-of]]
@@ -133,6 +134,38 @@
   [component run-id vcs-type org-name project-name]
   (transact-run-mutate component `(run/cancel {:run/id ~run-id})))
 
+;; Avatar for user who triggered the workflow run
+(defn avatar [size avatar-url]
+  (html
+   [:img
+    ;; Adding `&s=N` to the avatar URL returns an NxN version of the
+    ;; avatar (except, for some reason, for default avatars, which are
+    ;; always returned full-size, but they're sized with CSS anyhow).
+    {:src (if avatar-url
+            (-> avatar-url url/url (assoc-in [:query "s"] size) str)
+            (utils/cdn-path "/img/inner/icons/Default-Avatar.svg"))}]))
+
+
+(defui ^:once Triggerer
+  static om-next/IQuery
+  (query [this]
+    [:triggerer/avatar-url :triggerer/name])
+  Object
+  (render [this]
+    (component
+      (let [{:keys [:triggerer/avatar-url :triggerer/name]} (om-next/props this)
+            {:keys [loading?] :as computed} (om-next/get-computed this)]
+        (html
+         [:div
+          {:title          name
+           :data-toggle    "tooltip"
+           :data-placement "right"}
+          (if loading?
+            (loading-circle)
+            (element :avatar
+              (avatar 40 avatar-url)))])))))
+
+(def triggerer (om-next/factory Triggerer))
 
 (defui ^:once RunRow
   ;; NOTE: this is commented out until bodhi handles queries for components with idents first
@@ -152,7 +185,8 @@
                          :trigger-info/subject
                          :trigger-info/body
                          :trigger-info/branch
-                         {:trigger-info/pull-requests [:pull-request/url]}]}
+                         {:trigger-info/pull-requests [:pull-request/url]}
+                         {:trigger-info/triggerer (om-next/get-query Triggerer)}]}
      {:run/project [:project/name
                     {:project/organization [:organization/name
                                             :organization/vcs-type]}]}])
@@ -176,10 +210,10 @@
              commit-body :trigger-info/body
              commit-subject :trigger-info/subject
              pull-requests :trigger-info/pull-requests
-             branch :trigger-info/branch} trigger-info
+             branch :trigger-info/branch
+             triggerer-data :trigger-info/triggerer} trigger-info
             run-status-class (when-not loading?
                                (status-class status))]
-
         (card/full-bleed
          (element :content
            (html
@@ -247,14 +281,19 @@
                   (if loading?
                     (loading-placeholder 300)
                     [:span branch " / " run-name])]]]
-               [:div.recent-commit-msg
-                [:span.recent-log
-                 {:title (when commit-body
-                           commit-body)}
-                 (if loading?
-                   (loading-placeholder 200)
-                   (when commit-subject
-                     commit-subject))]]]
+               [:div.commit-info
+                (if loading?
+                  (triggerer (om-next/computed {}
+                                               {:loading? loading?}))
+                  (triggerer triggerer-data))
+                [:div.recent-commit-msg
+                 [:span.recent-log
+                  {:title (when commit-body
+                            commit-body)}
+                  (if loading?
+                    (loading-placeholder 200)
+                    (when commit-subject
+                      commit-subject))]]]]
               [:div.metadata
                [:div.metadata-row.timing
                 [:span.metadata-item.recent-time.start-time
@@ -320,7 +359,8 @@
                                          :trigger-info/subject
                                          :trigger-info/body
                                          :trigger-info/branch
-                                         :trigger-info/pull-requests]))
+                                         :trigger-info/pull-requests
+                                         :trigger-info/triggerer]))
 
   (s/def :run/project (s/keys :req [:project/name
                                     :project/organization]))
@@ -347,6 +387,9 @@
   (s/def :trigger-info/body string?)
   (s/def :trigger-info/branch (s/and string? seq))
   (s/def :trigger-info/pull-requests (s/every :pull-request/entity))
+  (s/def :trigger-info/triggerer (s/nilable
+                                  (s/keys :req [:triggerer/avatar-url
+                                                :triggerer/name])))
   (s/def :pull-request/entity (s/keys :req [:pull-request/url]))
   ;; NOTE: :pull-request/url does not currently validate that it's a real URL,
   ;; only that it's a string we can extract a PR number from.
@@ -356,6 +399,9 @@
   (s/def :project/name (s/and string? seq))
   (s/def :organization/name (s/and string? seq))
   (s/def :organization/vcs-type #{:github :bitbucket})
+
+  (s/def :triggerer/avatar-url string?)
+  (s/def :triggerer/name string?)
 
   (s/fdef prs
     :args (s/cat :prs (s/every :pull-request/entity)))
@@ -378,7 +424,9 @@
                                 [:run :run/stopped-at ::s/pred] #(faker/inst-in-last-day)
                                 :trigger-info/branch #(faker/snake-case-identifier)
                                 :trigger-info/subject #(faker/sentence)
-                                :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)}
+                                :trigger-info/pull-requests #(gen/vector (s/gen :pull-request/entity) 0 2)
+                                :triggerer/name (fn [] faker/lorem-word)
+                                :triggerer/avatar-url #(gen/return "https://avatars1.githubusercontent.com/u/3971300?v=3&s=460")}
                      (fn [morphs]
                        (binding [om-next/*shared* {:timer-atom (timer/initialize)}]
                          (card/collection (->> morphs
