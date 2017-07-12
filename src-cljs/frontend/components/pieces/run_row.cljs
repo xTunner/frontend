@@ -42,7 +42,7 @@
                                      :run-status/failed
                                      :run-status/canceled})
 
-(def ^:private rerunnable-from-start-statuses #{:run-status/failed})
+(def ^:private rerunnable-from-failed-statuses #{:run-status/failed :run-status/canceled})
 
 (defui PRs
   Object
@@ -220,7 +220,7 @@
                   [:span "Rerun"]
                   [:i.fa.fa-chevron-down.dropdown-toggle {:data-toggle "dropdown"}]
                   [:ul.dropdown-menu.pull-right
-                   (when (rerunnable-from-start-statuses status)
+                   (when (rerunnable-from-failed-statuses status)
                      [:li
                       [:a
                        {:on-click (fn [_event]
