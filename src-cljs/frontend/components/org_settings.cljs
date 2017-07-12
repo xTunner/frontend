@@ -7,6 +7,7 @@
             [frontend.components.common :as common]
             [frontend.components.forms :as forms]
             [frontend.components.inputs :as inputs]
+            [frontend.components.org-settings.contexts :as contexts]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.form :as form]
@@ -1654,6 +1655,8 @@
     {:overview overview
      :users users
      :projects projects}
+    (when (feature/enabled? :contexts-v1)
+      {:contexts contexts/main-component})
     (if (config/enterprise?)
       {:containers overview}
       {:containers cloud-pricing

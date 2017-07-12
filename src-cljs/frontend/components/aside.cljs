@@ -273,7 +273,9 @@
            [{:type :subpage :title "Share & Transfer" :href "#organizations" :subpage :organizations}]))))
    [{:type :heading :title "Organization"}
     {:type :subpage :href "#projects" :title "Projects" :subpage :projects}
-    {:type :subpage :href "#users" :title "Users" :subpage :users}]))
+    {:type :subpage :href "#users" :title "Users" :subpage :users}]
+   (when (feature/enabled? :contexts-v1)
+    [{:type :subpage :href "#contexts" :title "Contexts" :subpage :contexts}])))
 
 (defn admin-settings-nav-items []
   (concat
