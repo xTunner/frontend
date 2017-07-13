@@ -5,6 +5,8 @@
             [frontend.components.build-head :as old-build-head]
             [frontend.components.builds-table :as builds-table]
             [frontend.components.common :as common]
+            [frontend.components.pages.build.head.context :as context]
+            [frontend.components.pages.build.head.summary-item :as summary-item]
             [frontend.components.pages.build.head.trigger :as trigger]
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.icon :as icon]
@@ -13,6 +15,7 @@
             [frontend.config :refer [enterprise? github-endpoint]]
             [frontend.datetime :as datetime]
             [frontend.models.build :as build-model]
+            [frontend.models.feature :as feature]
             [frontend.models.project :as project-model]
             [frontend.routes :as routes]
             [frontend.timer :as timer]
@@ -25,14 +28,6 @@
             [frontend.state :as state]
             [om.core :as om :include-macros true])
   (:require-macros [devcards.core :as dc :refer [defcard-om]]))
-
-(defn- summary-item [label value]
-  (component
-    (html
-     [:.summary-item
-      (when label
-        [:span.summary-label label])
-      value])))
 
 (defn- linkify [text]
   (let [url-pattern #"(?im)(\b(https?|ftp)://[-A-Za-z0-9+@#/%?=~_|!:,.;]*[-A-Za-z0-9+@#/%=~_|])"
@@ -173,18 +168,18 @@
       (component
         (html
          [:div
-          (summary-item nil (status/build-badge (build-model/build-status build)))
+          (summary-item/summary-item nil (status/build-badge (build-model/build-status build)))
 
           (if-not stop_time
             (when start_time
-              (summary-item
+              (summary-item/summary-item
                "Started:"
                (html
                 [:span {:title (datetime/full-datetime start_time)}
                  (om/build common/updating-duration {:start start_time})
                  " ago"])))
 
-            (summary-item
+            (summary-item/summary-item
              "Finished:"
              (list
               (html
@@ -196,12 +191,12 @@
               (str " (" (build-model/duration build) ")"))))
 
           (when (build-model/running? build)
-            (summary-item
+            (summary-item/summary-item
              "Estimated:"
              (datetime/as-duration (:build_time_millis (:previous_successful_build build)))))
 
           (when-let [build-number (:build_num (:previous build))]
-            (summary-item
+            (summary-item/summary-item
              "Previous:"
              (html
               [:a {:href (routes/v1-build-path (vcs-url/vcs-type vcs_url)
@@ -211,7 +206,7 @@
                build-number])))
 
           (when (project-model/parallel-available? project)
-            (summary-item
+            (summary-item/summary-item
              "Parallelism:"
              (html
                [:a
@@ -228,7 +223,7 @@
                   (str " out of " (project-model/buildable-parallelism plan project) "x"))])))
 
           (when usage_queued_at
-            (summary-item
+            (summary-item/summary-item
              "Queued:"
              (if (< 0 (build-model/run-queued-time build))
                (list
@@ -245,36 +240,40 @@
                 " waiting for builds to finish"))))
 
           (when-let [resource_class (:resource_class picard)]
-            (summary-item
-              [:span "Resources:"
-               [:span.resource-class
-                (popover/tooltip {:body (html [:span "Your job's resource is defined through your configuration."
-                                               (let [href "https://circleci.com/docs/2.0/configuration-reference/#jobs"]
-                                                 [:div [:a {:href href
-                                                            :target "_blank"
-                                                            :on-click #((om/get-shared owner :track-event) {:event-type :resource-class-docs-clicked
-                                                                                                            :properties {:href href}})}
-                                                        "Read more in our docs →"]])])
-                                  :placement :bottom}
-                                 [:i.fa.fa-question-circle])]]
+            (summary-item/summary-item
+              [:span "Resources:"]
               [:span
                (gstring/format "%sCPU/%sMB"
                                (:cpu resource_class)
-                               (:ram resource_class))]))
+                               (:ram resource_class))]
+              (popover/tooltip {:body (html [:span "Your job's resource is defined through your configuration."
+                                             (let [href "https://circleci.com/docs/2.0/configuration-reference/#jobs"]
+                                               [:div [:a {:href href
+                                                          :target "_blank"
+                                                          :on-click #((om/get-shared owner :track-event) {:event-type :resource-class-docs-clicked
+                                                                                                          :properties {:href href}})}
+                                                      "Read more in our docs →"]])])
+                                :placement :bottom}
+                               [:i.fa.fa-question-circle])))
           (when-let [{:keys [workflow_id workflow_name]} (:workflows build)]
-            (summary-item
+            (summary-item/summary-item
              [:span "Workflow:"]
              [:span
               [:a {:href (routes/v1-run-path workflow_id)}
                workflow_name]]))
 
+          (when-let [context-ids (:context_ids build)]
+            (context/summary-item context-ids
+                                  (vcs-url/vcs-type vcs_url)
+                                  (vcs-url/org-name vcs_url)))
+
           [:.right-side
-           (summary-item
+           (summary-item/summary-item
             "Triggered by:"
             (trigger/description build))
 
            (when (and (= "canceled" status) canceler)
-             (summary-item
+             (summary-item/summary-item
               "Canceled by:"
               (let [{:keys [type name login]} canceler]
                 (html
@@ -285,7 +284,7 @@
                   (if (not-empty name) name login)]))))
 
            (when (build-model/has-pull-requests? build)
-             (summary-item
+             (summary-item/summary-item
               (str "PR" (when (< 1 (count pull_requests)) "s") ":")
               (om/build pull-requests pull_requests)))]])))))
 
