@@ -4,6 +4,7 @@
             [frontend.components.pieces.card :as card]
             [frontend.components.pieces.confirmation-button :as confirmation-button]
             [frontend.components.pieces.empty-state :as empty-state]
+            [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.input-modal :as input-modal]
             [frontend.components.pieces.table :as table]
             [frontend.components.project-settings :as project-envvars]
@@ -40,7 +41,7 @@
     created-at :created-at}]
   (html
     [:div
-     [:p (str "This context was created at: " created-at)]
+     [:p "Contexts are a set of resources that can be shared across different projects in an organization."]
      (if (empty? resources)
        (empty-state/empty-state
          {:heading (html [:span (empty-state/important "No Resources")])
@@ -53,26 +54,20 @@
                   :columns (conj envvar-table-columns
                                  (remove-column api-ch organization))}))]))
 
-(defn details-card
+(defn- details-card
   [owner organization target-context]
   (when target-context
     (card/titled
-      {:title  (str "Default Context: org-global")
+      {:title (html [:div.details-title
+                     [:span "Default Context: org-global"]
+                     [:span.created-at (str "Created at: " (:created-at target-context))]])
        :action [(button/button {:on-click #(om/set-state! owner :show-resources-modal? true)
-                                :kind     :primary
-                                :size     :small}
+                                :kind :primary
+                                :size :small}
                                "Add Resources")]}
       (details (om/get-shared owner [:comms :api])
                organization
                target-context))))
-
-(defn description-card
-  []
-  (card/titled
-    {:title "What is a Context?"}
-    (html
-      [:div
-       [:p "Contexts are a set of resources that can be shared across different projects in an organization."]])))
 
 (defn create
   [api-ch organization]
@@ -81,12 +76,13 @@
                    :kind     :primary}
                   "Create a Context")])
 
-(defn create-card
-  [api-ch organization a-context-exists?]
-  (when-not a-context-exists?
-    (card/titled
-      {:title "No Context Found?"}
-      (create api-ch organization))))
+(defn- create-card
+  [api-ch organization]
+  (card/basic
+    (empty-state/empty-state {:icon (icon/settings)
+                              :heading "No Contexts"
+                              :subheading "Context are a set of resources that can be shared across different projects in an organization."
+                              :action (create api-ch organization)})))
 
 (defn main
   [app owner]
@@ -102,24 +98,22 @@
         (api/fetch-context api-ch organization))
       om/IRenderState
       (render-state [_ {:keys [show-resources-modal?]}]
-        (let [context-data (get-in app state/org-contexts-path)
-              cards [(description-card)
-                     (create-card api-ch organization context-data)
-                     (details-card owner organization context-data)]]
+        (let [context-data (get-in app state/org-contexts-path)]
           (html
-            [:div
-             [:div.followed-projects.row-fluid
-              [:article
-               [:legend (str "Contexts for " org-name)]
-               (when show-resources-modal?
-                 (om/build input-modal/input-modal
-                           {:title       "Add an Environment Variable"
-                            :labels      ["Variable" "Value"]
-                            :text        project-envvars/env-var-tutorial
-                            :submit-text "Add Variable"
-                            :submit-fn   (fn [callback [variable value]]
-                                           (api/store-resources api-ch callback
-                                                                organization [{:variable variable
-                                                                               :value    value}]))
-                            :close-fn    (input-modal/mk-close-fn owner :show-resources-modal?)}))
-               (card/collection cards)]]]))))))
+            [:.context-settings
+             [:article
+              [:legend (str "Contexts for " org-name)]
+              (when show-resources-modal?
+                (om/build input-modal/input-modal
+                          {:title "Add an Environment Variable"
+                           :labels ["Variable" "Value"]
+                           :text project-envvars/env-var-tutorial
+                           :submit-text "Add Variable"
+                           :submit-fn (fn [callback [variable value]]
+                                        (api/store-resources api-ch callback
+                                                             organization [{:variable variable
+                                                                            :value value}]))
+                           :close-fn (input-modal/mk-close-fn owner :show-resources-modal?)}))
+              (if-not context-data
+                (create-card owner organization)
+                (details-card owner organization context-data))]]))))))

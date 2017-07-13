@@ -252,6 +252,25 @@
         border-color: @red;
       }
     }
+
+    .context-settings {
+
+      .title {
+        width: 100%;
+
+        .details-title {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+
+          .created-at {
+            margin-right: 10px;
+            font-size: @font-size-small;
+            color: @gray-light;
+          }
+        }
+      }
+    }
   }
 
   .ui("progress-bar", {
