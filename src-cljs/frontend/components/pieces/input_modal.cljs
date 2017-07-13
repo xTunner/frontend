@@ -65,8 +65,8 @@
       ```"
   [{title        :title
     text         :text
-    button-text  :button-text
     field-labels :labels
+    submit-text  :submit-text
     submit-fn    :submit-fn
     close-fn     :close-fn}
    owner]
@@ -91,5 +91,5 @@
                                             :on-click     #(on-submit-click
                                                              submit-fn close-fn
                                                              owner field-labels)}
-                                           button-text)]
+                                           submit-text)]
          :close-fn #(close-fn)}))))

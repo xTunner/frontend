@@ -2,6 +2,7 @@
   (:require [frontend.api.contexts :as api]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.confirmation-button :as confirmation-button]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.input-modal :as input-modal]
             [frontend.components.pieces.table :as table]
@@ -9,6 +10,21 @@
             [frontend.state :as state]
             [frontend.utils :refer-macros [html]]
             [om.core :as om]))
+
+(defn- remove-column
+  [api-ch organization]
+  {:header "Remove"
+   :cell-fn (fn [resource]
+              (om/build confirmation-button/confirmation-button
+                        {:action-text "Remove"
+                         :confirmation-text
+                         (str
+                           "Are you sure you want to remove the resource \""
+                           (:variable resource)
+                           "\"?")
+
+                         :action-fn
+                         #(api/remove-resources api-ch organization [resource])}))})
 
 (def ^:private envvar-table-columns
   [{:header  "Variable"
@@ -19,7 +35,8 @@
     :cell-fn (comp str :timestamp)}])
 
 (defn details
-  [{resources :resources
+  [api-ch organization
+   {resources :resources
     created-at :created-at}]
   (html
     [:div
@@ -33,10 +50,11 @@
        (om/build table/table
                  {:rows resources
                   :key-fn  :variable
-                  :columns envvar-table-columns}))]))
+                  :columns (conj envvar-table-columns
+                                 (remove-column api-ch organization))}))]))
 
-(defn- details-card
-  [owner target-context]
+(defn details-card
+  [owner organization target-context]
   (when target-context
     (card/titled
       {:title  (str "Default Context: org-global")
@@ -44,7 +62,9 @@
                                 :kind     :primary
                                 :size     :small}
                                "Add Resources")]}
-      (details target-context))))
+      (details (om/get-shared owner [:comms :api])
+               organization
+               target-context))))
 
 (defn description-card
   []
@@ -85,7 +105,7 @@
         (let [context-data (get-in app state/org-contexts-path)
               cards [(description-card)
                      (create-card api-ch organization context-data)
-                     (details-card owner context-data)]]
+                     (details-card owner organization context-data)]]
           (html
             [:div
              [:div.followed-projects.row-fluid

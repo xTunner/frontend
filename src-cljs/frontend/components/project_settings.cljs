@@ -11,6 +11,7 @@
             [frontend.components.inputs :as inputs]
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.card :as card]
+            [frontend.components.pieces.confirmation-button :as confirmation-button]
             [frontend.components.pieces.dropdown :as dropdown]
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.form :as form]
@@ -51,29 +52,11 @@
   :remove-fn             - The function which will actually remove the row once
                            confirmed."
   [{:keys [confirmation-question remove-fn]} owner]
-  (reify
-    om/IInitState
-    (init-state [_]
-      {:show-modal? false})
-    om/IRenderState
-    (render-state [_ {:keys [show-modal?]}]
-      (html
-       [:span
-        (table/action-button
-         "Remove"
-         (icon/cancel-circle)
-         #(om/set-state! owner :show-modal? true))
-        (when show-modal?
-          (let [close-fn #(om/set-state! owner :show-modal? false)]
-            (modal/modal-dialog {:title "Are you sure?"
-                                 :body confirmation-question
-                                 :actions [(button/button {:on-click close-fn
-                                                           :kind :flat}
-                                                          "Cancel")
-                                           (button/button {:kind :primary
-                                                           :on-click remove-fn}
-                                                          "Remove")]
-                                 :close-fn close-fn})))]))))
+  (confirmation-button/confirmation-button
+    {:confirmation-text confirmation-question
+     :action-text "Remove"
+     :action-fn remove-fn}
+    owner))
 
 (defn branch-names [project-data]
   (map (comp gstring/urlDecode name) (keys (:branches (:project project-data)))))
