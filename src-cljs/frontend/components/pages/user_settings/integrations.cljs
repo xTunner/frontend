@@ -58,8 +58,8 @@
 (defui Subpage
   static om-next/IQuery
   (query [this]
-    [{:app/current-user [{:user/identities (fq/merge [:identity/type]
-                                                     (fq/get card :identity))}]}])
+    [{:circleci/viewer [{:user/identities (fq/merge [:identity/type]
+                                                    (fq/get card :identity))}]}])
   Object
   (render [this]
     (let [{[github-identity] "github"
@@ -67,7 +67,7 @@
            [google-identity] "google"
            [slack-identity] "slack"}
           (group-by :identity/type
-                    (-> (om-next/props this) :app/current-user :user/identities))]
+                    (-> (om-next/props this) :circleci/viewer :user/identities))]
       (html
         [:div
          [:legend "Account Integrations"]

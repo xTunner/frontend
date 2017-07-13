@@ -91,7 +91,7 @@
     ;; wrapper, not the template, renders the header.
     ;; See https://circleci.atlassian.net/browse/CIRCLE-2412
     ['{:legacy/state [*]}
-     {:app/current-user [:user/login]}
+     {:circleci/viewer [:user/login]}
      :app/subpage-route
      {:app/subpage-route-data (assoc subpage-route->query
                                      ;; Add the default route at nil.
@@ -99,7 +99,7 @@
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
-      {:user (get-in props [:app/current-user :user/login])
+      {:user (get-in props [:circleci/viewer :user/login])
        :view :account}))
   Object
   (componentDidMount [this]

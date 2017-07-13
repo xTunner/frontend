@@ -135,7 +135,7 @@
   static om-next/IQuery
   (query [this]
     [{:legacy/state ['*]}
-     {:app/current-user [:user/login]}
+     {:circleci/viewer [:user/login]}
      {:routed/organization [:organization/vcs-type
                             :organization/name]}
      {:routed/project [:project/name]}
@@ -143,7 +143,7 @@
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
-      {:user (get-in props [:app/current-user :user/login])
+      {:user (get-in props [:circleci/viewer :user/login])
        :view :route/project-workflows
        :org (get-in props [:routed/organization :organization/name])
        :vcs-type (get-in props [:routed/organization :organization/vcs-type])
@@ -224,7 +224,7 @@
   static om-next/IQuery
   (query [this]
     [{:legacy/state ['*]}
-     {:app/current-user [:user/login]}
+     {:circleci/viewer [:user/login]}
      {:routed/organization [:organization/vcs-type
                             :organization/name]}
      {:routed/project [:project/name]}
@@ -234,7 +234,7 @@
   analytics/Properties
   (properties [this]
     (let [props (om-next/props this)]
-      {:user (get-in props [:app/current-user :user/login])
+      {:user (get-in props [:circleci/viewer :user/login])
        :view :route/project-branch-workflows
        :org (get-in props [:routed/organization :organization/name])
        :vcs-type (get-in props [:routed/organization :organization/vcs-type])
@@ -321,7 +321,7 @@
   #_analytics/Properties
   #_(properties [this]
       (let [props (om-next/props this)]
-        {:user (get-in props [:app/current-user :user/login])
+        {:user (get-in props [:circleci/viewer :user/login])
          :view :projects
          :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
   Object
@@ -353,7 +353,7 @@
   #_analytics/Properties
   #_(properties [this]
       (let [props (om-next/props this)]
-        {:user (get-in props [:app/current-user :user/login])
+        {:user (get-in props [:circleci/viewer :user/login])
          :view :projects
          :org (get-in props [:app/route-data :route-data/organization :organization/name])}))
   Object

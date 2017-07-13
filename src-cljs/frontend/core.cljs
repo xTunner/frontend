@@ -250,23 +250,23 @@
         history-imp (history/new-history-imp top-level-node)
         pusher-imp (pusher/new-pusher-instance (config/pusher))
         state-atom (atom {:legacy/state legacy-state
-                          :app/current-user (when-let [rc-user (-> js/window
-                                                                   (aget "renderContext")
-                                                                   (aget "current_user"))]
-                                              {:user/login (aget rc-user "login")
-                                               :user/bitbucket-authorized? (aget rc-user "bitbucket_authorized")
-                                               :user/github-oauth-scopes (-> rc-user
-                                                                             (aget "github_oauth_scopes")
-                                                                             js->clj)
-                                               :user/identities (let [legacy-format-identites
-                                                                      (-> rc-user
-                                                                          (aget "identities")
-                                                                          (js->clj :keywordize-keys true)
-                                                                          vals)]
-                                                                  (mapv
-                                                                   #(hash-map :identity/type (:type %)
-                                                                              :identity/login (:login %))
-                                                                   legacy-format-identites))})})
+                          :circleci/viewer (when-let [rc-user (-> js/window
+                                                                  (aget "renderContext")
+                                                                  (aget "current_user"))]
+                                             {:user/login (aget rc-user "login")
+                                              :user/bitbucket-authorized? (aget rc-user "bitbucket_authorized")
+                                              :user/github-oauth-scopes (-> rc-user
+                                                                            (aget "github_oauth_scopes")
+                                                                            js->clj)
+                                              :user/identities (let [legacy-format-identites
+                                                                     (-> rc-user
+                                                                         (aget "identities")
+                                                                         (js->clj :keywordize-keys true)
+                                                                         vals)]
+                                                                 (mapv
+                                                                  #(hash-map :identity/type (:type %)
+                                                                             :identity/login (:login %))
+                                                                  legacy-format-identites))})})
 
         ;; The legacy-state-atom is a LensedAtom which we can treat like a
         ;; normal atom but which presents only the legacy state.
