@@ -1,12 +1,14 @@
 (ns frontend.components.org-settings.contexts
-  (:require [om.core :as om]
-            [frontend.state :as state]
-            [frontend.components.pieces.card :as card]
-            [frontend.utils :refer-macros [html]]
-            [frontend.api.contexts :as api]
+  (:require [frontend.api.contexts :as api]
             [frontend.components.pieces.button :as button]
+            [frontend.components.pieces.card :as card]
             [frontend.components.pieces.empty-state :as empty-state]
-            [frontend.components.pieces.table :as table]))
+            [frontend.components.pieces.input-modal :as input-modal]
+            [frontend.components.pieces.table :as table]
+            [frontend.components.project-settings :as project-envvars]
+            [frontend.state :as state]
+            [frontend.utils :refer-macros [html]]
+            [om.core :as om]))
 
 (def ^:private envvar-table-columns
   [{:header  "Variable"
@@ -14,7 +16,7 @@
    {:header  "Value"
     :cell-fn :value}
    {:header  "Created At"
-    :cell-fn :created-at}])
+    :cell-fn (comp str :timestamp)}])
 
 (defn details
   [{resources :resources
@@ -33,11 +35,15 @@
                   :key-fn  :variable
                   :columns envvar-table-columns}))]))
 
-(defn details-card
-  [target-context]
+(defn- details-card
+  [owner target-context]
   (when target-context
     (card/titled
-      {:title (str "Default Context: org-global")}
+      {:title  (str "Default Context: org-global")
+       :action [(button/button {:on-click #(om/set-state! owner :show-resources-modal? true)
+                                :kind     :primary
+                                :size     :small}
+                               "Add Resources")]}
       (details target-context))))
 
 (defn description-card
@@ -68,19 +74,32 @@
         organization (get-in app state/org-data-path)
         org-name (get-in app state/org-name-path)]
     (reify
+      om/IInitState
+      (init-state [_]
+        {:show-resources-modal? nil})
       om/IDidMount
       (did-mount [_]
         (api/fetch-context api-ch organization))
-      om/IRender
-      (render [_]
+      om/IRenderState
+      (render-state [_ {:keys [show-resources-modal?]}]
         (let [context-data (get-in app state/org-contexts-path)
               cards [(description-card)
                      (create-card api-ch organization context-data)
-                     (details-card context-data)]]
+                     (details-card owner context-data)]]
           (html
             [:div
              [:div.followed-projects.row-fluid
               [:article
-               [:legend
-                (str "Contexts for " org-name)]
+               [:legend (str "Contexts for " org-name)]
+               (when show-resources-modal?
+                 (om/build input-modal/input-modal
+                           {:title       "Add an Environment Variable"
+                            :labels      ["Variable" "Value"]
+                            :text        project-envvars/env-var-tutorial
+                            :submit-text "Add Variable"
+                            :submit-fn   (fn [callback [variable value]]
+                                           (api/store-resources api-ch callback
+                                                                organization [{:variable variable
+                                                                               :value    value}]))
+                            :close-fn    (input-modal/mk-close-fn owner :show-resources-modal?)}))
                (card/collection cards)]]]))))))

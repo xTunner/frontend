@@ -524,6 +524,12 @@
             [:hr]
             (clear-cache-button "source" project-data owner)]]]]))))
 
+(def env-var-tutorial
+  [:p
+   " To disable string substitution you need to escape the " [:code "$"]
+   " characters by prefixing them with " [:code "\\"] "."
+   " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."])
+
 (defn- add-env-vars-modal
   [{:keys [close-fn project-id project]} owner]
   (let [inputs (inputs/get-inputs-from-app-state owner)
@@ -548,10 +554,7 @@
         (modal/modal-dialog {:title "Add an Environment Variable"
                              :body (html
                                      [:div
-                                      [:p
-                                       " To disable string substitution you need to escape the " [:code "$"]
-                                       " characters by prefixing them with " [:code "\\"] "."
-                                       " For example, a value like " [:code "usd$"] " would be entered as " [:code "usd\\$"] "."]
+                                      env-var-tutorial
                                       (form/form {}
                                         (om/build form/text-field {:label "Name"
                                                                    :required true
