@@ -3,7 +3,7 @@
             [frontend.components.pieces.button :as button]
             [frontend.components.pieces.modal :as modal]
             [frontend.models.feature :as feature]
-            [frontend.utils :refer-macros [html]]
+            [frontend.utils :refer-macros [html] :as utils]
             [om.core :as om :include-macros true]))
 
 (defn ab-test-treatment []
@@ -22,8 +22,8 @@
   (and (show-intervention? build)
        (-> build :build_num (<= 3))))
 
-(defn- setup-docs-link-props [track-fn]
-  {:href "https://circleci.com/docs/manually"
+(defn- setup-docs-link-props [track-fn link]
+  {:href link
    :target "_blank"
    :on-click #(track-setup-docs-clicked track-fn)})
 
@@ -41,10 +41,13 @@
                   [:div
                    [:span
                     (str "We couldn't detect the settings for your project! "
-                         "Please make sure you have a circle.yml configuration "
-                         "file in place, and check our doc about ")
-                    [:a (setup-docs-link-props track-fn)
-                        "manual build setup"]
+                         "Please make sure you have a configuration "
+                         "file in place, and check our doc about manual build setup in ")
+                    [:a (setup-docs-link-props track-fn utils/platform-2-0-docs-url)
+                        "CircleCI 2.0"]
+                    " or "
+                    [:a (setup-docs-link-props track-fn utils/platform-1-0-docs-url)
+                     "CircleCI 1.0"]
                     "."]])]
             (common/message {:type :warning
                              :content content})))))))
@@ -62,10 +65,13 @@
            :body (html
                    [:span
                     (str "We're sorry about that! Please make sure you have a "
-                         "circle.yml configuration file in place, and check "
-                         "our doc about ")
-                    [:a (setup-docs-link-props track-fn)
-                        "manual build setup"]
+                         "configuration file in place, and check "
+                         "our doc about manual build setup in ")
+                    [:a (setup-docs-link-props track-fn utils/platform-2-0-docs-url)
+                     "CircleCI 2.0"]
+                    " or "
+                    [:a (setup-docs-link-props track-fn utils/platform-1-0-docs-url)
+                     "CircleCI 1.0"]
                     "."])
            :actions [(button/button {:kind :primary
                                      :on-click close-fn}
