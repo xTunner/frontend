@@ -125,7 +125,7 @@
                          (if (feature/enabled? :workflow-map)
                            (let [jobs (-> this
                                           om-next/props
-                                          :routed-entity/run
+                                          :routed/run
                                           :run/jobs)
                                  nodes (map :job/name jobs)
                                  edges (for [job jobs
