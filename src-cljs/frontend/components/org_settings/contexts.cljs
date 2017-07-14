@@ -6,6 +6,7 @@
             [frontend.components.pieces.empty-state :as empty-state]
             [frontend.components.pieces.icon :as icon]
             [frontend.components.pieces.input-modal :as input-modal]
+            [frontend.components.pieces.popover :as popover]
             [frontend.components.pieces.table :as table]
             [frontend.components.project-settings :as project-envvars]
             [frontend.state :as state]
@@ -60,6 +61,15 @@
     (card/titled
       {:title (html [:div.details-title
                      [:span "Default Context: org-global"]
+                     [:span (popover/tooltip
+                              {:body
+                               (html
+                                 [:div "Context name editing and multiple contexts are coming soon."
+                                  [:div [:a {:href "https://circleci.com/docs/2.0/contexts/"
+                                             :target "_blank"}
+                                         "Learn more →"]]])
+                               :placement :bottom}
+                              [:i.fa.fa-question-circle])]
                      [:span.created-at (str "Created at: " (:created-at target-context))]])
        :action [(button/button {:on-click #(om/set-state! owner :show-resources-modal? true)
                                 :kind :primary
