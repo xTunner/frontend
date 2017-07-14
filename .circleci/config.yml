@@ -13,87 +13,78 @@ references:
   attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
-      
-  load_code: &load_code
-    run:
-      name: load code from workspace
-      command: |
-        # Move all files and dotfiles to current directory
-        mv /tmp/workspace/frontend/* /tmp/workspace/frontend/.[!.]* .
+
+  restore_repo: &restore_repo
+    restore_cache:
+      keys:
+        - v1-repo-{{ .Branch }}-{{ .Revision }}
+        - v1-repo-{{ .Branch }}
+        - v1-repo
       
   jars_cache_key: &jars_cache_key
-    key: v7-dependency-jars-{{ checksum "project.clj" }}
-
-  js_cache_key: &js_cache_key
-    key: v6-dependency-npm-{{ checksum "package.json"}}-{{ checksum "bower.json" }}
+    v7-dependency-jars-{{ checksum "project.clj" }}
+  jars_backup_cache_key: &jars_backup_cache_key
+    v7-dependency-jars
     
   restore_jars: &restore_jars
-    run:
-      name: Restore m2 repo from workspace
-      command: |
-        [[ -d ~/.m2 ]] && rm -r ~/.m2
-        mv /tmp/workspace/.m2 ~/
+    restore_cache:
+      keys:
+        - *jars_cache_key
+        - *jars_backup_cache_key
+
+  npm_cache_key: &npm_cache_key
+    v1-dependency-npm-{{ checksum "package.json" }}
+  npm_backup_cache_key: &npm_backup_cache_key
+    v1-dependency-npm
 
   restore_node_modules: &restore_node_modules
-    run:
-      name: Restore npm dependencies from workspace
-      command: mv /tmp/workspace/node_modules ./
+    restore_cache:
+      keys:
+        - *npm_cache_key
+        - *npm_backup_cache_key
+
+  bower_cache_key: &bower_cache_key
+    v1-dependency-bower-{{ checksum "bower.json" }}
+  bower_backup_cache_key: &bower_backup_cache_key
+    v1-dependency-bower
 
   restore_bower_components: &restore_bower_components
-    run:
-      name: Restore bower dependencies from workspace
-      command: mv /tmp/workspace/bower_components resources/components
+    restore_cache:
+      keys:
+        - *bower_cache_key
+        - *bower_backup_cache_key
       
 jobs:
-            
   checkout_code:
     <<: *container_config
     steps:
+      - *restore_repo
       - checkout
-      - run:
-          command: |
-            mkdir -p /tmp/workspace/frontend
-            mv * .[!.]* /tmp/workspace/frontend/
-      - persist_to_workspace:
-          root: *workspace_root
+      - save_cache:
+          key: v1-repo-{{ .Branch }}-{{ .Revision }}
           paths:
-            - frontend
+            - .
 
   clojure_dependencies:
     <<: *container_config
     steps:
-      - *attach_workspace
-      - *load_code
-      - restore_cache:
-          <<: *jars_cache_key
+      - *restore_repo
+      - *restore_jars
       - run:
-          name: download dependencies
-          command: |
-            [[ -f /root/.m2/.circle_cache ]] || lein deps
-      - run:
-          name: Mark m2 repo as cached
-          command: touch ~/.m2/.circle_cache
+          command: lein deps
       - save_cache:
-          <<: *jars_cache_key
+          key: *jars_cache_key
           paths:
             - /root/.m2
-      - run:
-          name: Move m2 repo to workspace
-          command: mv /root/.m2 /tmp/workspace/
-      - persist_to_workspace:
-          root: *workspace_root
-          paths:
-            - .m2
 
   npm_bower_dependencies:
     <<: *container_config
     docker:
       - image: node:4.8.3
     steps:
-      - *attach_workspace
-      - *load_code
-      - restore_cache:
-          <<: *js_cache_key
+      - *restore_repo
+      - *restore_node_modules
+      - *restore_bower_components
       - run:
           name: download dependencies
           command: |
@@ -103,26 +94,18 @@ jobs:
               node_modules/bower/bin/bower --allow-root install
             fi
       - save_cache:
-          <<: *js_cache_key
+          key: *npm_cache_key
           paths:
             - /root/frontend/node_modules
-            - /root/frontend/resources/components
-      - run:
-          name: Move dependencies to workspace
-          command: |
-            mv node_modules /tmp/workspace/
-            mv resources/components /tmp/workspace/bower_components
-      - persist_to_workspace:
-          root: *workspace_root
+      - save_cache:
+          key: *bower_cache_key
           paths:
-            - node_modules
-            - bower_components
+            - /root/frontend/resources/components
           
   clojure_test:
     <<: *container_config
     steps:
-      - *attach_workspace
-      - *load_code
+      - *restore_repo
       - *restore_jars
       - run:
           name: lein test
@@ -145,9 +128,8 @@ jobs:
             apk update
             apk add tar
       - *attach_workspace
-      - *load_code
+      - *restore_repo
       - *restore_jars
-      - *restore_bower_components
       - *restore_node_modules
       - run:
           name: Restore compiled cljs from workspace
@@ -168,8 +150,7 @@ jobs:
   cljsbuild_whitespace:
     <<: *container_config
     steps:
-      - *attach_workspace
-      - *load_code
+      - *restore_repo
       - *restore_jars
       - run:
           name: cljsbuild whitespace
@@ -188,8 +169,7 @@ jobs:
   cljsbuild_production:
     <<: *container_config
     steps:
-      - *attach_workspace
-      - *load_code
+      - *restore_repo
       - *restore_jars
       - run:
           name: cljsbuild production
@@ -208,8 +188,7 @@ jobs:
   cljsbuild_test:
     <<: *container_config
     steps:
-      - *attach_workspace
-      - *load_code
+      - *restore_repo
       - *restore_jars
       - run:
           name: cljsbuild test
@@ -229,7 +208,7 @@ jobs:
     <<: *container_config
     steps:
       - *attach_workspace
-      - *load_code
+      - *restore_repo
       - *restore_jars
       - *restore_node_modules
       - *restore_bower_components
@@ -266,7 +245,7 @@ jobs:
     working_directory: /root/frontend
     steps:
       - *attach_workspace
-      - *load_code
+      - *restore_repo
       - run:
           name: Restore compiled assets from workspace
           command: |
