@@ -125,5 +125,5 @@
                                                                             :value value}]))
                            :close-fn (input-modal/mk-close-fn owner :show-resources-modal?)}))
               (if-not context-data
-                (create-card owner organization)
+                (create-card api-ch organization)
                 (details-card owner organization context-data))]]))))))
