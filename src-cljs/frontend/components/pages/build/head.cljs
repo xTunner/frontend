@@ -239,7 +239,8 @@
                                                     :stop (or (:queued_at build) (:stop_time build))})
                 " waiting for builds to finish"))))
 
-          (when-let [resource_class (:resource_class picard)]
+          (when-let [resource_class (and (= "docker" (get-in picard [:build_agent :properties :executor]))
+                                         (:resource_class picard))]
             (summary-item/summary-item
               [:span "Resources:"]
               [:span
