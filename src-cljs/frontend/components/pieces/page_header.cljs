@@ -239,7 +239,7 @@
                                                                                          :treatment "top-bar-beta"}})}
                            "Give Topbar UI Feedback")])])))))
 
-(defn new-ui-button [{:keys [show-button? has-topbar? topbar-beta]} owner]
+(defn toggle-topbar-button [{:keys [show-button? has-topbar? topbar-beta]} owner]
   (reify
     om/IRender
     (render [_]
@@ -300,10 +300,10 @@
                 [:div.topbar-toggle
                  (om/build top-bar-feedback-button {:show-button? (and has-topbar?
                                                                        (not om-next-page?))})
-                 (om/build new-ui-button {:show-button? (and (false? om-next-page?)
-                                                             (false? show-nux-experience?))
-                                          :has-topbar? has-topbar?
-                                          :topbar-beta topbar-beta})])
+                 (om/build toggle-topbar-button {:show-button? (and (false? om-next-page?)
+                                                                    (false? show-nux-experience?))
+                                                 :has-topbar? has-topbar?
+                                                 :topbar-beta topbar-beta})])
               actions]]))))))
 
 (dc/do
