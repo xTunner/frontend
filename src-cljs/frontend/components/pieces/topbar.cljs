@@ -15,9 +15,9 @@
   (:require-macros [devcards.core :as dc :refer [defcard]]
                    [frontend.utils :refer [component html]]))
 
-(defn orgs-dropdown-selector [orgs selected-org current-route owner app]
+(defn orgs-dropdown-selector [orgs selected-org current-route owner show-nux-experience?]
   [:li.dropdown.org-dropdown
-   (if (false? (state-utils/show-nux-experience? app))
+   (when (false? show-nux-experience?)
      [:button.dropdown-toggle.org-button
       {:data-toggle "dropdown"
        :aria-haspopup "true"
@@ -149,7 +149,7 @@
   :user - The current user. We display their avatar in the bar.
   :orgs - all the orgs that the user is a part of
   :selected-org - The currently selected organization in the top bar."
-  [{:keys [user orgs selected-org current-route app]} owner]
+  [{:keys [user orgs selected-org current-route show-nux-experience?]} owner]
   (reify
     om/IRender
     (render [_]
@@ -158,7 +158,7 @@
           [:div
            [:div.navs-container
             [:ul.nav-options.collapsing-nav {:class (when (disable-org-picker? current-route) "disable")}
-              (orgs-dropdown-selector orgs selected-org current-route owner app)]
+              (orgs-dropdown-selector orgs selected-org current-route owner show-nux-experience?)]
 
             [:a.logomark {:href "/dashboard"
                           :aria-label "Dashboard"}

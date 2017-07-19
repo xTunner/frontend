@@ -161,7 +161,7 @@
                                              :selected-org selected-org
                                              :orgs orgs
                                              :current-route current-route
-                                             :app app}))]
+                                             :show-nux-experience? (state-utils/show-nux-experience? app)}))]
              [:.flash-presenter
               (flash/presenter {:display-timeout 2000
                                 :notification
