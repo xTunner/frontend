@@ -104,7 +104,7 @@
       (let [repo (:repo data)
             settings (:settings data)
             login (get-in settings [:add-projects :selected-org :login])
-            type (get-in settings [:add-projects :selected-org :type])
+            type (get-in settings [:add-projects :selected-org :vcs_type])
             repo-id (repo-model/id repo)
             repo-url (vcs-url/project-path (:vcs_url repo))
             tooltip-id (str "view-project-tooltip-" (string/replace repo-id #"[^\w]" ""))
