@@ -160,7 +160,8 @@
                 (build-legacy topbar/topbar {:user user
                                              :selected-org selected-org
                                              :orgs orgs
-                                             :current-route current-route}))]
+                                             :current-route current-route
+                                             :show-nux-experience? (state-utils/show-nux-experience? app)}))]
              [:.flash-presenter
               (flash/presenter {:display-timeout 2000
                                 :notification

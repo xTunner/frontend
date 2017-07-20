@@ -10,21 +10,23 @@
             [frontend.utils.github :as gh-utils]
             [frontend.utils.bitbucket :as bb-utils]
             [frontend.utils.html :as html]
+            [frontend.utils.state :as state-utils]
             [om.core :as om])
   (:require-macros [devcards.core :as dc :refer [defcard]]
                    [frontend.utils :refer [component html]]))
 
-(defn orgs-dropdown-selector [orgs selected-org current-route owner]
+(defn orgs-dropdown-selector [orgs selected-org current-route owner show-nux-experience?]
   [:li.dropdown.org-dropdown
-   [:button.dropdown-toggle.org-button
-    {:data-toggle "dropdown"
-     :aria-haspopup "true"
-     :aria-expanded "false"}
-    [:.avatar
-     [:img.gravatar.selected-org-icon {:src (gh-utils/make-avatar-url selected-org :size 60)}]]
-    [:.org-name
-     [:span.selected-org-name (:login selected-org)]
-     [:i.material-icons.org-picker-arrow "keyboard_arrow_down"]]]
+   (when (false? show-nux-experience?)
+     [:button.dropdown-toggle.org-button
+      {:data-toggle "dropdown"
+       :aria-haspopup "true"
+       :aria-expanded "false"}
+      [:.avatar
+       [:img.gravatar.selected-org-icon {:src (gh-utils/make-avatar-url selected-org :size 60)}]]
+      [:.org-name
+       [:span.selected-org-name (:login selected-org)]
+       [:i.material-icons.org-picker-arrow "keyboard_arrow_down"]]])
 
    [:ul.dropdown-menu.pull-right.animated.slideInDown.nav-items.org-dropdown-menu
     [:li.org-dropdown-menu__item.switch-org-text
@@ -147,7 +149,7 @@
   :user - The current user. We display their avatar in the bar.
   :orgs - all the orgs that the user is a part of
   :selected-org - The currently selected organization in the top bar."
-  [{:keys [user orgs selected-org current-route]} owner]
+  [{:keys [user orgs selected-org current-route show-nux-experience?]} owner]
   (reify
     om/IRender
     (render [_]
@@ -156,7 +158,7 @@
           [:div
            [:div.navs-container
             [:ul.nav-options.collapsing-nav {:class (when (disable-org-picker? current-route) "disable")}
-              (orgs-dropdown-selector orgs selected-org current-route owner)]
+              (orgs-dropdown-selector orgs selected-org current-route owner show-nux-experience?)]
 
             [:a.logomark {:href "/dashboard"
                           :aria-label "Dashboard"}
