@@ -104,7 +104,7 @@
       (let [repo (:repo data)
             settings (:settings data)
             login (get-in settings [:add-projects :selected-org :login])
-            type (get-in settings [:add-projects :selected-org :vcs_type])
+            vcs-type (get-in settings [:add-projects :selected-org :vcs_type])
             repo-id (repo-model/id repo)
             repo-url (vcs-url/project-path (:vcs_url repo))
             tooltip-id (str "view-project-tooltip-" (string/replace repo-id #"[^\w]" ""))
@@ -126,25 +126,23 @@
                    (button/link
                      {:kind :primary
                       :href (if (feature/enabled? "top-bar-ui-v-1")
-                              (routes/v1-setup-project-path {:org login :vcs_type type})
+                              (routes/v1-setup-project-path {:org login :vcs_type vcs-type})
                               (routes/v1-setup-project))
                       :on-click #(raise! owner [:setup-project-select-project repo-id])}
                      "Setup project")]
 
                   (managed-button
                     [:button {:on-click #(do
-                                           (raise! owner [:followed-repo (assoc repo
-                                                                           :login login
-                                                                           :type type)])
+                                           (raise! owner [:followed-repo repo])
                                            ; TODO: rm not building-on-circle? content when :onboarding-v1
                                            ; it out of treatment.
                                            (when (not building-on-circle?)
                                              (om/set-state! owner :building? true)
                                              ((om/get-shared owner :track-event)
-                                               {:event-type :build-project-clicked
-                                                :properties {:project-vcs-url repo-url
-                                                             :repo repo-name
-                                                             :org login}})))
+                                              {:event-type :build-project-clicked
+                                               :properties {:project-vcs-url repo-url
+                                                            :repo repo-name
+                                                            :org login}})))
                               ; TODO: rm not building-on-circle? content when :onboarding-v1
                               :title (if building-on-circle?
                                        "This project is currently building on CircleCI. Clicking will cause builds for this project to show up for you in the UI."
@@ -157,9 +155,7 @@
                [:li.repo-unfollow
                 title-el
                 (managed-button
-                 [:button {:on-click #(raise! owner [:unfollowed-repo (assoc repo
-                                                                             :login login
-                                                                             :type type)])
+                 [:button {:on-click #(raise! owner [:unfollowed-repo repo])
                            :data-spinner true}
                   [:span "Unfollow project"]])]
 
