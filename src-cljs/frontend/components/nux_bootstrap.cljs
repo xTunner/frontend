@@ -306,13 +306,4 @@
 
                 (if organizations
                   (om/build nux-bootstrap-content (assoc data :on-success #(om/set-state! owner :show-success? true)))
-                  (card/basic (spinner)))
-                (if organizations
-                  (card/titled
-                    {:title "Interested in a tour?"}
-                    (html
-                      [:div
-                       [:a {:href "https://circleci.com/gh/spotify/helios/5715?appcue=-KaIkbbdxnEVnAzMAkKx"
-                            :target "_blank"
-                            :on-click #((om/get-shared owner :track-event) {:event-type :view-demo-clicked})}
-                        "See how Spotify uses CircleCI"] ". You'll be able to to see what builds pass/fail and show how fast they run."])))]))])))))
+                  (card/basic (spinner)))]))])))))
